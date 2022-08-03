@@ -9,9 +9,12 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.make(
-  name: "Repository",
+  name: "DataSource",
   targets: [
-    .staticLibrary(name: "Repository", dependencies: []),
-    .unitTests(name: "Repository")
+    .staticLibrary(
+        name: "DataSource",
+        dependencies: []
+    ),
+    .unitTests(name: "DataSource")
   ]
 )
