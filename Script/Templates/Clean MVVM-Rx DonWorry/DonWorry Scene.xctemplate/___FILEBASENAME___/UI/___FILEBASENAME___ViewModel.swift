@@ -7,12 +7,10 @@
 //
 
 import Foundation
+import BaseArchitecture
+
 import RxSwift
 
 final class ___VARIABLE_sceneName___ViewModel: BaseViewModel {
-
-    var disposeBag: DisposeBag = DisposeBag()
-    
-    init() {}
 
 }

@@ -10,7 +10,7 @@ import RxSwift
 
 protocol ___VARIABLE_sceneName___Repository {}
 
-final class ___VARIABLE_sceneName___RepositoryImpl: HomeRepository {
+final class ___VARIABLE_sceneName___RepositoryImpl: ___VARIABLE_sceneName___Repository {
 
     public init() {}
 }

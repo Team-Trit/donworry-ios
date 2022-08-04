@@ -7,14 +7,16 @@
 //
 
 import UIKit
+import BaseArchitecture
+
 import RxCocoa
 import RxSwift
+
 
 final class ___VARIABLE_sceneName___ViewController: BaseViewController {
 
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = ___VARIABLE_sceneName___ViewModel()
-    private var disposeBag: DisposeBag = DisposeBag()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +29,7 @@ final class ___VARIABLE_sceneName___ViewController: BaseViewController {
 }
 
 extension ___VARIABLE_sceneName___ViewController {
+
     private func attributes() {
 
     }
