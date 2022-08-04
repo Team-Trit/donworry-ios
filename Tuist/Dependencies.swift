@@ -17,8 +17,9 @@ let dependencies = Dependencies(
         .remote(url: "https://github.com/Moya/Moya.git", requirement: .upToNextMajor(from: "15.0.0")),
         .remote(url: "https://github.com/RxSwiftCommunity/RxDataSources.git", requirement: .exact("5.0.0")),
         .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .exact("6.5.0")),
-        .remote(url: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.2.1"))
-
+        .remote(url: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.2.1")),
+        .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMajor(from: "3.0.0")),
+//        .remote(url: "https://github.com/RxSwiftCommunity/RxFlow.git", requirement: .exact("2.10.0"))
     ],
     platforms: [.iOS]
 )

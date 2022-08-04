@@ -12,7 +12,7 @@ extension Target {
       product: .app,
       bundleId: "com.Tr-iT.\(name)",
       deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone]),
-      infoPlist: .file(path: "Resources/\(name)-Info.plist"), 
+      infoPlist: .file(path: "SupportingFiles/\(name)-Info.plist"), 
       sources: ["Sources/**"],
       resources: ["Resources/**"],
       dependencies: dependencies

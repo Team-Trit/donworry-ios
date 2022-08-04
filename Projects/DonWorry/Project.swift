@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 
 let project = Project.make(
-  name: "DonWorry",
+  name: "App",
   targets: [
     Target.appTarget(
         name: "DonWorry",
