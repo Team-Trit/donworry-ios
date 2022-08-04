@@ -10,7 +10,11 @@ let project = Project.make(
         dependencies: [
             .project(target: "DesignSystem", path: "../DesignSystem"),
             .project(target: "CoreKit", path: "../Core/CoreKit"),
-            .project(target: "DataSource", path: "../DataSource"),
+            .project(target: "Networking", path: "../Networking"),
+            .project(target: "BaseArchitecture", path: "../Core/CoreKit"),
+            .project(target: "DonWorryExtensions", path: "../Core/CoreKit"),
+            .project(target: "DonWorryProtocols", path: "../Core/CoreKit"),
+            .project(target: "Models", path: "../Core/CoreKit"),
             .external(name: "SnapKit"),
             .external(name: "Kingfisher"),
             .external(name: "RxSwift"),
@@ -21,18 +25,5 @@ let project = Project.make(
         ]
     ),
     Target.unitTests(name: "DonWorry"),
-    Target.staticLibrary(
-        name: "DonWorry-Login",
-        dependencies: [
-
-        ]
-    ),
-    Target.staticLibrary(
-        name: "DonWorry-CheckRoomList",
-        dependencies: [
-            .external(name: "SnapKit"),
-            .external(name: "Kingfisher")
-        ]
-    ),
   ]
 )

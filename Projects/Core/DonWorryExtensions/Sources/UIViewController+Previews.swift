@@ -11,7 +11,7 @@ import UIKit
 #if DEBUG
 import SwiftUI
 
-extension UIViewController {
+public extension UIViewController {
 
     private struct Preview: UIViewControllerRepresentable {
         let viewController: UIViewController
