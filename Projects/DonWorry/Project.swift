@@ -10,15 +10,21 @@ let project = Project.make(
         dependencies: [
             .project(target: "DesignSystem", path: "../DesignSystem"),
             .project(target: "CoreKit", path: "../Core/CoreKit"),
-            .project(target: "DataSource", path: "../DataSource")
+            .project(target: "DataSource", path: "../DataSource"),
+            .external(name: "SnapKit"),
+            .external(name: "Kingfisher"),
+            .external(name: "RxSwift"),
+            .external(name: "RxCocoa"),
+            .external(name: "ReactorKit"),
+            .external(name: "FlexLayout"),
+            .external(name: "Moya")
         ]
     ),
     Target.unitTests(name: "DonWorry"),
     Target.staticLibrary(
         name: "DonWorry-Login",
         dependencies: [
-            .external(name: "SnapKit"),
-            .external(name: "Kingfisher")
+
         ]
     ),
     Target.staticLibrary(

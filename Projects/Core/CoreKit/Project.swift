@@ -13,6 +13,17 @@ let project = Project.make(
   targets: [
     .staticLibrary(name: "CoreKit"),
     .unitTests(name: "CoreKit"),
-    .staticLibraryTarget(name: "Models")
+    .staticLibraryTarget(name: "Models"),
+    .staticLibraryTarget(
+        name: "BaseArchitecture",
+        dependencies: [
+        .external(name: "RxSwift")
+    ]),
+    .staticLibraryTarget(
+        name: "DonWorryExtensions"
+    ),
+    .staticLibraryTarget(
+        name: "DonWorryProtocols"
+    )
   ]
 )
