@@ -12,6 +12,7 @@ let project = Project.make(
   name: "CoreKit",
   targets: [
     .staticLibrary(name: "CoreKit"),
-    .unitTests(name: "CoreKit")
+    .unitTests(name: "CoreKit"),
+    .staticLibraryTarget(name: "Models")
   ]
 )

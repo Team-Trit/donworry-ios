@@ -35,6 +35,22 @@ extension Target {
     )
   }
 
+  public static func staticLibraryTarget(
+    name: String,
+    dependencies: [TargetDependency] = []
+  ) -> Target {
+    Target(
+      name: name,
+      platform: .iOS,
+      product: .staticLibrary,
+      bundleId: "com.Tr-iT.\(name)",
+      deploymentTarget: .iOS(targetVersion: "13.0", devices: .iphone),
+      infoPlist: .default,
+      sources: ["../\(name)/Sources/**"],
+      dependencies: dependencies
+    )
+  }
+
   public static func unitTests(
     name: String
   ) -> Target {
