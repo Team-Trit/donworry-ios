@@ -9,11 +9,23 @@
 import Foundation
 
 public struct PaymentRoom {
+    public var id: String
+    public var code: String
+    public var name: String
+    public var admin: User
     public var paymentCardList: [PaymentCard]
     public var transferList: [Transfer]
 
-    public init(paymentCardList: [PaymentCard],
+    public init(id: String,
+                code: String,
+                name: String,
+                admin: User,
+                paymentCardList: [PaymentCard],
                 transferList: [Transfer]) {
+        self.id = id
+        self.code = code
+        self.name = name
+        self.admin = admin
         self.paymentCardList = paymentCardList
         self.transferList = transferList
     }

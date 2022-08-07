@@ -14,7 +14,7 @@ public struct PaymentCard {
     public var name: String
     public var cardIcon: PaymentCardIcon
     public var totalAmount: Money
-    public var user: User
+    public var payer: User
     public var backgroundColor: String
     public var date: Date
     public var bankAccount: BankAccount?
@@ -25,7 +25,7 @@ public struct PaymentCard {
                 name: String,
                 cardIcon: PaymentCardIcon,
                 totalAmount: Money,
-                user: User,
+                payer: User,
                 backgroundColor: String,
                 date: Date,
                 bankAccount: BankAccount?,
@@ -35,7 +35,7 @@ public struct PaymentCard {
         self.name = name
         self.cardIcon = cardIcon
         self.totalAmount = totalAmount
-        self.user = user
+        self.payer = payer
         self.backgroundColor = backgroundColor
         self.date = date
         self.bankAccount = bankAccount

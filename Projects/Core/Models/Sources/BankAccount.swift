@@ -10,14 +10,14 @@ import Foundation
 
 public struct BankAccount {
     public var bank: Bank
-    public var accountName: String
+    public var accountHolderName: String
     public var accountNumber: String
 
     public init(bank: Bank,
-                accountName: String,
+                accountHolderName: String,
                 accountNumber: String) {
         self.bank = bank
-        self.accountName = accountName
+        self.accountHolderName = accountHolderName
         self.accountNumber = accountNumber
     }
 }

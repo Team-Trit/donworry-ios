@@ -12,7 +12,7 @@ public enum PaymentCardIcon {
     case chicken
     case coffee
     case wine
-    case market
+    case shopping
     case camera
     case dinner
     case birthday
