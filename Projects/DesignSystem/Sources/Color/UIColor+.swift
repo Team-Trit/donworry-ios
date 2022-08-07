@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import DonWorryExtensions
 
 public extension UIColor {
     class func donworry(_ color: Pallete) -> UIColor? {
