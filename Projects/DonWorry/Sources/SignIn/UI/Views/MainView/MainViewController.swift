@@ -17,6 +17,7 @@ final class MainViewController: BaseViewController {
     private let backgroundView = UIView()
     private let backgroundImage = UIImageView() 
     let viewModel = MainViewModel()
+    // Multiple 버그 체크
     
     public override func viewDidLoad() {
         super.viewDidLoad()
