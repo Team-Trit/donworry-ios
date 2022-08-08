@@ -14,14 +14,14 @@ public struct PaymentRoom {
     public var name: String
     public var admin: User
     public var paymentCardList: [PaymentCard]
-    public var transferList: [Transfer]
+    public var transferList: [Transfer]?
 
     public init(id: String,
                 code: String,
                 name: String,
                 admin: User,
                 paymentCardList: [PaymentCard],
-                transferList: [Transfer]) {
+                transferList: [Transfer]?) {
         self.id = id
         self.code = code
         self.name = name

@@ -29,7 +29,7 @@ public struct PaymentCard {
                 backgroundColor: String,
                 date: Date,
                 bankAccount: BankAccount?,
-                images: [String],
+                images: [String]?,
                 participatedUserList: [User]) {
         self.id = id
         self.name = name
