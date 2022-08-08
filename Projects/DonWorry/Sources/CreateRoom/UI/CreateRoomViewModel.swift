@@ -1,8 +1,8 @@
 //
-//  CreateRoomViewViewModel.swift
+//  CreateRoomViewModel.swift
 //  App
 //
-//  Created by 임영후 on 2022/08/08.
+//  Created by 임영후 on 2022/08/09.
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
@@ -11,6 +11,6 @@ import BaseArchitecture
 
 import RxSwift
 
-final class CreateRoomViewViewModel: BaseViewModel {
+final class CreateRoomViewModel: BaseViewModel {
 
 }

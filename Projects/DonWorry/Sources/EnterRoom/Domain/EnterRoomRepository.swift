@@ -8,9 +8,9 @@
 import Foundation
 import RxSwift
 
-protocol CreateRoomViewRepository {}
+protocol EnterRoomRepository {}
 
-final class CreateRoomViewRepositoryImpl: CreateRoomViewRepository {
+final class EnterRoomRepositoryImpl: EnterRoomRepository {
 
     public init() {}
 }

@@ -1,8 +1,8 @@
 //
-//  CreateRoomViewViewController.swift
+//  CreateRoomViewController.swift
 //  App
 //
-//  Created by 임영후 on 2022/08/08.
+//  Created by 임영후 on 2022/08/09.
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
@@ -13,10 +13,10 @@ import RxCocoa
 import RxSwift
 
 
-final class CreateRoomViewViewController: BaseViewController {
+final class CreateRoomViewController: BaseViewController {
 
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
-    let viewModel = CreateRoomViewViewModel()
+    let viewModel = CreateRoomViewModel()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +28,7 @@ final class CreateRoomViewViewController: BaseViewController {
 
 }
 
-extension CreateRoomViewViewController {
+extension CreateRoomViewController {
 
     private func attributes() {
 
