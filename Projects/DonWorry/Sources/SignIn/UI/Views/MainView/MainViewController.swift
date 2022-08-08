@@ -17,7 +17,6 @@ final class MainViewController: BaseViewController {
     private let backgroundView = UIView()
     private let backgroundImage = UIImageView() 
     let viewModel = MainViewModel()
-    // Multiple 버그 체크
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,16 +59,21 @@ extension MainViewController {
         // MARK: Background Image
         backgroundImage.image = UIImage(named: "SignInImage")
         
-        view.addSubviews(backgroundView, backgroundImage)
+        view.addSubview(backgroundView)
+        view.addSubview(backgroundImage)
     }
     
     private func setLabelStackView() {
-        // TODO: 폰트 및 색상 추가 후 수정 예정
         let titleLabel = UILabel()
         titleLabel.text = "돈 워리"
+        titleLabel.font = .gmarksans(weight: .bold, size: ._30)
+        titleLabel.textColor = .designSystem(.mainBlue)
         
         let descriptionLabel = UILabel()
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.textAlignment = .center
         descriptionLabel.text = "떼인 돈 받아드립니다.\n걱정마세요."
+        descriptionLabel.font = .gmarksans(weight: .light, size: ._15)
         
         labelStackView.axis = .vertical
         labelStackView.spacing = 20
@@ -113,7 +117,7 @@ extension MainViewController {
             backgroundImage.widthAnchor.constraint(equalToConstant: 263),
             backgroundImage.heightAnchor.constraint(equalToConstant: 233),
             backgroundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40)
+            backgroundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 20)
         ])
     }
     
