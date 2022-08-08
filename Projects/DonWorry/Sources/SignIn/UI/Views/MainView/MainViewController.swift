@@ -79,12 +79,22 @@ extension MainViewController {
     }
     
     private func setButtonStackView() {
+        let appleLoginButton = UIButton()
+        appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
+        
+        let googleLoginButton = UIButton()
+        googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
+        
+        let kakaoLoginButton = UIButton()
+        kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
+        
         buttonStackView.axis = .vertical
         buttonStackView.spacing = 10
         buttonStackView.alignment = .center
-        buttonStackView.addArrangedSubview(AppleLoginButton())
-        buttonStackView.addArrangedSubview(GoogleLoginButton())
-        buttonStackView.addArrangedSubview(KakaoLoginButton())
+        buttonStackView.distribution = .fillEqually
+        buttonStackView.addArrangedSubview(appleLoginButton)
+        buttonStackView.addArrangedSubview(googleLoginButton)
+        buttonStackView.addArrangedSubview(kakaoLoginButton)
         view.addSubview(buttonStackView)
     }
     
@@ -118,7 +128,7 @@ extension MainViewController {
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             buttonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            buttonStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+            buttonStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
     }
 }
