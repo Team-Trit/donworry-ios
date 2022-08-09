@@ -27,7 +27,7 @@ public extension UIView {
     self.layer.shadowRadius = 2.5
     self.layer.cornerRadius = radius
   }
-
+  
   func roundCorners(
     _ radius: CGFloat = 16
   ) {
@@ -35,5 +35,13 @@ public extension UIView {
     self.layer.cornerRadius = radius
     self.clipsToBounds = true
   }
+  
+  func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+    let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+    let mask = CAShapeLayer()
+    mask.path = path.cgPath
+    self.layer.mask = mask
+  }
+  
 }
 

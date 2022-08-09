@@ -21,6 +21,7 @@ public enum Font {
         case _18 = 18
         case _15 = 15
         case _13 = 13
+        case _9 = 9
     }
 
     public enum Weight: String {
