@@ -109,14 +109,14 @@ class RecieveMoneyDetailStatusView: UIView {
         
     }
     
-    func configure(payment: Float, outstanding: Float) {
+    func configure(payment: Int, outstanding: Int) {
         paymentAmount.attributedText = makeAtrributedString(money: payment)
         outstandingAmount.attributedText = makeAtrributedString(money: outstanding)
         
-        progressView.setProgress(payment/outstanding, animated: false)
+        progressView.setProgress(Float(payment/outstanding), animated: false)
     }
     
-    func makeAtrributedString(money: Float) -> NSMutableAttributedString {
+    func makeAtrributedString(money: Int) -> NSMutableAttributedString {
         let numberformatter = NumberFormatter()
         numberformatter.numberStyle = .decimal
         let paymentString = numberformatter.string(for: money)! + "원"
