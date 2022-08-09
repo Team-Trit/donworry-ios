@@ -15,6 +15,7 @@ let project = Project.make(
             .project(target: "DonWorryExtensions", path: "../Core/CoreKit"),
             .project(target: "DonWorryProtocols", path: "../Core/CoreKit"),
             .project(target: "Models", path: "../Core/CoreKit"),
+            .external(name: "RxDataSources"),
             .external(name: "SnapKit"),
             .external(name: "Kingfisher"),
             .external(name: "RxSwift"),
