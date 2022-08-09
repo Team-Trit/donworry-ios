@@ -9,12 +9,12 @@
 import UIKit
 
 final class LimitTextField: UIView {
-    var placeholder: String?
-    var limit: Int?
-    var textCount = 0
     private let textField = UITextField()
     private let line = UILabel()
     private let limitLabel = UILabel()
+    var placeholder = ""
+    var limit = 0
+    var textCount = 0
     
     init(placeholder: String, limit: Int) {
         self.placeholder = placeholder
@@ -37,7 +37,6 @@ final class LimitTextField: UIView {
 // MARK: - Configurations
 extension LimitTextField {
     private func attributes() {
-        guard let placeholder = placeholder, let limit = limit else { return }
         setTextField(placeholder: placeholder)
         setLine()
         setLimitLabel(limit: limit)
@@ -54,23 +53,21 @@ extension LimitTextField {
         /// clear button reference : https://woongsios.tistory.com/315
         textField.placeholder = placeholder
         textField.clearButtonMode = .whileEditing
-        addSubview(textField)
     }
     
     private func setLine() {
         line.backgroundColor = textCount == 0 ? .designSystem(.gray2) : .designSystem(.mainBlue)
-        addSubview(line)
     }
     
     private func setLimitLabel(limit: Int) {
         limitLabel.text = "\(textCount)/\(limit)"
         limitLabel.textColor = .designSystem(.gray2)
         limitLabel.font = .systemFont(ofSize: 10)
-        addSubview(limitLabel)
     }
     
     // MARK: - Layout Helper
     private func setTextFieldLayout() {
+        addSubview(textField)
         textField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             textField.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -81,6 +78,7 @@ extension LimitTextField {
     }
     
     private func setLineLayout() {
+        addSubview(line)
         line.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             line.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -91,6 +89,7 @@ extension LimitTextField {
     }
     
     private func setLimitLabelLayout() {
+        addSubview(limitLabel)
         limitLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             limitLabel.trailingAnchor.constraint(equalTo: trailingAnchor),

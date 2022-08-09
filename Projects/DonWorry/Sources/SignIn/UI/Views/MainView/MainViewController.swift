@@ -42,7 +42,6 @@ extension MainViewController {
     
     // MARK: - Attributes Helper
     private func setBackground() {
-        // MARK: Background Gradient
         backgroundView.frame = view.bounds
         /// Reference : https://babbab2.tistory.com/55
         let gradientLayer = CAGradientLayer()
@@ -55,12 +54,7 @@ extension MainViewController {
         gradientLayer.locations = [0.47, 0.75]
         gradientLayer.type = .axial
         backgroundView.layer.addSublayer(gradientLayer)
-        
-        // MARK: Background Image
         backgroundImage.image = UIImage(named: "SignInImage")
-        
-        view.addSubview(backgroundView)
-        view.addSubview(backgroundImage)
     }
     
     private func setLabelStackView() {
@@ -68,31 +62,25 @@ extension MainViewController {
         titleLabel.text = "돈 워리"
         titleLabel.font = .gmarksans(weight: .bold, size: ._30)
         titleLabel.textColor = .designSystem(.mainBlue)
-        
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         descriptionLabel.text = "떼인 돈 받아드립니다.\n걱정마세요."
         descriptionLabel.font = .gmarksans(weight: .light, size: ._15)
-        
         labelStackView.axis = .vertical
         labelStackView.spacing = 20
         labelStackView.alignment = .center
         labelStackView.addArrangedSubview(titleLabel)
         labelStackView.addArrangedSubview(descriptionLabel)
-        view.addSubview(labelStackView)
     }
     
     private func setButtonStackView() {
         let appleLoginButton = UIButton()
         appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
-        
         let googleLoginButton = UIButton()
         googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
-        
         let kakaoLoginButton = UIButton()
         kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
-        
         buttonStackView.axis = .vertical
         buttonStackView.spacing = 10
         buttonStackView.alignment = .center
@@ -100,18 +88,19 @@ extension MainViewController {
         buttonStackView.addArrangedSubview(appleLoginButton)
         buttonStackView.addArrangedSubview(googleLoginButton)
         buttonStackView.addArrangedSubview(kakaoLoginButton)
-        view.addSubview(buttonStackView)
     }
     
     // MARK: - Layout Helper
     private func setBackgroundLayout() {
+        view.addSubview(backgroundView)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-
+        view.addSubview(backgroundImage)
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             backgroundImage.widthAnchor.constraint(equalToConstant: 263),
@@ -122,6 +111,7 @@ extension MainViewController {
     }
     
     private func setLabelStackViewLayout() {
+        view.addSubview(labelStackView)
         labelStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             labelStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -130,6 +120,7 @@ extension MainViewController {
     }
     
     private func setButtonStackViewLayout() {
+        view.addSubview(buttonStackView)
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             buttonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
