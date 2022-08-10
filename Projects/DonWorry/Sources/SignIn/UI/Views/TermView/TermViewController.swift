@@ -15,7 +15,7 @@ final class TermViewController: BaseViewController {
     private let descriptionLabel = UILabel()
     private let termTableView = TermTableView()
     private let nextButton = LargeButton(text: "다음", isDisabled: true)
-    let viewModel = UserInfoViewModel()
+    let viewModel = TermViewModel()
     
     public override func viewDidLoad () {
         super.viewDidLoad()

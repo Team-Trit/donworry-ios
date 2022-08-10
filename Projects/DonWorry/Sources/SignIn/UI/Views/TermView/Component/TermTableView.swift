@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import BaseArchitecture
 import UIKit
 
 struct Term {
@@ -24,7 +25,7 @@ private let Terms: [Term] = [
     Term(title: "이벤트 알림 수신 동의", details: ["5-1", "5-2", "5-3"], isChecked: false, showsDetail: true)
 ]
 
-final class TermTableView: UIViewController {
+final class TermTableView: BaseViewController {
     private let termTableView = UITableView()
     
     override func viewDidLoad() {
