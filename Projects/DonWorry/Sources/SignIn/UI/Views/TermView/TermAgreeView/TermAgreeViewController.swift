@@ -14,7 +14,7 @@ import UIKit
 final class TermAgreeViewController: BaseViewController {
     private let descriptionLabel = UILabel()
     private let termTableView = TermTableView()
-    private let nextButton = LargeButton()
+    private let nextButton = LargeButton(type: .done)
     let viewModel = TermAgreeViewModel()
     
     public override func viewDidLoad () {
@@ -30,6 +30,7 @@ extension TermAgreeViewController {
     private func attributes() {
         setDescriptionLabel()
         addTableViewController()
+        nextButton.delegate = self
     }
     
     private func layout() {
@@ -67,7 +68,14 @@ extension TermAgreeViewController {
         NSLayoutConstraint.activate([
             nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
             nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -90)
+            nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
+    }
+}
+
+// MARK: - LargeButtonDelegate {
+extension TermAgreeViewController: LargeButtonDelegate {
+    func buttonPressed(_ sender: UIButton) {
+        present(TermConfirmViewController(), animated: true)
     }
 }

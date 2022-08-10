@@ -30,12 +30,9 @@ extension TermConfirmViewController {
         view.addSubview(confirmButton)
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            
+            confirmButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            confirmButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            confirmButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
-    }
-    
-    // MARK: - Attibutes Helper
-    private func setTitleLabel() {
-        
     }
 }

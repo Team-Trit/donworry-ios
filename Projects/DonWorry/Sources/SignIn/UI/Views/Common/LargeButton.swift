@@ -17,7 +17,7 @@ public enum LargeButtonType {
 }
 
 protocol LargeButtonDelegate: AnyObject {
-    func buttonPressed()
+    func buttonPressed(_ sender: UIButton)
 }
 
 final class LargeButton: UIButton {
@@ -63,7 +63,7 @@ final class LargeButton: UIButton {
 // MARK: - Configurations
 extension LargeButton {
     private func attributes() {
-        isEnabled = false
+//        isEnabled = false
         titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
         backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
         layer.cornerRadius = 25
@@ -83,6 +83,6 @@ extension LargeButton {
 // MARK: - Interaction Functions
 extension LargeButton {
     @objc private func buttonPressed(_ sender: UIButton) {
-        delegate?.buttonPressed()
+        delegate?.buttonPressed(sender)
     }
 }

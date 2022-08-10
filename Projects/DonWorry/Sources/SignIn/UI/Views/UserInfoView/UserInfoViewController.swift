@@ -30,6 +30,7 @@ final class UserInfoViewController: BaseViewController {
 extension UserInfoViewController {
     
     private func attributes() {
+        setNavigationBar()
         setTitleLabel()
         setNickNameStackView()
         setAccountStackView()
@@ -44,6 +45,10 @@ extension UserInfoViewController {
     }
     
     // MARK: - Attributes Helper
+    private func setNavigationBar() {
+//        navigationController?.navigationBar.topItem?.backButtonTitle = ""
+    }
+    
     private func setTitleLabel() {
         titleLabel.text = "돈 워리"
         titleLabel.font = .gmarksans(weight: .bold, size: ._30)
@@ -166,7 +171,7 @@ extension UserInfoViewController: AccountTextFieldDelegate {
 
 // MARK: - LargeButtonDelegate
 extension UserInfoViewController: LargeButtonDelegate {
-    func buttonPressed() {
+    func buttonPressed(_ sender: UIButton) {
         navigationController?.pushViewController(TermAgreeViewController(), animated: true)
     }
 }
