@@ -18,10 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         
-        let rootViewController = BankSelectViewController()
+        let rootViewController = MainViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.setNavigationBarHidden(true, animated: false)
-        window.rootViewController = rootViewController
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
         self.window = window
     }

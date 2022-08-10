@@ -76,10 +76,13 @@ extension MainViewController {
     private func setButtonStackView() {
         let appleLoginButton = UIButton()
         appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
+        appleLoginButton.addTarget(self, action: #selector(appleButtonPressed), for: .touchUpInside)
         let googleLoginButton = UIButton()
         googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
+        googleLoginButton.addTarget(self, action: #selector(googleButtonPressed), for: .touchUpInside)
         let kakaoLoginButton = UIButton()
         kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
+        kakaoLoginButton.addTarget(self, action: #selector(kakaoButtonPressed), for: .touchUpInside)
         buttonStackView.axis = .vertical
         buttonStackView.spacing = 10
         buttonStackView.alignment = .center
@@ -125,5 +128,23 @@ extension MainViewController {
             buttonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
+    }
+}
+
+// MARK: - Interaction Functions
+extension MainViewController {
+    @objc private func appleButtonPressed() {
+        // TODO: 소셜 로그인 기능 추가
+        navigationController?.pushViewController(UserInfoViewController(), animated: true)
+    }
+    
+    @objc private func googleButtonPressed() {
+        // TODO: 소셜 로그인 기능 추가
+        navigationController?.pushViewController(UserInfoViewController(), animated: true)
+    }
+    
+    @objc private func kakaoButtonPressed() {
+        // TODO: 소셜 로그인 기능 추가
+        navigationController?.pushViewController(UserInfoViewController(), animated: true)
     }
 }
