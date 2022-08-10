@@ -20,7 +20,6 @@ final class MainViewController: BaseViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
         attributes()
         layout()
     }

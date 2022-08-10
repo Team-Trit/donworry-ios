@@ -25,7 +25,7 @@ private let Terms: [Term] = [
 ]
 
 final class TermTableView: UIViewController {
-    private let termTableView = UITableView(frame: .zero)
+    private let termTableView = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()

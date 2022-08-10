@@ -12,9 +12,9 @@ final class LimitTextField: UIView {
     private let textField = UITextField()
     private let line = UILabel()
     private let limitLabel = UILabel()
+    private var textCount = 0
     var placeholder = ""
     var limit = 0
-    var textCount = 0
     
     init(placeholder: String, limit: Int) {
         self.placeholder = placeholder
