@@ -18,19 +18,19 @@ class SentMoneyDetailStatusView: UIView {
         return title
     }()
     
-    private let subTitle: UILabel = {
-        let subTitle = UILabel()
-        subTitle.translatesAutoresizingMaskIntoConstraints = false
-        subTitle.text = "님께"
-        subTitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        subTitle.textColor = UIColor.gray
-        return subTitle
+    private let nameSubTitle: UILabel = {
+        let nameSubTitle = UILabel()
+        nameSubTitle.translatesAutoresizingMaskIntoConstraints = false
+        nameSubTitle.text = "님께"
+        nameSubTitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        nameSubTitle.textColor = UIColor.gray
+        return nameSubTitle
     }()
     
     private let leftSmallTitle: UILabel = {
         let leftSmallTitle = UILabel()
         leftSmallTitle.translatesAutoresizingMaskIntoConstraints = false
-        leftSmallTitle.text = "정산 금액"
+        leftSmallTitle.text = "송금할 금액"
         leftSmallTitle.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         leftSmallTitle.textColor = UIColor.black
         return leftSmallTitle
@@ -56,6 +56,7 @@ class SentMoneyDetailStatusView: UIView {
         return progressView
     }()
 
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         render()
@@ -69,12 +70,11 @@ class SentMoneyDetailStatusView: UIView {
         addSubview(title)
         title.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-        title.widthAnchor.constraint(equalToConstant: 72).isActive = true
         title.heightAnchor.constraint(equalToConstant: 22).isActive = true
         
-        addSubview(subTitle)
-        subTitle.bottomAnchor.constraint(equalTo: title.bottomAnchor).isActive = true
-        subTitle.leadingAnchor.constraint(equalTo: title.trailingAnchor, constant: 5).isActive = true
+        addSubview(nameSubTitle)
+        nameSubTitle.bottomAnchor.constraint(equalTo: title.bottomAnchor).isActive = true
+        nameSubTitle.leadingAnchor.constraint(equalTo: title.trailingAnchor, constant: 5).isActive = true
         
         addSubview(leftSmallTitle)
         leftSmallTitle.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 20).isActive = true
@@ -96,7 +96,7 @@ class SentMoneyDetailStatusView: UIView {
     func configure(recievedUser: String, payment: Int, totalAmount: Int) {
         title.text = recievedUser
         paymentAmount.attributedText = makeAtrributedString(money: payment)
-        progressView.setProgress(Float(payment/totalAmount), animated: false)
+        progressView.setProgress(Float(payment)/Float(totalAmount), animated: false)
     }
     
     func makeAtrributedString(money: Int) -> NSMutableAttributedString {
