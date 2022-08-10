@@ -9,7 +9,7 @@
 import UIKit
 
 final class TermCellView: UITableViewCell {
-    static let termCellViewID = "TermCellView"
+    static let identifier = "TermCellView"
     var termLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

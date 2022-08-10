@@ -9,8 +9,9 @@
 import BaseArchitecture
 import UIKit
 
-final class TermConfirmView: BaseViewController {
+final class TermConfirmViewController: BaseViewController {
     private let confirmButton = LargeButton(text: "확인", isDisabled: false)
+    let viewModel = TermConfirmViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +21,7 @@ final class TermConfirmView: BaseViewController {
 }
 
 // MARK: - Configuration
-extension TermConfirmView {
+extension TermConfirmViewController {
     private func attributes() {
         
     }

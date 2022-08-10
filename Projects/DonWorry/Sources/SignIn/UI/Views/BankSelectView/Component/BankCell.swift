@@ -9,7 +9,7 @@
 import UIKit
 
 final class BankCell: UICollectionViewCell {
-    static let bankCellID = "BankCell"
+    static let identifier = "BankCell"
     let bankIconView = UIImageView()
     let bankLabel = UILabel()
     

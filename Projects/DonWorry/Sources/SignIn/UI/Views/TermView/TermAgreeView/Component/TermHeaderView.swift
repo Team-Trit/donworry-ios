@@ -10,11 +10,11 @@ import DesignSystem
 import UIKit
 
 final class TermHeaderView: UITableViewHeaderFooterView {
-    static let termHeaderViewID = "TermHeaderView"
+    static let identifier = "TermHeaderView"
+    private var horizontalStackView = UIStackView()
     var checkButton = UIButton()
     var titleLabel = UILabel()
     var showDetailButton = UIButton()
-    private var horizontalStackView = UIStackView()
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)

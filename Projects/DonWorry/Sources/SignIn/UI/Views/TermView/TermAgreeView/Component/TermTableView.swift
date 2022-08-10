@@ -40,8 +40,8 @@ final class TermTableView: BaseViewController {
 // MARK: - Configuration
 extension TermTableView {
     private func attributes() {
-        termTableView.register(TermHeaderView.self, forHeaderFooterViewReuseIdentifier: TermHeaderView.termHeaderViewID)
-        termTableView.register(TermCellView.self, forCellReuseIdentifier: TermCellView.termCellViewID)
+        termTableView.register(TermHeaderView.self, forHeaderFooterViewReuseIdentifier: TermHeaderView.identifier)
+        termTableView.register(TermCellView.self, forCellReuseIdentifier: TermCellView.identifier)
         termTableView.separatorStyle = .none
     }
     
@@ -65,7 +65,7 @@ extension TermTableView: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TermCellView.termCellViewID, for: indexPath) as! TermCellView
+        let cell = tableView.dequeueReusableCell(withIdentifier: TermCellView.identifier, for: indexPath) as! TermCellView
         let text = Terms[indexPath.section].details[indexPath.row]
         cell.termLabel.text = text
         return cell
@@ -80,7 +80,7 @@ extension TermTableView: UITableViewDataSource {
 extension TermTableView: UITableViewDelegate {
     /// Custom Header Reference : https://velog.io/@minni/Custom-TableViewHeaderView-생성하기
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let termHeaderView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermHeaderView.termHeaderViewID) as? TermHeaderView else { return UIView() }
+        guard let termHeaderView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermHeaderView.identifier) as? TermHeaderView else { return UIView() }
         let currentTerm = Terms[section]
         termHeaderView.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
         termHeaderView.checkButton.tintColor = .designSystem(currentTerm.isChecked ? .gray2 : .mainBlue)

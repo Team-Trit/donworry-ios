@@ -10,7 +10,7 @@ import DesignSystem
 import UIKit
 
 final class BankHeaderView: UICollectionReusableView {
-    static let bankHeaderViewID = "BankHeaderView"
+    static let identifier = "BankHeaderView"
     private let bankTextField = UITextField()
     
     override init(frame: CGRect) {
