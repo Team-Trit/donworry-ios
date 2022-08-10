@@ -11,11 +11,11 @@ import RxCocoa
 import RxSwift
 import UIKit
 
-final class TermViewController: BaseViewController {
+final class TermAgreeViewController: BaseViewController {
     private let descriptionLabel = UILabel()
     private let termTableView = TermTableView()
     private let nextButton = LargeButton(text: "다음", isDisabled: true)
-    let viewModel = TermViewModel()
+    let viewModel = TermAgreeViewModel()
     
     public override func viewDidLoad () {
         super.viewDidLoad()
@@ -26,7 +26,7 @@ final class TermViewController: BaseViewController {
 }
 
 // MARK: - Configuration
-extension TermViewController {
+extension TermAgreeViewController {
     private func attributes() {
         setDescriptionLabel()
         addTableViewController()

@@ -10,6 +10,6 @@ import BaseArchitecture
 import Foundation
 import RxSwift
 
-final class TermViewModel: BaseViewModel {
+final class TermAgreeViewModel: BaseViewModel {
 
 }
