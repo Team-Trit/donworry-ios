@@ -15,7 +15,7 @@ final class UserInfoViewController: BaseViewController {
     private let titleLabel = UILabel()
     private let nickNameStackView = UIStackView()
     private let accountStackView = UIStackView(frame: .zero)
-    lazy var nextButton = LargeButton(text: "다음", isEnabled: true)
+    private let nextButton = LargeButton(type: .next)
     let viewModel = UserInfoViewModel()
     
     public override func viewDidLoad () {
@@ -29,17 +29,11 @@ final class UserInfoViewController: BaseViewController {
 // MARK: - Configuration
 extension UserInfoViewController {
     
-    @objc func testFunction() {
-        print("vncajdskvndjsak")
-    }
-    
     private func attributes() {
         setTitleLabel()
         setNickNameStackView()
         setAccountStackView()
         nextButton.delegate = self
-        nextButton.isEnabled = true
-        nextButton.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
     }
     
     private func layout() {
@@ -47,9 +41,6 @@ extension UserInfoViewController {
         setNickNameStackViewLayout()
         setAccountStackViewLayout()
         setNextButtonLayout()
-        
-        nextButton.isUserInteractionEnabled = true
-//        nextButton.addGestureRecognizer(UITapGestureRecognizer(target: LargeButton.self, action: #selector(testFunction)))
     }
     
     // MARK: - Attributes Helper
@@ -161,7 +152,7 @@ extension UserInfoViewController {
         NSLayoutConstraint.activate([
             nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
             nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -90)
+            nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)
         ])
     }
 }
@@ -176,7 +167,6 @@ extension UserInfoViewController: AccountTextFieldDelegate {
 // MARK: - LargeButtonDelegate
 extension UserInfoViewController: LargeButtonDelegate {
     func buttonPressed() {
-        print("second pressed")
         navigationController?.pushViewController(TermAgreeViewController(), animated: true)
     }
 }

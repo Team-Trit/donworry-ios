@@ -15,17 +15,12 @@ final class BankHeaderView: UICollectionReusableView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        attributes()
+        layout()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        attributes()
-        layout()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

@@ -19,17 +19,12 @@ final class TermHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .white
-        commonInit()
+        attributes()
+        layout()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        attributes()
-        layout()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

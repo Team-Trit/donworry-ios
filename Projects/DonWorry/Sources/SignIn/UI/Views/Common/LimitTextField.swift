@@ -20,17 +20,12 @@ final class LimitTextField: UIView {
         self.placeholder = placeholder
         self.limit = limit
         super.init(frame: .zero)
-        commonInit()
+        attributes()
+        layout()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        attributes()
-        layout()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

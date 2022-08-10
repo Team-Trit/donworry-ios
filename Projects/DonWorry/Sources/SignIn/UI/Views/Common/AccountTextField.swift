@@ -20,19 +20,14 @@ final class AccountTextField: UIStackView {
     private let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요", limit: 20)
     weak var delegate: AccountTextFieldDelegate?
     
-    
     init() {
         super.init(frame: .zero)
-        commonInit()
+        attributes()
+        layout()
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func commonInit() {
-        attributes()
-        layout()
     }
 }
 

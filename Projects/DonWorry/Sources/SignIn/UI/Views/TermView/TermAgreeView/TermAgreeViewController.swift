@@ -14,7 +14,7 @@ import UIKit
 final class TermAgreeViewController: BaseViewController {
     private let descriptionLabel = UILabel()
     private let termTableView = TermTableView()
-    private let nextButton = LargeButton(text: "다음", isEnabled: true)
+    private let nextButton = LargeButton()
     let viewModel = TermAgreeViewModel()
     
     public override func viewDidLoad () {

@@ -8,23 +8,29 @@
 
 import UIKit
 
+public enum LargeButtonType {
+    case next   // 다음
+    case done   // 완료
+    case hurry  // 재촉하기
+    case enter  // 정산방 참가하기
+    case update // Payment 수정하기
+}
+
 protocol LargeButtonDelegate: AnyObject {
     func buttonPressed()
 }
 
-final class LargeButton: UIView {
-    lazy var button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-//    var text = ""
-//    var isEnabled = false
-    var text: String
-    var isEnabled: Bool
+final class LargeButton: UIButton {
+    /// UIButton Customize Reference : https://ios-development.tistory.com/43
     weak var delegate: LargeButtonDelegate?
-
-    init(text: String, isEnabled: Bool) {
-        self.text = text
-        self.isEnabled = isEnabled
-//        super.init(frame: .zero)
-        super.init(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+    
+    init() {
+        super.init(frame: .zero)
+        commonInit()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         commonInit()
     }
     
@@ -32,10 +38,21 @@ final class LargeButton: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    required init?(coder: NSCoder) {
-//        super.init(coder: coder)
-//        commonInit()
-//    }
+    convenience init(type: LargeButtonType) {
+        self.init()
+        switch(type) {
+        case .next:
+            setTitle("다음", for: .normal)
+        case .done:
+            setTitle("완료", for: .normal)
+        case .hurry:
+            setTitle("재촉하기", for: .normal)
+        case .enter:
+            setTitle("정산방 참가하기", for: .normal)
+        case .update:
+            setTitle("수정하기", for: .normal)
+        }
+    }
     
     private func commonInit() {
         attributes()
@@ -46,41 +63,26 @@ final class LargeButton: UIView {
 // MARK: - Configurations
 extension LargeButton {
     private func attributes() {
-        button.setTitle(text, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
-        button.backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
-        button.layer.cornerRadius = 25
-//        button.isEnabled = isEnabled
-//        button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(buttonPressed)))
-       
+        isEnabled = false
+        titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
+        backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
+        layer.cornerRadius = 25
+        addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
     }
     
     private func layout() {
-        addSubview(button)
-        
-        
-        button.isUserInteractionEnabled = true
-        button.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
-        
-        
-        
-        print("able : \(button.isEnabled)")
-        button.translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            button.leadingAnchor.constraint(equalTo: leadingAnchor),
-            button.trailingAnchor.constraint(equalTo: trailingAnchor),
-            button.heightAnchor.constraint(equalToConstant: 50)
+            leadingAnchor.constraint(equalTo: leadingAnchor),
+            trailingAnchor.constraint(equalTo: trailingAnchor),
+            heightAnchor.constraint(equalToConstant: 50)
         ])
     }
 }
 
 // MARK: - Interaction Functions
 extension LargeButton {
-//    @objc private func buttonPressed(sender: UITapGestureRecognizer) {
-//        delegate?.buttonPressed()
-//    }
     @objc private func buttonPressed(_ sender: UIButton) {
-        print("first pressed")
         delegate?.buttonPressed()
     }
 }

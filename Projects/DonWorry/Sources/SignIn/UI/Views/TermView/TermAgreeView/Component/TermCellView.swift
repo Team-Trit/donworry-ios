@@ -14,17 +14,12 @@ final class TermCellView: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        commonInit()
+        attributes()
+        layout()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        attributes()
-        layout()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
