@@ -76,13 +76,13 @@ extension MainViewController {
     private func setButtonStackView() {
         let appleLoginButton = UIButton()
         appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
-        appleLoginButton.addTarget(self, action: #selector(appleButtonPressed), for: .touchUpInside)
+        appleLoginButton.addTarget(self, action: #selector(appleButtonPressed(_:)), for: .touchUpInside)
         let googleLoginButton = UIButton()
         googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
-        googleLoginButton.addTarget(self, action: #selector(googleButtonPressed), for: .touchUpInside)
+        googleLoginButton.addTarget(self, action: #selector(googleButtonPressed(_:)), for: .touchUpInside)
         let kakaoLoginButton = UIButton()
         kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
-        kakaoLoginButton.addTarget(self, action: #selector(kakaoButtonPressed), for: .touchUpInside)
+        kakaoLoginButton.addTarget(self, action: #selector(kakaoButtonPressed(_:)), for: .touchUpInside)
         buttonStackView.axis = .vertical
         buttonStackView.spacing = 10
         buttonStackView.alignment = .center
@@ -133,17 +133,17 @@ extension MainViewController {
 
 // MARK: - Interaction Functions
 extension MainViewController {
-    @objc private func appleButtonPressed() {
+    @objc private func appleButtonPressed(_ sender: UIButton) {
         // TODO: 소셜 로그인 기능 추가
         navigationController?.pushViewController(UserInfoViewController(), animated: true)
     }
     
-    @objc private func googleButtonPressed() {
+    @objc private func googleButtonPressed(_ sender: UIButton) {
         // TODO: 소셜 로그인 기능 추가
         navigationController?.pushViewController(UserInfoViewController(), animated: true)
     }
     
-    @objc private func kakaoButtonPressed() {
+    @objc private func kakaoButtonPressed(_ sender: UIButton) {
         // TODO: 소셜 로그인 기능 추가
         navigationController?.pushViewController(UserInfoViewController(), animated: true)
     }

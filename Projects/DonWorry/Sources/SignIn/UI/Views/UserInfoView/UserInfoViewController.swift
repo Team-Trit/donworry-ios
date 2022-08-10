@@ -14,8 +14,8 @@ import UIKit
 final class UserInfoViewController: BaseViewController {
     private let titleLabel = UILabel()
     private let nickNameStackView = UIStackView()
-    private let accountStackView = UIStackView()
-    private let nextButton = LargeButton(text: "다음", isDisabled: false)
+    private let accountStackView = UIStackView(frame: .zero)
+    lazy var nextButton = LargeButton(text: "다음", isEnabled: true)
     let viewModel = UserInfoViewModel()
     
     public override func viewDidLoad () {
@@ -28,10 +28,18 @@ final class UserInfoViewController: BaseViewController {
 
 // MARK: - Configuration
 extension UserInfoViewController {
+    
+    @objc func testFunction() {
+        print("vncajdskvndjsak")
+    }
+    
     private func attributes() {
         setTitleLabel()
         setNickNameStackView()
         setAccountStackView()
+        nextButton.delegate = self
+        nextButton.isEnabled = true
+        nextButton.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
     }
     
     private func layout() {
@@ -39,6 +47,9 @@ extension UserInfoViewController {
         setNickNameStackViewLayout()
         setAccountStackViewLayout()
         setNextButtonLayout()
+        
+        nextButton.isUserInteractionEnabled = true
+//        nextButton.addGestureRecognizer(UITapGestureRecognizer(target: LargeButton.self, action: #selector(testFunction)))
     }
     
     // MARK: - Attributes Helper
@@ -69,27 +80,24 @@ extension UserInfoViewController {
         let accountLabel = UILabel()
         accountLabel.text = "계좌정보"
         accountLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        let accountInfoStackView = setAccountInfoStackView()
-        let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요", limit: 20)
         accountStackView.axis = .vertical
         accountStackView.spacing = 20
         accountStackView.alignment = .leading
         accountStackView.addArrangedSubview(accountLabel)
+        let accountInfoStackView = AccountTextField()
+        accountInfoStackView.delegate = self
         accountStackView.addArrangedSubview(accountInfoStackView)
-        /// Add padding in stack view Reference : https://ios-development.tistory.com/670
-        accountStackView.setCustomSpacing(40, after: accountInfoStackView)
-        accountStackView.addArrangedSubview(accountTextField)
         view.addSubview(accountStackView)
         accountInfoStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountInfoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
             accountInfoStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
         ])
-        accountTextField.translatesAutoresizingMaskIntoConstraints = false
+        accountStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            accountTextField.topAnchor.constraint(equalTo: accountInfoStackView.bottomAnchor, constant: 90),
-            accountTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            accountTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
+            accountStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            accountStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            accountStackView.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 20)
         ])
     }
     
@@ -114,7 +122,7 @@ extension UserInfoViewController {
         NSLayoutConstraint.activate([
             chooseBankLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             chooseBankLabel.widthAnchor.constraint(equalToConstant: 90),
-            chooseBankLabel.heightAnchor.constraint(equalToConstant: 30),
+            chooseBankLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
         holderTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -155,5 +163,20 @@ extension UserInfoViewController {
             nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
             nextButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -90)
         ])
+    }
+}
+
+// MARK: - AccountTextFieldDelegate
+extension UserInfoViewController: AccountTextFieldDelegate {
+    func showBankSelectSheet() {
+        present(BankSelectViewController(), animated: true)
+    }
+}
+
+// MARK: - LargeButtonDelegate
+extension UserInfoViewController: LargeButtonDelegate {
+    func buttonPressed() {
+        print("second pressed")
+        navigationController?.pushViewController(TermAgreeViewController(), animated: true)
     }
 }
