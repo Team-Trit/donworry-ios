@@ -54,6 +54,7 @@ extension MainViewController {
         gradientLayer.locations = [0.47, 0.75]
         gradientLayer.type = .axial
         backgroundView.layer.addSublayer(gradientLayer)
+        
         backgroundImage.image = UIImage(named: "SignInImage")
     }
     
@@ -62,11 +63,13 @@ extension MainViewController {
         titleLabel.text = "돈.워리"
         titleLabel.font = .gmarksans(weight: .bold, size: ._30)
         titleLabel.textColor = .designSystem(.mainBlue)
+        
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         descriptionLabel.text = "떼인 돈 받아드립니다.\n걱정마세요."
         descriptionLabel.font = .gmarksans(weight: .light, size: ._15)
+        
         labelStackView.axis = .vertical
         labelStackView.spacing = 20
         labelStackView.alignment = .center
@@ -78,12 +81,15 @@ extension MainViewController {
         let appleLoginButton = UIButton()
         appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
         appleLoginButton.addTarget(self, action: #selector(appleButtonPressed(_:)), for: .touchUpInside)
+        
         let googleLoginButton = UIButton()
         googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
         googleLoginButton.addTarget(self, action: #selector(googleButtonPressed(_:)), for: .touchUpInside)
+        
         let kakaoLoginButton = UIButton()
         kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
         kakaoLoginButton.addTarget(self, action: #selector(kakaoButtonPressed(_:)), for: .touchUpInside)
+        
         buttonStackView.axis = .vertical
         buttonStackView.spacing = 10
         buttonStackView.alignment = .center
@@ -103,6 +109,7 @@ extension MainViewController {
             backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
         view.addSubview(backgroundImage)
         backgroundImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([

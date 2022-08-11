@@ -22,7 +22,6 @@ final class BankSelectViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         attributes()
         layout()
         bankCollectionView.dataSource = self
@@ -33,6 +32,8 @@ final class BankSelectViewController: BaseViewController {
 // MARK: - Configuration
 extension BankSelectViewController {
     private func attributes() {
+        view.backgroundColor = .white
+        
         titleLabel.text = "은행선택"
         titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
         dismissButton.setTitle("취소", for: .normal)
@@ -67,12 +68,14 @@ extension BankSelectViewController {
             titleLabel.widthAnchor.constraint(equalToConstant: 100),
             titleLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
         view.addSubview(dismissButton)
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
             dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30)
         ])
+        
         view.addSubview(searchTextField)
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -81,6 +84,7 @@ extension BankSelectViewController {
             searchTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
             searchTextField.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
         view.addSubview(bankCollectionView)
         bankCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([

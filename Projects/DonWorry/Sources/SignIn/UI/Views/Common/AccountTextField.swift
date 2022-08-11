@@ -37,12 +37,14 @@ extension AccountTextField {
         axis = .vertical
         spacing = 20
         alignment = .leading
+        
         let attributedString = NSMutableAttributedString(string: "")
         let imageAttachment = NSTextAttachment()
         imageAttachment.image = UIImage(systemName: "chevron.down")?.withTintColor(.white)
         imageAttachment.bounds = CGRect(x: 0, y: 0, width: 16, height: 8)
         attributedString.append(NSAttributedString(string: "은행 선택 "))
         attributedString.append(NSAttributedString(attachment: imageAttachment))
+        
         chooseBankLabel.attributedText = attributedString
         chooseBankLabel.textColor = .white
         chooseBankLabel.font = .systemFont(ofSize: 12)
@@ -52,6 +54,7 @@ extension AccountTextField {
         chooseBankLabel.backgroundColor = .designSystem(.gray2)
         chooseBankLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(chooseBankLabelPressed)))
         chooseBankLabel.isUserInteractionEnabled = true
+        
         bankHolderStack.axis = .horizontal
         bankHolderStack.spacing = 20
         bankHolderStack.alignment = .center
@@ -60,6 +63,7 @@ extension AccountTextField {
     private func layout() {
         bankHolderStack.addArrangedSubview(chooseBankLabel)
         bankHolderStack.addArrangedSubview(holderTextField)
+        
         addSubview(bankHolderStack)
         chooseBankLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -67,18 +71,22 @@ extension AccountTextField {
             chooseBankLabel.widthAnchor.constraint(equalToConstant: 90),
             chooseBankLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
+        
         holderTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             holderTextField.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
+        
         self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             self.leadingAnchor.constraint(equalTo: leadingAnchor),
             self.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
+        
         addArrangedSubview(bankHolderStack)
         setCustomSpacing(40, after: bankHolderStack)
         addArrangedSubview(accountTextField)
+        
         accountTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountTextField.topAnchor.constraint(equalTo: bankHolderStack.bottomAnchor, constant: 90),

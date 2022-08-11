@@ -54,12 +54,15 @@ extension UserInfoViewController {
         let nickNameLabel = UILabel()
         nickNameLabel.text = "닉네임"
         nickNameLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        
         let nickNameTextField = LimitTextField(placeholder: "닉네임을 입력해주세요", limit: 20)
+        
         nickNameStackView.axis = .vertical
         nickNameStackView.spacing = 20
         nickNameStackView.alignment = .leading
         nickNameStackView.addArrangedSubview(nickNameLabel)
         nickNameStackView.addArrangedSubview(nickNameTextField)
+        
         view.addSubview(nickNameStackView)
         nickNameTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -72,24 +75,29 @@ extension UserInfoViewController {
         let accountLabel = UILabel()
         accountLabel.text = "계좌정보"
         accountLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        
         accountStackView.axis = .vertical
         accountStackView.spacing = 20
         accountStackView.alignment = .leading
         accountStackView.addArrangedSubview(accountLabel)
+        
         let accountInfoStackView = AccountTextField()
         accountInfoStackView.delegate = self
         accountStackView.addArrangedSubview(accountInfoStackView)
+        
         view.addSubview(accountStackView)
         accountLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountLabel.widthAnchor.constraint(equalToConstant: 100),
             accountLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
         accountInfoStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountInfoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
             accountInfoStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
         ])
+        
         accountStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
@@ -108,12 +116,14 @@ extension UserInfoViewController {
         chooseBankLabel.clipsToBounds = true
         chooseBankLabel.layer.cornerRadius = 15
         chooseBankLabel.backgroundColor = .designSystem(.gray2)
+        
         let holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
         accountInfoStackView.axis = .horizontal
         accountInfoStackView.spacing = 10
         accountInfoStackView.alignment = .center
         accountInfoStackView.addArrangedSubview(chooseBankLabel)
         accountInfoStackView.addArrangedSubview(holderTextField)
+        
         view.addSubview(accountInfoStackView)
         chooseBankLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -121,10 +131,12 @@ extension UserInfoViewController {
             chooseBankLabel.widthAnchor.constraint(equalToConstant: 90),
             chooseBankLabel.heightAnchor.constraint(equalToConstant: 30)
         ])
+        
         holderTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             holderTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
         return accountInfoStackView
     }
     

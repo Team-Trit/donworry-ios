@@ -39,6 +39,7 @@ extension BankCell {
             bankIconView.widthAnchor.constraint(equalToConstant: 25),
             bankIconView.heightAnchor.constraint(equalToConstant: 25)
         ])
+        
         addSubview(bankLabel)
         bankLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([

@@ -63,14 +63,11 @@ final class LargeButton: UIButton {
 // MARK: - Configurations
 extension LargeButton {
     private func attributes() {
-//        isEnabled = false
+        isEnabled = false
         titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
         backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
         layer.cornerRadius = 25
         addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
-//        rx.tap.subscribe(onNext: { _ in
-//            self.buttonPressed(_: self)
-//        })
     }
     
     private func layout() {

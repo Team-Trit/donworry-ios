@@ -46,6 +46,7 @@ extension TermConfirmViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
         view.addSubview(confirmButton)
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -88,6 +89,7 @@ extension TermConfirmViewController: UITableViewDelegate {
         titleLabel.text = "\(Date().formatted("yyyy년 M월 dd일")) 알림 수신을\n아래와 같이 설정하였습니다."
         titleLabel.font = .systemFont(ofSize: 18, weight: .bold)
         titleLabel.numberOfLines = 0
+        
         header.contentView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -95,6 +97,7 @@ extension TermConfirmViewController: UITableViewDelegate {
             titleLabel.trailingAnchor.constraint(equalTo: header.contentView.trailingAnchor, constant: -25),
             titleLabel.topAnchor.constraint(equalTo: header.contentView.topAnchor, constant: 10)
         ])
+        
         return header
     }
     

@@ -17,8 +17,6 @@ final class LimitTextField: UIView {
     private let limitLabel = UILabel()
     private var limit: Int?
     private var textCount = 0
-    var disposeBag = DisposeBag()
-    
     
     init(placeholder: String) {
         super.init(frame: .zero)
@@ -65,14 +63,6 @@ extension LimitTextField {
     private func setTextField() {
         /// clear button reference : https://woongsios.tistory.com/315
         textField.clearButtonMode = .whileEditing
-        textField.rx.text
-            .orEmpty
-            .distinctUntilChanged()
-            .subscribe(onNext: { changedText in
-                self.textCount = changedText.count
-                print(self.textCount)
-            })
-            .disposed(by: disposeBag)
     }
     
     private func setLimitLabel() {
