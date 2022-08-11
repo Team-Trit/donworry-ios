@@ -14,6 +14,7 @@ private let banks = ["경남은행", "광주ᄋ
 
 final class BankSelectViewController: BaseViewController {
     private let titleLabel = UILabel()
+    private let dismissButton = UIButton()
     private let searchTextField = UITextField()
     private let bankCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout.init())
     let viewModel = BankSelectViewModel()
@@ -33,6 +34,10 @@ extension BankSelectViewController {
     private func attributes() {
         titleLabel.text = "은행선택"
         titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        dismissButton.setTitle("취소", for: .normal)
+        dismissButton.setTitleColor(.black, for: .normal)
+        dismissButton.titleLabel?.font = .systemFont(ofSize: 15)
+        dismissButton.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
         searchTextField.placeholder = "은행검색"
         searchTextField.backgroundColor = .systemGray6
         searchTextField.layer.cornerRadius = 7
@@ -53,9 +58,15 @@ extension BankSelectViewController {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 80),
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
             titleLabel.widthAnchor.constraint(equalToConstant: 100),
             titleLabel.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        view.addSubview(dismissButton)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            dismissButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 30)
         ])
         view.addSubview(searchTextField)
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -105,5 +116,12 @@ extension BankSelectViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
+    }
+}
+
+// MARK: - Interaction Functions
+extension BankSelectViewController {
+    @objc private func dismissButtonPressed(_ sender: UIButton) {
+        dismiss(animated: true)
     }
 }
