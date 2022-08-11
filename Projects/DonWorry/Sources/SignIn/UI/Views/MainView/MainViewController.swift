@@ -58,7 +58,7 @@ extension MainViewController {
     
     private func setLabelStackView() {
         let titleLabel = UILabel()
-        titleLabel.text = "돈 워리"
+        titleLabel.text = "돈.워리"
         titleLabel.font = .gmarksans(weight: .bold, size: ._30)
         titleLabel.textColor = .designSystem(.mainBlue)
         let descriptionLabel = UILabel()

@@ -30,7 +30,6 @@ final class UserInfoViewController: BaseViewController {
 extension UserInfoViewController {
     
     private func attributes() {
-        setNavigationBar()
         setTitleLabel()
         setNickNameStackView()
         setAccountStackView()
@@ -45,12 +44,8 @@ extension UserInfoViewController {
     }
     
     // MARK: - Attributes Helper
-    private func setNavigationBar() {
-//        navigationController?.navigationBar.topItem?.backButtonTitle = ""
-    }
-    
     private func setTitleLabel() {
-        titleLabel.text = "돈 워리"
+        titleLabel.text = "돈.워리"
         titleLabel.font = .gmarksans(weight: .bold, size: ._30)
     }
     
@@ -84,6 +79,11 @@ extension UserInfoViewController {
         accountInfoStackView.delegate = self
         accountStackView.addArrangedSubview(accountInfoStackView)
         view.addSubview(accountStackView)
+        accountLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            accountLabel.widthAnchor.constraint(equalToConstant: 100),
+            accountLabel.heightAnchor.constraint(equalToConstant: 50)
+        ])
         accountInfoStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             accountInfoStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
