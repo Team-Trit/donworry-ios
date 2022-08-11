@@ -11,6 +11,6 @@ import Foundation
 import BaseArchitecture
 import RxSwift
 
-final class MainViewModel: BaseViewModel {
+final class LoginViewModel: BaseViewModel {
 
 }

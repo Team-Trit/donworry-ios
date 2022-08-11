@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  LoginViewController.swift
 //  DonWorry
 //
 //  Created by 김승창 on 2022/08/07.
@@ -12,12 +12,12 @@ import BaseArchitecture
 import RxCocoa
 import RxSwift
 
-final class MainViewController: BaseViewController {
+final class LoginViewController: BaseViewController {
     private lazy var labelStackView = UIStackView()
     private lazy var buttonStackView = UIStackView()
     private let backgroundView = UIView()
     private let backgroundImage = UIImageView() 
-    let viewModel = MainViewModel()
+    let viewModel = LoginViewModel()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +27,7 @@ final class MainViewController: BaseViewController {
 }
 
 // MARK: - Configuration
-extension MainViewController {
+extension LoginViewController {
     private func attributes() {
         setBackground()
         setLabelStackView()
@@ -140,7 +140,7 @@ extension MainViewController {
 }
 
 // MARK: - Interaction Functions
-extension MainViewController {
+extension LoginViewController {
     @objc private func appleButtonPressed(_ sender: UIButton) {
         // TODO: 소셜 로그인 기능 추가
         navigationController?.pushViewController(UserInfoViewController(), animated: true)
