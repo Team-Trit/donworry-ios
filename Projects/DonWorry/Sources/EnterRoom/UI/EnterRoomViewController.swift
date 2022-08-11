@@ -20,10 +20,12 @@ final class EnterRoomViewController: BaseViewController {
     var hasSetPointOrigin = false
     var pointOrigin: CGPoint?
     
-    @IBOutlet weak var slideIdicator: UIView!
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var subscribeButton: UIView!
     
+    @IBOutlet weak var slideIndicator: UIView!
+    @IBOutlet weak var enterRoomButton: UIButton!
+    @IBAction func enterRoomButton(_ sender: Any) {
+        
+    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +33,8 @@ final class EnterRoomViewController: BaseViewController {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
         view.addGestureRecognizer(panGesture)
         
-        slideIdicator.roundCorners(.allCorners, radius: 10)
-        subscribeButton.roundCorners(.allCorners, radius: 10)
+//        slideIndicator.roundCorners(.allCorners, radius: 5)
+//        enterRoomButton.roundCorners(.allCorners, radius: 5)
         
         attributes()
         layout()

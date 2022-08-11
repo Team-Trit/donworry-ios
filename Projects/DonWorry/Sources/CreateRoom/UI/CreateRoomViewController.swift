@@ -14,8 +14,7 @@ import RxSwift
 
 
 final class CreateRoomViewController: BaseViewController {
-
-    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
+    
     let viewModel = CreateRoomViewModel()
 
     public override func viewDidLoad() {
@@ -24,17 +23,32 @@ final class CreateRoomViewController: BaseViewController {
         attributes()
         layout()
     }
-
+    
+    @objc func showMiracle() {
+        let slideVC = EnterRoomViewController()
+        slideVC.modalPresentationStyle = .custom
+        slideVC.transitioningDelegate = self
+        self.present(slideVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func onButton(_ sender: Any) {
+        showMiracle()
+    }
 
 }
 
 extension CreateRoomViewController {
 
     private func attributes() {
-
     }
 
     private func layout() {
 
+    }
+}
+
+extension CreateRoomViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
     }
 }
