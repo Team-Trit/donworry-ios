@@ -68,6 +68,7 @@ extension TermTableView: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: TermCellView.identifier, for: indexPath) as! TermCellView
         let text = Terms[indexPath.section].details[indexPath.row]
         cell.termLabel.text = text
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -82,6 +83,7 @@ extension TermTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let termHeaderView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermHeaderView.identifier) as? TermHeaderView else { return UIView() }
         let currentTerm = Terms[section]
+        termHeaderView.delegate = self
         termHeaderView.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
         termHeaderView.checkButton.tintColor = .designSystem(currentTerm.isChecked ? .gray2 : .mainBlue)
         termHeaderView.titleLabel.text = currentTerm.title
@@ -91,5 +93,16 @@ extension TermTableView: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 25
+    }
+}
+
+// MARK: - TermHeaderViewDelegate
+extension TermTableView: TermHeaderViewDelegate {
+    func toggleCheck(_ sender: UIButton) {
+        print("toggle")
+    }
+    
+    func showDetail(_ sender: UIButton) {
+        print("show detail!!")
     }
 }

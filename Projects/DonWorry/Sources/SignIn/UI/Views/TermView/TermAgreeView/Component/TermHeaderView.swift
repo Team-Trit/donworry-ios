@@ -9,12 +9,18 @@
 import DesignSystem
 import UIKit
 
+protocol TermHeaderViewDelegate: AnyObject {
+    func toggleCheck(_ sender: UIButton)
+    func showDetail(_ sender: UIButton)
+}
+
 final class TermHeaderView: UITableViewHeaderFooterView {
     static let identifier = "TermHeaderView"
     private var horizontalStackView = UIStackView()
     var checkButton = UIButton()
     var titleLabel = UILabel()
     var showDetailButton = UIButton()
+    weak var delegate: TermHeaderViewDelegate?
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -31,6 +37,7 @@ final class TermHeaderView: UITableViewHeaderFooterView {
 // MARK: - Configuration
 extension TermHeaderView {
     private func attributes() {
+        checkButton.addTarget(self, action: #selector(checkButtonPressed(_:)), for: .touchUpInside)
         setTitleLabel()
         setShowDetailButton()
         setHorizontalStackView()
@@ -60,11 +67,23 @@ extension TermHeaderView {
     
     private func setShowDetailButton() {
         showDetailButton.tintColor = .designSystem(.gray1)
+        showDetailButton.addTarget(self, action: #selector(showDetailButtonPressed(_:)), for: .touchUpInside)
     }
     
     private func setHorizontalStackView() {
         horizontalStackView.axis = .horizontal
         horizontalStackView.spacing = 20
         horizontalStackView.alignment = .center
+    }
+}
+
+// MARK: - Interaction Functions
+extension TermHeaderView {
+    @objc private func checkButtonPressed(_ sender: UIButton) {
+        delegate?.toggleCheck(sender)
+    }
+    
+    @objc private func showDetailButtonPressed(_ sender: UIButton) {
+        delegate?.showDetail(sender)
     }
 }
