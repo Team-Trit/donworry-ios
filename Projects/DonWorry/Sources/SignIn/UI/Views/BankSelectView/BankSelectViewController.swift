@@ -39,6 +39,8 @@ extension BankSelectViewController {
         dismissButton.setTitleColor(.black, for: .normal)
         dismissButton.titleLabel?.font = .systemFont(ofSize: 15)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
+        
+        // SearchTextField
         searchTextField.placeholder = "은행검색"
         searchTextField.backgroundColor = .systemGray6
         searchTextField.layer.cornerRadius = 7
@@ -51,6 +53,8 @@ extension BankSelectViewController {
         frameView.addSubview(leftImageView)
         searchTextField.leftView = frameView
         searchTextField.leftViewMode = .always
+        
+        // CollectionView Register
         bankCollectionView.register(BankCell.self, forCellWithReuseIdentifier: BankCell.identifier)
     }
     

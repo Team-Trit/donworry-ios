@@ -15,7 +15,7 @@ import DonWorryExtensions
 final class TermConfirmViewController: BaseViewController {
     private let tableView = UITableView()
     private let confirmButton = LargeButton(type: .done)
-    private let checkedTerms = Terms.filter { $0.isChecked }
+    private let checkedTerms = terms.filter { $0.isChecked }
     let viewModel = TermConfirmViewModel()
     
     override func viewDidLoad() {

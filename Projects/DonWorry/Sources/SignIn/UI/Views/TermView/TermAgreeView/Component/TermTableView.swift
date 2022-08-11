@@ -17,7 +17,7 @@ struct Term {
     var showsDetail: Bool
 }
 
-let Terms: [Term] = [
+let terms: [Term] = [
     Term(title: "전체동의", details: [], isChecked: false, showsDetail: false),
     Term(title: "만 14세 이상입니다.", details: ["1-1", "1-2", "1-3"], isChecked: true, showsDetail: true),
     Term(title: "돈워리 서비스 이용약관 동의", details: ["2-1", "2-2"], isChecked: true, showsDetail: false),
@@ -63,18 +63,18 @@ extension TermTableView {
 extension TermTableView: UITableViewDataSource {
     /// UITableView Reference : https://inuplace.tistory.com/1174
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Terms[section].details.count
+        return terms[section].details.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: TermCellView.identifier, for: indexPath) as! TermCellView
-        let text = Terms[indexPath.section].details[indexPath.row]
+        let text = terms[indexPath.section].details[indexPath.row]
         cell.termLabel.text = text
         return cell
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return Terms.count
+        return terms.count
     }
 }
 
@@ -83,7 +83,7 @@ extension TermTableView: UITableViewDelegate {
     /// Custom Header Reference : https://velog.io/@minni/Custom-TableViewHeaderView-생성하기
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let termHeaderView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermHeaderView.identifier) as? TermHeaderView else { return UIView() }
-        let currentTerm = Terms[section]
+        let currentTerm = terms[section]
         termHeaderView.delegate = self
         termHeaderView.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
         termHeaderView.checkButton.tintColor = .designSystem(currentTerm.isChecked ? .gray2 : .mainBlue)
