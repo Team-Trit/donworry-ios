@@ -16,7 +16,7 @@ struct Term {
     var showsDetail: Bool
 }
 
-private let Terms: [Term] = [
+let Terms: [Term] = [
     Term(title: "전체동의", details: [], isChecked: false, showsDetail: false),
     Term(title: "만 14세 이상입니다.", details: ["1-1", "1-2", "1-3"], isChecked: true, showsDetail: true),
     Term(title: "돈워리 서비스 이용약관 동의", details: ["2-1", "2-2"], isChecked: true, showsDetail: false),
@@ -30,8 +30,6 @@ final class TermTableView: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        termTableView.dataSource = self
-        termTableView.delegate = self
         attributes()
         layout()
     }
@@ -40,9 +38,12 @@ final class TermTableView: BaseViewController {
 // MARK: - Configuration
 extension TermTableView {
     private func attributes() {
+        termTableView.dataSource = self
+        termTableView.delegate = self
         termTableView.register(TermHeaderView.self, forHeaderFooterViewReuseIdentifier: TermHeaderView.identifier)
         termTableView.register(TermCellView.self, forCellReuseIdentifier: TermCellView.identifier)
         termTableView.separatorStyle = .none
+        termTableView.allowsSelection = false
     }
     
     private func layout() {
@@ -68,7 +69,6 @@ extension TermTableView: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: TermCellView.identifier, for: indexPath) as! TermCellView
         let text = Terms[indexPath.section].details[indexPath.row]
         cell.termLabel.text = text
-        cell.selectionStyle = .none
         return cell
     }
     
@@ -100,9 +100,11 @@ extension TermTableView: UITableViewDelegate {
 extension TermTableView: TermHeaderViewDelegate {
     func toggleCheck(_ sender: UIButton) {
         print("toggle")
+        // TODO: Toggle isChecked
     }
     
     func showDetail(_ sender: UIButton) {
         print("show detail!!")
+        // TODO: Toggle showsDetail and show detail terms
     }
 }
