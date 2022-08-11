@@ -34,10 +34,6 @@ final class LargeButton: UIButton {
         commonInit()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     convenience init(type: LargeButtonType) {
         self.init()
         switch(type) {
@@ -52,6 +48,10 @@ final class LargeButton: UIButton {
         case .update:
             setTitle("수정하기", for: .normal)
         }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func commonInit() {

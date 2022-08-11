@@ -17,7 +17,7 @@ final class AccountTextField: UIStackView {
     private let bankHolderStack = UIStackView()
     private let chooseBankLabel = UILabel()
     private let holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
-    private let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요", limit: 20)
+    private let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
     weak var delegate: AccountTextFieldDelegate?
     
     init() {

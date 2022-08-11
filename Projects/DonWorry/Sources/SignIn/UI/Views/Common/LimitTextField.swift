@@ -12,41 +12,52 @@ final class LimitTextField: UIView {
     private let textField = UITextField()
     private let line = UILabel()
     private let limitLabel = UILabel()
+    private var limit: Int?
     private var textCount = 0
-    var placeholder = ""
-    var limit = 0
     
-    init(placeholder: String, limit: Int) {
-        self.placeholder = placeholder
-        self.limit = limit
+    init(placeholder: String) {
         super.init(frame: .zero)
-        attributes()
-        layout()
+        commonInit()
+        textField.placeholder = placeholder
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+    
+    convenience init(placeholder: String, limit: Int) {
+        self.init(placeholder: placeholder)
+        self.limit = limit
+        setLimitLabel()
+        setLimitLabelLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func commonInit() {
+        attributes()
+        layout()
     }
 }
 
 // MARK: - Configurations
 extension LimitTextField {
     private func attributes() {
-        setTextField(placeholder: placeholder)
+        setTextField()
         setLine()
-        setLimitLabel(limit: limit)
     }
     
     private func layout() {
         setTextFieldLayout()
         setLineLayout()
-        setLimitLabelLayout()
     }
     
     // MARK: - Attibutes Helper
-    private func setTextField(placeholder: String) {
+    private func setTextField() {
         /// clear button reference : https://woongsios.tistory.com/315
-        textField.placeholder = placeholder
         textField.clearButtonMode = .whileEditing
     }
     
@@ -54,7 +65,8 @@ extension LimitTextField {
         line.backgroundColor = textCount == 0 ? .designSystem(.gray2) : .designSystem(.mainBlue)
     }
     
-    private func setLimitLabel(limit: Int) {
+    private func setLimitLabel() {
+        guard let limit = limit else { return }
         limitLabel.text = "\(textCount)/\(limit)"
         limitLabel.textColor = .designSystem(.gray2)
         limitLabel.font = .systemFont(ofSize: 10)
