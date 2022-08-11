@@ -6,8 +6,9 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import BaseArchitecture
 import Foundation
+
+import BaseArchitecture
 import RxSwift
 
 final class UserInfoViewModel: BaseViewModel {

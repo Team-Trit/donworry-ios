@@ -6,8 +6,9 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import BaseArchitecture
 import UIKit
+
+import BaseArchitecture
 
 struct Term {
     let title: String

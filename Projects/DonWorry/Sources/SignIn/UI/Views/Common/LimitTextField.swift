@@ -6,9 +6,10 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import UIKit
+
 import RxCocoa
 import RxSwift
-import UIKit
 
 final class LimitTextField: UIView {
     private let textField = UITextField()

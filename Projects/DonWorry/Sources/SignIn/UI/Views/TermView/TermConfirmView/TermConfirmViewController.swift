@@ -6,10 +6,11 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import UIKit
+
 import BaseArchitecture
 import DesignSystem
 import DonWorryExtensions
-import UIKit
 
 final class TermConfirmViewController: BaseViewController {
     private let tableView = UITableView()

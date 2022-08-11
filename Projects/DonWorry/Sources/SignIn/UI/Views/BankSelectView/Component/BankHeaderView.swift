@@ -6,8 +6,9 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import DesignSystem
 import UIKit
+
+import DesignSystem
 
 final class BankHeaderView: UICollectionReusableView {
     static let identifier = "BankHeaderView"

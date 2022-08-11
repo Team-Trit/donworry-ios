@@ -6,10 +6,11 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import UIKit
+
 import BaseArchitecture
 import RxCocoa
 import RxSwift
-import UIKit
 
 final class TermAgreeViewController: BaseViewController {
     private let descriptionLabel = UILabel()

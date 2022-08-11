@@ -6,10 +6,11 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import UIKit
+
 import BaseArchitecture
 import RxCocoa
 import RxSwift
-import UIKit
 
 final class UserInfoViewController: BaseViewController {
     private let titleLabel = UILabel()
