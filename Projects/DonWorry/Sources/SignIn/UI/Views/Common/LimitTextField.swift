@@ -6,6 +6,8 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import RxCocoa
+import RxSwift
 import UIKit
 
 final class LimitTextField: UIView {
@@ -14,6 +16,8 @@ final class LimitTextField: UIView {
     private let limitLabel = UILabel()
     private var limit: Int?
     private var textCount = 0
+    var disposeBag = DisposeBag()
+    
     
     init(placeholder: String) {
         super.init(frame: .zero)
@@ -31,6 +35,7 @@ final class LimitTextField: UIView {
         self.limit = limit
         setLimitLabel()
         setLimitLabelLayout()
+        textField.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -47,7 +52,7 @@ final class LimitTextField: UIView {
 extension LimitTextField {
     private func attributes() {
         setTextField()
-        setLine()
+        line.backgroundColor = textCount == 0 ? .designSystem(.gray2) : .designSystem(.mainBlue)
     }
     
     private func layout() {
@@ -59,10 +64,14 @@ extension LimitTextField {
     private func setTextField() {
         /// clear button reference : https://woongsios.tistory.com/315
         textField.clearButtonMode = .whileEditing
-    }
-    
-    private func setLine() {
-        line.backgroundColor = textCount == 0 ? .designSystem(.gray2) : .designSystem(.mainBlue)
+        textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .subscribe(onNext: { changedText in
+                self.textCount = changedText.count
+                print(self.textCount)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setLimitLabel() {
@@ -102,5 +111,18 @@ extension LimitTextField {
             limitLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             limitLabel.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 10)
         ])
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension LimitTextField: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        checkMaxLength(textField)
+    }
+    
+    private func checkMaxLength(_ textfield: UITextField!) {
+        if textfield.text?.count ?? 0 > limit! {
+            textfield.deleteBackward()
+        }
     }
 }

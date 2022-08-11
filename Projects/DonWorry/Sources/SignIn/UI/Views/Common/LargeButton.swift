@@ -68,6 +68,9 @@ extension LargeButton {
         backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
         layer.cornerRadius = 25
         addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+//        rx.tap.subscribe(onNext: { _ in
+//            self.buttonPressed(_: self)
+//        })
     }
     
     private func layout() {
