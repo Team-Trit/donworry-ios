@@ -113,18 +113,17 @@ extension LimitTextField: View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.trimmedText }
+        let textObservable = reactor.state.map { $0.trimmedText }.share()
+        textObservable
             .bind(to: textField.rx.text)
             .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.trimmedText.count }
+        textObservable.map { $0.count }
             .distinctUntilChanged()
             .map { self.limit != nil ? "\($0)/\(self.limit!)" : "" }
             .bind(to: limitLabel.rx.text)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.trimmedText.isEmpty }
-            .distinctUntilChanged()
+        textObservable.map { $0.isEmpty } .distinctUntilChanged()
             .map { return UIColor.designSystem($0 ? .gray2 : .mainBlue) }
             .bind(to: line.rx.backgroundColor)
             .disposed(by: disposeBag)
