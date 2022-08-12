@@ -17,7 +17,6 @@ final class LimitTextField: UIView {
     private let line = UILabel()
     private let limitLabel = UILabel()
     private var limit: Int?
-    private var textCount = 0
     var disposeBag = DisposeBag()
     
     init(placeholder: String) {
@@ -53,7 +52,7 @@ final class LimitTextField: UIView {
 extension LimitTextField {
     private func attributes() {
         setTextField()
-        line.backgroundColor = textCount == 0 ? .designSystem(.gray2) : .designSystem(.mainBlue)
+        line.backgroundColor = textField.text!.isEmpty ? .designSystem(.gray2) : .designSystem(.mainBlue)
     }
     
     private func layout() {
@@ -68,7 +67,7 @@ extension LimitTextField {
     
     private func setLimitLabel() {
         guard let limit = limit else { return }
-        limitLabel.text = "\(textCount)/\(limit)"
+        limitLabel.text = "0/\(limit)"
         limitLabel.textColor = .designSystem(.gray2)
         limitLabel.font = .systemFont(ofSize: 10)
     }
@@ -116,6 +115,18 @@ extension LimitTextField: View {
         
         reactor.state.map { $0.trimmedText }
             .bind(to: textField.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.trimmedText.count }
+            .distinctUntilChanged()
+            .map { self.limit != nil ? "\($0)/\(self.limit!)" : "" }
+            .bind(to: limitLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.trimmedText.isEmpty }
+            .distinctUntilChanged()
+            .map { return UIColor.designSystem($0 ? .gray2 : .mainBlue) }
+            .bind(to: line.rx.backgroundColor)
             .disposed(by: disposeBag)
     }
 }
