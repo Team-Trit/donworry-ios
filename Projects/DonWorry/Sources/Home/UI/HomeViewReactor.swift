@@ -13,7 +13,7 @@ import Models
 
 final class HomeViewReactor: Reactor {
     typealias Section = BillCardSection
-
+    typealias HeaderModel = HomeHeaderViewModel
     enum Action {
         case setup
         case didSelectPaymentRoom(at: Int)
@@ -25,15 +25,13 @@ final class HomeViewReactor: Reactor {
 
     enum Mutation {
         case updateLoading(Bool)
-        case updateHomeHeader
+        case updateHomeHeader(User)
         case updatePaymentRoom(Int)
         case updatePaymentRoomList([PaymentRoom])
     }
 
     struct State {
-        var homeHeader: HomeHeaderViewModel = .init(
-            imageURL: User.dummyUser1.image,
-            nickName: User.dummyUser1.nickName)
+        var homeHeader: HeaderModel?
         var isLoading: Bool = false
         var selectedPaymentRoomIndex: Int = 0
         var paymentRoomList: [PaymentRoom] = []
@@ -42,9 +40,11 @@ final class HomeViewReactor: Reactor {
 
     let initialState = State()
 
-    init(_ homeRepository: HomeRepository = FakeHomeRepositoryImpl(),
-         _ homePresenter: HomePresenter = HomePresenterImpl(),
-         _ user: User = .dummyUser1) {
+    init(
+        _ homeRepository: HomeRepository = FakeHomeRepositoryImpl(),
+        _ homePresenter: HomePresenter = HomePresenterImpl(),
+        _ user: User = .dummyUser1
+    ) {
         self.homeRepository = homeRepository
         self.homePresenter = homePresenter
         self.user = user
@@ -55,7 +55,7 @@ final class HomeViewReactor: Reactor {
         case .setup:
             return Observable.concat([
                 .just(.updateLoading(true)),
-                .just(.updateHomeHeader),
+                .just(.updateHomeHeader(user)),
                 self.homeRepository.fetchPaymentRoomList().map { .updatePaymentRoomList($0) },
                 .just(.updateLoading(false))
             ])
@@ -72,14 +72,14 @@ final class HomeViewReactor: Reactor {
         case .didTapProfileImage:
             break
         }
-        return .just(.updateHomeHeader)
+        return .just(.updateLoading(false))
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
          switch mutation {
-         case .updateHomeHeader:
-             newState = state
+         case .updateHomeHeader(let user):
+             newState.homeHeader = homePresenter.formHomeHeader(from: user)
 
          case .updatePaymentRoom(let index):
              newState.selectedPaymentRoomIndex = index

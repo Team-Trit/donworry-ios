@@ -13,6 +13,7 @@ import DonWorryExtensions
 
 struct PaymentRoomCellViewModel {
     var title: String
+    var isSelected: Bool
 }
 
 final class PaymentRoomCollectionViewCell: UICollectionViewCell {
@@ -26,6 +27,7 @@ final class PaymentRoomCollectionViewCell: UICollectionViewCell {
         return v
     }()
 
+    var layersToRemoveLater: [CALayer] = []
     var viewModel: PaymentRoomCellViewModel? {
         didSet {
             guard let viewModel = viewModel else {
@@ -33,14 +35,18 @@ final class PaymentRoomCollectionViewCell: UICollectionViewCell {
             }
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = viewModel.title
-//                let textColor: UIColor? = viewModel.isSelect ? .designSystem(.white) : .designSystem(.black)
-//                self?.titleLabel.textColor = textColor
-//                if viewModel.isSelect {
-//                    self?.contentView.addGradient(
-//                        startColor: .designSystem(.blueTopGradient)!,
-//                        endColor: .designSystem(.blueBottomGradient)!
-//                    )
-//                }
+                let textColor: UIColor? = viewModel.isSelected ? .designSystem(.white) : .designSystem(.black)
+                self?.titleLabel.textColor = textColor
+                if viewModel.isSelected {
+                    guard let self = self else { return }
+                    let layer = self.contentView.addGradientWithOutput(
+                        startColor: .designSystem(.blueTopGradient)!,
+                        endColor: .designSystem(.blueBottomGradient)!
+                    )
+                    self.layersToRemoveLater.append(layer)
+                } else {
+                    self?.layersToRemoveLater.forEach { $0.removeFromSuperlayer() }
+                }
             }
         }
     }

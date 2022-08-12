@@ -69,7 +69,8 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 cellIdentifier: PaymentRoomCollectionViewCell.identifier,
                 cellType: PaymentRoomCollectionViewCell.self)
             ) { item, cellModel, cell in
-                cell.viewModel = .init(title: cellModel.name) 
+                let selectedIndex: Int = reactor.currentState.selectedPaymentRoomIndex
+                cell.viewModel = .init(title: cellModel.name, isSelected: selectedIndex == item)
             }.disposed(by: disposeBag)
 
         reactor.state.map { $0.sections }

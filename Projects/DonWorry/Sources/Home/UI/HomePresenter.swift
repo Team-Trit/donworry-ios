@@ -16,9 +16,19 @@ protocol HomePresenter {
         with selectedIndex: Int,
         user: User
     ) -> [BillCardSection]
+
+    func formHomeHeader(
+        from user: User
+    ) -> HomeHeaderViewModel
 }
 
 final class HomePresenterImpl: HomePresenter {
+
+    func formHomeHeader(
+        from user: User
+    ) -> HomeHeaderViewModel {
+        return HomeHeaderViewModel(imageURL: user.image, nickName: user.nickName)
+    }
 
     func formatSection(
         from paymentRoomList: [PaymentRoom],
@@ -95,5 +105,12 @@ extension TakePaymentCardCellViewModel {
         self.giverID = transfers.first!.giver.id
         self.amount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
         self.wholeAmount =  transfers.map { $0.amount }.reduce(0, +)
+    }
+}
+
+extension HomeHeaderViewModel {
+    init(_ user: User) {
+        self.nickName = user.nickName
+        self.imageURL = user.image
     }
 }
