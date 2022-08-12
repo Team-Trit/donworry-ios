@@ -8,6 +8,9 @@
 
 import UIKit
 
+import DesignSystem
+import SnapKit
+
 public enum LargeButtonType {
     case next   // 다음
     case done   // 완료
@@ -22,61 +25,58 @@ protocol LargeButtonDelegate: AnyObject {
 
 final class LargeButton: UIButton {
     /// UIButton Customize Reference : https://ios-development.tistory.com/43
+    private lazy var largeButton: UIButton = {
+       let largeButton = UIButton()
+        largeButton.isEnabled = false
+        largeButton.titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
+        largeButton.backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
+        largeButton.layer.cornerRadius = 25
+        largeButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        return largeButton
+    }()
     weak var delegate: LargeButtonDelegate?
     
     init() {
         super.init(frame: .zero)
-        commonInit()
+        setUI()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        setUI()
     }
     
     convenience init(type: LargeButtonType) {
         self.init()
         switch(type) {
         case .next:
-            setTitle("다음", for: .normal)
+            largeButton.setTitle("다음", for: .normal)
         case .done:
-            setTitle("완료", for: .normal)
+            largeButton.setTitle("완료", for: .normal)
         case .hurry:
-            setTitle("재촉하기", for: .normal)
+            largeButton.setTitle("재촉하기", for: .normal)
         case .enter:
-            setTitle("정산방 참가하기", for: .normal)
+            largeButton.setTitle("정산방 참가하기", for: .normal)
         case .update:
-            setTitle("수정하기", for: .normal)
+            largeButton.setTitle("수정하기", for: .normal)
         }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func commonInit() {
-        attributes()
-        layout()
-    }
 }
 
-// MARK: - Configurations
+// MARK: - Layout
 extension LargeButton {
-    private func attributes() {
-        isEnabled = false
-        titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
-        backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.gray2)
-        layer.cornerRadius = 25
-        addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
-    }
-    
-    private func layout() {
-        translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: leadingAnchor),
-            trailingAnchor.constraint(equalTo: trailingAnchor),
-            heightAnchor.constraint(equalToConstant: 50)
-        ])
+    private func setUI() {
+        addSubview(largeButton)
+        largeButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(25)
+            make.trailing.equalToSuperview().offset(-25)
+            make.bottom.equalToSuperview().offset(-50)
+            make.height.equalTo(50)
+        }
     }
 }
 
