@@ -16,11 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Font.registerFonts()
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-
-        let rootViewController = MainViewController()
+        let rootViewController = UIViewController()
+        rootViewController.view.backgroundColor = .systemIndigo
         let navigationController = UINavigationController(rootViewController: rootViewController)
-//        navigationController.setNavigationBarHidden(true, animated: false)
-        window.rootViewController = navigationController
+        navigationController.setNavigationBarHidden(true, animated: false)
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
         self.window = window
     }

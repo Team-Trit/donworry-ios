@@ -8,6 +8,7 @@
 
 import UIKit
 
+import ReactorKit
 import RxCocoa
 import RxSwift
 
@@ -17,6 +18,7 @@ final class LimitTextField: UIView {
     private let limitLabel = UILabel()
     private var limit: Int?
     private var textCount = 0
+    var disposeBag = DisposeBag()
     
     init(placeholder: String) {
         super.init(frame: .zero)
@@ -34,7 +36,6 @@ final class LimitTextField: UIView {
         self.limit = limit
         setLimitLabel()
         setLimitLabelLayout()
-        textField.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -42,6 +43,7 @@ final class LimitTextField: UIView {
     }
     
     private func commonInit() {
+        reactor = LimitTextFieldReactor()
         attributes()
         layout()
     }
@@ -61,7 +63,6 @@ extension LimitTextField {
     
     // MARK: - Attibutes Helper
     private func setTextField() {
-        /// clear button reference : https://woongsios.tistory.com/315
         textField.clearButtonMode = .whileEditing
     }
     
@@ -105,15 +106,16 @@ extension LimitTextField {
     }
 }
 
-// MARK: - UITextFieldDelegate
-extension LimitTextField: UITextFieldDelegate {
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        checkMaxLength(textField)
-    }
-    
-    private func checkMaxLength(_ textfield: UITextField!) {
-        if textfield.text?.count ?? 0 > limit! {
-            textfield.deleteBackward()
-        }
+// MARK: - Bind
+extension LimitTextField: View {
+    func bind(reactor: LimitTextFieldReactor) {
+        textField.rx.text
+            .map { Reactor.Action.edit($0, self.limit) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.trimmedText }
+            .bind(to: textField.rx.text)
+            .disposed(by: disposeBag)
     }
 }
