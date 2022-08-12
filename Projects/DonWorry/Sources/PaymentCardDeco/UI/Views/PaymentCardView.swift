@@ -227,9 +227,9 @@ public class PaymentCardView: UIView {
         }
     }
     
-    var accountHodlerName: String! {
+    var accountHolderName: String! {
         didSet {
-            if accountHodlerName == "" {
+            if accountHolderName == "" {
                 let name = NSMutableAttributedString(string: "", attributes: [
                     NSAttributedString.Key.foregroundColor: UIColor.white,
                 ])
@@ -240,7 +240,7 @@ public class PaymentCardView: UIView {
                 accountHodlerNameLabel.attributedText = name
                 return
             }
-            let name = NSMutableAttributedString(string: accountHodlerName, attributes: [
+            let name = NSMutableAttributedString(string: accountHolderName, attributes: [
                 NSAttributedString.Key.foregroundColor: UIColor.white,
             ])
             accountHodlerNameLabel.attributedText = name
