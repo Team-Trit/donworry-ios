@@ -14,7 +14,6 @@ final class PaymentCardCollectionView: UICollectionView {
     convenience init() {
         let flowLayout = CircularCollectionViewLayout()
         self.init(frame: .zero, collectionViewLayout: flowLayout)
-        // flowLayout.delegate = self
         self.register(TakePaymentCardCollectionViewCell.self)
         self.register(GivePaymentCardCollectionViewCell.self)
         self.register(StatePaymentCardCollectionViewCell.self)

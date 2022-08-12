@@ -13,7 +13,6 @@ import DonWorryExtensions
 
 struct PaymentRoomCellViewModel {
     var title: String
-    var isSelect: Bool
 }
 
 final class PaymentRoomCollectionViewCell: UICollectionViewCell {
@@ -34,14 +33,14 @@ final class PaymentRoomCollectionViewCell: UICollectionViewCell {
             }
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = viewModel.title
-                let textColor: UIColor? = viewModel.isSelect ? .designSystem(.white) : .designSystem(.black)
-                self?.titleLabel.textColor = textColor
-                if viewModel.isSelect {
-                    self?.contentView.addGradient(
-                        startColor: .designSystem(.blueTopGradient)!,
-                        endColor: .designSystem(.blueBottomGradient)!
-                    )
-                }
+//                let textColor: UIColor? = viewModel.isSelect ? .designSystem(.white) : .designSystem(.black)
+//                self?.titleLabel.textColor = textColor
+//                if viewModel.isSelect {
+//                    self?.contentView.addGradient(
+//                        startColor: .designSystem(.blueTopGradient)!,
+//                        endColor: .designSystem(.blueBottomGradient)!
+//                    )
+//                }
             }
         }
     }

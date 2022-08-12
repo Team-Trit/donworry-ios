@@ -9,7 +9,8 @@
 import UIKit
 import DesignSystem
 
-struct TakePaymentCardCellViewModel {
+struct TakePaymentCardCellViewModel: Equatable {
+    var giverID: Int
     var amount: Int
     var wholeAmount: Int
 }

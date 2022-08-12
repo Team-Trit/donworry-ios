@@ -11,8 +11,8 @@ import DesignSystem
 import DonWorryExtensions
 import Kingfisher
 
-struct GivePaymentCardCellViewModel {
-    var id: Int
+struct GivePaymentCardCellViewModel: Equatable {
+    var takerID: Int
     var imageURL: String
     var nickName: String
     var amount: Int

@@ -12,6 +12,7 @@ import RxSwift
 import Models
 
 final class HomeViewReactor: Reactor {
+    typealias Section = BillCardSection
 
     enum Action {
         case setup
@@ -25,41 +26,28 @@ final class HomeViewReactor: Reactor {
     enum Mutation {
         case updateLoading(Bool)
         case updateHomeHeader
-        case updatePaymentRoom(PaymentCard)
-        case updatePaymentRoomList(PaymentRoom)
+        case updatePaymentRoom(Int)
+        case updatePaymentRoomList([PaymentRoom])
     }
 
     struct State {
-        #warning("초기값 변경하기")
         var homeHeader: HomeHeaderViewModel = .init(
-            imageURL: User.dummyUser2.image,
-            nickName: User.dummyUser2.nickName)
+            imageURL: User.dummyUser1.image,
+            nickName: User.dummyUser1.nickName)
         var isLoading: Bool = false
-
-        // MARK: 초기값 바꾸면서 수정하기
-        var paymentRoomList: [PaymentRoomCellViewModel] = [
-            .init(title: "MC2 돈워리", isSelect: true),
-            .init(title: "떱떱해", isSelect: false),
-        ]
-        // MARK: 값 바꿔가며 테스트하기
-        var paymentCardSection: [PaymentCardCollectionViewSection] = [
-            .CircleSection([.StatePaymentCard,
-
-                            // MARK: 받을 돈 카드 테스트
-                            .TakePaymentCard([Transfer(giver: User.dummyUser2, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-                                              Transfer(giver: User.dummyUser3, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-                                              Transfer(giver: User.dummyUser4, taker: User.dummyUser1, amount: 30000, isCompleted: false)]),
-
-                            .LeavePaymentCard])
-        ]
-
-                                             //
+        var selectedPaymentRoomIndex: Int = 0
+        var paymentRoomList: [PaymentRoom] = []
+        var sections: [Section] = [.BillCardSection([])]
     }
 
     let initialState = State()
 
-    init(_ homeRepository: HomeRepository = FakeHomeRepositoryImpl()) {
+    init(_ homeRepository: HomeRepository = FakeHomeRepositoryImpl(),
+         _ homePresenter: HomePresenter = HomePresenterImpl(),
+         _ user: User = .dummyUser1) {
         self.homeRepository = homeRepository
+        self.homePresenter = homePresenter
+        self.user = user
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -68,14 +56,12 @@ final class HomeViewReactor: Reactor {
             return Observable.concat([
                 .just(.updateLoading(true)),
                 .just(.updateHomeHeader),
-//                self.homeRepository.fetchPaymentRoomList().map { .update},
+                self.homeRepository.fetchPaymentRoomList().map { .updatePaymentRoomList($0) },
                 .just(.updateLoading(false))
             ])
         case .didSelectPaymentRoom(let index):
             return Observable.concat([
-                .just(.updateLoading(true)),
-//                self.homeRepository.fetchPaymentRoom(with: index),
-                .just(.updateLoading(false)),
+                .just(.updatePaymentRoom(index))
             ])
         case .didTapAlarm:
             break
@@ -95,25 +81,28 @@ final class HomeViewReactor: Reactor {
          case .updateHomeHeader:
              newState = state
 
-         case .updatePaymentRoom:
-             newState.paymentCardSection = [
-                .CircleSection([.StatePaymentCard,
-
-                                // MARK: 받을 돈 카드 테스트
-                                .TakePaymentCard([Transfer(giver: User.dummyUser2, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-                                                  Transfer(giver: User.dummyUser3, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-                                                  Transfer(giver: User.dummyUser4, taker: User.dummyUser1, amount: 30000, isCompleted: false)]),
-                                .LeavePaymentCard])
-             ]
-
+         case .updatePaymentRoom(let index):
+             newState.selectedPaymentRoomIndex = index
+             newState.sections = homePresenter.formatSection(
+                from: currentState.paymentRoomList,
+                with: currentState.selectedPaymentRoomIndex,
+                user: user
+             )
          case .updateLoading(let loading):
              newState.isLoading = loading
-         case .updatePaymentRoomList(_):
-             return state
+         case .updatePaymentRoomList(let paymentRoomList):
+             newState.paymentRoomList = paymentRoomList
+             newState.sections = homePresenter.formatSection(
+                from: paymentRoomList,
+                with: currentState.selectedPaymentRoomIndex,
+                user: user
+             )
          }
         return newState
     }
 
+    private let user: User
     private let homeRepository: HomeRepository
+    private let homePresenter: HomePresenter
 }
 

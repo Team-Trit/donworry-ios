@@ -10,23 +10,23 @@ import Foundation
 import RxDataSources
 import Models
 
-enum HomePaymentCardItem {
-    case TakePaymentCard([Transfer])
-    case GivePaymentCard(Transfer)
+enum HomeBillCardItem: Equatable {
+    case TakePaymentCard(TakePaymentCardCellViewModel)
+    case GivePaymentCard(GivePaymentCardCellViewModel)
     case StatePaymentCard
     case LeavePaymentCard
 }
 
-enum PaymentCardCollectionViewSection {
-    case CircleSection([HomePaymentCardItem])
+enum BillCardSection: Equatable {
+    case BillCardSection([HomeBillCardItem])
 }
 
-extension PaymentCardCollectionViewSection: SectionModelType {
-    typealias Item = HomePaymentCardItem
+extension BillCardSection: SectionModelType {
+    typealias Item = HomeBillCardItem
 
-    var items: [HomePaymentCardItem] {
+    var items: [HomeBillCardItem] {
         switch self {
-        case .CircleSection(let items):
+        case .BillCardSection(let items):
             return items
         }
     }

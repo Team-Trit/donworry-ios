@@ -16,6 +16,7 @@ final class FakeHomeRepositoryImpl: HomeRepository {
 
     func fetchPaymentRoomList() -> Observable<[PaymentRoom]> {
         return .just([dummyPaymentRoom1, dummyPaymentRoom2])
+            .asObservable()
     }
     func fetchPaymentRoom(with id: Int) -> Observable<PaymentRoom> {
         let rooms = [dummyPaymentRoom1, dummyPaymentRoom2]
@@ -35,9 +36,9 @@ extension FakeHomeRepositoryImpl {
             PaymentCard.dummyPaymentCard2
         ],
         transferList: [
-            Transfer(giver: User.dummyUser2, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-            Transfer(giver: User.dummyUser3, taker: User.dummyUser1, amount: 37000, isCompleted: false),
-            Transfer(giver: User.dummyUser4, taker: User.dummyUser1, amount: 30000, isCompleted: false)
+            Transfer(giver: User.dummyUser2, taker: User.dummyUser1, amount: 37000, isCompleted: true),
+            Transfer(giver: User.dummyUser3, taker: User.dummyUser1, amount: 37000, isCompleted: true),
+            Transfer(giver: User.dummyUser4, taker: User.dummyUser1, amount: 30000, isCompleted: true)
         ])
     }
     var dummyPaymentRoom2: PaymentRoom { .init(

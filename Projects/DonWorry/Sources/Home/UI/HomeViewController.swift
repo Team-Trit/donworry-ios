@@ -25,8 +25,8 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     }
 
     func bind(reactor: Reactor) {
-        self.dispatch(to: reactor)
         self.render(reactor)
+        self.dispatch(to: reactor)
     }
 
     private func dispatch(to reactor: Reactor) {
@@ -60,7 +60,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.emptyView.rx.isHidden)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentCardSection.isEmpty }
+        reactor.state.map { $0.sections.isEmpty }
             .bind(to: self.paymentCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
@@ -69,10 +69,12 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 cellIdentifier: PaymentRoomCollectionViewCell.identifier,
                 cellType: PaymentRoomCollectionViewCell.self)
             ) { item, cellModel, cell in
-                cell.viewModel = cellModel
+                cell.viewModel = .init(title: cellModel.name) 
             }.disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentCardSection }
+        reactor.state.map { $0.sections }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
             .bind(to: self.paymentCardCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
@@ -157,18 +159,17 @@ extension HomeViewController {
 extension HomeViewController {
     typealias DataSource = RxCollectionViewSectionedReloadDataSource
 
-    func paymentCardDatsourceOf() -> DataSource<PaymentCardCollectionViewSection> {
+    func paymentCardDatsourceOf() -> DataSource<BillCardSection> {
            return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
 
                switch dataSource[indexPath] {
-               case .GivePaymentCard(let transfers):
+               case .GivePaymentCard(let viewModel):
                    let cell = collectionView.dequeueReusableCell(GivePaymentCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = .init(id: 0, imageURL: transfers.taker.image, nickName: transfers.taker.nickName, amount: transfers.amount, isComplete: transfers.isCompleted)
+                   cell.viewModel = viewModel
                    return cell
-               case .TakePaymentCard(let transfers):
+               case .TakePaymentCard(let viewModel):
                    let cell = collectionView.dequeueReusableCell(TakePaymentCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = .init(amount: transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +),
-                                          wholeAmount: transfers.map { $0.amount }.reduce(0, +))
+                   cell.viewModel = viewModel
                    return cell
                case .StatePaymentCard:
                    let cell = collectionView.dequeueReusableCell(StatePaymentCardCollectionViewCell.self, for: indexPath)
