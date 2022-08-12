@@ -1,5 +1,5 @@
 //
-//  SignInLoginViewController.swift
+//  LoginViewController.swift
 //  App
 //
 //  Created by 김승창 on 2022/08/12.
@@ -13,11 +13,11 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
-final class SignInLoginViewController: BaseViewController {
+final class LoginViewController: BaseViewController {
     private lazy var labelStackView = LabelStackView()
     private lazy var loginButtonStackView = LoginButtonStackView()
     private lazy var backgroundView = BackgroundView()
-    let viewModel = SignInLoginViewModel()
+    let viewModel = LoginViewModel()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +26,7 @@ final class SignInLoginViewController: BaseViewController {
 }
 
 // MARK: - Layout
-extension SignInLoginViewController {
+extension LoginViewController {
     private func setUI() {
         view.addSubviews(backgroundView, labelStackView, loginButtonStackView)
         

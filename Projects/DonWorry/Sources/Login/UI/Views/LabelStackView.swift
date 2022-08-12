@@ -8,6 +8,7 @@
 
 import UIKit
 
+import DesignSystem
 import SnapKit
 
 final class LabelStackView: UIStackView {
@@ -18,7 +19,6 @@ final class LabelStackView: UIStackView {
         labelStackView.alignment = .center
         return labelStackView
     }()
-    
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.text = "돈.워리"
@@ -26,7 +26,6 @@ final class LabelStackView: UIStackView {
         titleLabel.textColor = .designSystem(.mainBlue)
         return titleLabel
     }()
-    
     private lazy var descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0

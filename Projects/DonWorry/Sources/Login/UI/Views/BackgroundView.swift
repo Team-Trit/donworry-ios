@@ -27,7 +27,6 @@ final class BackgroundView: UIView {
         gradientBackground.layer.addSublayer(gradientLayer)
         return gradientBackground
     }()
-    
     private lazy var backgroundImageView: UIImageView = {
         let backgroundImageView = UIImageView()
         backgroundImageView.image = UIImage(named: "SignInImage")

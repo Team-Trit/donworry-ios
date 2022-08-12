@@ -19,21 +19,18 @@ final class LoginButtonStackView: UIStackView {
         loginButtonStackView.distribution = .fillEqually
         return loginButtonStackView
     }()
-
     private lazy var appleLoginButton: UIButton = {
         let appleLoginButton = UIButton()
         appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
         appleLoginButton.addTarget(self, action: #selector(appleButtonPressed(_:)), for: .touchUpInside)
         return appleLoginButton
     }()
-    
     private lazy var googleLoginButton: UIButton = {
         let googleLoginButton = UIButton()
         googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
         googleLoginButton.addTarget(self, action: #selector(googleButtonPressed(_:)), for: .touchUpInside)
         return googleLoginButton
     }()
-    
     private lazy var kakaoLoginButton: UIButton = {
         let kakaoLoginButton = UIButton()
         kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)

@@ -1,5 +1,5 @@
 //
-//  AccountTextField.swift
+//  AccountInputField.swift
 //  DonWorry
 //
 //  Created by 김승창 on 2022/08/10.
@@ -8,17 +8,17 @@
 
 import UIKit
 
-protocol AccountTextFieldDelegate: AnyObject {
+protocol AccountInputFieldDelegate: AnyObject {
     /// Delegate Pattern Reference : https://kasroid.github.io/posts/ios/20201010-uikit-delegate-pattern/
     func showBankSelectSheet()
 }
 
-final class AccountTextField: UIStackView {
+final class AccountInputField: UIStackView {
     private let bankHolderStack = UIStackView()
     private let chooseBankLabel = UILabel()
     private let holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
     private let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
-    weak var delegate: AccountTextFieldDelegate?
+    weak var delegate: AccountInputFieldDelegate?
     
     init() {
         super.init(frame: .zero)
@@ -32,7 +32,7 @@ final class AccountTextField: UIStackView {
 }
 
 // MARK: - Configuration
-extension AccountTextField {
+extension AccountInputField {
     private func attributes() {
         axis = .vertical
         spacing = 20
@@ -97,7 +97,7 @@ extension AccountTextField {
 }
 
 // MARK: - Interaction Functions
-extension AccountTextField {
+extension AccountInputField {
     @objc private func chooseBankLabelPressed(sender: UITapGestureRecognizer) {
         delegate?.showBankSelectSheet()
     }
