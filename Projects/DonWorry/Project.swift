@@ -20,8 +20,7 @@ let project = Project.make(
             .external(name: "RxSwift"),
             .external(name: "RxCocoa"),
             .external(name: "ReactorKit"),
-            .external(name: "FlexLayout"),
-            .external(name: "Moya")
+            .external(name: "FlexLayout")
         ]
     ),
     Target.unitTests(name: "DonWorry"),
