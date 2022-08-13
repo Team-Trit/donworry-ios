@@ -19,7 +19,7 @@ extension PaymentRoom {
             paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
             transferList: [
                 Transfer(giver: .dummyUser2, taker: .dummyUser1, amount: 37000, isCompleted: false),
-                Transfer(giver: .dummyUser3, taker: .dummyUser1, amount: 37000, isCompleted: false),
+                Transfer(giver: .dummyUser3, taker: .dummyUser1, amount: 37000, isCompleted: true),
                 Transfer(giver: .dummyUser4, taker: .dummyUser1, amount: 30000, isCompleted: false)
             ]
         )
@@ -28,7 +28,7 @@ extension PaymentRoom {
         .init(
             id: "2",
             code: "5613d42s3s5",
-            name: "MC3 서울 나들이",
+            name: "서울 나들이",
             admin: .dummyUser2,
             paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
             transferList: nil

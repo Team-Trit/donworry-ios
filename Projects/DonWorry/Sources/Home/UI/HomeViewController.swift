@@ -49,8 +49,13 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         self.paymentRoomCollectionView.rx.itemSelected.map { .didSelectPaymentRoom(at: $0.item) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-    }
 
+        self.paymentCardCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] _ in
+                self?.paymentCardCollectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .left, animated: false)
+            }).disposed(by: disposeBag)
+    }
+    
     private func render(_ reactor: Reactor) {
         reactor.state.map { $0.homeHeader }
             .bind(to: self.headerView.rx.viewModel)
@@ -125,7 +130,7 @@ extension HomeViewController {
             make.height.equalTo(80)
         }
         self.paymentCardCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentRoomCollectionView.snp.bottom).offset(0)
+            make.top.equalTo(self.paymentRoomCollectionView.snp.bottom)
             make.leading.trailing.equalToSuperview()
         }
         self.gotoSearchPaymentRoomButton.snp.makeConstraints { make in
