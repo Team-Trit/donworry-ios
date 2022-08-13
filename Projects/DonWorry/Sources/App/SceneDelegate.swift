@@ -20,6 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        rootViewController.view.backgroundColor = .systemIndigo
 //        let navigationController = UINavigationController(rootViewController: rootViewController)
 //        navigationController.setNavigationBarHidden(true, animated: false)
+//        let testVC = TableTestViewController()
+//        window.rootViewController = testVC
         let paymentCardDecoViewController = PaymentCardDecoViewController()
         let navigationController = UINavigationController(rootViewController: paymentCardDecoViewController)
         window.rootViewController = navigationController

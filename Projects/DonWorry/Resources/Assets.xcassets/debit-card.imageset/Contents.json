@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "스크린샷 2022-08-10 오전 1.28.50.png",
+      "filename" : "debit-card.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "debit-card@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "debit-card@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -193,7 +193,6 @@ public class PaymentCardView: UIView {
         $0.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         return $0
     }(UIView())
-
     
     
     // MARK: - Store Properties

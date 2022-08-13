@@ -8,37 +8,35 @@
 
 import UIKit
 
-private enum CellType: String {
-    case cardColor
-    case datePicker
-    case accountInfo
-    case attachment
-}
-
-private struct Section {
+struct CardDecoItem {
     let title: String
-    let options: [String]
-    var isOpened = false
+    let content: String
+    var isHidden = true
    
     init(title: String,
-         options: [String],
-         isOpened: Bool = false){
+         content: String,
+         isHidden: Bool = true){
         self.title = title
-        self.options = options
-        self.isOpened = isOpened
+        self.content = content
+        self.isHidden = isHidden
     }
     
 }
 
 class PaymentCardDecoTableView: UITableView {
     
-    // MARK: - Constructors
-    let spaceBetweenSections = 15.0
-    private var sections = [Section]()
+    private var cardDecoItems: [CardDecoItem] = [
+        CardDecoItem(title: "배경 선택", content: "Let’s focus on the cellForRowAt function. After configuring the cell with the title and the description we need to configure the bottomView in order to be hidden when the cell is tapped. We simply set the isHidden property of the bottomView with our value in the array. If you need also to change the icon (up or down) you can set the image based on the isHidden property."),
+        CardDecoItem(title: "날짜 선택", content: "날짜 달력있음"),
+        CardDecoItem(title: "계좌번호 입력 (선택)", content: "계좌번호 셀"),
+        CardDecoItem(title: "파일 추가 (선택)", content: "파일추가 셀"),
+    ]
     
+    // MARK: - Constructors
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: .zero, style: .insetGrouped)
-        setUI()
+        attributes()
+        layout()
     }
 
     required init?(coder: NSCoder) {
@@ -46,173 +44,92 @@ class PaymentCardDecoTableView: UITableView {
         print("init(coder:) has not been implemented")
     }
     
-    
-    override var contentSize: CGSize {
-        didSet {
-            if !constraints.isEmpty {
-                invalidateIntrinsicContentSize()
-            } else {
-                sizeToFit()
-            }
-
-            if contentSize != oldValue {
-                if let delegate = delegate as? ContentFittingTableViewDelegate {
-                    delegate.tableViewDidUpdateContentSize(self)
-                }
-            }
-        }
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return contentSize
-    }
-
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return contentSize
-    }
-    
-
 }
 
 extension PaymentCardDecoTableView {
     
-    func setUI() {
-        self.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        self.register(CardColorPickerCell.self,
-                      forCellReuseIdentifier: CardColorPickerCell.identifier)
-        self.register(PayDatePickerCell.nib(),
-                      forCellReuseIdentifier: PayDatePickerCell.identifier)
-        
-        
-        
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = .white
-        self.roundCorners(15)
-        
-        sections = [
-            Section(title: "배경 선택", options: [1].compactMap({ return "Cell \($0)"})),
-            Section(title: "날짜 선택", options: [2].compactMap({ return "Cell \($0)"})),
-            Section(title: "계좌번호 입력 (선택)", options: [3].compactMap({ return "Cell \($0)"})),
-            Section(title: "파일 추가 (선택)", options: [4].compactMap({ return "Cell \($0)"})),
-        ]
+    func attributes() {
         
         self.delegate = self
         self.dataSource = self
+
+        self.register(UINib(nibName: "TestCell", bundle: nil), forCellReuseIdentifier: "TestCell")
         
+        
+        // 상단여백제거
+        self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
+                                                    y: 0.0,
+                                                    width: 0.0,
+                                                    height: CGFloat.leastNonzeroMagnitude))
         self.separatorStyle = .none
+        self.showsVerticalScrollIndicator = false
+        self.alwaysBounceVertical = true
+        self.isScrollEnabled = true
         
-        /* header */
-        let header = UIView(frame: CGRect(x: 0, y: 0, width: 340, height: 66))
-        header.backgroundColor = .systemBlue
+        self.backgroundColor = .white
+        self.layer.cornerRadius = 15
+        self.layer.masksToBounds = true
+        self.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
-        let headerLabel = UILabel(frame: header.bounds)
-        headerLabel.text = "정산카드 꾸미기"
-        header.addSubview(headerLabel)
-        
-        self.tableHeaderView = header
-        self.alwaysBounceVertical = false
-        self.isScrollEnabled = false
-        
+    }
+    
+    func layout() {
+        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
 }
 
 extension PaymentCardDecoTableView : UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        if indexPath.row == 0 {
-            sections[indexPath.section].isOpened = !sections[indexPath.section].isOpened // toggle
-            tableView.reloadSections([indexPath.section], with: .none)
-            print("tapped section  \(indexPath)")
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let expandableItem = self.cardDecoItems[indexPath.row]
+        if expandableItem.isHidden {
+            return 48+15
+        }else {
+            return 300
         }
-        else {
-            print("tapped sub cell \(indexPath)")
-        }
-        
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        cardDecoItems[indexPath.row].isHidden = !(cardDecoItems[indexPath.row].isHidden)
+        tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
+    }
+    
 }
 
 extension PaymentCardDecoTableView : UITableViewDataSource {
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
-    }
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = sections[section]
-        if section.isOpened {
-            return section.options.count + 1
-        }
-        else {
-            return 1
-        }
+        return cardDecoItems.count
     }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "cell",
-            for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
         cell.selectionStyle = .none
-        cell.backgroundColor = .designSystem(.white)
+        let expandableItem = self.cardDecoItems[indexPath.row]
         
-        let cardColorPickerCell = tableView.dequeueReusableCell(withIdentifier: "CardColorPickerCell", for: indexPath) as! CardColorPickerCell
+        cell.topTitleLabel.text = expandableItem.title
+        cell.bottomDescriptionLabel.text = expandableItem.content
+        cell.bottomView.isHidden = expandableItem.isHidden
         
-        let payDatePickerCell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
-        
-        if indexPath.row == 0 {
-            cell.textLabel?.text = sections[indexPath.section].title
-            return cell
-        }
-        else {
+        cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
             
-            switch indexPath.section {
-            case 0:
-                return cardColorPickerCell
-            case 1:
-                return payDatePickerCell
-            case 2:
-                cell.textLabel?.text = "계좌"
+        switch indexPath.row {
+            case 0: // 배경선택
                 return cell
-            case 3:
-                cell.textLabel?.text = "이미지"
+            case 1: // 날짜선택
+                return cell
+            case 2: // 계좌번호
+                return cell
+            case 3: // 파일추가
                 return cell
             default:
-                cell.textLabel?.text = sections[indexPath.section].options[indexPath.row - 1]  //1빼는 이유 : 위에서 section title 때문에 하나 추가해서
                 return cell
-            }
         }
 
-//        return cell
     }
 
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return nil
-    }
-
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return CGFloat(spaceBetweenSections / 2)
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return CGFloat(spaceBetweenSections / 2)
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-       return UITableView.automaticDimension
-    }
-    
-}
-
-protocol ContentFittingTableViewDelegate: UITableViewDelegate {
-    func tableViewDidUpdateContentSize(_ tableView: UITableView)
 }
