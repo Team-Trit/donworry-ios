@@ -32,6 +32,7 @@ final class HomeViewReactor: Reactor {
 
     struct State {
         var homeHeader: HeaderModel?
+        var user: User?
         var isLoading: Bool = false
         var selectedPaymentRoomIndex: Int = 0
         var paymentRoomList: [PaymentRoom] = []
@@ -41,13 +42,13 @@ final class HomeViewReactor: Reactor {
     let initialState = State()
 
     init(
-        _ homeRepository: HomeRepository = FakeHomeRepositoryImpl(),
-        _ homePresenter: HomePresenter = HomePresenterImpl(),
-        _ user: User = .dummyUser1
+        _ paymentRoomUseCase: PaymentRoomUseCase = PaymentRoomUseCaseImpl(),
+        _ userUseCase: UserUseCase = UserUseCaseImpl(),
+        _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
-        self.homeRepository = homeRepository
+        self.userUseCase = userUseCase
+        self.paymentRoomUseCase = paymentRoomUseCase
         self.homePresenter = homePresenter
-        self.user = user
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -55,8 +56,8 @@ final class HomeViewReactor: Reactor {
         case .setup:
             return Observable.concat([
                 .just(.updateLoading(true)),
-                .just(.updateHomeHeader(user)),
-                self.homeRepository.fetchPaymentRoomList().map { .updatePaymentRoomList($0) },
+                self.userUseCase.fetchUser().compactMap { .updateHomeHeader($0) },
+                self.paymentRoomUseCase.fetchPaymentRoomList().compactMap { .updatePaymentRoomList($0) },
                 .just(.updateLoading(false))
             ])
         case .didSelectPaymentRoom(let index):
@@ -77,32 +78,32 @@ final class HomeViewReactor: Reactor {
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-         switch mutation {
-         case .updateHomeHeader(let user):
-             newState.homeHeader = homePresenter.formHomeHeader(from: user)
-
-         case .updatePaymentRoom(let index):
-             newState.selectedPaymentRoomIndex = index
-             newState.sections = homePresenter.formatSection(
+        switch mutation {
+        case .updateHomeHeader(let user):
+            newState.homeHeader = homePresenter.formHomeHeader(from: user)
+            newState.user = user
+        case .updatePaymentRoom(let index):
+            newState.selectedPaymentRoomIndex = index
+            newState.sections = homePresenter.formatSection(
                 from: currentState.paymentRoomList,
-                with: currentState.selectedPaymentRoomIndex,
-                user: user
-             )
-         case .updateLoading(let loading):
-             newState.isLoading = loading
-         case .updatePaymentRoomList(let paymentRoomList):
-             newState.paymentRoomList = paymentRoomList
-             newState.sections = homePresenter.formatSection(
+                with: index,
+                user: User.dummyUser2
+            )
+        case .updateLoading(let loading):
+            newState.isLoading = loading
+        case .updatePaymentRoomList(let paymentRoomList):
+            newState.paymentRoomList = paymentRoomList
+            newState.sections = homePresenter.formatSection(
                 from: paymentRoomList,
                 with: currentState.selectedPaymentRoomIndex,
-                user: user
-             )
-         }
+                user: User.dummyUser2
+            )
+        }
         return newState
     }
 
-    private let user: User
-    private let homeRepository: HomeRepository
+    private let userUseCase: UserUseCase
+    private let paymentRoomUseCase: PaymentRoomUseCase
     private let homePresenter: HomePresenter
 }
 

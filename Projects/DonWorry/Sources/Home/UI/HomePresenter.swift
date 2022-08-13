@@ -37,6 +37,9 @@ final class HomePresenterImpl: HomePresenter {
     ) -> [BillCardSection] {
         if paymentRoomList.isEmpty { return [.BillCardSection([])] }
         let selectedPaymentRoom: PaymentRoom = paymentRoomList[selectedIndex]
+
+        guard selectedPaymentRoom.transferList != nil else { return [.BillCardSection([.StatePaymentCard])] }
+
         var billCardItemList: [HomeBillCardItem] = []
         billCardItemList.append(.StatePaymentCard)
         billCardItemList.append(contentsOf: formatBillCardList(from: selectedPaymentRoom, user: user))

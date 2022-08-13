@@ -56,7 +56,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.headerView.rx.viewModel)
             .disposed(by: disposeBag)
 
-        reactor.state.map { !$0.paymentRoomList.isEmpty }
+        reactor.state.map { $0.paymentRoomList.isNotEmpty }
             .bind(to: self.emptyView.rx.isHidden)
             .disposed(by: disposeBag)
 

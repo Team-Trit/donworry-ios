@@ -23,6 +23,7 @@ final class PaymentCardCollectionView: UICollectionView {
         self.backgroundColor = .clear
         self.allowsSelection = true
         self.allowsMultipleSelection = false
+        self.decelerationRate = .fast
     }
 }
 
