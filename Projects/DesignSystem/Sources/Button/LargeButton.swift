@@ -39,7 +39,7 @@ public final class LargeButton: UIButton {
         setUI()
     }
     
-    convenience init(type: LargeButtonType) {
+    public convenience init(type: LargeButtonType) {
         self.init()
         switch(type) {
         case .next:
