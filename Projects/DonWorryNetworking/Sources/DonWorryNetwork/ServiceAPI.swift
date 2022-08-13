@@ -9,14 +9,14 @@
 import Foundation
 import Moya
 
-protocol ServiceAPI: TargetType, AccessTokenAuthorizable {
+public protocol ServiceAPI: TargetType, AccessTokenAuthorizable {
     associatedtype Response: Decodable
 
     var task: Task { get }
 
 }
 
-extension ServiceAPI {
+public extension ServiceAPI {
     var baseURL: URL { return URL(string: "")! }
     var headers: [String : String]? { nil }
     var task: Task { task }

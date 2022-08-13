@@ -10,7 +10,7 @@ let project = Project.make(
         dependencies: [
             .project(target: "DesignSystem", path: "../DesignSystem"),
             .project(target: "CoreKit", path: "../Core/CoreKit"),
-            .project(target: "Networking", path: "../Networking"),
+            .project(target: "DonWorryNetworking", path: "../DonWorryNetworking"),
             .project(target: "BaseArchitecture", path: "../Core/CoreKit"),
             .project(target: "DonWorryExtensions", path: "../Core/CoreKit"),
             .project(target: "DonWorryProtocols", path: "../Core/CoreKit"),

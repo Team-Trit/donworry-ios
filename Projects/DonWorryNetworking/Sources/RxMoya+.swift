@@ -9,5 +9,5 @@
 import Foundation
 import Moya
 
-typealias Method = Moya.Method
-typealias Task = Moya.Task
+public typealias Method = Moya.Method
+public typealias Task = Moya.Task

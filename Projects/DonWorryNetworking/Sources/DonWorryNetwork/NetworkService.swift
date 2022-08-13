@@ -11,19 +11,20 @@ import RxSwift
 import Moya
 import RxMoya
 
-protocol NetworkServable {
-    func request<API>(_ api: API) -> Observable<API.Response> where API : ServiceAPI
+public protocol NetworkServable {
+    func request<API>(_ api: API) -> Single<API.Response> where API : ServiceAPI
 }
 
-final class NetworkService: NetworkServable {
+public final class NetworkService: NetworkServable {
 
 
-    func request<API>(_ api: API) -> Observable<API.Response> where API : ServiceAPI {
+    public func request<API>(_ api: API) -> Single<API.Response> where API : ServiceAPI {
         return self._request(api)
             .compactMap { $0.data }
+            .asSingle()
     }
 
-    func _request<API>(_ api: API) -> Observable<DonwWorryResponse<API.Response>> where API : ServiceAPI {
+    private func _request<API>(_ api: API) -> Observable<DonwWorryResponse<API.Response>> where API : ServiceAPI {
         let endpoint = MultiTarget.target(api)
         return provider.rx.request(endpoint)
             .asObservable()
