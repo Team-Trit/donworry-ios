@@ -7,30 +7,31 @@
 //
 
 import UIKit
+import DesignSystem
 
 class AccountInformationView: UIView {
     
     private let bankName: UILabel = {
         let bankName = UILabel()
         bankName.translatesAutoresizingMaskIntoConstraints = false
-        bankName.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        bankName.textColor = .white
+        bankName.font = .designSystem(weight: .regular, size: ._13)
+        bankName.textColor = .designSystem(.gray1)
         return bankName
     }()
     
     private let accountNumber: UILabel = {
         let accountNumber = UILabel()
         accountNumber.translatesAutoresizingMaskIntoConstraints = false
-        accountNumber.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        accountNumber.textColor = .white
+        accountNumber.font = .designSystem(weight: .regular, size: ._13)
+        accountNumber.textColor = .designSystem(.gray1)
         return accountNumber
     }()
     
     private let realName: UILabel = {
         let realName = UILabel()
         realName.translatesAutoresizingMaskIntoConstraints = false
-        realName.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        realName.textColor = .white
+        realName.font = .designSystem(weight: .regular, size: ._13)
+        realName.textColor = .designSystem(.gray1)
         return realName
     }()
     
@@ -38,6 +39,7 @@ class AccountInformationView: UIView {
         let copyImage = UIImageView()
         copyImage.translatesAutoresizingMaskIntoConstraints = false
         copyImage.image = UIImage(named: "CopyMark")
+        copyImage.tintColor = .designSystem(.gray1)
         return copyImage
     }()
 

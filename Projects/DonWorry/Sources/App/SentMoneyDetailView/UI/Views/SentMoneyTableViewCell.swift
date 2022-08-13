@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DesignSystem
 
 class SentMoneyTableViewCell: BaseTableViewCell {
     
@@ -15,14 +16,14 @@ class SentMoneyTableViewCell: BaseTableViewCell {
     private let smallRoundRectangle: UIView = {
         let smallRoundRec = UIView()
         smallRoundRec.translatesAutoresizingMaskIntoConstraints = false
-        smallRoundRec.backgroundColor = .lightGray
+        smallRoundRec.backgroundColor = .designSystem(.white)
         smallRoundRec.clipsToBounds = true
         smallRoundRec.layer.cornerRadius = 10
         smallRoundRec.layer.masksToBounds = false
         smallRoundRec.layer.shadowColor = UIColor.black.cgColor
-        smallRoundRec.layer.shadowOffset = CGSize(width: 1, height: 1)
+        smallRoundRec.layer.shadowOffset = CGSize(width: 0, height: 0)
         smallRoundRec.layer.shadowOpacity = 0.5
-        smallRoundRec.layer.shadowRadius = 1
+        smallRoundRec.layer.shadowRadius = 2
         return smallRoundRec
     }()
     
@@ -35,7 +36,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
     private let paymentRoomName: UILabel = {
         let paymentRoomName = UILabel()
         paymentRoomName.translatesAutoresizingMaskIntoConstraints = false
-        paymentRoomName.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        paymentRoomName.font = .designSystem(weight: .bold, size: ._15)
         paymentRoomName.textColor = .black
         return paymentRoomName
     }()
@@ -43,22 +44,23 @@ class SentMoneyTableViewCell: BaseTableViewCell {
     private let paymentDate: UILabel = {
         let date = UILabel()
         date.translatesAutoresizingMaskIntoConstraints = false
-        date.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        date.font = .designSystem(weight: .regular, size: ._13)
+        date.textColor = .designSystem(.gray1)
         return date
     }()
     
     private let dividedAmountDetail: UILabel = {
         let dividedAmountDetail = UILabel()
         dividedAmountDetail.translatesAutoresizingMaskIntoConstraints = false
-        dividedAmountDetail.font = UIFont.systemFont(ofSize: 13, weight: .bold)
-        dividedAmountDetail.textColor = .gray
+        dividedAmountDetail.font = .designSystem(weight: .bold, size: ._13)
+        dividedAmountDetail.textColor = .designSystem(.gray1)
         return dividedAmountDetail
     }()
     
     private let dividedAmount: UILabel = {
         let dividedAmount = UILabel()
         dividedAmount.translatesAutoresizingMaskIntoConstraints = false
-        dividedAmount.font = UIFont.systemFont(ofSize: 15, weight: .heavy)
+        dividedAmount.font = .designSystem(weight: .heavy, size: ._15)
         return dividedAmount
     }()
     
@@ -116,6 +118,6 @@ func makeAtrributedString(myPayment: Payment) -> NSMutableAttributedString {
     numberformatter.numberStyle = .decimal
     let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
     let attributedQuote = NSMutableAttributedString(string: paymentString)
-    attributedQuote.addAttribute(.foregroundColor, value: UIColor.blue, range: (paymentString as NSString).range(of: " / " + "\(myPayment.totalUers)" + "명"))
+    attributedQuote.addAttribute(.foregroundColor, value: UIColor.designSystem(.mainBlue)!, range: (paymentString as NSString).range(of: " / " + "\(myPayment.totalUers)" + "명"))
     return attributedQuote
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DesignSystem
 
 class QuestionInformationView: UIView {
     
@@ -17,7 +18,7 @@ class QuestionInformationView: UIView {
         questionContent.numberOfLines = 3
         questionContent.textAlignment = .left
         questionContent.font = UIFont.systemFont(ofSize: 10, weight: .regular)
-        questionContent.textColor = .white
+        questionContent.textColor = .designSystem(.gray1)
         
         let attrString = NSMutableAttributedString(string: questionContent.text!)
         let paragraphStyle = NSMutableParagraphStyle()

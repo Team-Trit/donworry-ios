@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import DesignSystem
 
 class SentMoneyDetailStatusView: UIView {
     
     private let title: UILabel = {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        title.font = .designSystem(weight: .heavy, size: ._25)
         title.textColor = UIColor.black
         return title
     }()
@@ -22,8 +23,8 @@ class SentMoneyDetailStatusView: UIView {
         let nameSubTitle = UILabel()
         nameSubTitle.translatesAutoresizingMaskIntoConstraints = false
         nameSubTitle.text = "님께"
-        nameSubTitle.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        nameSubTitle.textColor = UIColor.gray
+        nameSubTitle.font = .designSystem(weight: .regular, size: ._15)
+        nameSubTitle.textColor = .designSystem(.gray1)
         return nameSubTitle
     }()
     
@@ -31,7 +32,7 @@ class SentMoneyDetailStatusView: UIView {
         let leftSmallTitle = UILabel()
         leftSmallTitle.translatesAutoresizingMaskIntoConstraints = false
         leftSmallTitle.text = "송금할 금액"
-        leftSmallTitle.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        leftSmallTitle.font = .designSystem(weight: .heavy, size: ._15)
         leftSmallTitle.textColor = UIColor.black
         return leftSmallTitle
     }()
@@ -39,16 +40,16 @@ class SentMoneyDetailStatusView: UIView {
     private let paymentAmount: UILabel = {
         let paymentAmount = UILabel()
         paymentAmount.translatesAutoresizingMaskIntoConstraints = false
-        paymentAmount.font = UIFont.systemFont(ofSize: 25, weight: .heavy)
-        paymentAmount.textColor = UIColor.blue
+        paymentAmount.font = .designSystem(weight: .heavy, size: ._25)
+        paymentAmount.textColor = .designSystem(.mainBlue)
         return paymentAmount
     }()
     
     private let progressView: UIProgressView = {
         let progressView = UIProgressView(progressViewStyle: .bar)
         progressView.translatesAutoresizingMaskIntoConstraints = false
-        progressView.trackTintColor = UIColor.gray
-        progressView.progressTintColor = UIColor.blue
+        progressView.trackTintColor = .designSystem(.white)
+        progressView.progressTintColor = .designSystem(.mainBlue)
         progressView.layer.cornerRadius = 5
         progressView.clipsToBounds = true
         progressView.layer.sublayers![1].cornerRadius = 5
@@ -90,7 +91,7 @@ class SentMoneyDetailStatusView: UIView {
         progressView.topAnchor.constraint(equalTo: paymentAmount.bottomAnchor, constant: 15).isActive = true
         progressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         progressView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
-        progressView.heightAnchor.constraint(equalToConstant: 10).isActive = true
+        progressView.heightAnchor.constraint(equalToConstant: 8).isActive = true
     }
 
     func configure(recievedUser: String, payment: Int, totalAmount: Int) {

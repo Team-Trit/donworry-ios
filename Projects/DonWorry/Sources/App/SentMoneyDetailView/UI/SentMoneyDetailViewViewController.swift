@@ -12,6 +12,8 @@ import BaseArchitecture
 import RxCocoa
 import RxSwift
 
+import DesignSystem
+
 
 final class SentMoneyDetailViewViewController: BaseViewController {
 
@@ -38,14 +40,14 @@ final class SentMoneyDetailViewViewController: BaseViewController {
         accontInfo.configure(bank: "우리은행", account: "1002 - 045 - 401235", name: "임영후")
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
-        accontInfo.backgroundColor = .lightGray
+        accontInfo.backgroundColor = .designSystem(.white)
         return accontInfo
     }()
     
     private let separatorView: UIView = {
         let separatorView = UIView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
-        separatorView.backgroundColor = .gray
+        separatorView.backgroundColor = .designSystem(.white)
         return separatorView
     }()
     
@@ -55,7 +57,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
         questionView.frame = CGRect(x: 195, y: 120, width: 168, height: 76)
         questionView.layer.masksToBounds = true
         questionView.layer.cornerRadius = 8
-        questionView.backgroundColor = .gray
+        questionView.backgroundColor = .designSystem(.white)
         return questionView
     }()
     
@@ -91,7 +93,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let totalAmount: UILabel = {
         let totalAmount = UILabel()
         totalAmount.translatesAutoresizingMaskIntoConstraints = false
-        totalAmount.textColor = .blue
+        totalAmount.textColor = .designSystem(.mainBlue)
         totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
         totalAmount.attributedText = makeAtrributedString(money: 120000)
         return totalAmount
@@ -100,12 +102,12 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let leftButtomButton: UIButton = {
        let buttonButton = UIButton()
         buttonButton.frame = CGRect(x: 21, y: 746, width: 222, height: 58)
-        buttonButton.backgroundColor = UIColor.blue
+        buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
         buttonButton.setTitle("계좌번호 복사하기", for: .normal)
         buttonButton.setTitleColor(.white, for: .normal)
-        buttonButton.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        buttonButton.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
         
         return buttonButton
     }()
@@ -113,12 +115,12 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let rightButtomButton: UIButton = {
        let buttonButton = UIButton()
         buttonButton.frame = CGRect(x: 262, y: 746, width: 103, height: 58)
-        buttonButton.backgroundColor = UIColor.blue
+        buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
         buttonButton.setTitle("보냈어요!", for: .normal)
         buttonButton.setTitleColor(.white, for: .normal)
-        buttonButton.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        buttonButton.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
         
         return buttonButton
     }()
@@ -176,14 +178,14 @@ extension SentMoneyDetailViewViewController {
         accountInfo.widthAnchor.constraint(equalToConstant: 340).isActive = true
         
         view.addSubview(separatorView)
-        separatorView.topAnchor.constraint(equalTo: accountInfo.bottomAnchor, constant: 40).isActive = true
+        separatorView.topAnchor.constraint(equalTo: accountInfo.bottomAnchor, constant: 28.5).isActive = true
         separatorView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
         separatorView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
         
         view.addSubview(subTitle)
-        subTitle.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 20).isActive = true
+        subTitle.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 22.5).isActive = true
         subTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
         subTitle.heightAnchor.constraint(equalToConstant: 15).isActive = true
         
@@ -239,4 +241,17 @@ func makeAtrributedString(money: Int) -> NSMutableAttributedString {
     attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .bold), range: (paymentString as NSString).range(of: "원"))
     
     return attributedQuote
+}
+
+extension UIButton {
+    func addGradient(startColor: UIColor, endColor: UIColor) {
+       self.layoutIfNeeded()
+       let gradient: CAGradientLayer = CAGradientLayer()
+       gradient.locations = [0.0 , 1.0]
+       gradient.colors = [startColor.cgColor, endColor.cgColor]
+       gradient.startPoint = CGPoint(x: 0.0, y: 0.0)
+       gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
+       gradient.frame = .init(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+       self.layer.insertSublayer(gradient, at: 0)
+     }
 }
