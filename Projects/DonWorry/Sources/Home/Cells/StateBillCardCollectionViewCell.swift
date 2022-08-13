@@ -1,20 +1,22 @@
 //
-//  LeavePaymentRoomCollectionViewCell.swift
+//  StateBillCardCollectionViewCell.swift
 //  DonWorry
 //
-//  Created by Woody on 2022/08/10.
+//  Created by Woody on 2022/08/09.
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
 import UIKit
 import DesignSystem
+import DonWorryExtensions
 
-final class LeavePaymentRoomCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "LeavePaymentRoomCollectionViewCell"
-    lazy var leaveImageView: UIImageView = {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .heavy)
-        let v = UIImageView(image: UIImage(systemName: "rectangle.portrait.and.arrow.right", withConfiguration: configuration))
-        v.tintColor = .designSystem(.white)
+final class StateBillCardCollectionViewCell: UICollectionViewCell {
+    static let identifier: String = "StateBillCardCollectionViewCell"
+    lazy var periodLabel: UILabel = {
+        let v = UILabel()
+        v.font = .designSystem(weight: .heavy, size: ._30)
+        v.textColor = .designSystem(.white)
+        v.text = "•••"
         return v
     }()
 
@@ -29,7 +31,7 @@ final class LeavePaymentRoomCollectionViewCell: UICollectionViewCell {
         let v = UILabel()
         v.font = .designSystem(weight: .heavy, size: ._15)
         v.textColor = .designSystem(.white)
-        v.text = "정산방 나가기"
+        v.text = "참석확인 중"
         return v
     }()
 
@@ -48,13 +50,13 @@ final class LeavePaymentRoomCollectionViewCell: UICollectionViewCell {
     private func setUI() {
         self.contentView.addSubview(self.circleView)
         self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.leaveImageView)
+        self.contentView.addSubview(self.periodLabel)
 
         self.circleView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(83)
         }
-        self.leaveImageView.snp.makeConstraints { make in
+        self.periodLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         self.titleLabel.snp.makeConstraints { make in
@@ -64,8 +66,8 @@ final class LeavePaymentRoomCollectionViewCell: UICollectionViewCell {
 
         self.circleView.roundCorners(83/2)
         self.contentView.addGradient(
-            startColor: .designSystem(.redTopGradient)!,
-            endColor: .designSystem(.redBottomGradient)!
+            startColor: .designSystem(.blueTopGradient)!,
+            endColor: .designSystem(.blueBottomGradient)!
         )
         self.contentView.roundCorners(8)
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)

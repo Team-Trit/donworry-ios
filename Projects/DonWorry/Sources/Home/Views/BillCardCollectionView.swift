@@ -14,10 +14,10 @@ final class BillCardCollectionView: UICollectionView {
     convenience init() {
         let flowLayout = CircularCollectionViewLayout()
         self.init(frame: .zero, collectionViewLayout: flowLayout)
-        self.register(TakePaymentCardCollectionViewCell.self)
-        self.register(GivePaymentCardCollectionViewCell.self)
-        self.register(StatePaymentCardCollectionViewCell.self)
-        self.register(LeavePaymentRoomCollectionViewCell.self)
+        self.register(TakeBillCardCollectionViewCell.self)
+        self.register(GiveBillCardCollectionViewCell.self)
+        self.register(StateBillCardCollectionViewCell.self)
+        self.register(LeavePaymentRoomBillCardCollectionViewCell.self)
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
         self.backgroundColor = .clear

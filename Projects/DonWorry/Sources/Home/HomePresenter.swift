@@ -57,7 +57,7 @@ final class HomePresenterImpl: HomePresenter {
     private func formatTakeBillCard(from paymentRoom: PaymentRoom, user: User) -> [HomeBillCardItem] {
         if let transferList = paymentRoom.transferList {
             let filteredTransferList = transferList.filter { $0.taker.id == user.id }
-            var result = [HomeBillCardItem.TakePaymentCard(TakePaymentCardCellViewModel(filteredTransferList))]
+            var result = [HomeBillCardItem.TakePaymentCard(TakeBillCardCellViewModel(filteredTransferList))]
             result.append(.LeavePaymentCard)
             return result
         }
@@ -68,7 +68,7 @@ final class HomePresenterImpl: HomePresenter {
         if let transferList = paymentRoom.transferList {
             let filteredTransferList = transferList.filter { $0.giver.id == user.id }
             var result = filteredTransferList
-                .map(GivePaymentCardCellViewModel.init)
+                .map(GiveBillCardCellViewModel.init)
                 .map { HomeBillCardItem.GivePaymentCard($0) }
             result.append(.LeavePaymentCard)
             return result
@@ -94,7 +94,7 @@ final class HomePresenterImpl: HomePresenter {
     }
 }
 
-extension GivePaymentCardCellViewModel {
+extension GiveBillCardCellViewModel {
     init(_ transfer: Transfer) {
         self.takerID = transfer.taker.id
         self.imageURL = transfer.taker.image
@@ -108,7 +108,7 @@ extension GivePaymentCardCellViewModel {
     }
 }
 
-extension TakePaymentCardCellViewModel {
+extension TakeBillCardCellViewModel {
     init(_ transfers: [Transfer]) {
         self.giverID = transfers.first!.giver.id
         let completedAmount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)

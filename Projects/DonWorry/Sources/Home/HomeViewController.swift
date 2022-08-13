@@ -170,18 +170,18 @@ extension HomeViewController {
 
                switch dataSource[indexPath] {
                case .GivePaymentCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(GivePaymentCardCollectionViewCell.self, for: indexPath)
+                   let cell = collectionView.dequeueReusableCell(GiveBillCardCollectionViewCell.self, for: indexPath)
                    cell.viewModel = viewModel
                    return cell
                case .TakePaymentCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(TakePaymentCardCollectionViewCell.self, for: indexPath)
+                   let cell = collectionView.dequeueReusableCell(TakeBillCardCollectionViewCell.self, for: indexPath)
                    cell.viewModel = viewModel
                    return cell
                case .StatePaymentCard:
-                   let cell = collectionView.dequeueReusableCell(StatePaymentCardCollectionViewCell.self, for: indexPath)
+                   let cell = collectionView.dequeueReusableCell(StateBillCardCollectionViewCell.self, for: indexPath)
                    return cell
                case .LeavePaymentCard:
-                   let cell = collectionView.dequeueReusableCell(LeavePaymentRoomCollectionViewCell.self, for: indexPath)
+                   let cell = collectionView.dequeueReusableCell(LeavePaymentRoomBillCardCollectionViewCell.self, for: indexPath)
                    return cell
                }
            })

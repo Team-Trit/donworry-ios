@@ -11,8 +11,8 @@ import RxDataSources
 import Models
 
 enum HomeBillCardItem: Equatable {
-    case TakePaymentCard(TakePaymentCardCellViewModel)
-    case GivePaymentCard(GivePaymentCardCellViewModel)
+    case TakePaymentCard(TakeBillCardCellViewModel)
+    case GivePaymentCard(GiveBillCardCellViewModel)
     case StatePaymentCard
     case LeavePaymentCard
 }
