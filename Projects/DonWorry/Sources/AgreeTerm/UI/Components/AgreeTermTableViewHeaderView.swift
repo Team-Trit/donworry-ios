@@ -1,5 +1,5 @@
 //
-//  TermTableViewHeaderView.swift
+//  AgreeTermTableViewHeaderView.swift
 //  DonWorry
 //
 //  Created by 김승창 on 2022/08/13.
@@ -10,13 +10,13 @@ import UIKit
 
 import DesignSystem
 
-protocol TermTableViewHeaderViewDelegate: AnyObject {
+protocol AgreeTermTableViewHeaderViewDelegate: AnyObject {
     func toggleCheck(_ sender: UIButton)
     func showDetail(_ sender: UIButton)
 }
 
-final class TermTableViewHeaderView: UITableViewHeaderFooterView {
-    static let identifier = "TermTableViewHeaderView"
+final class AgreeTermTableViewHeaderView: UITableViewHeaderFooterView {
+    static let identifier = "AgreeTermTableViewHeaderView"
     private lazy var termStackView: UIStackView = {
         let v = UIStackView()
         v.axis = .horizontal
@@ -41,7 +41,7 @@ final class TermTableViewHeaderView: UITableViewHeaderFooterView {
         v.addTarget(self, action: #selector(showDetailButtonPressed(_:)), for: .touchUpInside)
         return v
     }()
-    weak var delegate: TermTableViewHeaderViewDelegate?
+    weak var delegate: AgreeTermTableViewHeaderViewDelegate?
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -54,7 +54,7 @@ final class TermTableViewHeaderView: UITableViewHeaderFooterView {
 }
 
 // MARK: - Layout
-extension TermTableViewHeaderView {
+extension AgreeTermTableViewHeaderView {
     private func setUI() {
         contentView.backgroundColor = .white
         termStackView.addArrangedSubview(checkButton)
@@ -74,7 +74,7 @@ extension TermTableViewHeaderView {
 }
 
 // MARK: - Interaction Functions
-extension TermTableViewHeaderView {
+extension AgreeTermTableViewHeaderView {
     @objc private func checkButtonPressed(_ sender: UIButton) {
         delegate?.toggleCheck(sender)
     }

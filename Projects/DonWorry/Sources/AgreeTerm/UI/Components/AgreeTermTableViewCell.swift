@@ -1,5 +1,5 @@
 //
-//  TermTableViewCell.swift
+//  AgreeTermTableViewCell.swift
 //  DonWorryTests
 //
 //  Created by 김승창 on 2022/08/13.
@@ -11,8 +11,8 @@ import UIKit
 import DesignSystem
 import SnapKit
 
-final class TermTableViewCell: UITableViewCell {
-    static let identifier = "TermTableViewCell"
+final class AgreeTermTableViewCell: UITableViewCell {
+    static let identifier = "AgreeTermTableViewCell"
     lazy var termLabel: UILabel = {
        let v = UILabel()
         v.textColor = .designSystem(.gray1)
@@ -31,7 +31,7 @@ final class TermTableViewCell: UITableViewCell {
 }
 
 // MARK: - Layout
-extension TermTableViewCell {
+extension AgreeTermTableViewCell {
     private func setUI() {
         addSubview(termLabel)
         

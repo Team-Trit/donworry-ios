@@ -6,11 +6,11 @@
 //
 
 import Foundation
+
 import RxSwift
 
-protocol SignInRepository {}
+protocol ConfirmTermRepository {}
 
-final class SignInRepositoryImpl: SignInRepository {
-
+final class ConfirmTermRepositoryImpl: ConfirmTermRepository {
     public init() {}
 }

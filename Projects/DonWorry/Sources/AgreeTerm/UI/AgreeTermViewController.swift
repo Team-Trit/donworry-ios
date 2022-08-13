@@ -25,8 +25,8 @@ final class AgreeTermViewController: BaseViewController {
         let v = AgreeTermTableView()
         v.dataSource = self
         v.delegate = self
-        v.register(TermTableViewHeaderView.self, forHeaderFooterViewReuseIdentifier: TermTableViewHeaderView.identifier)
-        v.register(TermTableViewCell.self, forCellReuseIdentifier: TermTableViewCell.identifier)
+        v.register(AgreeTermTableViewHeaderView.self, forHeaderFooterViewReuseIdentifier: AgreeTermTableViewHeaderView.identifier)
+        v.register(AgreeTermTableViewCell.self, forCellReuseIdentifier: AgreeTermTableViewCell.identifier)
         v.backgroundColor = .white
         v.separatorStyle = .none
         v.showsVerticalScrollIndicator = false
@@ -80,7 +80,7 @@ extension AgreeTermViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TermTableViewCell.identifier, for: indexPath) as! TermTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: AgreeTermTableViewCell.identifier, for: indexPath) as! AgreeTermTableViewCell
         let text = terms[indexPath.section].details[indexPath.row]
         cell.termLabel.text = text
         return cell
@@ -95,7 +95,7 @@ extension AgreeTermViewController: UITableViewDataSource {
 extension AgreeTermViewController: UITableViewDelegate {
     /// Custom Header Reference : https://velog.io/@minni/Custom-TableViewHeaderView-생성하기
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermTableViewHeaderView.identifier) as? TermTableViewHeaderView else { return UIView() }
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: AgreeTermTableViewHeaderView.identifier) as? AgreeTermTableViewHeaderView else { return UIView() }
         let currentTerm = terms[section]
         header.delegate = self
         header.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
@@ -111,7 +111,7 @@ extension AgreeTermViewController: UITableViewDelegate {
 }
 
 // MARK: - TermTableViewHeaderViewDelegate
-extension AgreeTermViewController: TermTableViewHeaderViewDelegate {
+extension AgreeTermViewController: AgreeTermTableViewHeaderViewDelegate {
     func toggleCheck(_ sender: UIButton) {
         // TODO: Toggle isChecked
     }
