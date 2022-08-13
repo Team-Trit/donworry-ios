@@ -15,10 +15,10 @@ import RxSwift
 
 final class EnterUserInfoViewController: BaseViewController {
     private lazy var titleLabel: UILabel = {
-       let titleLabel = UILabel()
-        titleLabel.text = "돈.워리"
-        titleLabel.font = .gmarksans(weight: .bold, size: ._30)
-        return titleLabel
+       let v = UILabel()
+        v.text = "돈.워리"
+        v.font = .gmarksans(weight: .bold, size: ._30)
+        return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
     private lazy var accountStackView = AccountStackView()
@@ -66,7 +66,7 @@ extension EnterUserInfoViewController {
 // MARK: - LargeButtonDelegate
 extension EnterUserInfoViewController: LargeButtonDelegate {
     func buttonPressed(_ sender: UIButton) {
-        navigationController?.pushViewController(TermAgreeViewController(), animated: true)
+        navigationController?.pushViewController(AgreeTermViewController(), animated: true)
     }
 }
 

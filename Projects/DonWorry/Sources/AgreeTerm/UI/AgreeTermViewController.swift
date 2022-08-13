@@ -9,6 +9,7 @@
 import UIKit
 
 import BaseArchitecture
+import DesignSystem
 import RxCocoa
 import RxSwift
 
@@ -16,8 +17,8 @@ final class AgreeTermViewController: BaseViewController {
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
         v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
+        v.font = .designSystem(weight: .bold, size: ._18)
         v.numberOfLines = 0
-        v.font = .systemFont(ofSize: 18, weight: .bold)
         return v
     }()
     private lazy var termTableView: AgreeTermTableView = {
@@ -49,10 +50,8 @@ final class AgreeTermViewController: BaseViewController {
 extension AgreeTermViewController {
     private func setUI() {
         view.backgroundColor = .white
-        
-        view.addSubview(descriptionLabel)
-        view.addSubview(termTableView)
-        view.addSubview(doneButton)
+
+        view.addSubviews(descriptionLabel, termTableView, doneButton)
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(150)
@@ -64,7 +63,7 @@ extension AgreeTermViewController {
             make.leading.equalToSuperview().offset(25)
             make.trailing.equalToSuperview().offset(-25)
             make.top.equalToSuperview().offset(250)
-            make.bottom.equalToSuperview().offset(-200)
+            make.bottom.equalToSuperview().offset(-170)
         }
         
         doneButton.snp.makeConstraints { make in
@@ -96,14 +95,14 @@ extension AgreeTermViewController: UITableViewDataSource {
 extension AgreeTermViewController: UITableViewDelegate {
     /// Custom Header Reference : https://velog.io/@minni/Custom-TableViewHeaderView-생성하기
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let termHeaderView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermTableViewHeaderView.identifier) as? TermTableViewHeaderView else { return UIView() }
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TermTableViewHeaderView.identifier) as? TermTableViewHeaderView else { return UIView() }
         let currentTerm = terms[section]
-        termHeaderView.delegate = self
-        termHeaderView.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
-        termHeaderView.checkButton.tintColor = .designSystem(currentTerm.isChecked ? .gray2 : .mainBlue)
-        termHeaderView.titleLabel.text = currentTerm.title
-        termHeaderView.showDetailButton.setImage(UIImage(systemName: currentTerm.showsDetail ? "chevron.up" : "chevron.down"), for: .normal)
-        return termHeaderView
+        header.delegate = self
+        header.checkButton.setImage(UIImage(systemName: currentTerm.isChecked ? "circle" : "checkmark.circle.fill"), for: .normal)
+        header.checkButton.tintColor = .designSystem(currentTerm.isChecked ? .gray2 : .mainBlue)
+        header.titleLabel.text = currentTerm.title
+        header.showDetailButton.setImage(UIImage(systemName: currentTerm.showsDetail ? "chevron.up" : "chevron.down"), for: .normal)
+        return header
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -111,8 +110,8 @@ extension AgreeTermViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - TermHeaderViewDelegate
-extension AgreeTermViewController: TermHeaderViewDelegate {
+// MARK: - TermTableViewHeaderViewDelegate
+extension AgreeTermViewController: TermTableViewHeaderViewDelegate {
     func toggleCheck(_ sender: UIButton) {
         // TODO: Toggle isChecked
     }

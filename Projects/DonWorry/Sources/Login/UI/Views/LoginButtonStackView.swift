@@ -12,30 +12,30 @@ import SnapKit
 
 final class LoginButtonStackView: UIStackView {
     private lazy var loginButtonStackView: UIStackView = {
-       let loginButtonStackView = UIStackView()
-        loginButtonStackView.axis = .vertical
-        loginButtonStackView.spacing = 10
-        loginButtonStackView.alignment = .center
-        loginButtonStackView.distribution = .fillEqually
-        return loginButtonStackView
+       let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 10
+        v.alignment = .center
+        v.distribution = .fillEqually
+        return v
     }()
     private lazy var appleLoginButton: UIButton = {
-        let appleLoginButton = UIButton()
-        appleLoginButton.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
-        appleLoginButton.addTarget(self, action: #selector(appleButtonPressed(_:)), for: .touchUpInside)
-        return appleLoginButton
+        let v = UIButton()
+        v.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
+        v.addTarget(self, action: #selector(appleButtonPressed(_:)), for: .touchUpInside)
+        return v
     }()
     private lazy var googleLoginButton: UIButton = {
-        let googleLoginButton = UIButton()
-        googleLoginButton.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
-        googleLoginButton.addTarget(self, action: #selector(googleButtonPressed(_:)), for: .touchUpInside)
-        return googleLoginButton
+        let v = UIButton()
+        v.setBackgroundImage(UIImage(named: "google_login_button"), for: .normal)
+        v.addTarget(self, action: #selector(googleButtonPressed(_:)), for: .touchUpInside)
+        return v
     }()
     private lazy var kakaoLoginButton: UIButton = {
-        let kakaoLoginButton = UIButton()
-        kakaoLoginButton.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
-        kakaoLoginButton.addTarget(self, action: #selector(kakaoButtonPressed(_:)), for: .touchUpInside)
-        return kakaoLoginButton
+        let v = UIButton()
+        v.setBackgroundImage(UIImage(named: "kakao_login_button"), for: .normal)
+        v.addTarget(self, action: #selector(kakaoButtonPressed(_:)), for: .touchUpInside)
+        return v
     }()
     
     override init(frame: CGRect) {

@@ -9,7 +9,6 @@
 import UIKit
 
 import DesignSystem
-import SwiftUI
 
 protocol TermTableViewHeaderViewDelegate: AnyObject {
     func toggleCheck(_ sender: UIButton)
@@ -42,7 +41,7 @@ final class TermTableViewHeaderView: UITableViewHeaderFooterView {
         v.addTarget(self, action: #selector(showDetailButtonPressed(_:)), for: .touchUpInside)
         return v
     }()
-    weak var delegate: TermHeaderViewDelegate?
+    weak var delegate: TermTableViewHeaderViewDelegate?
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)

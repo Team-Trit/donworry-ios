@@ -13,26 +13,26 @@ import SnapKit
 
 final class LabelStackView: UIStackView {
     private lazy var labelStackView: UIStackView = {
-        let labelStackView = UIStackView()
-        labelStackView.axis = .vertical
-        labelStackView.spacing = 20
-        labelStackView.alignment = .center
-        return labelStackView
+        let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 20
+        v.alignment = .center
+        return v
     }()
     private lazy var titleLabel: UILabel = {
-        let titleLabel = UILabel()
-        titleLabel.text = "돈.워리"
-        titleLabel.font = .gmarksans(weight: .bold, size: ._30)
-        titleLabel.textColor = .designSystem(.mainBlue)
-        return titleLabel
+        let v = UILabel()
+        v.text = "돈.워리"
+        v.font = .gmarksans(weight: .bold, size: ._30)
+        v.textColor = .designSystem(.mainBlue)
+        return v
     }()
     private lazy var descriptionLabel: UILabel = {
-        let descriptionLabel = UILabel()
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.textAlignment = .center
-        descriptionLabel.text = "떼인 돈 받아드립니다.\n걱정마세요."
-        descriptionLabel.font = .gmarksans(weight: .light, size: ._15)
-        return descriptionLabel
+        let v = UILabel()
+        v.numberOfLines = 0
+        v.textAlignment = .center
+        v.text = "떼인 돈 받아드립니다.\n걱정마세요."
+        v.font = .gmarksans(weight: .light, size: ._15)
+        return v
     }()
     
     override init(frame: CGRect) {

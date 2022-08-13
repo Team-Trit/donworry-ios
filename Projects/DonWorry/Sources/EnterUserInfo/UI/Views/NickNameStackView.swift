@@ -8,21 +8,22 @@
 
 import UIKit
 
+import DesignSystem
 import SnapKit
 
 final class NickNameStackView: UIStackView {
     private lazy var nickNameStackView: UIStackView = {
-        let nickNameStackView = UIStackView()
-        nickNameStackView.axis = .vertical
-        nickNameStackView.spacing = 20
-        nickNameStackView.alignment = .leading
-        return nickNameStackView
+        let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 20
+        v.alignment = .leading
+        return v
     }()
     private lazy var nickNameLabel: UILabel = {
-       let nickNameLabel = UILabel()
-        nickNameLabel.text = "닉네임"
-        nickNameLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        return nickNameLabel
+       let v = UILabel()
+        v.text = "닉네임"
+        v.font = .designSystem(weight: .bold, size: ._18)
+        return v
     }()
     private lazy var nickNameTextField = LimitTextField(placeholder: "닉네임을 입력해주세요", limit: 20)
     

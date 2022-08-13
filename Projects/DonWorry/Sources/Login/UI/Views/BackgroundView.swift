@@ -12,11 +12,11 @@ import SnapKit
 
 final class BackgroundView: UIView {
     private lazy var gradientBackground: UIView = {
-        let gradientBackground = UIView()
-        gradientBackground.bounds = UIScreen.main.bounds
+        let v = UIView()
+        v.bounds = UIScreen.main.bounds
         /// Reference : https://babbab2.tistory.com/55
         let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = gradientBackground.bounds
+        gradientLayer.frame = v.bounds
         let colors: [CGColor] = [
             .init(red: 1, green: 1, blue: 1, alpha: 1),
             .init(red: 0.1098, green: 0.4196, blue: 1, alpha: 1)
@@ -24,13 +24,13 @@ final class BackgroundView: UIView {
         gradientLayer.colors = colors
         gradientLayer.locations = [0.47, 0.75]
         gradientLayer.type = .axial
-        gradientBackground.layer.addSublayer(gradientLayer)
-        return gradientBackground
+        v.layer.addSublayer(gradientLayer)
+        return v
     }()
     private lazy var backgroundImageView: UIImageView = {
-        let backgroundImageView = UIImageView()
+        let v = UIImageView()
         backgroundImageView.image = UIImage(named: "SignInImage")
-        return backgroundImageView
+        return v
     }()
     
     override init(frame: CGRect) {

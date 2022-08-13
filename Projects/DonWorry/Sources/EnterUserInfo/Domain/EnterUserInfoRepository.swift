@@ -6,11 +6,11 @@
 //
 
 import Foundation
+
 import RxSwift
 
 protocol EnterUserInfoRepository {}
 
 final class EnterUserInfoRepositoryImpl: EnterUserInfoRepository {
-
     public init() {}
 }

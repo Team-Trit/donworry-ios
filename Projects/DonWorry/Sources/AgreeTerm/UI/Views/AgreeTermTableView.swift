@@ -43,6 +43,7 @@ final class AgreeTermTableView: UITableView {
 extension AgreeTermTableView {
     private func setUI() {
         addSubview(agreeTermTableView)
+        
         agreeTermTableView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }

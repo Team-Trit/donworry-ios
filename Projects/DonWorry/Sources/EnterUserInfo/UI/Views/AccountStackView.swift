@@ -8,26 +8,27 @@
 
 import UIKit
 
+import DesignSystem
 import SnapKit
 
 final class AccountStackView: UIStackView {
     private lazy var accountStackView: UIStackView = {
-        let accountStackView = UIStackView()
-        accountStackView.axis = .vertical
-        accountStackView.spacing = 20
-        accountStackView.alignment = .leading
-        return accountStackView
+        let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 20
+        v.alignment = .leading
+        return v
     }()
     private lazy var accountLabel: UILabel = {
-        let accountLabel = UILabel()
-        accountLabel.text = "계좌정보"
-        accountLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        return accountLabel
+        let v = UILabel()
+        v.text = "계좌정보"
+        v.font = .designSystem(weight: .bold, size: ._18)
+        return v
     }()
     private lazy var accountInputField: AccountInputField = {
-        let accountInputField = AccountInputField()
+        let v = AccountInputField()
         // TODO: Inject Delegate
-        return accountInputField
+        return v
     }()
     
     override init(frame: CGRect) {
