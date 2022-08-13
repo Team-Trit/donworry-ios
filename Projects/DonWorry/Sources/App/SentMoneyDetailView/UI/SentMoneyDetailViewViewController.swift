@@ -173,9 +173,11 @@ extension SentMoneyDetailViewViewController {
         
         view.addSubview(accountInfo)
         accountInfo.topAnchor.constraint(equalTo: statusView.bottomAnchor, constant: 20).isActive = true
-        accountInfo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        accountInfo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         accountInfo.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        accountInfo.widthAnchor.constraint(equalToConstant: 340).isActive = true
+//        accountInfo.widthAnchor.constraint(equalToConstant: 340).isActive = true
+        accountInfo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
+        accountInfo.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
         
         view.addSubview(separatorView)
         separatorView.topAnchor.constraint(equalTo: accountInfo.bottomAnchor, constant: 28.5).isActive = true
