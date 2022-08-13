@@ -87,7 +87,7 @@ final class HomeViewReactor: Reactor {
             newState.sections = homePresenter.formatSection(
                 from: currentState.paymentRoomList,
                 with: index,
-                user: User.dummyUser1
+                user: currentState.user!
             )
         case .updateLoading(let loading):
             newState.isLoading = loading
@@ -96,9 +96,8 @@ final class HomeViewReactor: Reactor {
             newState.sections = homePresenter.formatSection(
                 from: paymentRoomList,
                 with: currentState.selectedPaymentRoomIndex,
-                user: User.dummyUser1
+                user: currentState.user!
             )
-            print(newState.sections)
         }
         return newState
     }

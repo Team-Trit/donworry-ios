@@ -70,9 +70,7 @@ final class HomePresenterImpl: HomePresenter {
             var result = filteredTransferList
                 .map(GivePaymentCardCellViewModel.init)
                 .map { HomeBillCardItem.GivePaymentCard($0) }
-            if isAllBillCardListCompleted(filteredTransferList) {
-                result.append(.LeavePaymentCard)
-            }
+            result.append(.LeavePaymentCard)
             return result
         }
         return []
@@ -101,7 +99,11 @@ extension GivePaymentCardCellViewModel {
         self.takerID = transfer.taker.id
         self.imageURL = transfer.taker.image
         self.nickName = transfer.taker.nickName
-        self.amount = transfer.amount
+        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: transfer.amount)) {
+            self.amount = amountText + "원"
+        } else {
+            self.amount = "0원"
+        }
         self.isCompleted = transfer.isCompleted
     }
 }
@@ -109,8 +111,14 @@ extension GivePaymentCardCellViewModel {
 extension TakePaymentCardCellViewModel {
     init(_ transfers: [Transfer]) {
         self.giverID = transfers.first!.giver.id
-        self.amount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
-        self.totalAmount =  transfers.map { $0.amount }.reduce(0, +)
+        let completedAmount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
+        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: completedAmount)) {
+            self.amount = amountText + "원"
+        } else {
+            self.amount = "0원"
+        }
+        let totalAmount =  transfers.map { $0.amount }.reduce(0, +)
+        self.isCompleted =  totalAmount == completedAmount
     }
 }
 

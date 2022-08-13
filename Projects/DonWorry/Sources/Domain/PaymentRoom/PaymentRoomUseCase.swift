@@ -21,9 +21,10 @@ protocol PaymentRoomUseCase {
 final class PaymentRoomUseCaseImpl: PaymentRoomUseCase {
 
     init(
-        _ paymentRoomRepository: PaymentRoomRepository = FakePaymentRoomRepositoryImpl()) {
-            self.paymentRoomRepository = paymentRoomRepository
-        }
+        _ paymentRoomRepository: PaymentRoomRepository = FakePaymentRoomRepositoryImpl()
+    ) {
+        self.paymentRoomRepository = paymentRoomRepository
+    }
 
     func fetchPaymentRoomList() -> Observable<[PaymentRoom]> {
         return paymentRoomRepository.fetchPaymentRoomList().asObservable()

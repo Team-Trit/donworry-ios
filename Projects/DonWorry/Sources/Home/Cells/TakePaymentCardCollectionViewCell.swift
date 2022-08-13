@@ -11,8 +11,8 @@ import DesignSystem
 
 struct TakePaymentCardCellViewModel: Equatable {
     var giverID: Int
-    var amount: Int
-    var totalAmount: Int
+    var amount: String
+    var isCompleted: Bool
 }
 
 final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
@@ -41,7 +41,7 @@ final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
-    lazy var moneyLabel: UILabel = {
+    lazy var amountLabel: UILabel = {
         let v = UILabel()
         v.textColor = .designSystem(.white)
         v.font = .designSystem(weight: .heavy, size: ._20)
@@ -56,11 +56,9 @@ final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
 
     var viewModel: TakePaymentCardCellViewModel? {
         didSet {
-            if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: (viewModel?.totalAmount ?? 0) - (viewModel?.amount ?? 0))) {
-                self.moneyLabel.text = amountText + "원"
-            }
+            self.amountLabel.text = viewModel?.amount
             if let viewModel = viewModel {
-                completeCoverView.isHidden = !(viewModel.amount == viewModel.totalAmount)
+                completeCoverView.isHidden = !viewModel.isCompleted
             }
         }
     }
@@ -82,7 +80,7 @@ final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.descriptionStackView)
         self.descriptionStackView.addArrangedSubview(self.descriptionLabel)
-        self.descriptionStackView.addArrangedSubview(self.moneyLabel)
+        self.descriptionStackView.addArrangedSubview(self.amountLabel)
 
         self.titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(15)

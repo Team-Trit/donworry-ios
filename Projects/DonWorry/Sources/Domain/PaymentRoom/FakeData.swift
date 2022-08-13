@@ -20,7 +20,8 @@ extension PaymentRoom {
             transferList: [
                 Transfer(giver: .dummyUser2, taker: .dummyUser1, amount: 37000, isCompleted: false),
                 Transfer(giver: .dummyUser3, taker: .dummyUser1, amount: 37000, isCompleted: true),
-                Transfer(giver: .dummyUser4, taker: .dummyUser1, amount: 30000, isCompleted: false)
+                Transfer(giver: .dummyUser4, taker: .dummyUser1, amount: 30000, isCompleted: false),
+                Transfer(giver: .dummyUser2, taker: .dummyUser5, amount: 37000, isCompleted: true),
             ]
         )
     }()

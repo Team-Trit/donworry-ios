@@ -15,7 +15,7 @@ struct GivePaymentCardCellViewModel: Equatable {
     var takerID: Int
     var imageURL: String
     var nickName: String
-    var amount: Int
+    var amount: String
     var isCompleted: Bool
 }
 
@@ -67,7 +67,7 @@ final class GivePaymentCardCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
-    lazy var moneyLabel: UILabel = {
+    lazy var amountLabel: UILabel = {
         let v = UILabel()
         v.textColor = .designSystem(.white)
         v.font = .designSystem(weight: .heavy, size: ._20)
@@ -83,9 +83,7 @@ final class GivePaymentCardCollectionViewCell: UICollectionViewCell {
     var viewModel: GivePaymentCardCellViewModel? {
         didSet {
             self.nickNameLabel.text = viewModel?.nickName
-            if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: viewModel?.amount ?? 0)) {
-                self.moneyLabel.text = amountText + "원"
-            }
+            self.amountLabel.text = viewModel?.amount
             if let viewModel = viewModel {
                 let urlString = URL(string: viewModel.imageURL)
                 profileImageView.kf.setImage(with: urlString)
@@ -116,7 +114,7 @@ final class GivePaymentCardCollectionViewCell: UICollectionViewCell {
         self.profileStackView.addArrangedSubview(self.profileImageView)
         self.profileStackView.addArrangedSubview(self.nickNameLabel)
         self.descriptionStackView.addArrangedSubview(self.descriptionLabel)
-        self.descriptionStackView.addArrangedSubview(self.moneyLabel)
+        self.descriptionStackView.addArrangedSubview(self.amountLabel)
 
         self.wholeStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(25)

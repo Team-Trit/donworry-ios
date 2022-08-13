@@ -85,7 +85,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
     }
 
-    lazy var dataSource = paymentCardDatsourceOf()
+    lazy var dataSource = paymentCardDataSourceOf()
     lazy var headerView = HomeHeaderView()
     lazy var paymentRoomCollectionView = PaymentRoomCollectionView()
     lazy var billCardCollectionView = BillCardCollectionView()
@@ -165,7 +165,7 @@ extension HomeViewController {
 extension HomeViewController {
     typealias DataSource = RxCollectionViewSectionedReloadDataSource
 
-    func paymentCardDatsourceOf() -> DataSource<BillCardSection> {
+    func paymentCardDataSourceOf() -> DataSource<BillCardSection> {
            return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
 
                switch dataSource[indexPath] {
