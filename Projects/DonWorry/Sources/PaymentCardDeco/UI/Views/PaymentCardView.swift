@@ -13,6 +13,18 @@ import DonWorryExtensions
 
 public class PaymentCardView: UIView {
     
+    // MARK: - Constructors
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        attributes()
+        layout()
+    }
+    
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - 카드정산날짜포메팅함수
     
     fileprivate func formatPayDate(s: String) -> (String, String) {
@@ -149,7 +161,6 @@ public class PaymentCardView: UIView {
         $0.alignment = .center
         return $0
     }(UIStackView())
-    
     
     private let userImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -346,18 +357,6 @@ public class PaymentCardView: UIView {
             userImageView.heightAnchor.constraint(equalToConstant: 30),
         ])
         
-    }
-    
-    // MARK: - Constructors
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        attributes()
-        layout()
-    }
-    
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     

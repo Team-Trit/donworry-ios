@@ -14,24 +14,29 @@ import BaseArchitecture
 import DesignSystem
 import DonWorryExtensions
 
+
 final class PaymentCardDecoViewController: BaseViewController {
     
     //    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = PaymentCardDecoViewModel()
-    var paymentCard: PaymentCardView!
+    lazy var paymentCard = PaymentCardView()
+    lazy var tableView = PaymentCardDecoTableView()
     
+    let scrollView: UIScrollView = {
+      let scrollView = UIScrollView()
+      scrollView.translatesAutoresizingMaskIntoConstraints = false
+      return scrollView
+    }()
     
     // MARK: - LifeCycle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configNavigationBar()
         attributes()
         layout()
     }
-    
-    
 }
 
 
@@ -46,18 +51,34 @@ extension PaymentCardDecoViewController {
     
     private func attributes() {
         view.backgroundColor = .designSystem(.white)
+        
     }
+    
     
     private func layout() {
         
-        paymentCard = PaymentCardView()
-        view.addSubviews(paymentCard)
+        view.addSubviews(paymentCard, scrollView)
+        scrollView.addSubviews(tableView)
+        scrollView.isScrollEnabled = true
         
         NSLayoutConstraint.activate([
             paymentCard.topAnchor.constraint(equalTo: view.topAnchor, constant: 122),
-            paymentCard.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            paymentCard.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            paymentCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            scrollView.topAnchor.constraint(equalTo: paymentCard.bottomAnchor, constant: -20),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            
+            
+            tableView.widthAnchor.constraint(equalToConstant: 340),
+            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            tableView.topAnchor.constraint(equalTo: paymentCard.bottomAnchor, constant: 20),
+            tableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 20),
+            
+            
         ])
+         
             
     }
 
