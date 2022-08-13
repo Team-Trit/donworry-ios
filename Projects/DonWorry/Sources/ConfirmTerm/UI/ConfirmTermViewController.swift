@@ -22,7 +22,7 @@ final class ConfirmTermViewController: BaseViewController {
         v.register(UITableViewCell.self, forCellReuseIdentifier: "TermConfirmCell")
         
         // MARK: ConfirmTermTableView로 옮기고 싶은데 적용이 안됨
-        v.backgroundColor = .blue
+        v.backgroundColor = .white
         v.separatorStyle = .none
         v.showsVerticalScrollIndicator = false
         v.allowsSelection = false

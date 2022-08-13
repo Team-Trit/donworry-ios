@@ -124,6 +124,6 @@ extension AgreeTermViewController: AgreeTermTableViewHeaderViewDelegate {
 // MARK: - LargeButtonDelegate {
 extension AgreeTermViewController: LargeButtonDelegate {
     func buttonPressed(_ sender: UIButton) {
-        present(TermConfirmViewController(), animated: true)
+        present(ConfirmTermViewController(), animated: true)
     }
 }
