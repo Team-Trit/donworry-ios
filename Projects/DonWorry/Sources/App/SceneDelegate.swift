@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         Font.registerFonts()
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        let rootViewController = SentMoneyDetailViewViewController()
+        let rootViewController = ModalButtonViewController()
         rootViewController.view.backgroundColor = .white
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.setNavigationBarHidden(true, animated: false)

@@ -54,7 +54,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let questionView: QuestionInformationView = {
         let questionView = QuestionInformationView()
         questionView.isHidden = true
-        questionView.frame = CGRect(x: 195, y: 120, width: 168, height: 76)
+        questionView.frame = CGRect(x: 195, y: 70, width: 168, height: 76)
         questionView.layer.masksToBounds = true
         questionView.layer.cornerRadius = 8
         questionView.backgroundColor = .designSystem(.white)
@@ -101,7 +101,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     
     private let leftButtomButton: UIButton = {
        let buttonButton = UIButton()
-        buttonButton.frame = CGRect(x: 21, y: 746, width: 222, height: 58)
+        buttonButton.frame = CGRect(x: 21, y: 690, width: 222, height: 58)
         buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
@@ -114,7 +114,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     
     private let rightButtomButton: UIButton = {
        let buttonButton = UIButton()
-        buttonButton.frame = CGRect(x: 262, y: 746, width: 103, height: 58)
+        buttonButton.frame = CGRect(x: 262, y: 690, width: 103, height: 58)
         buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
@@ -153,12 +153,12 @@ final class SentMoneyDetailViewViewController: BaseViewController {
 extension SentMoneyDetailViewViewController {
 
     private func attributes() {
-
+        view.backgroundColor = .white
     }
 
     private func layout() {
         view.addSubview(statusView)
-        statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
         statusView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         statusView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         statusView.heightAnchor.constraint(equalToConstant: 150).isActive = true
