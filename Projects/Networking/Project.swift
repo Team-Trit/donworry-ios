@@ -13,7 +13,10 @@ let project = Project.make(
   targets: [
     .staticLibrary(
         name: "Networking",
-        dependencies: []
+        dependencies: [
+            .external(name: "Moya"),
+            .external(name: "RxMoya")
+        ]
     ),
     .unitTests(name: "Networking")
   ]
