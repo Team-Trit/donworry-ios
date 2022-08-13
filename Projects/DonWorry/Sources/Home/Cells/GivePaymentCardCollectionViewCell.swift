@@ -16,7 +16,7 @@ struct GivePaymentCardCellViewModel: Equatable {
     var imageURL: String
     var nickName: String
     var amount: Int
-    var isComplete: Bool
+    var isCompleted: Bool
 }
 
 final class GivePaymentCardCollectionViewCell: UICollectionViewCell {
@@ -91,7 +91,7 @@ final class GivePaymentCardCollectionViewCell: UICollectionViewCell {
                 profileImageView.kf.setImage(with: urlString)
             }
             if let viewModel = viewModel {
-                completeCoverView.isHidden = !viewModel.isComplete
+                completeCoverView.isHidden = !viewModel.isCompleted
             }
         }
     }

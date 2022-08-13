@@ -12,7 +12,7 @@ import DesignSystem
 struct TakePaymentCardCellViewModel: Equatable {
     var giverID: Int
     var amount: Int
-    var wholeAmount: Int
+    var totalAmount: Int
 }
 
 final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
@@ -56,11 +56,11 @@ final class TakePaymentCardCollectionViewCell: UICollectionViewCell {
 
     var viewModel: TakePaymentCardCellViewModel? {
         didSet {
-            if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: (viewModel?.wholeAmount ?? 0) - (viewModel?.amount ?? 0))) {
+            if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: (viewModel?.totalAmount ?? 0) - (viewModel?.amount ?? 0))) {
                 self.moneyLabel.text = amountText + "원"
             }
             if let viewModel = viewModel {
-                completeCoverView.isHidden = !(viewModel.amount == viewModel.wholeAmount)
+                completeCoverView.isHidden = !(viewModel.amount == viewModel.totalAmount)
             }
         }
     }

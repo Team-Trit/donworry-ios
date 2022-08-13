@@ -102,7 +102,7 @@ extension GivePaymentCardCellViewModel {
         self.imageURL = transfer.taker.image
         self.nickName = transfer.taker.nickName
         self.amount = transfer.amount
-        self.isComplete = transfer.isCompleted
+        self.isCompleted = transfer.isCompleted
     }
 }
 
@@ -110,7 +110,7 @@ extension TakePaymentCardCellViewModel {
     init(_ transfers: [Transfer]) {
         self.giverID = transfers.first!.giver.id
         self.amount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
-        self.wholeAmount =  transfers.map { $0.amount }.reduce(0, +)
+        self.totalAmount =  transfers.map { $0.amount }.reduce(0, +)
     }
 }
 
