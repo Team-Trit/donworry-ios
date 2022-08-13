@@ -43,7 +43,7 @@ final class NetworkService: NetworkServable {
 }
 
 enum DonWorryNetworkError: Error {
-    case hasnoAuthenticationToken
+    case hasNoAuthenticationToken
     case accessTokenInvalidate
     case denyAuthentication
     case serverError
