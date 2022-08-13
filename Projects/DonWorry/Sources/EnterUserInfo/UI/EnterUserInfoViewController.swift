@@ -22,12 +22,15 @@ final class EnterUserInfoViewController: BaseViewController {
     }()
     private lazy var nickNameStackView = NickNameStackView()
     private lazy var accountStackView = AccountStackView()
-    private lazy var nextButton = LargeButton(type: .next)
+    private lazy var nextButton: LargeButton = {
+        let v = LargeButton(type: .next)
+        v.delegate = self
+        return v
+    }()
     let viewModel = EnterUserInfoViewModel()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        nextButton.delegate = self
         setUI()
     }
 }
