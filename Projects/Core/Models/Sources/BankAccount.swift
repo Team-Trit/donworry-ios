@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct BankAccount {
+public struct BankAccount: Codable {
     public var bank: Bank
     public var accountHolderName: String
     public var accountNumber: String

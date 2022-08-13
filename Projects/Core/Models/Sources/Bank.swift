@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum Bank {
+public enum Bank: Codable {
     case sinhan
     case woori
     case toss
