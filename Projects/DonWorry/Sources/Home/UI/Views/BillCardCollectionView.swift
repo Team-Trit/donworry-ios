@@ -9,7 +9,7 @@
 import UIKit
 import DonWorryExtensions
 
-final class PaymentCardCollectionView: UICollectionView {
+final class BillCardCollectionView: UICollectionView {
 
     convenience init() {
         let flowLayout = CircularCollectionViewLayout()
@@ -27,8 +27,7 @@ final class PaymentCardCollectionView: UICollectionView {
     }
 }
 
-extension PaymentCardCollectionView: CircularCollectionViewLayoutDelegate {
-
+extension BillCardCollectionView: CircularCollectionViewLayoutDelegate {
     private var screenWidth: CGFloat {
         UIApplication.shared.delegate?.window??.windowScene?.screen.bounds.width ?? 0
     }
@@ -38,4 +37,6 @@ extension PaymentCardCollectionView: CircularCollectionViewLayoutDelegate {
         let height: CGFloat = width * 215 / 160
         return .init(width: width, height: height)
     }
+    func scrollToIndentity() {}
+
 }

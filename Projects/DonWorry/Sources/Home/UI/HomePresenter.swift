@@ -58,9 +58,7 @@ final class HomePresenterImpl: HomePresenter {
         if let transferList = paymentRoom.transferList {
             let filteredTransferList = transferList.filter { $0.taker.id == user.id }
             var result = [HomeBillCardItem.TakePaymentCard(TakePaymentCardCellViewModel(filteredTransferList))]
-            if isAllBillCardListCompleted(filteredTransferList) {
-                result.append(.LeavePaymentCard)
-            }
+            result.append(.LeavePaymentCard)
             return result
         }
         return []

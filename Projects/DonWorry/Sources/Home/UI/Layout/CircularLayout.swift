@@ -29,13 +29,14 @@ class CircularCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
 
 protocol CircularCollectionViewLayoutDelegate: AnyObject {
     var itemSize: CGSize { get }
+
+    func scrollToIndentity()
 }
 
 final class CircularCollectionViewLayout: UICollectionViewLayout {
     private var currentContentOffsetX: CGFloat = 0
     private var basicItemSize: CGSize = CGSize(width: 160, height: 215)
-//    private let itemSize = CGSize(width: 160, height: 215)
-//    weak var delegate: CircularCollectionViewLayoutDelegate?
+    weak var delegate: CircularCollectionViewLayoutDelegate?
     private var angleAtExtreme: CGFloat {
         guard let collectionView = collectionView else { return 0 }
         let numberOfItems: Int = collectionView.numberOfItems(inSection: 0)
@@ -115,15 +116,12 @@ final class CircularCollectionViewLayout: UICollectionViewLayout {
         var multiplier: CGFloat
         let proposedAngle = proposedContentOffset.x*factor
         if (velocity.x > 0) {
-//            let proposedAngle = (currentContentOffsetX + 1) * factor
             let ratio = proposedAngle / anglePerItem
             multiplier = ceil(ratio)
         } else if (velocity.x < 0) {
-//            let proposedAngle = (currentContentOffsetX - 1) * factor
             let ratio = proposedAngle / anglePerItem
             multiplier = floor(ratio)
         } else {
-//            let proposedAngle = (currentContentOffsetX - 1) * factor
             let ratio = proposedAngle / anglePerItem
             multiplier = round(ratio)
         }
@@ -148,16 +146,15 @@ final class CircularCollectionViewLayout: UICollectionViewLayout {
     override func layoutAttributesForItem(
         at indexPath: IndexPath
     ) -> UICollectionViewLayoutAttributes? {
-        return attributesList[indexPath.row]
+        return attributesList[indexPath.item]
     }
 
     override class var layoutAttributesClass: AnyClass {
         CircularCollectionViewLayoutAttributes.self
     }
-}
 
-struct DeviceInfo {
-    static var width: CGFloat {
-        return UIScreen.main.bounds.width
+    func scrollToIndentity() {
+//        let attribute = attributesList[0]
+//        currentContentOffsetX
     }
 }

@@ -50,9 +50,9 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.paymentCardCollectionView.rx.itemSelected
+        self.paymentRoomCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] _ in
-                self?.paymentCardCollectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .left, animated: false)
+                self?.billCardCollectionView.scrollToItem(at: .init(item: 0, section: 0), at: .centeredHorizontally, animated: false)
             }).disposed(by: disposeBag)
     }
     
@@ -66,7 +66,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.sections.isEmpty }
-            .bind(to: self.paymentCardCollectionView.rx.isHidden)
+            .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.paymentRoomList }
@@ -81,14 +81,14 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         reactor.state.map { $0.sections }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .bind(to: self.paymentCardCollectionView.rx.items(dataSource: dataSource))
+            .bind(to: self.billCardCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
 
     lazy var dataSource = paymentCardDatsourceOf()
     lazy var headerView = HomeHeaderView()
     lazy var paymentRoomCollectionView = PaymentRoomCollectionView()
-    lazy var paymentCardCollectionView = PaymentCardCollectionView()
+    lazy var billCardCollectionView = BillCardCollectionView()
     lazy var emptyView = EmptyPaymentCardView()
     lazy var gotoSearchPaymentRoomButton: UIButton = {
         let v = UIButton(type: .system)
@@ -115,7 +115,7 @@ extension HomeViewController {
         self.view.backgroundColor = .designSystem(.white)
         self.view.addSubview(self.headerView)
         self.view.addSubview(self.paymentRoomCollectionView)
-        self.view.addSubview(self.paymentCardCollectionView)
+        self.view.addSubview(self.billCardCollectionView)
         self.view.addSubview(self.gotoSearchPaymentRoomButton)
         self.view.addSubview(self.goToCreatePaymentRoomButton)
         self.view.addSubview(self.emptyView)
@@ -129,18 +129,18 @@ extension HomeViewController {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(80)
         }
-        self.paymentCardCollectionView.snp.makeConstraints { make in
+        self.billCardCollectionView.snp.makeConstraints { make in
             make.top.equalTo(self.paymentRoomCollectionView.snp.bottom)
             make.leading.trailing.equalToSuperview()
         }
         self.gotoSearchPaymentRoomButton.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentCardCollectionView.snp.bottom).offset(20)
+            make.top.equalTo(self.billCardCollectionView.snp.bottom).offset(20)
             make.leading.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().inset(34)
             make.height.equalTo(58)
         }
         self.goToCreatePaymentRoomButton.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentCardCollectionView.snp.bottom).offset(20)
+            make.top.equalTo(self.billCardCollectionView.snp.bottom).offset(20)
             make.leading.equalTo(self.gotoSearchPaymentRoomButton.snp.trailing).offset(8)
             make.trailing.equalToSuperview().inset(25)
             make.width.equalTo(self.gotoSearchPaymentRoomButton.snp.width).multipliedBy(262/70)
