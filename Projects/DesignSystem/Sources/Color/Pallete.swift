@@ -11,13 +11,18 @@ import Foundation
 public enum Pallete: String {
     case mainBlue
     case lightBlue
-    case gray1
-    case gray2
+    case gray818181
+    case grayC5C5C5
     case white
-    case topGradient
-    case bottomGradient
+    case blueTopGradient
+    case blueBottomGradient
     case brown
     case green
+    case black
+    case white2
+    case grayF6F6F6
+    case redTopGradient
+    case redBottomGradient
 
     var hexString: String {
         switch self {
@@ -25,20 +30,30 @@ public enum Pallete: String {
             return "#1C6BFFFF"
         case .lightBlue:
             return "#A4C6FFFF"
-        case .gray1:
+        case .gray818181:
             return "#818181FF"
-        case .gray2:
+        case .grayC5C5C5:
             return "#C5C5C5FF"
         case .white:
-            return "#F6F6F6"
-        case .topGradient:
+            return "#FFFFFFFF"
+        case .blueTopGradient:
             return "#1B86F4FF"
-        case .bottomGradient:
+        case .blueBottomGradient:
             return "#19B2F2FF"
         case .brown:
             return "#51312CFF"
         case .green:
             return "#6BAE66FF"
+        case .black:
+            return "#000000FF"
+        case .white2:
+            return "#F6F6F6FF"
+        case .grayF6F6F6:
+            return "#F6F6F6FF"
+        case .redTopGradient:
+            return "#FF5F5FFF"
+        case .redBottomGradient:
+            return "#FFA1B9FF"
         }
     }
 }

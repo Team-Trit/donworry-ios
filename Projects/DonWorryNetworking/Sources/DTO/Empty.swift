@@ -9,5 +9,5 @@
 import Foundation
 
 extension DTO {
-    struct Empty: Decodable {}
+    public struct Empty: Decodable {}
 }

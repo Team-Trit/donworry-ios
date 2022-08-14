@@ -7,6 +7,7 @@
 
 import UIKit
 import DesignSystem
+import Models
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -14,13 +15,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         Font.registerFonts()
+        #warning("테스트용, 배포할 때 데브버전으로 옮겨야 함.")
+        UserDefaults.standard.writeCodable(User.dummyUser2, key: .user)
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        let rootViewController = UIViewController()
-                rootViewController.view.backgroundColor = .systemIndigo
-                let navigationController = UINavigationController(rootViewController: rootViewController)
-                navigationController.setNavigationBarHidden(true, animated: false)
-                window.rootViewController = rootViewController
+        let rootViewController = HomeViewController()
+        rootViewController.reactor = HomeViewReactor()
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        navigationController.setNavigationBarHidden(true, animated: false)
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
         self.window = window
     }

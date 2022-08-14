@@ -12,21 +12,27 @@ let project = Project.make(
   name: "CoreKit",
   targets: [
     .staticLibrary(
-        name: "CoreKit",
-        dependencies: []
+      name: "CoreKit",
+      dependencies: []
     ),
     .unitTests(name: "CoreKit"),
     .staticLibraryTarget(name: "Models"),
     .staticLibraryTarget(
-        name: "BaseArchitecture",
-        dependencies: [
-        .external(name: "RxSwift")
-    ]),
-    .staticLibraryTarget(
-        name: "DonWorryExtensions"
+      name: "BaseArchitecture",
+      dependencies: [
+        .external(name: "RxSwift"),
+        .external(name: "RxCocoa")
+      ]
     ),
     .staticLibraryTarget(
-        name: "DonWorryProtocols"
+      name: "DonWorryExtensions",
+      dependencies: [
+        .external(name: "RxSwift"),
+        .external(name: "RxCocoa")
+      ]
+    ),
+    .staticLibraryTarget(
+      name: "DonWorryProtocols"
     )
   ]
 )

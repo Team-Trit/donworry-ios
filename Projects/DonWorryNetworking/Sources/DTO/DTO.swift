@@ -1,5 +1,5 @@
 //
-//  RxMoya+.swift
+//  DTO.swift
 //  Networking
 //
 //  Created by Woody on 2022/08/13.
@@ -7,7 +7,5 @@
 //
 
 import Foundation
-import Moya
 
-typealias Method = Moya.Method
-typealias Task = Moya.Task
+public enum DTO {}
