@@ -10,6 +10,22 @@ import UIKit
 import DesignSystem
 import DonWorryExtensions
 
+struct PaymentCardCellDdipUser: Equatable {
+    var id: Int
+    var nickName: String
+    var imageURL: String
+}
+
+struct PaymentCardCellViewModel: Equatable {
+    var id: Int
+    var name: String
+    var amount: Int
+    var number: Int
+    var payer: PaymentCardCellDdipUser
+    var participatedUserList: [PaymentCardCellDdipUser]
+    var dateString: String
+}
+
 final class PaymentCardCollectionViewCell: UICollectionViewCell {
     lazy var paymentCardView = PaymentCardView()
 
@@ -26,11 +42,17 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
+        self.roundCorners(20)
+        self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
+        self.layer.borderWidth = 1
+        self.addShadowWithRoundedCorners(20, shadowColor: UIColor.designSystem(.black)!.cgColor, opacity: 0.6)
         self.contentView.addSubview(self.paymentCardView)
 
         self.paymentCardView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        self.paymentCardView.layer.masksToBounds = true
     }
 
 }

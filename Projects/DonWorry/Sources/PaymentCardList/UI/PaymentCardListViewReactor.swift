@@ -12,7 +12,7 @@ import RxSwift
 import Models
 
 final class PaymentCardListViewReactor: Reactor {
-
+    typealias Section = PaymentCardSection
     enum Action {
         case setup
     }
@@ -23,12 +23,15 @@ final class PaymentCardListViewReactor: Reactor {
 
     struct State {
         var paymentRoom: PaymentRoom?
+        var section: [Section] = [.PaymentCardSection([.AddPaymentCard])]
     }
 
     let initialState: State = State()
 
-    init() {
-
+    init(
+        _ paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
+    ) {
+        self.paymentCardListPresenter =  paymentCardListPresenter
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -45,9 +48,12 @@ final class PaymentCardListViewReactor: Reactor {
         switch mutation {
         case .updateTitle(let paymentRoom):
             newState.paymentRoom = paymentRoom
+            newState.section = paymentCardListPresenter.formatSection(from: paymentRoom.paymentCardList)
         }
         return newState
     }
+
+    private let paymentCardListPresenter: PaymentCardListPresenter
 }
 
 extension PaymentCardListViewReactor {

@@ -12,7 +12,7 @@ import Models
 extension PaymentRoom {
     static let dummyPaymentRoom1: PaymentRoom = {
         .init(
-            id: "1",
+            id: 1,
             code: "213d42s3s5",
             name: "MC2 첫 회식",
             admin: .dummyUser1,
@@ -27,11 +27,11 @@ extension PaymentRoom {
     }()
     static let dummyPaymentRoom2: PaymentRoom = {
         .init(
-            id: "2",
+            id: 2,
             code: "5613d42s3s5",
             name: "서울 나들이",
             admin: .dummyUser2,
-            paymentCardList: [],
+            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
             transferList: nil
         )
     }()
@@ -41,7 +41,7 @@ extension PaymentRoom {
 extension PaymentCard {
     static let  dummyPaymentCard1: PaymentCard = {
         .init(
-            id: "1",
+            id: 1,
             name: "1차 고깃집 파티",
             cardIcon: .chicken,
             totalAmount: 120000,
@@ -55,7 +55,7 @@ extension PaymentCard {
     }()
     static let dummyPaymentCard2: PaymentCard = {
         .init(
-            id: "2",
+            id: 2,
             name: "2차 유스택시",
             cardIcon: .dinner,
             totalAmount: 21000,

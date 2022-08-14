@@ -13,6 +13,7 @@ import RxCocoa
 import RxSwift
 import DesignSystem
 import DonWorryExtensions
+import RxDataSources
 
 final class PaymentCardListViewController: BaseViewController, View {
     typealias Reactor = PaymentCardListViewReactor
@@ -52,15 +53,16 @@ final class PaymentCardListViewController: BaseViewController, View {
     }()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        #warning("통일화시켜야 하는 카드 사이즈")
+        layout.itemSize = .init(width: 340, height: 216)
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        v.backgroundColor = .systemIndigo
         v.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 25, right: 25)
+        v.register(PaymentCardCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
         return v
     }()
-    lazy var paymentCardView = PaymentCardView()
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -86,8 +88,15 @@ final class PaymentCardListViewController: BaseViewController, View {
             .map { "정산방 ID : \($0 ?? "")"}
             .bind(to: paymentRoomIDLabel.rx.text)
             .disposed(by: disposeBag)
+
+        reactor.state.map { $0.section }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: self.collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
     }
 
+    lazy var dataSource = paymentCardDataSourceOf()
 }
 
 // MARK: setUI
@@ -126,5 +135,25 @@ extension PaymentCardListViewController {
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)
+    }
+}
+
+// MARK: RxCollectionViewSectionedReloadDataSource
+
+extension PaymentCardListViewController {
+    typealias DataSource = RxCollectionViewSectionedReloadDataSource
+
+    func paymentCardDataSourceOf() -> DataSource<PaymentCardSection> {
+        return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
+
+            switch dataSource[indexPath] {
+            case .AddPaymentCard:
+                let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
+                return cell
+            case .PaymentCard(let viewModel):
+                let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
+                return cell
+            }
+        })
     }
 }

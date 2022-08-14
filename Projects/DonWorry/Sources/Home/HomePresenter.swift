@@ -38,10 +38,10 @@ final class HomePresenterImpl: HomePresenter {
         if paymentRoomList.isEmpty { return [.BillCardSection([])] }
         let selectedPaymentRoom: PaymentRoom = paymentRoomList[selectedIndex]
 
-        guard selectedPaymentRoom.transferList != nil else { return [.BillCardSection([.StatePaymentCard])] }
+        guard selectedPaymentRoom.transferList != nil else { return [.BillCardSection([.StateBillCard])] }
 
         var billCardItemList: [HomeBillCardItem] = []
-        billCardItemList.append(.StatePaymentCard)
+        billCardItemList.append(.StateBillCard)
         billCardItemList.append(contentsOf: formatBillCardList(from: selectedPaymentRoom, user: user))
         return [.BillCardSection(billCardItemList)]
     }
@@ -57,8 +57,8 @@ final class HomePresenterImpl: HomePresenter {
     private func formatTakeBillCard(from paymentRoom: PaymentRoom, user: User) -> [HomeBillCardItem] {
         if let transferList = paymentRoom.transferList {
             let filteredTransferList = transferList.filter { $0.taker.id == user.id }
-            var result = [HomeBillCardItem.TakePaymentCard(TakeBillCardCellViewModel(filteredTransferList))]
-            result.append(.LeavePaymentCard)
+            var result = [HomeBillCardItem.TakeBillCard(TakeBillCardCellViewModel(filteredTransferList))]
+            result.append(.LeaveBillCard)
             return result
         }
         return []
@@ -69,8 +69,8 @@ final class HomePresenterImpl: HomePresenter {
             let filteredTransferList = transferList.filter { $0.giver.id == user.id }
             var result = filteredTransferList
                 .map(GiveBillCardCellViewModel.init)
-                .map { HomeBillCardItem.GivePaymentCard($0) }
-            result.append(.LeavePaymentCard)
+                .map { HomeBillCardItem.GiveBillCard($0) }
+            result.append(.LeaveBillCard)
             return result
         }
         return []
