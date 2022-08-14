@@ -9,36 +9,49 @@
 import Foundation
 import ReactorKit
 import RxSwift
+import Models
 
 final class PaymentCardListViewReactor: Reactor {
 
     enum Action {
-        // actiom cases
+        case setup
     }
 
     enum Mutation {
-        // mutation cases
+        case updateTitle(PaymentRoom)
     }
 
     struct State {
-        //state
+        var paymentRoom: PaymentRoom?
     }
 
     let initialState: State = State()
 
     init() {
-        // init state initialState = State(...)
+
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
-        // switch action {
-        // }
+        switch action {
+        case .setup:
+            return Observable.concat([
+                .just(.updateTitle(dummyPaymentRoom))
+            ])
+        }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        // switch mutation {
-        // }
+        switch mutation {
+        case .updateTitle(let paymentRoom):
+            newState.paymentRoom = paymentRoom
+        }
         return newState
+    }
+}
+
+extension PaymentCardListViewReactor {
+    var dummyPaymentRoom: PaymentRoom {
+        .dummyPaymentRoom2
     }
 }

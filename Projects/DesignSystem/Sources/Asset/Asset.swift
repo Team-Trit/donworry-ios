@@ -13,4 +13,5 @@ public enum Asset: String {
     case test_avo
     case ic_calculation_3d
     case ic_check_white
+    case btn_copy
 }

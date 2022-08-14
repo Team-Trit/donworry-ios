@@ -83,6 +83,9 @@ final class HomeHeaderView: UIView {
         self.stackView.addArrangedSubview(self.profileImageView)
         self.stackView.addArrangedSubview(self.titleLabel)
 
+        self.snp.makeConstraints { make in
+            make.height.equalTo(65)
+        }
         self.stackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview().offset(25)

@@ -31,7 +31,7 @@ extension PaymentRoom {
             code: "5613d42s3s5",
             name: "서울 나들이",
             admin: .dummyUser2,
-            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
+            paymentCardList: [],
             transferList: nil
         )
     }()
