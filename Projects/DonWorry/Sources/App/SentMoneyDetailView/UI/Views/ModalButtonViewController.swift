@@ -15,8 +15,7 @@ class ModalButtonViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("모달띄우기", for: .normal)
         button.backgroundColor = .orange
-        button.addTarget(self, action: #selector(touchUpPresentModalButton), for: .touchUpInside)
-//        button.addTarget(self, action: #selector(touchUpDismissModalButton), for: .touchUpInside)
+        button.addTarget(ModalButtonViewController.self, action: #selector(touchUpPresentModalButton), for: .touchUpInside)
         return button
     }()
 
@@ -35,12 +34,6 @@ class ModalButtonViewController: UIViewController {
     
     @objc func touchUpPresentModalButton(_ sender: UIButton) {
         let vc = SentMoneyDetailViewViewController()
-//        vc.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(vc, animated: true, completion: nil)
     }
-    
-//    @objc func touchUpDismissModalButton(_ sender: UIButton) {
-//        self.dismiss(animated: true, completion: nil)
-//    }
-
 }

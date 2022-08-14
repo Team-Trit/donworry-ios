@@ -38,7 +38,7 @@ class AccountInformationView: UIView {
     private let copyImage: UIImageView = {
         let copyImage = UIImageView()
         copyImage.translatesAutoresizingMaskIntoConstraints = false
-        copyImage.image = UIImage(named: "CopyMark")
+        copyImage.image = UIImage(named: "copyImage")
         copyImage.tintColor = .designSystem(.gray1)
         return copyImage
     }()

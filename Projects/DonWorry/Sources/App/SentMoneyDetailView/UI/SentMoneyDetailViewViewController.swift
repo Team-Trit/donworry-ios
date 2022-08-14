@@ -19,7 +19,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
 
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = SentMoneyDetailViewViewModel()
-    
+
     private var statusView: SentMoneyDetailStatusView = {
         let status = SentMoneyDetailStatusView()
         status.translatesAutoresizingMaskIntoConstraints = false
@@ -30,7 +30,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let questionButton: UIImageView = {
         let questionButton = UIImageView()
         questionButton.translatesAutoresizingMaskIntoConstraints = false
-        questionButton.image = UIImage(named: "QuestionMark")
+        questionButton.image = UIImage(named: "questionMark")
         return questionButton
     }()
     
@@ -60,9 +60,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
         questionView.backgroundColor = .designSystem(.white)
         return questionView
     }()
-    
 
-    
     private let subTitle: UILabel = {
         let subTitle = UILabel()
         subTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -108,7 +106,6 @@ final class SentMoneyDetailViewViewController: BaseViewController {
         buttonButton.setTitle("계좌번호 복사하기", for: .normal)
         buttonButton.setTitleColor(.white, for: .normal)
         buttonButton.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
-        
         return buttonButton
     }()
     
@@ -127,24 +124,16 @@ final class SentMoneyDetailViewViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        let appearTapGesture = UITapGestureRecognizer(target: self, action: #selector(appearInfoTap))
-        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(copyTap))
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.showsVerticalScrollIndicator = false
-        questionButton.addGestureRecognizer(appearTapGesture)
-        questionButton.isUserInteractionEnabled = true
-        accountInfo.addGestureRecognizer(copyTapGesture)
         attributes()
         layout()
     }
     
-    @objc func appearInfoTap() {
+    @objc private func appearInfoTap() {
         print("is tapped")
         questionView.isHidden.toggle()
     }
     
-    @objc func copyTap() {
+    @objc private func copyTap() {
         print("복사되었습니다")
     }
 
@@ -153,7 +142,15 @@ final class SentMoneyDetailViewViewController: BaseViewController {
 extension SentMoneyDetailViewViewController {
 
     private func attributes() {
+        let appearTapGesture = UITapGestureRecognizer(target: self, action: #selector(appearInfoTap))
+        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(copyTap))
         view.backgroundColor = .white
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.showsVerticalScrollIndicator = false
+        questionButton.addGestureRecognizer(appearTapGesture)
+        questionButton.isUserInteractionEnabled = true
+        accountInfo.addGestureRecognizer(copyTapGesture)
     }
 
     private func layout() {
@@ -173,9 +170,7 @@ extension SentMoneyDetailViewViewController {
         
         view.addSubview(accountInfo)
         accountInfo.topAnchor.constraint(equalTo: statusView.bottomAnchor, constant: 20).isActive = true
-//        accountInfo.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         accountInfo.heightAnchor.constraint(equalToConstant: 90).isActive = true
-//        accountInfo.widthAnchor.constraint(equalToConstant: 340).isActive = true
         accountInfo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
         accountInfo.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
         
@@ -214,17 +209,14 @@ extension SentMoneyDetailViewViewController {
 
 extension SentMoneyDetailViewViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return payments.count
+        return viewModel.payments.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SentMoneyTableViewCell.identifier, for: indexPath)
                 as? SentMoneyTableViewCell else { return UITableViewCell() }
-        cell.configure(icon: "flame.fill", myPayment: payments[indexPath.row])
+        cell.configure(icon: "flame.fill", myPayment: viewModel.payments[indexPath.row])
         return cell
-    }
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        UIView()
     }
 }
 

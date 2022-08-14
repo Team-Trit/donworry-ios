@@ -9,7 +9,18 @@
 import UIKit
 import DesignSystem
 
+public struct Payment {
+    let name: String
+    let date: String
+    let totalAmount: Int
+    let totalUers: Int
+    let myAmount: Int
+}
+
 class SentMoneyTableViewCell: BaseTableViewCell {
+
+
+    public let numberformatter = NumberFormatter()
     
     static let identifier: String = "SentMoneyTableViewCell"
     
@@ -106,18 +117,20 @@ class SentMoneyTableViewCell: BaseTableViewCell {
 
     func configure(icon: String, myPayment: Payment) {
         numberformatter.numberStyle = .decimal
-        spaceIcon.image = UIImage(named: "MeatIcon")
+        spaceIcon.image = UIImage(named: "baconImage")
         paymentRoomName.text = myPayment.name
         paymentDate.text = myPayment.date
         dividedAmountDetail.attributedText = makeAtrributedString(myPayment: myPayment)
         dividedAmount.text = numberformatter.string(for: myPayment.myAmount)! + "원"
     }
+    
+    func makeAtrributedString(myPayment: Payment) -> NSMutableAttributedString {
+        numberformatter.numberStyle = .decimal
+        let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
+        let attributedQuote = NSMutableAttributedString(string: paymentString)
+        attributedQuote.addAttribute(.foregroundColor, value: UIColor.designSystem(.mainBlue)!, range: (paymentString as NSString).range(of: " / " + "\(myPayment.totalUers)" + "명"))
+        return attributedQuote
+    }
 }
 
-func makeAtrributedString(myPayment: Payment) -> NSMutableAttributedString {
-    numberformatter.numberStyle = .decimal
-    let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
-    let attributedQuote = NSMutableAttributedString(string: paymentString)
-    attributedQuote.addAttribute(.foregroundColor, value: UIColor.designSystem(.mainBlue)!, range: (paymentString as NSString).range(of: " / " + "\(myPayment.totalUers)" + "명"))
-    return attributedQuote
-}
+
