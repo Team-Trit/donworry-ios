@@ -124,6 +124,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .white
         attributes()
         layout()
     }
