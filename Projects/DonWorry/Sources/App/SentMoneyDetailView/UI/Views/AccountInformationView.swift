@@ -15,7 +15,7 @@ class AccountInformationView: UIView {
         let bankName = UILabel()
         bankName.translatesAutoresizingMaskIntoConstraints = false
         bankName.font = .designSystem(weight: .regular, size: ._13)
-        bankName.textColor = .designSystem(.gray1)
+        bankName.textColor = .designSystem(.gray818181)
         return bankName
     }()
     
@@ -23,7 +23,7 @@ class AccountInformationView: UIView {
         let accountNumber = UILabel()
         accountNumber.translatesAutoresizingMaskIntoConstraints = false
         accountNumber.font = .designSystem(weight: .regular, size: ._13)
-        accountNumber.textColor = .designSystem(.gray1)
+        accountNumber.textColor = .designSystem(.gray818181)
         return accountNumber
     }()
     
@@ -31,7 +31,7 @@ class AccountInformationView: UIView {
         let realName = UILabel()
         realName.translatesAutoresizingMaskIntoConstraints = false
         realName.font = .designSystem(weight: .regular, size: ._13)
-        realName.textColor = .designSystem(.gray1)
+        realName.textColor = .designSystem(.gray818181)
         return realName
     }()
     
@@ -39,7 +39,7 @@ class AccountInformationView: UIView {
         let copyImage = UIImageView()
         copyImage.translatesAutoresizingMaskIntoConstraints = false
         copyImage.image = UIImage(named: "copyImage")
-        copyImage.tintColor = .designSystem(.gray1)
+        copyImage.tintColor = .designSystem(.gray818181)
         return copyImage
     }()
 
