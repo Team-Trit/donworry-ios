@@ -27,7 +27,9 @@ var alertMessages: [AlertMessageInfomations] = [
     AlertMessageInfomations(recievedDate: "22일 일요일", senderName: "유쓰", spaceName: "4차 맥주", messageType: .startAlert),
     AlertMessageInfomations(recievedDate: "22일 일요일", senderName: "유쓰", spaceName: "MC2", messageType: .completedAlert),
     AlertMessageInfomations(recievedDate: "22일 일요일", senderName: "유쓰", spaceName: "MC2", messageType: .hurriedAlert),
-    AlertMessageInfomations(recievedDate: "24일 화요일", senderName: "애셔", spaceName: "1차 고깃집 파티~", messageType: .startAlert)
+    AlertMessageInfomations(recievedDate: "24일 화요일", senderName: "애셔", spaceName: "1차 고깃집 파티~", messageType: .startAlert),
+    AlertMessageInfomations(recievedDate: "28일 토요일", senderName: "우디", spaceName: "우디생파", messageType: .completedAlert),
+    AlertMessageInfomations(recievedDate: "24일 화요일", senderName: "에이버리", spaceName: "버리생파", messageType: .hurriedAlert)
 ]
 
 func chunkedMessages(messages: [AlertMessageInfomations]) -> [[AlertMessageInfomations]] {
