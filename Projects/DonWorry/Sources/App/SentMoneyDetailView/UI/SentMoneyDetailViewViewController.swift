@@ -30,7 +30,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let questionButton: UIImageView = {
         let questionButton = UIImageView()
         questionButton.translatesAutoresizingMaskIntoConstraints = false
-        questionButton.image = UIImage(named: "questionMark")
+        questionButton.image = UIImage(named: "QuestionMark")
         return questionButton
     }()
     
