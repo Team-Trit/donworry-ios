@@ -24,7 +24,7 @@ class SentMoneyDetailStatusView: UIView {
         nameSubTitle.translatesAutoresizingMaskIntoConstraints = false
         nameSubTitle.text = "님께"
         nameSubTitle.font = .designSystem(weight: .regular, size: ._15)
-        nameSubTitle.textColor = .designSystem(.gray1)
+        nameSubTitle.textColor = .designSystem(.gray818181)
         return nameSubTitle
     }()
     

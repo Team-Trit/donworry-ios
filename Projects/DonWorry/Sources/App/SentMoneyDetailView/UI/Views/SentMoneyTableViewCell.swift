@@ -27,14 +27,9 @@ class SentMoneyTableViewCell: BaseTableViewCell {
     private let smallRoundRectangle: UIView = {
         let smallRoundRec = UIView()
         smallRoundRec.translatesAutoresizingMaskIntoConstraints = false
-        smallRoundRec.backgroundColor = .designSystem(.white)
-        smallRoundRec.clipsToBounds = true
-        smallRoundRec.layer.cornerRadius = 10
-        smallRoundRec.layer.masksToBounds = false
-        smallRoundRec.layer.shadowColor = UIColor.black.cgColor
-        smallRoundRec.layer.shadowOffset = CGSize(width: 0, height: 0)
-        smallRoundRec.layer.shadowOpacity = 0.5
-        smallRoundRec.layer.shadowRadius = 2
+        smallRoundRec.backgroundColor = .designSystem(.grayF6F6F6)
+        smallRoundRec.roundCorners(10)
+        smallRoundRec.addShadow()
         return smallRoundRec
     }()
     
@@ -56,7 +51,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         let date = UILabel()
         date.translatesAutoresizingMaskIntoConstraints = false
         date.font = .designSystem(weight: .regular, size: ._13)
-        date.textColor = .designSystem(.gray1)
+        date.textColor = .designSystem(.gray818181)
         return date
     }()
     
@@ -64,7 +59,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         let dividedAmountDetail = UILabel()
         dividedAmountDetail.translatesAutoresizingMaskIntoConstraints = false
         dividedAmountDetail.font = .designSystem(weight: .bold, size: ._13)
-        dividedAmountDetail.textColor = .designSystem(.gray1)
+        dividedAmountDetail.textColor = .designSystem(.gray818181)
         return dividedAmountDetail
     }()
     

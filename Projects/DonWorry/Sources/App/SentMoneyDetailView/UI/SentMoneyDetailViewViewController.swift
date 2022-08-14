@@ -40,7 +40,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
         accontInfo.configure(bank: "우리은행", account: "1002 - 045 - 401235", name: "임영후")
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
-        accontInfo.backgroundColor = .designSystem(.white)
+        accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
         return accontInfo
     }()
     
@@ -100,7 +100,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let leftButtomButton: UIButton = {
        let buttonButton = UIButton()
         buttonButton.frame = CGRect(x: 21, y: 690, width: 222, height: 58)
-        buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
+        buttonButton.addGradient(startColor: .designSystem(.blueTopGradient)!, endColor: .designSystem(.blueBottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
         buttonButton.setTitle("계좌번호 복사하기", for: .normal)
@@ -112,7 +112,7 @@ final class SentMoneyDetailViewViewController: BaseViewController {
     private let rightButtomButton: UIButton = {
        let buttonButton = UIButton()
         buttonButton.frame = CGRect(x: 262, y: 690, width: 103, height: 58)
-        buttonButton.addGradient(startColor: .designSystem(.topGradient)!, endColor: .designSystem(.bottomGradient)!)
+        buttonButton.addGradient(startColor: .designSystem(.blueTopGradient)!, endColor: .designSystem(.blueBottomGradient)!)
         buttonButton.layer.masksToBounds = true
         buttonButton.layer.cornerRadius = 29
         buttonButton.setTitle("보냈어요!", for: .normal)
@@ -238,15 +238,15 @@ func makeAtrributedString(money: Int) -> NSMutableAttributedString {
     return attributedQuote
 }
 
-extension UIButton {
-    func addGradient(startColor: UIColor, endColor: UIColor) {
-       self.layoutIfNeeded()
-       let gradient: CAGradientLayer = CAGradientLayer()
-       gradient.locations = [0.0 , 1.0]
-       gradient.colors = [startColor.cgColor, endColor.cgColor]
-       gradient.startPoint = CGPoint(x: 0.0, y: 0.0)
-       gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
-       gradient.frame = .init(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-       self.layer.insertSublayer(gradient, at: 0)
-     }
-}
+//extension UIButton {
+//    func addGradient(startColor: UIColor, endColor: UIColor) {
+//       self.layoutIfNeeded()
+//       let gradient: CAGradientLayer = CAGradientLayer()
+//       gradient.locations = [0.0 , 1.0]
+//       gradient.colors = [startColor.cgColor, endColor.cgColor]
+//       gradient.startPoint = CGPoint(x: 0.0, y: 0.0)
+//       gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
+//       gradient.frame = .init(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+//       self.layer.insertSublayer(gradient, at: 0)
+//     }
+//}
