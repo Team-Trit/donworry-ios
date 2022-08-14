@@ -19,16 +19,33 @@ struct PaymentCardCellDdipUser: Equatable {
 struct PaymentCardCellViewModel: Equatable {
     var id: Int
     var name: String
-    var amount: Int
+    var totalAmount: String
     var number: Int
+    var cardIconImageName: String
     var payer: PaymentCardCellDdipUser
     var participatedUserList: [PaymentCardCellDdipUser]
     var dateString: String
+    var backgroundColor: String
 }
 
 final class PaymentCardCollectionViewCell: UICollectionViewCell {
-    lazy var paymentCardView = PaymentCardView()
+    lazy var paymentCardInRoomView = PaymentCardInRoomView()
 
+    var viewModel: PaymentCardCellViewModel? {
+        didSet {
+            self.paymentCardInRoomView.viewModel = viewModel.map { model in
+                return PaymentCardInRoomViewModel(
+                    id: model.id,
+                    name: model.name,
+                    cardIconImageName: model.cardIconImageName,
+                    totalAmount: model.totalAmount,
+                    backgroundColor: model.backgroundColor,
+                    date: model.dateString,
+                    payer: model.payer,
+                    participatedUserList: model.participatedUserList)
+            }
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -46,13 +63,13 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
         self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
         self.layer.borderWidth = 1
         self.addShadowWithRoundedCorners(20, shadowColor: UIColor.designSystem(.black)!.cgColor, opacity: 0.6)
-        self.contentView.addSubview(self.paymentCardView)
+        self.contentView.addSubview(self.paymentCardInRoomView)
 
-        self.paymentCardView.snp.makeConstraints { make in
+        self.paymentCardInRoomView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
-        self.paymentCardView.layer.masksToBounds = true
+        self.paymentCardInRoomView.layer.masksToBounds = true
     }
 
 }

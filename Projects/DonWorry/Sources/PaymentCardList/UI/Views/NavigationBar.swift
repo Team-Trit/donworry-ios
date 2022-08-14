@@ -23,7 +23,7 @@ final class NavigationBar: UIView {
     lazy var stackView: UIStackView = {
         let v = UIStackView()
         v.axis = .horizontal
-        v.spacing = 30
+        v.spacing = 10
         v.distribution = .equalSpacing
         v.alignment = .center
         return v

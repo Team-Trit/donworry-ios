@@ -152,6 +152,7 @@ extension PaymentCardListViewController {
                 return cell
             case .PaymentCard(let viewModel):
                 let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
+                cell.viewModel = viewModel
                 return cell
             }
         })

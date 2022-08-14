@@ -50,14 +50,14 @@ extension PaymentCard {
             date: Date(),
             bankAccount: nil,
             images: nil,
-            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4]
+            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4, .dummyUser5]
         )
     }()
     static let dummyPaymentCard2: PaymentCard = {
         .init(
             id: 2,
             name: "2차 유스택시",
-            cardIcon: .dinner,
+            cardIcon: .chicken,
             totalAmount: 21000,
             payer: .dummyUser1,
             backgroundColor: "#FF5454",

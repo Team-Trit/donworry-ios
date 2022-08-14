@@ -33,11 +33,17 @@ extension PaymentCardCellViewModel {
     init(_ entity: PaymentCard) {
         self.id = entity.id
         self.name =  entity.name
-        self.amount = entity.totalAmount
         self.number = entity.participatedUserList.count
         self.payer = .init(entity.payer)
         self.participatedUserList = entity.participatedUserList.map(PaymentCardCellDdipUser.init)
+        self.cardIconImageName = entity.cardIcon.rawValue
+        self.backgroundColor = entity.backgroundColor
         self.dateString = Formatter.paymentCardDateFormatter.string(from: entity.date)
+        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: entity.totalAmount)) {
+            self.totalAmount = "총 " + amountText + "원"
+        } else {
+            self.totalAmount = "0원"
+        }
     }
 }
 
