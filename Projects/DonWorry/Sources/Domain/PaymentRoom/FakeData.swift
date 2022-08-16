@@ -31,7 +31,7 @@ extension PaymentRoom {
             code: "5613d42s3s5",
             name: "서울 나들이",
             admin: .dummyUser2,
-            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
+            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2,.dummyPaymentCard3],
             transferList: nil
         )
     }()
@@ -65,6 +65,20 @@ extension PaymentCard {
             bankAccount: nil,
             images: nil,
             participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser5]
+        )
+    }()
+    static let dummyPaymentCard3: PaymentCard = {
+        .init(
+            id: 2,
+            name: "3차 볼링장",
+            cardIcon: .chicken,
+            totalAmount: 132000,
+            payer: .dummyUser2,
+            backgroundColor: "#4A2597",
+            date: Date(),
+            bankAccount: nil,
+            images: nil,
+            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4 ,.dummyUser5]
         )
     }()
 }

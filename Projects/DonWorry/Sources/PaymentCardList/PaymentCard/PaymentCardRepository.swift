@@ -10,5 +10,7 @@ import RxSwift
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
 
-    public init() {}
+    public init() {
+
+    }
 }

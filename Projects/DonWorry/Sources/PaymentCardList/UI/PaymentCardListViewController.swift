@@ -54,12 +54,13 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         #warning("통일화시켜야 하는 카드 사이즈")
-        layout.itemSize = .init(width: 340, height: 216)
+        layout.estimatedItemSize = .init(width: 340, height: 0)
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        v.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 25, right: 25)
+        v.contentInset = UIEdgeInsets(top: 13, left: 25, bottom: 25, right: 25)
         v.register(PaymentCardCollectionViewCell.self)
+        v.register(AddPaymentCardCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
         return v
     }()
@@ -129,7 +130,7 @@ extension PaymentCardListViewController {
             make.centerY.equalTo(self.paymentRoomStackView)
         }
         self.collectionView.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentRoomIDLabel.snp.bottom).offset(28)
+            make.top.equalTo(self.paymentRoomIDLabel.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.view.safeAreaLayoutGuide)
         }
@@ -148,7 +149,7 @@ extension PaymentCardListViewController {
 
             switch dataSource[indexPath] {
             case .AddPaymentCard:
-                let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
+                let cell = collectionView.dequeueReusableCell(AddPaymentCardCollectionViewCell.self, for: indexPath)
                 return cell
             case .PaymentCard(let viewModel):
                 let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)

@@ -12,38 +12,47 @@ import DonWorryExtensions
 
 protocol PaymentCardListPresenter {
     func formatSection(
-        from paymentCardList: [PaymentCard]
+        from paymentCardList: [PaymentCard],
+        with transfer: [Transfer]?
     ) -> [PaymentCardSection]
 }
 
 final class PaymentCardPresenterImpl: PaymentCardListPresenter {
 
     func formatSection(
-        from paymentCardList: [PaymentCard]
+        from paymentCardList: [PaymentCard],
+        with transferList: [Transfer]?
     ) -> [PaymentCardSection] {
         guard paymentCardList.isNotEmpty else { return [.PaymentCardSection([.AddPaymentCard])]}
-        var paymentCardItems = paymentCardList.map(PaymentCardCellViewModel.init)
-            .map { PaymentCardItem.PaymentCard($0)}
+        var paymentCardItems = paymentCardList
+            .map { paymentCard in convert(paymentCard, yetComplete: false) }
+            .map { PaymentCardItem.PaymentCard($0) }
         paymentCardItems.append(.AddPaymentCard)
         return [.PaymentCardSection(paymentCardItems)]
     }
-}
 
-extension PaymentCardCellViewModel {
-    init(_ entity: PaymentCard) {
-        self.id = entity.id
-        self.name =  entity.name
-        self.number = entity.participatedUserList.count
-        self.payer = .init(entity.payer)
-        self.participatedUserList = entity.participatedUserList.map(PaymentCardCellDdipUser.init)
-        self.cardIconImageName = entity.cardIcon.rawValue
-        self.backgroundColor = entity.backgroundColor
-        self.dateString = Formatter.paymentCardDateFormatter.string(from: entity.date)
-        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: entity.totalAmount)) {
-            self.totalAmount = "총 " + amountText + "원"
+    private func convert(_ paymentCard: PaymentCard, yetComplete: Bool) -> PaymentCardCellViewModel {
+        return .init(
+            id: paymentCard.id,
+                     name: paymentCard.name,
+            totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
+            number: paymentCard.participatedUserList.count,
+            cardIconImageName: paymentCard.cardIcon.rawValue,
+            payer: .init(paymentCard.payer),
+            participatedUserList: paymentCard.participatedUserList.map(PaymentCardCellDdipUser.init),
+            dateString: Formatter.paymentCardDateFormatter.string(from: paymentCard.date),
+            backgroundColor: paymentCard.backgroundColor,
+            yetComplete: yetComplete)
+    }
+
+    private func convertTotalAmountToString(_ totalAmount: Int) -> String {
+        var result: String = ""
+        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: totalAmount)) {
+            result = "총 " + amountText + "원"
         } else {
-            self.totalAmount = "0원"
+            result = "0원"
         }
+        return result
     }
 }
 

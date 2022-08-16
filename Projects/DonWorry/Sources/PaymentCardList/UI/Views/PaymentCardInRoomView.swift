@@ -66,6 +66,7 @@ public class PaymentCardInRoomView: UIView {
             $0.roundCorners(12)
             offset += 17
         }
+
         if users.count > 4 {
             let imageView = UIImageView(image: .init(systemName: "ellipsis.circle.fill"))
             imageView.tintColor = .designSystem(.white2)
@@ -217,7 +218,7 @@ extension PaymentCardInRoomView {
         self.participatedUserView.snp.makeConstraints { make in
             make.top.equalTo(self.payerStackView.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(self.dateLabel.snp.top).inset(10)
+            make.bottom.equalTo(self.dateLabel.snp.top)
         }
         self.dateLabel.snp.makeConstraints { make in
             make.centerX.equalTo(payerStackView)

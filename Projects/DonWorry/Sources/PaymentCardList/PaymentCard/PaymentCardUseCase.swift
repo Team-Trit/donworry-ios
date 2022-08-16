@@ -7,10 +7,14 @@
 //
 
 import Foundation
+import RxSwift
+import Models
 
 protocol PaymentCardRepository {}
 
-protocol PaymentCardUseCase {}
+protocol PaymentCardUseCase {
+    func fetchPaymentCardList() -> Observable<[PaymentCard]>
+}
 
 final class PaymentCardUseCaseImpl: PaymentCardUseCase {
 
@@ -19,6 +23,12 @@ final class PaymentCardUseCaseImpl: PaymentCardUseCase {
     ) {
         self.paymentCardRepository = paymentCardRepository
     }
+
+    func fetchPaymentCardList() -> Observable<[PaymentCard]> {
+        return .just([.dummyPaymentCard1, .dummyPaymentCard2, .dummyPaymentCard3])
+    }
+
+
 
     private let paymentCardRepository: PaymentCardRepository
 }

@@ -26,11 +26,15 @@ struct PaymentCardCellViewModel: Equatable {
     var participatedUserList: [PaymentCardCellDdipUser]
     var dateString: String
     var backgroundColor: String
+    var yetComplete: Bool
 }
 
 final class PaymentCardCollectionViewCell: UICollectionViewCell {
     lazy var paymentCardInRoomView = PaymentCardInRoomView()
-
+    lazy var completeCoverView: UIView = {
+        let v = UIView()
+        return v
+    }()
     var viewModel: PaymentCardCellViewModel? {
         didSet {
             self.paymentCardInRoomView.viewModel = viewModel.map { model in
@@ -44,6 +48,7 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                     payer: model.payer,
                     participatedUserList: model.participatedUserList)
             }
+            self.completeCoverView.isHidden = (viewModel?.yetComplete ?? false)
         }
     }
     override init(frame: CGRect) {
@@ -59,17 +64,40 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
-        self.roundCorners(20)
+
         self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
         self.layer.borderWidth = 1
         self.addShadowWithRoundedCorners(20, shadowColor: UIColor.designSystem(.black)!.cgColor, opacity: 0.6)
         self.contentView.addSubview(self.paymentCardInRoomView)
+        self.contentView.addSubview(self.completeCoverView)
 
         self.paymentCardInRoomView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        self.completeCoverView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         self.paymentCardInRoomView.layer.masksToBounds = true
+        self.completeCoverView.roundCorners(20)
+        self.addCompleteCoverViewBlurEffect()
     }
 
+    private func addCompleteCoverViewBlurEffect() {
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = completeCoverView.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.addCompleteCheckImageView(to: blurEffectView)
+        self.completeCoverView.addSubview(blurEffectView)
+    }
+
+    private func addCompleteCheckImageView(to superView: UIVisualEffectView) {
+        let checkImageView = UIImageView(image: .init(.ic_check_white))
+        superView.contentView.addSubview(checkImageView)
+        checkImageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(36)
+        }
+    }
 }

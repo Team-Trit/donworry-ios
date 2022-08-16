@@ -48,7 +48,10 @@ final class PaymentCardListViewReactor: Reactor {
         switch mutation {
         case .updateTitle(let paymentRoom):
             newState.paymentRoom = paymentRoom
-            newState.section = paymentCardListPresenter.formatSection(from: paymentRoom.paymentCardList)
+            newState.section = paymentCardListPresenter.formatSection(
+                from: paymentRoom.paymentCardList,
+                with: paymentRoom.transferList
+            )
         }
         return newState
     }
@@ -58,6 +61,6 @@ final class PaymentCardListViewReactor: Reactor {
 
 extension PaymentCardListViewReactor {
     var dummyPaymentRoom: PaymentRoom {
-        .dummyPaymentRoom2
+        .dummyPaymentRoom1
     }
 }
