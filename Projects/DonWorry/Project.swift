@@ -10,18 +10,18 @@ let project = Project.make(
         dependencies: [
             .project(target: "DesignSystem", path: "../DesignSystem"),
             .project(target: "CoreKit", path: "../Core/CoreKit"),
-            .project(target: "Networking", path: "../Networking"),
+            .project(target: "DonWorryNetworking", path: "../DonWorryNetworking"),
             .project(target: "BaseArchitecture", path: "../Core/CoreKit"),
             .project(target: "DonWorryExtensions", path: "../Core/CoreKit"),
             .project(target: "DonWorryProtocols", path: "../Core/CoreKit"),
             .project(target: "Models", path: "../Core/CoreKit"),
+            .external(name: "RxDataSources"),
             .external(name: "SnapKit"),
             .external(name: "Kingfisher"),
             .external(name: "RxSwift"),
             .external(name: "RxCocoa"),
             .external(name: "ReactorKit"),
-            .external(name: "FlexLayout"),
-            .external(name: "Moya")
+            .external(name: "FlexLayout")
         ]
     ),
     Target.unitTests(name: "DonWorry"),

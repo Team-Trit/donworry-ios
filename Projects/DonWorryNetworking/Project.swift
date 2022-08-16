@@ -9,12 +9,15 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.make(
-  name: "Networking",
+  name: "DonWorryNetworking",
   targets: [
     .staticLibrary(
-        name: "Networking",
-        dependencies: []
+        name: "DonWorryNetworking",
+        dependencies: [
+            .external(name: "Moya"),
+            .external(name: "RxMoya")
+        ]
     ),
-    .unitTests(name: "Networking")
+    .unitTests(name: "DonWorryNetworking")
   ]
 )
