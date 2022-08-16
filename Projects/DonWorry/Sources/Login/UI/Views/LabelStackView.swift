@@ -48,8 +48,7 @@ final class LabelStackView: UIStackView {
 // MARK: - Layout
 extension LabelStackView {
     private func setUI() {
-        labelStackView.addArrangedSubview(titleLabel)
-        labelStackView.addArrangedSubview(descriptionLabel)
+        labelStackView.addArrangedSubviews(titleLabel, descriptionLabel)
         addSubview(labelStackView)
         
         labelStackView.snp.makeConstraints { make in

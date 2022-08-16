@@ -59,9 +59,7 @@ final class LoginButtonStackView: UIStackView {
 // MARK: - Layout
 extension LoginButtonStackView {
     private func setUI() {
-        loginButtonStackView.addArrangedSubview(appleLoginButton)
-        loginButtonStackView.addArrangedSubview(googleLoginButton)
-        loginButtonStackView.addArrangedSubview(kakaoLoginButton)
+        loginButtonStackView.addArrangedSubviews(appleLoginButton, googleLoginButton, kakaoLoginButton)
         addSubview(loginButtonStackView)
         
         loginButtonStackView.snp.makeConstraints { make in
