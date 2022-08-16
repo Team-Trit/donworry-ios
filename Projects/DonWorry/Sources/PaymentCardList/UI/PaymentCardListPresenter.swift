@@ -25,7 +25,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
     ) -> [PaymentCardSection] {
         guard paymentCardList.isNotEmpty else { return [.PaymentCardSection([.AddPaymentCard])]}
         var paymentCardItems = paymentCardList
-            .map { paymentCard in convert(paymentCard, yetComplete: false) }
+            .map { paymentCard in convert(paymentCard, yetComplete: transferList == nil) }
             .map { PaymentCardItem.PaymentCard($0) }
         paymentCardItems.append(.AddPaymentCard)
         return [.PaymentCardSection(paymentCardItems)]

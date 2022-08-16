@@ -166,24 +166,24 @@ extension HomeViewController {
     typealias DataSource = RxCollectionViewSectionedReloadDataSource
 
     func billCardDataSourceOf() -> DataSource<BillCardSection> {
-           return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
+        return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
 
-               switch dataSource[indexPath] {
-               case .GiveBillCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(GiveBillCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = viewModel
-                   return cell
-               case .TakeBillCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(TakeBillCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = viewModel
-                   return cell
-               case .StateBillCard:
-                   let cell = collectionView.dequeueReusableCell(StateBillCardCollectionViewCell.self, for: indexPath)
-                   return cell
-               case .LeaveBillCard:
-                   let cell = collectionView.dequeueReusableCell(LeavePaymentRoomBillCardCollectionViewCell.self, for: indexPath)
-                   return cell
-               }
-           })
-       }
+            switch dataSource[indexPath] {
+            case .GiveBillCard(let viewModel):
+                let cell = collectionView.dequeueReusableCell(GiveBillCardCollectionViewCell.self, for: indexPath)
+                cell.viewModel = viewModel
+                return cell
+            case .TakeBillCard(let viewModel):
+                let cell = collectionView.dequeueReusableCell(TakeBillCardCollectionViewCell.self, for: indexPath)
+                cell.viewModel = viewModel
+                return cell
+            case .StateBillCard:
+                let cell = collectionView.dequeueReusableCell(StateBillCardCollectionViewCell.self, for: indexPath)
+                return cell
+            case .LeaveBillCard:
+                let cell = collectionView.dequeueReusableCell(LeavePaymentRoomBillCardCollectionViewCell.self, for: indexPath)
+                return cell
+            }
+        })
+    }
 }

@@ -61,6 +61,6 @@ final class PaymentCardListViewReactor: Reactor {
 
 extension PaymentCardListViewReactor {
     var dummyPaymentRoom: PaymentRoom {
-        .dummyPaymentRoom1
+        .dummyPaymentRoom2
     }
 }

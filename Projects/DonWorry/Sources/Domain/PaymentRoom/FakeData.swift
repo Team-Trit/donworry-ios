@@ -96,7 +96,7 @@ extension User {
     static let dummyUser2: User = {
         .init(
             id: 2,
-            nickName: "에이브리",
+            nickName: "에이브리리리리",
             bankAccount: .init( bank: .toss, accountHolderName: "정찬희",  accountNumber: "1000-1831-4124"),
             image: "https://user-images.githubusercontent.com/56102421/179954565-010e44d2-7bf9-40de-b2af-345a3967031d.png"
         )

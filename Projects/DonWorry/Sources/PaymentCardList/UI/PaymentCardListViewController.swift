@@ -58,12 +58,46 @@ final class PaymentCardListViewController: BaseViewController, View {
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        v.contentInset = UIEdgeInsets(top: 13, left: 25, bottom: 25, right: 25)
+        v.contentInset = UIEdgeInsets(top: 13, left: 25, bottom: 58 + 6 + 20, right: 25)
         v.register(PaymentCardCollectionViewCell.self)
         v.register(AddPaymentCardCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
         return v
     }()
+    lazy var floatingStackView: UIStackView = {
+        let v = UIStackView()
+        v.axis = .horizontal
+        v.spacing = 10
+        v.distribution = .equalSpacing
+        v.alignment = .center
+        return v
+    }()
+    lazy var shareLinkButton: DWButton = {
+        let v = DWButton.create(.halfMainBlue)
+        v.setTitle("링크 공유", for: .normal)
+        let configuration = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 15, weight: .bold))
+        v.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: configuration), for: .normal)
+        v.semanticContentAttribute = .forceRightToLeft
+        let imagePadding: CGFloat = 12
+        v.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
+        v.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
+        v.imageEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
+        return v
+    }()
+    lazy var checkParticipatedButton: DWButton = {
+        let v = DWButton.create(.halfLightBlue)
+        v.setTitle("참석 확인", for: .normal)
+        let configuration = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 15, weight: .bold))
+        v.setImage(UIImage(systemName: "checkmark", withConfiguration: configuration), for: .normal)
+        v.semanticContentAttribute = .forceRightToLeft
+        let imagePadding: CGFloat = 12
+        v.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
+        v.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
+        v.imageEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
+        v.tintColor = .designSystem(.white)
+        return v
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -78,8 +112,37 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.rx.viewDidLoad.map { .setup }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-    }
 
+        self.collectionView.rx.itemHighlighted
+            .subscribe(onNext: { [weak self] indexPath in
+                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
+                    UIView.animate(withDuration: 0.22) {
+                        cell.transform = .init(scaleX: 0.95, y: 0.95)
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+
+        self.collectionView.rx.itemUnhighlighted
+            .subscribe(onNext: { [weak self] indexPath in
+                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
+                    UIView.animate(withDuration: 0.2) {
+                        cell.transform = .identity
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+
+        self.collectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell else { return }
+                let viewController = UIViewController()
+                viewController.view.backgroundColor = .systemIndigo
+                self?.navigationController?.setNavigationBarHidden(false, animated: false)
+                self?.navigationController?.pushViewController(viewController, animated: true)
+            }).disposed(by: disposeBag)
+
+    }
     private func render(reactor: Reactor) {
         reactor.state.map { $0.paymentRoom?.name }
             .bind(to: navigationBar.titleLabel.rx.text)
@@ -110,6 +173,8 @@ extension PaymentCardListViewController {
         self.view.addSubview(self.paymentRoomStackView)
         self.view.addSubview(self.startPaymentAlgorithmButton)
         self.view.addSubview(self.collectionView)
+        self.view.addSubview(self.floatingStackView)
+        self.floatingStackView.addArrangedSubviews(self.shareLinkButton, self.checkParticipatedButton)
         self.paymentRoomStackView.addArrangedSubviews(self.paymentRoomIDLabel, self.paymentRoomIDCopyButton)
 
         self.navigationBar.snp.makeConstraints { make in
@@ -132,7 +197,15 @@ extension PaymentCardListViewController {
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(self.paymentRoomIDLabel.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
+        }
+        self.floatingStackView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(6)
+            make.leading.trailing.equalToSuperview().inset(25)
+        }
+        self.shareLinkButton.snp.makeConstraints { make in
+
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)

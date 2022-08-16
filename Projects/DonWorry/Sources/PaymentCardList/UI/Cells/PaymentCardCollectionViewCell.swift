@@ -66,8 +66,14 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
     private func setUI() {
 
         self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
-        self.layer.borderWidth = 1
-        self.addShadowWithRoundedCorners(20, shadowColor: UIColor.designSystem(.black)!.cgColor, opacity: 0.6)
+        self.layer.borderWidth = 0.5
+        self.layer.cornerRadius = 20
+        self.addShadow(
+            shadowColor: UIColor.designSystem(.black)!.cgColor,
+            offset: .init(width: 0, height: 2),
+            opacity: 0.5,
+            radius: 2
+        )
         self.contentView.addSubview(self.paymentCardInRoomView)
         self.contentView.addSubview(self.completeCoverView)
 

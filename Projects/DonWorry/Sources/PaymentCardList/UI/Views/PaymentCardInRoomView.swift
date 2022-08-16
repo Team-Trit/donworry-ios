@@ -148,6 +148,7 @@ public class PaymentCardInRoomView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "정산자"
         $0.numberOfLines = 1
+        $0.adjustsFontSizeToFitWidth = true
         $0.font = .designSystem(weight: .heavy, size: ._15)
         $0.textAlignment = .left
         $0.textColor = .white
@@ -214,6 +215,7 @@ extension PaymentCardInRoomView {
         self.payerStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
             make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(6)
         }
         self.participatedUserView.snp.makeConstraints { make in
             make.top.equalTo(self.payerStackView.snp.bottom).offset(10)

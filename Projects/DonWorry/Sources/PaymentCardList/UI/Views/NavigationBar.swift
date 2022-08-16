@@ -30,14 +30,16 @@ final class NavigationBar: UIView {
     }()
     lazy var optionButton: UIButton = {
         let v = UIButton(type: .system)
-        v.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        let configure = UIImage.SymbolConfiguration.init(font: UIFont.boldSystemFont(ofSize: 15))
+        v.setImage(UIImage(systemName: "ellipsis", withConfiguration: configure), for: .normal)
         v.tintColor = .designSystem(.black)
         v.addTarget(self, action: #selector(didTapOptionButton), for: .touchUpInside)
         return v
     }()
     lazy var dismissButton: UIButton = {
         let v = UIButton(type: .system)
-        v.setImage(UIImage(systemName: "xmark"), for: .normal)
+        let configure = UIImage.SymbolConfiguration.init(font: UIFont.boldSystemFont(ofSize: 15))
+        v.setImage(UIImage(systemName: "xmark", withConfiguration: configure), for: .normal)
         v.tintColor = .designSystem(.black)
         v.addTarget(self, action: #selector(didTapDismissButton), for: .touchUpInside)
         return v
