@@ -12,9 +12,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EnterRoomViewController" customModule="DonWorry" customModuleProvider="target">
             <connections>
-                <outlet property="enterRoomButton" destination="r5J-7f-03Y" id="hQI-Fy-jOk"/>
-                <outlet property="slideIdicator" destination="C0X-1W-mHp" id="oDx-8c-I0l"/>
-                <outlet property="view" destination="iN0-l3-epB" id="OVF-Ou-KO9"/>
+                <outlet property="enterRoomButton" destination="r5J-7f-03Y" id="YfC-qY-7vp"/>
+                <outlet property="slideIndicator" destination="C0X-1W-mHp" id="mLs-rk-gN6"/>
+                <outlet property="view" destination="iN0-l3-epB" id="Pm1-XR-fgD"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -23,11 +23,11 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r5J-7f-03Y">
-                    <rect key="frame" x="37" y="392" width="340" height="58"/>
+                    <rect key="frame" x="37" y="400" width="340" height="50"/>
                     <color key="backgroundColor" red="0.10980392160000001" green="0.41960784309999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="340" id="ak2-MA-9os"/>
-                        <constraint firstAttribute="height" constant="58" id="jJY-f3-Lho"/>
+                        <constraint firstAttribute="height" constant="50" id="jJY-f3-Lho"/>
                     </constraints>
                     <color key="tintColor" name="AccentColor"/>
                     <state key="normal" title="Button"/>
@@ -36,7 +36,7 @@
                         <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </buttonConfiguration>
                     <connections>
-                        <action selector="enterRoomButton:" destination="-1" eventType="touchUpInside" id="Zj4-lT-V24"/>
+                        <action selector="enterRoomButton:" destination="-1" eventType="touchUpInside" id="YV9-Ey-b5I"/>
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="정산방 ID로 정산에 참가하기" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UZI-YO-vXq">
@@ -46,10 +46,10 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C0X-1W-mHp">
-                    <rect key="frame" x="177" y="15" width="60" height="5"/>
+                    <rect key="frame" x="177" y="15" width="60" height="4"/>
                     <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="5" id="PO8-rl-noN"/>
+                        <constraint firstAttribute="height" constant="4" id="PO8-rl-noN"/>
                         <constraint firstAttribute="width" constant="60" id="Zkg-ff-b83"/>
                     </constraints>
                 </view>
@@ -61,7 +61,7 @@
                     </constraints>
                 </imageView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="HNf-0l-fT5">
-                    <rect key="frame" x="37" y="290" width="340" height="42"/>
+                    <rect key="frame" x="37" y="298" width="340" height="42"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Vt1-R6-lw9">
                             <rect key="frame" x="0.0" y="0.0" width="340" height="31"/>

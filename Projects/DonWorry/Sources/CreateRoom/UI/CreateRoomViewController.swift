@@ -12,14 +12,17 @@ import BaseArchitecture
 import RxCocoa
 import RxSwift
 
-
 final class CreateRoomViewController: BaseViewController {
     
     let viewModel = CreateRoomViewModel()
 
+    
+    @IBOutlet weak var nextStepButton: UIButton!
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        nextStepButton.layer.cornerRadius = 25
         attributes()
         layout()
     }
@@ -34,12 +37,12 @@ final class CreateRoomViewController: BaseViewController {
     @IBAction func onButton(_ sender: Any) {
         showMiracle()
     }
-
 }
 
 extension CreateRoomViewController {
 
     private func attributes() {
+        
     }
 
     private func layout() {

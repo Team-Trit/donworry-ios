@@ -24,12 +24,14 @@ final class EnterRoomViewController: BaseViewController {
     @IBOutlet weak var slideIndicator: UIView!
     @IBOutlet weak var enterRoomButton: UIButton!
     @IBAction func enterRoomButton(_ sender: Any) {
-        
+
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+//        slideIndicator.layer.cornerRadius = 2
+//        enterRoomButton.layer.cornerRadius = 25
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
         view.addGestureRecognizer(panGesture)
         
