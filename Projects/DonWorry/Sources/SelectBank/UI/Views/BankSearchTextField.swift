@@ -46,6 +46,7 @@ extension BankSearchTextField {
         addSubview(bankSearchTextField)
         
         bankSearchTextField.snp.makeConstraints { make in
+            make.top.equalToSuperview()
             make.leading.equalToSuperview().offset(25)
             make.trailing.equalToSuperview().offset(-25)
             make.height.equalTo(55)
