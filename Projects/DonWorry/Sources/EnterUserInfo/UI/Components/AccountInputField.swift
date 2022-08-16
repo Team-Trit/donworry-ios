@@ -8,6 +8,7 @@
 
 import UIKit
 
+import DesignSystem
 import SnapKit
 
 protocol AccountInputFieldDelegate: AnyObject {
@@ -15,29 +16,22 @@ protocol AccountInputFieldDelegate: AnyObject {
 }
 
 final class AccountInputField: UIStackView {
-    private let bankHolderStack = UIStackView()
-    private let chooseBankLabel = UILabel()
-    private let holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
-    private let accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
-    weak var delegate: AccountInputFieldDelegate?
-    
-    init() {
-        super.init(frame: .zero)
-        attributes()
-        layout()
-    }
-    
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-// MARK: - Configuration
-extension AccountInputField {
-    private func attributes() {
-        axis = .vertical
-        spacing = 20
-        alignment = .leading
+    private lazy var accountInputField: UIStackView = {
+        let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 40
+        v.alignment = .leading
+        return v
+    }()
+    private lazy var bankHolderStack: UIStackView = {
+        let v = UIStackView()
+        v.axis = .horizontal
+        v.spacing = 20
+        v.alignment = .center
+        return v
+    }()
+    private lazy var chooseBankLabel: UILabel = {
+        let v = UILabel()
         
         let attributedString = NSMutableAttributedString(string: "")
         let imageAttachment = NSTextAttachment()
@@ -46,53 +40,62 @@ extension AccountInputField {
         attributedString.append(NSAttributedString(string: "은행 선택 "))
         attributedString.append(NSAttributedString(attachment: imageAttachment))
         
-        chooseBankLabel.attributedText = attributedString
-        chooseBankLabel.textColor = .white
-        chooseBankLabel.font = .systemFont(ofSize: 12)
-        chooseBankLabel.textAlignment = .center
-        chooseBankLabel.clipsToBounds = true
-        chooseBankLabel.layer.cornerRadius = 15
-        chooseBankLabel.backgroundColor = .designSystem(.grayC5C5C5)
-        chooseBankLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(chooseBankLabelPressed)))
-        chooseBankLabel.isUserInteractionEnabled = true
-        
-        bankHolderStack.axis = .horizontal
-        bankHolderStack.spacing = 20
-        bankHolderStack.alignment = .center
+        v.attributedText = attributedString
+        v.textColor = .white
+        v.font = .designSystem(weight: .regular, size: ._13)
+        v.textAlignment = .center
+        v.clipsToBounds = true
+        v.layer.cornerRadius = 15
+        v.backgroundColor = .designSystem(.grayC5C5C5)
+        v.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(chooseBankLabelPressed)))
+        v.isUserInteractionEnabled = true
+        return v
+    }()
+    private lazy var holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
+    private lazy var accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
+    weak var delegate: AccountInputFieldDelegate?
+    
+    init() {
+        super.init(frame: .zero)
+        setUI()
     }
     
-    private func layout() {
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Layout
+extension AccountInputField {
+    private func setUI() {
         bankHolderStack.addArrangedSubviews(chooseBankLabel, holderTextField)
-        addSubview(bankHolderStack)
+        accountInputField.addArrangedSubviews(bankHolderStack, accountTextField)
+        addSubview(accountInputField)
         
-        chooseBankLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            chooseBankLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            chooseBankLabel.widthAnchor.constraint(equalToConstant: 90),
-            chooseBankLabel.heightAnchor.constraint(equalToConstant: 30)
-        ])
+        bankHolderStack.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+        }
         
-        holderTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            holderTextField.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
+        chooseBankLabel.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview()
+            make.width.equalTo(90)
+            make.height.equalTo(30)
+        }
         
-        self.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            self.leadingAnchor.constraint(equalTo: leadingAnchor),
-            self.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
+        holderTextField.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+        }
         
-        addArrangedSubview(bankHolderStack)
-        setCustomSpacing(40, after: bankHolderStack)
-        addArrangedSubview(accountTextField)
+        accountTextField.snp.makeConstraints { make in
+            make.top.equalTo(bankHolderStack.snp.bottom).offset(400)
+            make.leading.trailing.equalToSuperview()
+        }
         
-        accountTextField.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            accountTextField.topAnchor.constraint(equalTo: bankHolderStack.bottomAnchor, constant: 90),
-            accountTextField.leadingAnchor.constraint(equalTo: leadingAnchor),
-            accountTextField.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
+        accountInputField.snp.makeConstraints { make in
+            make.top.equalTo(bankHolderStack).offset(40)
+            make.leading.trailing.equalToSuperview()
+            make.width.height.equalToSuperview()
+        }
     }
 }
 
