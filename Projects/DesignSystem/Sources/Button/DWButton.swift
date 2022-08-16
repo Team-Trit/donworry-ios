@@ -22,28 +22,6 @@ public enum DonWorryButtonType {
 }
 
 public extension DWButton {
-//    static func createWithConfiguration(_ type: DonWorryButtonType) -> DWButton {
-//        switch type {
-//        case .xlargeBlue:
-//            <#code#>
-//        case .xlargeGray:
-//            <#code#>
-//        case .largeBlue:
-//            <#code#>
-//        case .mediumBlue:
-//            <#code#>
-//        case .smallBlue:
-//            <#code#>
-//        case .halfMainBlue:
-//            <#code#>
-//        case .halfGray:
-//            <#code#>
-//        case .halfLightBlue:
-//            <#code#>
-//        case .xsmallGray:
-//            <#code#>
-//        }
-//    }
 
     static func create(_ type: DonWorryButtonType) -> DWButton {
         let button = DWButton(type: .system)
