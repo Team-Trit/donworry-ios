@@ -18,28 +18,22 @@ import SnapKit
 
 final class PaymentCardNameEditViewController: BaseViewController, View {
     
-//    enum PaymentCardNameEditViewType {
-//        case create
-//        case update
-//    }
-//
-//    var type: PaymentCardNameEditViewType?
-//
-//    override init() {
-//        super.init()
-//    }
-//
-//    init(type: PaymentCardNameEditViewType) {
-//        super.init()
-//        self.type = type
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-    
+    // MARK: - Init
+    enum PaymentCardNameEditViewType {
+        case create //default
+        case update
+    }
+
+    var type: PaymentCardNameEditViewType = .create
+
+    convenience init(type: PaymentCardNameEditViewType) {
+        self.init()
+        self.type = type
+    }
+
+    // MARK: - Views
     private lazy var titleLabel: UILabel = {
-        $0.text = "정산내역을\n추가해볼까요?"
+        $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
         $0.setLineSpacing(spacing: 10.0)
         $0.font = .designSystem(weight: .heavy, size: ._25)
@@ -50,22 +44,24 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
         return UIImageView(image: .init(.smartphone_with_bills))
     }()
     
-    private lazy var paymentNameLabel = LimitTextField(placeholder: "정산하고자 하는 항목을 입력하세요", limit: 20)
+    private lazy var paymentNameLabel = LimitTextField(placeholder: setPlaceholderText(type: type), limit: 20)
     
     private lazy var nextButton = LargeButton(type: .next)
     
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
     }
 
+    // MARK: - Binding
     func bind(reactor: PaymentCardNameEditViewReactor) {
         //binding here
     }
 
 }
 
-// MARK: setUI
+// MARK: - setUI
 
 extension PaymentCardNameEditViewController {
 
@@ -98,4 +94,25 @@ extension PaymentCardNameEditViewController {
         
     }
 
+}
+
+// MARK: - Method
+extension PaymentCardNameEditViewController {
+    private func setTitleLabelText(type: PaymentCardNameEditViewType) -> String {
+        switch type {
+            case .create:
+                return "정산내역을\n추가해볼까요?"
+            case .update:
+                return "정산항목명을\n수정해볼까요?"
+        }
+    }
+    
+    private func setPlaceholderText(type: PaymentCardNameEditViewType)  -> String {
+        switch type {
+            case .create:
+                return "정산하고자 하는 항목을 입력하세요"
+            case .update:
+                return "정산항목명을 입력하세요"
+        }
+    }
 }
