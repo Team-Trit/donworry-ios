@@ -19,7 +19,7 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     private struct Catogory {
         let iconName: String
     }
-    
+    private var selectedIcon: String = ""
     private let icons: [Catogory] = [Catogory(iconName: "ic_chicken"),
                                      Catogory(iconName: "ic_cup"),
                                      Catogory(iconName: "ic_wine"),
@@ -79,23 +79,23 @@ extension PaymentCardIconEditViewController {
             $0.leading.trailing.bottom.equalToSuperview()
         }
         
+        iconCollectionView.delegate = self
+        iconCollectionView.dataSource = self
+        iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
+        
         iconCollectionView.snp.makeConstraints {
             $0.width.equalTo(300)
             $0.top.equalTo(titleLabel.snp.bottom).offset(57.5)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(100)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-        
-        // 컬렉션뷰 설정
-        iconCollectionView.delegate = self
-        iconCollectionView.dataSource = self
-        
-        
-        // 셀등록
-        iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
-        // 컬렉션뷰
-        
     }
+}
+
+
+// MARK: - CollectionView
+
+extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     private func createCollecionViewLayout() -> UICollectionViewCompositionalLayout{
         
@@ -114,13 +114,6 @@ extension PaymentCardIconEditViewController {
         return layout
     }
     
-}
-
-
-// MARK: - setUI
-
-extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 9
     }
@@ -129,6 +122,14 @@ extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollect
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell else { return UICollectionViewCell() }
         cell.configure(with: icons[indexPath.row].iconName)
         return cell
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // TODO: 선택된 셀 다루기
+        selectedIcon = icons[indexPath.row].iconName
+        print("선택된 셀 : \(selectedIcon)")
     }
     
 }
