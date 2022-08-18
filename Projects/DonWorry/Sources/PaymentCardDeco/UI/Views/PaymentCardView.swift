@@ -197,7 +197,7 @@ public class PaymentCardView: UIView {
     
     // MARK: - Store Properties
     
-    var bank: String! {
+    fileprivate var bank: String! {
         didSet {
             if bank == "" {
                 let name = NSMutableAttributedString(string: "", attributes: [
@@ -217,7 +217,7 @@ public class PaymentCardView: UIView {
         }
     }
     
-    var accountNumber: String! {
+    fileprivate var accountNumber: String! {
         didSet {
             if accountNumber == "" {
                 let name = NSMutableAttributedString(string: "", attributes: [
@@ -237,7 +237,7 @@ public class PaymentCardView: UIView {
         }
     }
     
-    var accountHolderName: String! {
+    fileprivate var accountHolderName: String! {
         didSet {
             if accountHolderName == "" {
                 let name = NSMutableAttributedString(string: "", attributes: [
@@ -257,7 +257,7 @@ public class PaymentCardView: UIView {
         }
     }
     
-    var payDate: String! {
+    fileprivate var payDate: String! {
         didSet {
             if payDate == "" {
                 let nums = NSMutableAttributedString(string: "", attributes: [

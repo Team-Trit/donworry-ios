@@ -8,8 +8,10 @@
 
 import Foundation
 
-public struct User {
-    public var id: Int
+public struct User: Codable {
+    public typealias ID = Int
+
+    public var id: ID
     public var nickName: String
     public var bankAccount: BankAccount
     public var image: String
