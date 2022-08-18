@@ -74,6 +74,7 @@ extension ProfileTableViewUserCell {
         
         profileImageView.snp.makeConstraints { make in
             make.top.equalTo(profileLabel.snp.bottom).offset(26)
+            make.leading.equalToSuperview()
             make.width.height.equalTo(50)
         }
         
