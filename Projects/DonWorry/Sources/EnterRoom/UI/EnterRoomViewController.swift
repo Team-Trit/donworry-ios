@@ -8,7 +8,7 @@
 
 import UIKit
 import BaseArchitecture
-
+import DesignSystem
 import RxCocoa
 import RxSwift
 
@@ -20,27 +20,22 @@ final class EnterRoomViewController: BaseViewController {
     var hasSetPointOrigin = false
     var pointOrigin: CGPoint?
     
+    private lazy var nextButton = LargeButton(type: .enter)
+    private lazy var roomCodeTextField = RoomNameTextField()
     
+    @IBOutlet weak var enterRoomLabel: UILabel!
     @IBOutlet weak var slideIndicator: UIView!
-    @IBOutlet weak var enterRoomButton: UIButton!
-    @IBAction func enterRoomButton(_ sender: Any) {
-
-    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-//        slideIndicator.layer.cornerRadius = 2
-//        enterRoomButton.layer.cornerRadius = 25
+        slideIndicator.layer.cornerRadius = 2
+        
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
+        
         view.addGestureRecognizer(panGesture)
-        
-//        slideIndicator.roundCorners(.allCorners, radius: 5)
-//        enterRoomButton.roundCorners(.allCorners, radius: 5)
-        
-        attributes()
-        layout()
     }
+    
     
     override func viewDidLayoutSubviews() {
         if !hasSetPointOrigin {
@@ -48,6 +43,7 @@ final class EnterRoomViewController: BaseViewController {
             pointOrigin = self.view.frame.origin
         }
     }
+    
     
     @objc func panGestureRecognizerAction(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: view)
@@ -75,11 +71,18 @@ final class EnterRoomViewController: BaseViewController {
 
 extension EnterRoomViewController {
 
-    private func attributes() {
-
-    }
-
-    private func layout() {
-
+    private func setUI() {
+        view.backgroundColor = .white
+        view.addSubviews(roomCodeTextField, nextButton)
+        
+        roomCodeTextField.snp.makeConstraints { make in
+            make.top.equalTo(enterRoomLabel.snp.bottom).offset(59)
+            make.leading.trailing.centerX.equalToSuperview()
+            make.height.equalTo(100)
+        }
+        
+        nextButton.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
     }
 }
