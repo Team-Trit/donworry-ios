@@ -11,23 +11,40 @@ import UIKit
 import DesignSystem
 import SnapKit
 
+var terms: [Term] = [
+    Term(label: "전체동의"),
+    Term(label: "만 14세 이상입니다.", children: [
+        Term(label: "1-1"),
+        Term(label: "1-2")
+    ]),
+    Term(label: "돈워리 서비스 이용약관 동의", children: [
+        Term(label: "2-1"),
+        Term(label: "2-2")
+    ]),
+    Term(label: "돈워리의 개인정보 수집 및 이용에 동의", children: [
+        Term(label: "3-1")
+    ]),
+    Term(label: "돈워리 개인정보 제 3자 제공 동의"),
+    Term(label: "이벤트 알림 수신 동의")
+]
+
 final class AgreeTermTableView: UITableView {
-    private var terms: [Term] = [
-        Term(label: "전체동의"),
-        Term(label: "만 14세 이상입니다.", children: [
-            Term(label: "1-1"),
-            Term(label: "1-2")
-        ]),
-        Term(label: "돈워리 서비스 이용약관 동의", children: [
-            Term(label: "2-1"),
-            Term(label: "2-2")
-        ]),
-        Term(label: "돈워리의 개인정보 수집 및 이용에 동의", children: [
-            Term(label: "3-1")
-        ]),
-        Term(label: "돈워리 개인정보 제 3자 제공 동의"),
-        Term(label: "이벤트 알림 수신 동의")
-    ]
+    //    private var terms: [Term] = [
+    //        Term(label: "전체동의"),
+    //        Term(label: "만 14세 이상입니다.", children: [
+    //            Term(label: "1-1"),
+    //            Term(label: "1-2")
+    //        ]),
+    //        Term(label: "돈워리 서비스 이용약관 동의", children: [
+    //            Term(label: "2-1"),
+    //            Term(label: "2-2")
+    //        ]),
+    //        Term(label: "돈워리의 개인정보 수집 및 이용에 동의", children: [
+    //            Term(label: "3-1")
+    //        ]),
+    //        Term(label: "돈워리 개인정보 제 3자 제공 동의"),
+    //        Term(label: "이벤트 알림 수신 동의")
+    //    ]
     
     private lazy var agreeTermTableView: UITableView = {
         let v = UITableView()
@@ -91,11 +108,11 @@ extension AgreeTermTableView: UITableViewDelegate {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: AgreeTermTableViewHeader.identifier) as! AgreeTermTableViewHeader
         header.titleLabel.text = terms[section].label
         if terms[section].children != nil {
-            header.showDetailButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            header.isExpanded = true
+            header.showDetailButton?.tag = section
         }
         header.delegate = self
         header.checkButton.tag = section
-        header.showDetailButton.tag = section
         return header
     }
 }
@@ -114,13 +131,36 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         }
     }
     
+    func toggleAllCheck(_ sender: UIButton) {
+        let isAllSatisfied = terms.allSatisfy { $0.isChecked }
+        
+        for i in 0..<terms.count {
+            if let header = agreeTermTableView.headerView(forSection: i) as? AgreeTermTableViewHeader {
+                if isAllSatisfied {
+                    terms[i].isChecked = false
+                    agreeTermTableView.performBatchUpdates {
+                        header.checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
+                        header.checkButton.tintColor = .designSystem(.grayC5C5C5)
+                    }
+                    
+                } else {
+                    terms[i].isChecked = true
+                    agreeTermTableView.performBatchUpdates {
+                        header.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
+                        header.checkButton.tintColor = .designSystem(.mainBlue)
+                    }
+                }
+            }
+        }
+    }
+    
     func showDetail(_ sender: UIButton) {
         let section = sender.tag
         terms[section].isExpanded.toggle()
         let isExpanded = terms[section].isExpanded
         if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
             agreeTermTableView.performBatchUpdates {
-                header.showDetailButton.rotate(isExpanded ? .pi : 0.0)
+                header.showDetailButton!.rotate(isExpanded ? .pi : 0.0)
             }
         }
         

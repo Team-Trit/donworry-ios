@@ -69,7 +69,7 @@ extension ConfirmTermViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TermConfirmCell", for: indexPath)
-        cell.textLabel?.text = "* \(checkedTerms[indexPath.row].title)"
+        cell.textLabel?.text = "* \(checkedTerms[indexPath.row].label)"
         cell.textLabel?.font = .designSystem(weight: .regular, size: ._15)
         cell.textLabel?.textColor = .designSystem(.gray818181)
         return cell

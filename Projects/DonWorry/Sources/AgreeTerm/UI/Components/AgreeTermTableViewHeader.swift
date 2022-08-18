@@ -12,11 +12,21 @@ import DesignSystem
 
 protocol AgreeTermTableViewHeaderDelegate: AnyObject {
     func toggleCheck(_ sender: UIButton)
+    func toggleAllCheck(_ sender: UIButton)
     func showDetail(_ sender: UIButton)
 }
 
 final class AgreeTermTableViewHeader: UITableViewHeaderFooterView {
     static let identifier = "AgreeTermTableViewHeader"
+    var isExpanded: Bool? {
+        didSet {
+            showDetailButton = UIButton()
+            showDetailButton!.tintColor = .designSystem(.gray818181)
+            showDetailButton!.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            showDetailButton!.addTarget(self, action: #selector(showDetailButtonPressed(_:)), for: .touchUpInside)
+            setShowDetailButtonLayout()
+        }
+    }
     lazy var checkButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(systemName: "circle"), for: .normal)
@@ -30,13 +40,7 @@ final class AgreeTermTableViewHeader: UITableViewHeaderFooterView {
         v.font = .designSystem(weight: .regular, size: ._15)
         return v
     }()
-    lazy var showDetailButton: UIButton = {
-        let v = UIButton()
-        v.tintColor = .designSystem(.gray818181)
-//        v.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-        v.addTarget(self, action: #selector(showDetailButtonPressed(_:)), for: .touchUpInside)
-        return v
-    }()
+    var showDetailButton: UIButton?
     weak var delegate: AgreeTermTableViewHeaderDelegate?
     
     override init(reuseIdentifier: String?) {
@@ -53,8 +57,8 @@ final class AgreeTermTableViewHeader: UITableViewHeaderFooterView {
 extension AgreeTermTableViewHeader {
     private func setUI() {
         contentView.backgroundColor = .white
-
-        contentView.addSubviews(checkButton, titleLabel, showDetailButton)
+        
+        contentView.addSubviews(checkButton, titleLabel)
         
         checkButton.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
@@ -65,6 +69,12 @@ extension AgreeTermTableViewHeader {
             make.leading.equalTo(checkButton.snp.trailing).offset(20)
             make.centerY.equalToSuperview()
         }
+    }
+    
+    private func setShowDetailButtonLayout() {
+        guard let showDetailButton = showDetailButton else { return }
+        
+        contentView.addSubview(showDetailButton)
         
         showDetailButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-20)
@@ -76,7 +86,11 @@ extension AgreeTermTableViewHeader {
 // MARK: - Interaction Functions
 extension AgreeTermTableViewHeader {
     @objc private func checkButtonPressed(_ sender: UIButton) {
-        delegate?.toggleCheck(sender)
+        if sender.tag == 0 {
+            delegate?.toggleAllCheck(sender)
+        } else {
+            delegate?.toggleCheck(sender)
+        }
     }
     
     @objc private func showDetailButtonPressed(_ sender: UIButton) {

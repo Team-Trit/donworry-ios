@@ -13,6 +13,7 @@ import DesignSystem
 import RxCocoa
 import RxSwift
 import SnapKit
+import Alamofire
 
 final class AgreeTermViewController: BaseViewController {
     private lazy var descriptionLabel: UILabel = {
@@ -74,6 +75,7 @@ extension AgreeTermViewController {
 // MARK: - Interaction Functions
 extension AgreeTermViewController {
     @objc private func doneButtonPressed(_ sender: UIButton) {
-        present(ConfirmTermViewController(checkedTerms: getCheckedTerms()), animated: true)
+//        present(ConfirmTermViewController(checkedTerms: getCheckedTerms()), animated: true)
+        present(ConfirmTermViewController(), animated: true)
     }
 }
