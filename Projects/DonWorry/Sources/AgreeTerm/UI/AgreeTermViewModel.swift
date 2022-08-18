@@ -11,6 +11,14 @@ import BaseArchitecture
 
 import RxSwift
 
+struct Term {
+    var label: String
+    var isChecked: Bool = false
+    var isSection: Bool = false
+    var isExpanded: Bool = false
+    var children: [Term]?
+}
+
 final class AgreeTermViewModel: BaseViewModel {
 
 }

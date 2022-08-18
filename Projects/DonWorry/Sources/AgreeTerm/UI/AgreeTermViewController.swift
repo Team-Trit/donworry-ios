@@ -74,6 +74,6 @@ extension AgreeTermViewController {
 // MARK: - Interaction Functions
 extension AgreeTermViewController {
     @objc private func doneButtonPressed(_ sender: UIButton) {
-        present(ConfirmTermViewController(), animated: true)
+        present(ConfirmTermViewController(checkedTerms: getCheckedTerms()), animated: true)
     }
 }

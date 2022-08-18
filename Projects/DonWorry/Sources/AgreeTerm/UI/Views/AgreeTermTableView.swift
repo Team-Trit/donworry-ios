@@ -11,14 +11,6 @@ import UIKit
 import DesignSystem
 import SnapKit
 
-struct Term {
-    var label: String
-    var isChecked: Bool = false
-    var isSection: Bool = false
-    var isExpanded: Bool = false
-    var children: [Term]?
-}
-
 final class AgreeTermTableView: UITableView {
     private var terms: [Term] = [
         Term(label: "전체동의"),
