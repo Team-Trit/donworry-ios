@@ -17,14 +17,6 @@ protocol LoginButtonDelegate: AnyObject {
 }
 
 final class LoginButtonStackView: UIStackView {
-    private lazy var loginButtonStackView: UIStackView = {
-       let v = UIStackView()
-        v.axis = .vertical
-        v.spacing = 10
-        v.alignment = .center
-        v.distribution = .fillEqually
-        return v
-    }()
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(UIImage(named: "apple_login_button"), for: .normal)
@@ -48,6 +40,10 @@ final class LoginButtonStackView: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.axis = .vertical
+        self.spacing = 10
+        self.alignment = .center
+        self.distribution = .fillEqually
         setUI()
     }
 
@@ -59,14 +55,7 @@ final class LoginButtonStackView: UIStackView {
 // MARK: - Layout
 extension LoginButtonStackView {
     private func setUI() {
-        loginButtonStackView.addArrangedSubviews(appleLoginButton, googleLoginButton, kakaoLoginButton)
-        addSubview(loginButtonStackView)
-        
-        loginButtonStackView.snp.makeConstraints { make in
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-20)
-            make.centerX.equalToSuperview()
-            make.width.height.equalToSuperview()
-        }
+        addArrangedSubviews(appleLoginButton, googleLoginButton, kakaoLoginButton)
     }
 }
 

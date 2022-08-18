@@ -12,13 +12,6 @@ import DesignSystem
 import SnapKit
 
 final class LabelStackView: UIStackView {
-    private lazy var labelStackView: UIStackView = {
-        let v = UIStackView()
-        v.axis = .vertical
-        v.spacing = 20
-        v.alignment = .center
-        return v
-    }()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "돈.워리"
@@ -37,6 +30,9 @@ final class LabelStackView: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.axis = .vertical
+        self.spacing = 20
+        self.alignment = .center
         setUI()
     }
 
@@ -48,13 +44,6 @@ final class LabelStackView: UIStackView {
 // MARK: - Layout
 extension LabelStackView {
     private func setUI() {
-        labelStackView.addArrangedSubviews(titleLabel, descriptionLabel)
-        addSubview(labelStackView)
-        
-        labelStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(70)
-            make.width.height.equalToSuperview()
-            make.centerX.equalToSuperview()
-        }
+        addArrangedSubviews(titleLabel, descriptionLabel)
     }
 }
