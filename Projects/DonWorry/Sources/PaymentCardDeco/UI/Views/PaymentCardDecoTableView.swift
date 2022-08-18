@@ -60,7 +60,6 @@ extension PaymentCardDecoTableView {
         self.register(AttachedPickerCell.self, forCellReuseIdentifier: AttachedPickerCell.cellID)
         
         
-        
         // 상단여백제거
         self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
                                                     y: 0.0,

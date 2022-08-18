@@ -18,6 +18,7 @@ import SnapKit
 final class LimitTextField: UIView {
     private lazy var textField: UITextField = {
         let v = UITextField()
+        v.font = .designSystem(weight: .regular, size: ._13) // 🩹 임시수정
         v.clearButtonMode = .whileEditing
         return v
     }()

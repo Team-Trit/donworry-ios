@@ -44,11 +44,11 @@ final class AccountInputField: UIStackView {
         
         v.attributedText = attributedString
         v.textColor = .white
-        v.font = .designSystem(weight: .regular, size: ._13)
+        v.font = .designSystem(weight: .regular, size: ._9) // 🩹 임시수정
         v.textAlignment = .center
         v.clipsToBounds = true
         v.layer.cornerRadius = 15
-        v.backgroundColor = .designSystem(.gray2)
+        v.backgroundColor = .designSystem(.grayC5C5C5)
         v.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(chooseBankLabelPressed)))
         v.isUserInteractionEnabled = true
         return v
@@ -80,7 +80,7 @@ extension AccountInputField {
         
         chooseBankLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
-            make.width.equalTo(90)
+            make.width.equalTo(75)
             make.height.equalTo(30)
         }
         

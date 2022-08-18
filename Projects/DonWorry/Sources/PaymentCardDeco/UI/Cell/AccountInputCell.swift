@@ -12,18 +12,20 @@ class AccountInputCell: UITableViewCell {
     
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
-    @IBOutlet weak var bottomDescriptionLabel: UILabel!
     @IBOutlet weak var chevronImageView: UIImageView!
     @IBOutlet weak var bottomView: UIView! {
         didSet {
             bottomView.isHidden = true
         }
     }
-    @IBOutlet weak var button: UIButton!
+    private lazy var accountStackView = AccountStackView()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
+        self.layout()
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -32,8 +34,15 @@ class AccountInputCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    @IBAction func buttonDidTap(_ sender: Any) {
-        print("계좌쪽버튼눌림")
+    func layout() {
+        bottomView.addSubview(accountStackView)
+        
+        accountStackView.snp.makeConstraints { make in
+              make.top.equalToSuperview().offset(10)
+              make.leading.trailing.equalToSuperview()
+              make.height.equalTo(200)
+        }
+        
     }
     
 }
