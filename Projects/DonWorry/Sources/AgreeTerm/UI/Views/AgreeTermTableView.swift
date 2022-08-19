@@ -124,9 +124,11 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         terms[section].isChecked.toggle()
         let isChecked = terms[section].isChecked
         if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
-            agreeTermTableView.performBatchUpdates {
-                header.checkButton.setImage(UIImage(systemName: isChecked ? "checkmark.circle.fill" : "circle"), for: .normal)
-                header.checkButton.tintColor = .designSystem(isChecked ? .mainBlue : .grayC5C5C5)
+            UIView.animate(withDuration: 0.1) { [self] in
+                agreeTermTableView.performBatchUpdates {
+                    header.checkButton.setImage(UIImage(systemName: isChecked ? "checkmark.circle.fill" : "circle"), for: .normal)
+                    header.checkButton.tintColor = .designSystem(isChecked ? .mainBlue : .grayC5C5C5)
+                }
             }
         }
     }
@@ -138,16 +140,19 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
             if let header = agreeTermTableView.headerView(forSection: i) as? AgreeTermTableViewHeader {
                 if isAllSatisfied {
                     terms[i].isChecked = false
-                    agreeTermTableView.performBatchUpdates {
-                        header.checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
-                        header.checkButton.tintColor = .designSystem(.grayC5C5C5)
+                    UIView.animate(withDuration: 0.1) { [self] in
+                        agreeTermTableView.performBatchUpdates {
+                            header.checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
+                            header.checkButton.tintColor = .designSystem(.grayC5C5C5)
+                        }
                     }
-                    
                 } else {
                     terms[i].isChecked = true
-                    agreeTermTableView.performBatchUpdates {
-                        header.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
-                        header.checkButton.tintColor = .designSystem(.mainBlue)
+                    UIView.animate(withDuration: 0.1) { [self] in
+                        agreeTermTableView.performBatchUpdates {
+                            header.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
+                            header.checkButton.tintColor = .designSystem(.mainBlue)
+                        }
                     }
                 }
             }
