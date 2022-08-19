@@ -12,13 +12,6 @@ import DesignSystem
 import SnapKit
 
 final class NickNameStackView: UIStackView {
-    private lazy var nickNameStackView: UIStackView = {
-        let v = UIStackView()
-        v.axis = .vertical
-        v.spacing = 20
-        v.alignment = .leading
-        return v
-    }()
     private lazy var nickNameLabel: UILabel = {
        let v = UILabel()
         v.text = "닉네임"
@@ -29,6 +22,7 @@ final class NickNameStackView: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        configure()
         setUI()
     }
 
@@ -37,24 +31,23 @@ final class NickNameStackView: UIStackView {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension NickNameStackView {
+    private func configure() {
+        self.axis = .vertical
+        self.spacing = 20
+        self.alignment = .leading
+    }
+    
     private func setUI() {
-        nickNameStackView.addArrangedSubviews(nickNameLabel, nickNameTextField)
-        addSubview(nickNameStackView)
+        self.addArrangedSubviews(nickNameLabel, nickNameTextField)
         
         nickNameLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
         }
-        
+
         nickNameTextField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-        }
-        
-        nickNameStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
         }
     }
 }

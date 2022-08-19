@@ -48,7 +48,8 @@ extension EnterUserInfoViewController {
         
         nickNameStackView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(80)
-            make.leading.trailing.centerX.equalToSuperview()
+            make.leading.equalToSuperview().offset(25)
+            make.trailing.equalToSuperview().offset(-25)
             make.height.equalTo(100)
         }
         
