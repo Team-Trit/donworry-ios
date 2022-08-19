@@ -33,7 +33,7 @@ final class SelectBankCollectionView: UICollectionView {
         self.diffableDataSouce = UICollectionViewDiffableDataSource<Section, String>(collectionView: self) { (collectionView, indexPath, bank) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectBankCollectionViewCell.identifier, for: indexPath) as? SelectBankCollectionViewCell else { return UICollectionViewCell() }
             cell.bankLabel.text = bank
-            cell.bankIconView.image = UIImage(named: bank)
+            cell.bankIconView.image = .init(Asset(rawValue: bank)!)
             return cell
         }
     }
