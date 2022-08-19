@@ -36,7 +36,8 @@ final class LimitTextField: UIView {
     
     convenience init(placeholder: String) {
         self.init()
-        textField.placeholder = placeholder
+        textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._13)])
+
         if reactor == nil {
             reactor = LimitTextFieldReactor()
         }

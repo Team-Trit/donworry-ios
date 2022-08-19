@@ -15,21 +15,7 @@ protocol AccountInputFieldDelegate: AnyObject {
     func showBankSelectSheet()
 }
 
-final class AccountInputField: UIStackView {
-    private lazy var accountInputField: UIStackView = {
-        let v = UIStackView()
-        v.axis = .vertical
-        v.spacing = 40
-        v.alignment = .leading
-        return v
-    }()
-    private lazy var bankHolderStack: UIStackView = {
-        let v = UIStackView()
-        v.axis = .horizontal
-        v.spacing = 20
-        v.alignment = .center
-        return v
-    }()
+final class AccountInputField: UIView {
     private lazy var chooseBankLabel: UILabel = {
         let v = UILabel()
         
@@ -37,12 +23,12 @@ final class AccountInputField: UIStackView {
         let imageAttachment = NSTextAttachment()
         imageAttachment.image = UIImage(systemName: "chevron.down")?.withTintColor(.white)
         imageAttachment.bounds = CGRect(x: 0, y: 0, width: 16, height: 8)
-        attributedString.append(NSAttributedString(string: "은행 선택 "))
+        attributedString.append(NSAttributedString(string: "은행 선택   "))
         attributedString.append(NSAttributedString(attachment: imageAttachment))
         
         v.attributedText = attributedString
         v.textColor = .white
-        v.font = .designSystem(weight: .regular, size: ._13)
+        v.font = .designSystem(weight: .regular, size: ._9)
         v.textAlignment = .center
         v.clipsToBounds = true
         v.layer.cornerRadius = 15
@@ -65,16 +51,10 @@ final class AccountInputField: UIStackView {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension AccountInputField {
     private func setUI() {
-        bankHolderStack.addArrangedSubviews(chooseBankLabel, holderTextField)
-        accountInputField.addArrangedSubviews(bankHolderStack, accountTextField)
-        addSubview(accountInputField)
-        
-        bankHolderStack.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-        }
+        self.addSubviews(chooseBankLabel, holderTextField, accountTextField)
         
         chooseBankLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
@@ -83,18 +63,13 @@ extension AccountInputField {
         }
         
         holderTextField.snp.makeConstraints { make in
+            make.leading.equalTo(chooseBankLabel.snp.trailing).offset(10)
             make.trailing.equalToSuperview()
         }
         
         accountTextField.snp.makeConstraints { make in
-            make.top.equalTo(bankHolderStack.snp.bottom).offset(400)
+            make.top.equalTo(chooseBankLabel.snp.bottom).offset(35)
             make.leading.trailing.equalToSuperview()
-        }
-        
-        accountInputField.snp.makeConstraints { make in
-            make.top.equalTo(bankHolderStack).offset(40)
-            make.leading.trailing.equalToSuperview()
-            make.width.height.equalToSuperview()
         }
     }
 }
