@@ -55,7 +55,8 @@ extension EnterUserInfoViewController {
         
         accountStackView.snp.makeConstraints { make in
             make.top.equalTo(nickNameStackView.snp.bottom).offset(50)
-            make.leading.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(25)
+            make.trailing.equalToSuperview().offset(-25)
             make.height.equalTo(150)
         }
         

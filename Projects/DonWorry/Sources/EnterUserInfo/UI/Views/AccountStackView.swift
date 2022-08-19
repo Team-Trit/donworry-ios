@@ -12,13 +12,6 @@ import DesignSystem
 import SnapKit
 
 final class AccountStackView: UIStackView {
-    private lazy var accountStackView: UIStackView = {
-        let v = UIStackView()
-        v.axis = .vertical
-        v.spacing = 20
-        v.alignment = .leading
-        return v
-    }()
     private lazy var accountLabel: UILabel = {
         let v = UILabel()
         v.text = "계좌정보"
@@ -29,6 +22,7 @@ final class AccountStackView: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        configure()
         setUI()
     }
     
@@ -37,19 +31,19 @@ final class AccountStackView: UIStackView {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension AccountStackView {
+    private func configure() {
+        self.axis = .vertical
+        self.spacing = 20
+        self.alignment = .leading
+    }
+    
     private func setUI() {
-        accountStackView.addArrangedSubviews(accountLabel, accountInputField)
-        addSubview(accountStackView)
-        
+        self.addArrangedSubviews(accountLabel, accountInputField)
+
         accountInputField.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-        }
-        
-        accountStackView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
         }
     }
 }
