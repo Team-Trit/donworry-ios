@@ -25,7 +25,8 @@ final class AgreeTermViewController: BaseViewController {
         }()
     private lazy var agreeTermTableView: AgreeTermTableView = {
         let v = AgreeTermTableView()
-        v.backgroundColor = .white
+        v.dataSource = self
+        v.delegate = self
         return v
     }()
     private lazy var doneButton: LargeButton = {
@@ -34,6 +35,7 @@ final class AgreeTermViewController: BaseViewController {
         v.isEnabled = true
         return v
     }()
+    var expandedSections = Set<Int>()
     let viewModel = AgreeTermViewModel()
     
     public override func viewDidLoad() {
@@ -72,10 +74,125 @@ extension AgreeTermViewController {
     }
 }
 
+// MARK: - UITableViewDataSource
+extension AgreeTermViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.terms.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: AgreeTermTableViewCell.identifier, for: indexPath) as! AgreeTermTableViewCell
+        guard let children = viewModel.terms[indexPath.section].children else { return cell }
+        cell.termLabel.text = children[indexPath.row].label
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if expandedSections.contains(section), let children = viewModel.terms[section].children {
+            return children.count
+        }
+        return 0
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension AgreeTermViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: AgreeTermTableViewHeader.identifier) as! AgreeTermTableViewHeader
+        header.titleLabel.text = viewModel.terms[section].label
+        if viewModel.terms[section].children != nil {
+            header.isExpanded = true
+            header.showDetailButton?.tag = section
+        }
+        header.delegate = self
+        header.checkButton.tag = section
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
+}
+
+// MARK: - AgreeTermTableViewHeaderDelegate
+extension AgreeTermViewController: AgreeTermTableViewHeaderDelegate {
+    func toggleCheck(_ sender: UIButton) {
+        let section = sender.tag
+        viewModel.terms[section].isChecked.toggle()
+        let isChecked = viewModel.terms[section].isChecked
+        
+        if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
+            UIView.animate(withDuration: 0.1) { [self] in
+                agreeTermTableView.performBatchUpdates {
+                    header.checkButton.setImage(UIImage(systemName: isChecked ? "checkmark.circle.fill" : "circle"), for: .normal)
+                    header.checkButton.tintColor = .designSystem(isChecked ? .mainBlue : .grayC5C5C5)
+                }
+            }
+        }
+    }
+    
+    func toggleAllCheck(_ sender: UIButton) {
+        let isAllSatisfied = viewModel.terms.allSatisfy { $0.isChecked }
+        
+        for i in 0..<viewModel.terms.count {
+            if let header = agreeTermTableView.headerView(forSection: i) as? AgreeTermTableViewHeader {
+                if isAllSatisfied {
+                    viewModel.terms[i].isChecked = false
+                    UIView.animate(withDuration: 0.1) { [self] in
+                        agreeTermTableView.performBatchUpdates {
+                            header.checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
+                            header.checkButton.tintColor = .designSystem(.grayC5C5C5)
+                        }
+                    }
+                } else {
+                    viewModel.terms[i].isChecked = true
+                    UIView.animate(withDuration: 0.1) { [self] in
+                        agreeTermTableView.performBatchUpdates {
+                            header.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
+                            header.checkButton.tintColor = .designSystem(.mainBlue)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func showDetail(_ sender: UIButton) {
+        let section = sender.tag
+        viewModel.terms[section].isExpanded.toggle()
+        let isExpanded = viewModel.terms[section].isExpanded
+        
+        if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
+            agreeTermTableView.performBatchUpdates {
+                header.showDetailButton!.rotate(isExpanded ? .pi : 0.0)
+            }
+        }
+        
+        func indexPathsForSection() -> [IndexPath] {
+            var indexPaths = [IndexPath]()
+            if let children = viewModel.terms[section].children {
+                for row in 0..<children.count {
+                    indexPaths.append(IndexPath(row: row, section: section))
+                }
+            }
+            return indexPaths
+        }
+        
+        if expandedSections.contains(section) {
+            expandedSections.remove(section)
+            agreeTermTableView.deleteRows(at: indexPathsForSection(), with: .fade)
+        } else {
+            expandedSections.insert(section)
+            agreeTermTableView.insertRows(at: indexPathsForSection(), with: .fade)
+        }
+    }
+}
+
+
+
 // MARK: - Interaction Functions
 extension AgreeTermViewController {
     @objc private func doneButtonPressed(_ sender: UIButton) {
-//        present(ConfirmTermViewController(checkedTerms: getCheckedTerms()), animated: true)
-        present(ConfirmTermViewController(), animated: true)
+//        present(ConfirmTermViewController(), animated: true)
     }
 }
