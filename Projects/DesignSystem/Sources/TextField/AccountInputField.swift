@@ -8,19 +8,19 @@
 
 import UIKit
 
-import DesignSystem
 import SnapKit
 
-enum AccountInputFieldType {
+public enum AccountInputFieldType {
     case EnterUserInfo
     case PaymentCardDeco
 }
 
-protocol AccountInputFieldDelegate: AnyObject {
+public protocol AccountInputFieldDelegate: AnyObject {
+    // TODO: RxFlow로 수정
     func showBankSelectSheet()
 }
 
-final class AccountInputField: UIView {
+final public class AccountInputField: UIView {
     private lazy var chooseBankLabel: UILabel = {
         let v = UILabel()
         
@@ -42,12 +42,12 @@ final class AccountInputField: UIView {
         v.isUserInteractionEnabled = true
         return v
     }()
-    private lazy var holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
-    private lazy var accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
+    private lazy var holderTextField = LimitTextField(frame: .zero, type: .holder)
+    private lazy var accountTextField = LimitTextField(frame: .zero, type: .account)
     private var type: AccountInputFieldType
-    weak var delegate: AccountInputFieldDelegate?
+    weak public var delegate: AccountInputFieldDelegate?
     
-    init(frame: CGRect, type: AccountInputFieldType) {
+    public init(frame: CGRect, type: AccountInputFieldType) {
         self.type = type
         super.init(frame: frame)
         setUI()
@@ -61,7 +61,9 @@ final class AccountInputField: UIView {
 // MARK: - Helper
 extension AccountInputField {
     private func setUI() {
-        self.addSubviews(chooseBankLabel, holderTextField, accountTextField)
+        self.addSubview(chooseBankLabel)
+        self.addSubview(holderTextField)
+        self.addSubview(accountTextField)
         
         switch type {
         case .EnterUserInfo:
