@@ -29,39 +29,11 @@ var terms: [Term] = [
 ]
 
 final class AgreeTermTableView: UITableView {
-    //    private var terms: [Term] = [
-    //        Term(label: "전체동의"),
-    //        Term(label: "만 14세 이상입니다.", children: [
-    //            Term(label: "1-1"),
-    //            Term(label: "1-2")
-    //        ]),
-    //        Term(label: "돈워리 서비스 이용약관 동의", children: [
-    //            Term(label: "2-1"),
-    //            Term(label: "2-2")
-    //        ]),
-    //        Term(label: "돈워리의 개인정보 수집 및 이용에 동의", children: [
-    //            Term(label: "3-1")
-    //        ]),
-    //        Term(label: "돈워리 개인정보 제 3자 제공 동의"),
-    //        Term(label: "이벤트 알림 수신 동의")
-    //    ]
-    
-    private lazy var agreeTermTableView: UITableView = {
-        let v = UITableView()
-        v.dataSource = self
-        v.delegate = self
-        v.register(AgreeTermTableViewHeader.self, forHeaderFooterViewReuseIdentifier: AgreeTermTableViewHeader.identifier)
-        v.register(AgreeTermTableViewCell.self, forCellReuseIdentifier: AgreeTermTableViewCell.identifier)
-        v.separatorStyle = .none
-        v.showsVerticalScrollIndicator = false
-        v.allowsSelection = false
-        return v
-    }()
     var expandedSections = Set<Int>()
     
     init() {
         super.init(frame: .zero, style: .grouped)
-        setUI()
+        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -69,15 +41,16 @@ final class AgreeTermTableView: UITableView {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension AgreeTermTableView {
-    private func setUI() {
-        addSubview(agreeTermTableView)
-        
-        agreeTermTableView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
-            make.width.height.equalToSuperview()
-        }
+    private func configure() {
+        self.dataSource = self
+        self.delegate = self
+        self.register(AgreeTermTableViewHeader.self, forHeaderFooterViewReuseIdentifier: AgreeTermTableViewHeader.identifier)
+        self.register(AgreeTermTableViewCell.self, forCellReuseIdentifier: AgreeTermTableViewCell.identifier)
+        self.separatorStyle = .none
+        self.showsVerticalScrollIndicator = false
+        self.allowsSelection = false
     }
 }
 
@@ -115,6 +88,10 @@ extension AgreeTermTableView: UITableViewDelegate {
         header.checkButton.tag = section
         return header
     }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
+    }
 }
 
 // MARK: - AgreeTermTableViewHeaderDelegate
@@ -123,9 +100,10 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         let section = sender.tag
         terms[section].isChecked.toggle()
         let isChecked = terms[section].isChecked
-        if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
+        
+        if let header = self.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
             UIView.animate(withDuration: 0.1) { [self] in
-                agreeTermTableView.performBatchUpdates {
+                self.performBatchUpdates {
                     header.checkButton.setImage(UIImage(systemName: isChecked ? "checkmark.circle.fill" : "circle"), for: .normal)
                     header.checkButton.tintColor = .designSystem(isChecked ? .mainBlue : .grayC5C5C5)
                 }
@@ -137,11 +115,11 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         let isAllSatisfied = terms.allSatisfy { $0.isChecked }
         
         for i in 0..<terms.count {
-            if let header = agreeTermTableView.headerView(forSection: i) as? AgreeTermTableViewHeader {
+            if let header = self.headerView(forSection: i) as? AgreeTermTableViewHeader {
                 if isAllSatisfied {
                     terms[i].isChecked = false
                     UIView.animate(withDuration: 0.1) { [self] in
-                        agreeTermTableView.performBatchUpdates {
+                        self.performBatchUpdates {
                             header.checkButton.setImage(UIImage(systemName: "circle"), for: .normal)
                             header.checkButton.tintColor = .designSystem(.grayC5C5C5)
                         }
@@ -149,7 +127,7 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
                 } else {
                     terms[i].isChecked = true
                     UIView.animate(withDuration: 0.1) { [self] in
-                        agreeTermTableView.performBatchUpdates {
+                        self.performBatchUpdates {
                             header.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
                             header.checkButton.tintColor = .designSystem(.mainBlue)
                         }
@@ -163,8 +141,9 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         let section = sender.tag
         terms[section].isExpanded.toggle()
         let isExpanded = terms[section].isExpanded
-        if let header = agreeTermTableView.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
-            agreeTermTableView.performBatchUpdates {
+        
+        if let header = self.headerView(forSection: sender.tag) as? AgreeTermTableViewHeader {
+            self.performBatchUpdates {
                 header.showDetailButton!.rotate(isExpanded ? .pi : 0.0)
             }
         }
@@ -181,10 +160,10 @@ extension AgreeTermTableView: AgreeTermTableViewHeaderDelegate {
         
         if expandedSections.contains(section) {
             expandedSections.remove(section)
-            agreeTermTableView.deleteRows(at: indexPathsForSection(), with: .fade)
+            self.deleteRows(at: indexPathsForSection(), with: .fade)
         } else {
             expandedSections.insert(section)
-            agreeTermTableView.insertRows(at: indexPathsForSection(), with: .fade)
+            self.insertRows(at: indexPathsForSection(), with: .fade)
         }
     }
 }
