@@ -106,6 +106,7 @@ extension LimitTextField {
 // MARK: - Interaction Functions
 extension LimitTextField {
     @objc private func textFieldDidChange(_ sender: UITextField) {
+        line.backgroundColor = .designSystem(sender.text?.count == 0 ? .grayC5C5C5 : .mainBlue)
         guard let limit = limit else { return }
         
         if (sender.text?.count)! >= limit {
@@ -115,7 +116,6 @@ extension LimitTextField {
             textField.text = String(newString)
         }
         let count = (sender.text?.count)!
-        line.backgroundColor = .designSystem(count == 0 ? .grayC5C5C5 : .mainBlue)
         limitLabel?.text = "\(count)/\(limit)"
     }
 }
