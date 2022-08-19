@@ -29,12 +29,17 @@ final class SelectBankViewController: BaseViewController {
         v.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
         return v
     }()
-    private lazy var bankSearchTextField = BankSearchTextField()
+    private lazy var bankSearchTextField: BankSearchTextField = {
+        let v = BankSearchTextField()
+        v.addTarget(self, action: #selector(searchBarEdit(_:)), for: .editingChanged)
+        return v
+    }()
     private lazy var bankCollectionView = SelectBankCollectionView()
     let viewModel = SelectBankViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.performQuery(with: nil)
         setUI()
     }
 }
@@ -60,7 +65,9 @@ extension SelectBankViewController {
         
         bankSearchTextField.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(25)
+            make.trailing.equalToSuperview().offset(-25)
+            make.height.equalTo(55)
         }
         
         bankCollectionView.snp.makeConstraints { make in
@@ -76,5 +83,21 @@ extension SelectBankViewController {
 extension SelectBankViewController {
     @objc private func dismissButtonPressed(_ sender: UIButton) {
         dismiss(animated: true)
+    }
+    
+    @objc private func searchBarEdit(_ sender: UITextField) {
+        self.performQuery(with: sender.text)
+    }
+}
+
+// MARK: - Helper
+extension SelectBankViewController {
+    private func performQuery(with filter: String?) {
+        let bankList = viewModel.banks
+        let filtered = bankList.filter { $0.hasPrefix(filter ?? "") }
+        var snapshot = NSDiffableDataSourceSnapshot<Section, String>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(filtered)
+        bankCollectionView.diffableDataSouce.apply(snapshot, animatingDifferences: true)
     }
 }

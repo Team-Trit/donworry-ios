@@ -11,28 +11,9 @@ import UIKit
 import SnapKit
 
 final class BankSearchTextField: UITextField {
-    private lazy var bankSearchTextField: UITextField = {
-       let v = UITextField()
-        v.placeholder = "은행검색"
-        v.backgroundColor = .systemGray6
-        v.layer.cornerRadius = 7
-    
-        let leftImage = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate)
-        guard let size = leftImage?.size.width else { return UITextField() }
-        let frameView = UIView(frame: CGRect(x: 0, y: 0, width: size + 20, height: size))
-        let leftImageView = UIImageView(frame: CGRect(x: 10, y: 0, width: size, height: size))
-        leftImageView.image = leftImage
-        leftImageView.tintColor = .systemGray
-        frameView.addSubview(leftImageView)
-        v.leftView = frameView
-        v.leftViewMode = .always
-    
-        return v
-    }()
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setUI()
+        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -40,16 +21,21 @@ final class BankSearchTextField: UITextField {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension BankSearchTextField {
-    private func setUI() {
-        addSubview(bankSearchTextField)
-        
-        bankSearchTextField.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
-            make.height.equalTo(55)
-        }
+    private func configure() {
+        self.placeholder = "은행검색"
+        self.backgroundColor = .systemGray6
+        self.layer.cornerRadius = 7
+    
+        let leftImage = UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate)
+        guard let size = leftImage?.size.width else { return }
+        let frameView = UIView(frame: CGRect(x: 0, y: 0, width: size + 20, height: size))
+        let leftImageView = UIImageView(frame: CGRect(x: 10, y: 0, width: size, height: size))
+        leftImageView.image = leftImage
+        leftImageView.tintColor = .systemGray
+        frameView.addSubview(leftImageView)
+        self.leftView = frameView
+        self.leftViewMode = .always
     }
 }
