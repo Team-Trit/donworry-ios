@@ -11,6 +11,11 @@ import UIKit
 import DesignSystem
 import SnapKit
 
+enum AccountInputFieldType {
+    case EnterUserInfo
+    case PaymentCardDeco
+}
+
 protocol AccountInputFieldDelegate: AnyObject {
     func showBankSelectSheet()
 }
@@ -39,10 +44,12 @@ final class AccountInputField: UIView {
     }()
     private lazy var holderTextField = LimitTextField(placeholder: "예금주명을 입력해주세요", limit: 20)
     private lazy var accountTextField = LimitTextField(placeholder: "계좌번호를 입력해주세요")
+    private var type: AccountInputFieldType
     weak var delegate: AccountInputFieldDelegate?
     
-    init() {
-        super.init(frame: .zero)
+    init(frame: CGRect, type: AccountInputFieldType) {
+        self.type = type
+        super.init(frame: frame)
         setUI()
     }
     
@@ -56,20 +63,40 @@ extension AccountInputField {
     private func setUI() {
         self.addSubviews(chooseBankLabel, holderTextField, accountTextField)
         
-        chooseBankLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview()
-            make.width.equalTo(90)
-            make.height.equalTo(30)
-        }
-        
-        holderTextField.snp.makeConstraints { make in
-            make.leading.equalTo(chooseBankLabel.snp.trailing).offset(10)
-            make.trailing.equalToSuperview()
-        }
-        
-        accountTextField.snp.makeConstraints { make in
-            make.top.equalTo(chooseBankLabel.snp.bottom).offset(35)
-            make.leading.trailing.equalToSuperview()
+        switch type {
+        case .EnterUserInfo:
+            chooseBankLabel.snp.makeConstraints { make in
+                make.top.leading.equalToSuperview()
+                make.width.equalTo(90)
+                make.height.equalTo(30)
+            }
+            
+            holderTextField.snp.makeConstraints { make in
+                make.leading.equalTo(chooseBankLabel.snp.trailing).offset(10)
+                make.trailing.equalToSuperview()
+            }
+            
+            accountTextField.snp.makeConstraints { make in
+                make.top.equalTo(chooseBankLabel.snp.bottom).offset(35)
+                make.leading.trailing.equalToSuperview()
+            }
+            
+        case .PaymentCardDeco:
+            chooseBankLabel.snp.makeConstraints { make in
+                make.top.leading.equalToSuperview()
+                make.width.equalTo(75)
+                make.height.equalTo(30)
+            }
+            
+            holderTextField.snp.makeConstraints { make in
+                make.leading.equalTo(chooseBankLabel.snp.trailing).offset(10)
+                make.trailing.equalToSuperview()
+            }
+            
+            accountTextField.snp.makeConstraints { make in
+                make.top.equalTo(chooseBankLabel.snp.bottom).offset(35)
+                make.leading.trailing.equalToSuperview()
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ final class AccountStackView: UIStackView {
         v.font = .designSystem(weight: .bold, size: ._18)
         return v
     }()
-    lazy var accountInputField = AccountInputField()
+    lazy var accountInputField = AccountInputField(frame: .zero, type: .EnterUserInfo)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
