@@ -41,7 +41,6 @@ final class RoomNameEditViewController: BaseViewController, View {
     }(UILabel())
     
     private lazy var paymentNameLabel = LimitTextField(placeholder: setPlaceholderText(type: type), limit: 20)
-    
     private lazy var nextButton = LargeButton(type: .next)
     
     // MARK: - LifeCycle
@@ -55,7 +54,6 @@ final class RoomNameEditViewController: BaseViewController, View {
     func bind(reactor: PaymentCardNameEditViewReactor) {
         //binding here
     }
-
 }
 
 // MARK: - setUI
@@ -81,10 +79,7 @@ extension RoomNameEditViewController {
         nextButton.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
         }
-        
-        
     }
-
 }
 
 // MARK: - Method
