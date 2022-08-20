@@ -13,7 +13,6 @@ import DesignSystem
 import RxCocoa
 import RxSwift
 import SnapKit
-import Alamofire
 
 final class AgreeTermViewController: BaseViewController {
     private lazy var descriptionLabel: UILabel = {
@@ -35,7 +34,7 @@ final class AgreeTermViewController: BaseViewController {
         v.isEnabled = true
         return v
     }()
-    var expandedSections = Set<Int>()
+    private var expandedSections = Set<Int>()
     let viewModel = AgreeTermViewModel()
     
     public override func viewDidLoad() {
@@ -188,11 +187,11 @@ extension AgreeTermViewController: AgreeTermTableViewHeaderDelegate {
     }
 }
 
-
-
 // MARK: - Interaction Functions
 extension AgreeTermViewController {
     @objc private func doneButtonPressed(_ sender: UIButton) {
-//        present(ConfirmTermViewController(), animated: true)
+        let vc = ConfirmTermViewController()
+        vc.modalPresentationStyle = .overCurrentContext
+        self.present(vc, animated: false)
     }
 }

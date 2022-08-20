@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignSystem
+import SnapKit
 
 protocol AgreeTermTableViewHeaderDelegate: AnyObject {
     func toggleCheck(_ sender: UIButton)
@@ -56,7 +57,7 @@ final class AgreeTermTableViewHeader: UITableViewHeaderFooterView {
 // MARK: - Layout
 extension AgreeTermTableViewHeader {
     private func setUI() {
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .designSystem(.white)
         
         contentView.addSubviews(checkButton, titleLabel)
         
