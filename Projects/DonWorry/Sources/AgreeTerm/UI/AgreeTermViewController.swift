@@ -46,7 +46,7 @@ final class AgreeTermViewController: BaseViewController {
 // MARK: - Layout
 extension AgreeTermViewController {
     private func setUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .designSystem(.white)
         
         view.addSubviews(descriptionLabel, agreeTermTableView, doneButton)
         
