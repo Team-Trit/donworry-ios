@@ -38,9 +38,7 @@ extension ConfirmTermTableViewHeader {
         contentView.addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
+            make.top.leading.equalToSuperview().offset(25)
         }
     }
 }

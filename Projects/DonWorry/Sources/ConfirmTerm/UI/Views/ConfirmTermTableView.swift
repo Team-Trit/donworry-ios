@@ -9,28 +9,28 @@
 import UIKit
 
 import BaseArchitecture
-import SnapKit
+import DesignSystem
 
 final class ConfirmTermTableView: UITableView {
-    private var confirmTermTableView = UITableView()
-    
     init() {
         super.init(frame: .zero, style: .grouped)
-        setUI()
+        configure()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension ConfirmTermTableView {
-    private func setUI() {
-        addSubview(confirmTermTableView)
-        
-        confirmTermTableView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
-        }
+    private func configure() {
+        self.backgroundColor = .designSystem(.white)
+        self.register(ConfirmTermTableViewHeader.self, forHeaderFooterViewReuseIdentifier: ConfirmTermTableViewHeader.identifier)
+        self.register(UITableViewCell.self, forCellReuseIdentifier: "TermConfirmCell")
+        self.separatorStyle = .none
+        self.showsVerticalScrollIndicator = false
+        self.allowsSelection = false
+        self.isScrollEnabled = false
     }
 }
