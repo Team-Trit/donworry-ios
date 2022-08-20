@@ -16,12 +16,12 @@ import SnapKit
 
 final class AgreeTermViewController: BaseViewController {
     private lazy var descriptionLabel: UILabel = {
-            let v = UILabel()
-            v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
-            v.font = .designSystem(weight: .bold, size: ._18)
-            v.numberOfLines = 0
-            return v
-        }()
+        let v = UILabel()
+        v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
+        v.font = .designSystem(weight: .bold, size: ._18)
+        v.numberOfLines = 0
+        return v
+    }()
     private lazy var agreeTermTableView: AgreeTermTableView = {
         let v = AgreeTermTableView()
         v.dataSource = self
@@ -86,6 +86,10 @@ extension AgreeTermViewController: UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 35
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if expandedSections.contains(section), let children = viewModel.terms[section].children {
             return children.count
@@ -109,7 +113,15 @@ extension AgreeTermViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40
+        return 50
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0
     }
 }
 
