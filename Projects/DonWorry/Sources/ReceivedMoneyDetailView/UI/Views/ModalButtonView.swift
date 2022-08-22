@@ -15,7 +15,6 @@ import UIKit
          button.setTitle("모달띄우기", for: .normal)
          button.backgroundColor = .orange
          button.addTarget(self, action: #selector(touchUpPresentModalButton), for: .touchUpInside)
- //        button.addTarget(self, action: #selector(touchUpDismissModalButton), for: .touchUpInside)
          return button
      }()
 
@@ -34,11 +33,6 @@ import UIKit
 
      @objc func touchUpPresentModalButton(_ sender: UIButton) {
          let vc = RecievedMoneyDetailViewViewController()
- //        vc.modalPresentationStyle = UIModalPresentationStyle.fullScreen
          self.present(vc, animated: true, completion: nil)
      }
-
- //    @objc func touchUpDismissModalButton(_ sender: UIButton) {
- //        self.dismiss(animated: true, completion: nil)
- //    }
  }

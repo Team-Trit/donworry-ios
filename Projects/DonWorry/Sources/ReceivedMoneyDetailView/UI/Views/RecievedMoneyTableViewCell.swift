@@ -61,11 +61,16 @@ class RecievedMoneyTableViewCell: BaseTableViewCell {
         
     }
     
-    func configure(name: String, money: Int) {
+    func configure(_ content: RecievingCellContent) {
         let numberformatter = NumberFormatter()
         numberformatter.numberStyle = .decimal
-        userName.text = name
-        recievedMoney.text = numberformatter.string(for: money)! + "원"
+        userName.text = content.name
+        recievedMoney.text = numberformatter.string(for: content.money)! + "원"
+        if content.isCompleted {
+            profileImage.layer.opacity = 0.5
+            userName.layer.opacity = 0.5
+            recievedMoney.layer.opacity = 0.5
+        }
     }
     
 }

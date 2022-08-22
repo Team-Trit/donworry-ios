@@ -16,7 +16,7 @@ class RecieveMoneyDetailStatusView: UIView {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.text = "받을 돈"
-        title.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        title.font = .designSystem(weight: .bold, size: ._25)
         title.textColor = UIColor.black
         return title
     }()
@@ -114,7 +114,6 @@ class RecieveMoneyDetailStatusView: UIView {
     func configure(payment: Int, outstanding: Int) {
         paymentAmount.attributedText = makeAtrributedString(money: payment)
         outstandingAmount.attributedText = makeAtrributedString(money: outstanding)
-        
         progressView.setProgress(Float(payment)/Float(outstanding), animated: false)
     }
     

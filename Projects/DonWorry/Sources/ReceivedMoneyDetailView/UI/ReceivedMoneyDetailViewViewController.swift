@@ -7,12 +7,10 @@
 //
 
 import UIKit
-import BaseArchitecture
-
 import RxCocoa
 import RxSwift
-import SwiftUI
 
+import BaseArchitecture
 import DesignSystem
 
 
@@ -49,6 +47,8 @@ final class RecievedMoneyDetailViewViewController: BaseViewController {
         tableView.register(RecievedMoneyTableViewCell.self, forCellReuseIdentifier: RecievedMoneyTableViewCell.identifier)
         tableView.backgroundColor = .clear
         tableView.separatorColor = .clear
+        tableView.showsVerticalScrollIndicator = false
+        
         return tableView
     }()
     
@@ -69,7 +69,6 @@ final class RecievedMoneyDetailViewViewController: BaseViewController {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.showsVerticalScrollIndicator = false
         attributes()
         layout()
     }
@@ -81,7 +80,6 @@ extension RecievedMoneyDetailViewViewController {
 
     private func attributes() {
         view.backgroundColor = .white
-
     }
 
     private func layout() {
@@ -114,20 +112,14 @@ extension RecievedMoneyDetailViewViewController {
 
 extension RecievedMoneyDetailViewViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contents.count
+        return viewModel.contents.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RecievedMoneyTableViewCell.identifier, for: indexPath)
                 as? RecievedMoneyTableViewCell else { return UITableViewCell() }
-
-        let name = contents[indexPath.row].name
-        let money = contents[indexPath.row].money
-        cell.configure(name: name, money: money)
+        cell.configure(viewModel.contents[indexPath.row])
         return cell
-    }
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        UIView()
     }
 }
 
