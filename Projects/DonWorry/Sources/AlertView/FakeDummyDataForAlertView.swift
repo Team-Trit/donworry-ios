@@ -19,6 +19,7 @@ struct AlertMessageInfomations {
     let senderName: String
     let spaceName: String
     let messageType: AlertType
+    var isCompleted: Bool = false
 }
 
 

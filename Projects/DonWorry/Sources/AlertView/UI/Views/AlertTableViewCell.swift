@@ -92,8 +92,6 @@ class AlertTableViewCell: BaseTableViewCell {
         goToPayment.addSubview(buttonLabel)
         buttonLabel.centerYAnchor.constraint(equalTo: goToPayment.centerYAnchor).isActive = true
         buttonLabel.centerXAnchor.constraint(equalTo: goToPayment.centerXAnchor).isActive = true
-        buttonLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        buttonLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
     }
     
     func configure(message: AlertMessageInfomations){
@@ -112,6 +110,11 @@ class AlertTableViewCell: BaseTableViewCell {
             iconImage.widthAnchor.constraint(equalToConstant: 37).isActive = true
             iconImage.heightAnchor.constraint(equalToConstant: 24).isActive = true
             goToPayment.isHidden = false
+            if message.isCompleted {
+                goToPayment.backgroundColor = .designSystem(.gray2)
+                buttonLabel.text = "완료"
+                buttonLabel.textColor = .designSystem(.white)
+            }
         case .completedAlert :
             alertInfo.text = "\(message.spaceName)의 정산이 완료되었습니다"
             iconImage.image = UIImage(named: "startAlertImage")

@@ -31,26 +31,7 @@ final class AlertViewViewController: BaseViewController {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
-        attributes()
         layout()
-    }
-    
-    func chunkedMessages(messages: [AlertMessageInfomations]) -> [[AlertMessageInfomations]] {
-        var messagesByDate: [[AlertMessageInfomations]] = []
-        var currentDateMessages: [AlertMessageInfomations] = []
-        
-        for message in messages {
-            if let lastElement = currentDateMessages.last {
-                if lastElement.recievedDate != message.recievedDate {
-                    messagesByDate.append(currentDateMessages)
-                    currentDateMessages = []
-                }
-            }
-            currentDateMessages.append(message)
-        }
-        messagesByDate.append(currentDateMessages)
-        return messagesByDate
-        
     }
 }
 
@@ -71,7 +52,6 @@ extension AlertViewViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(viewModel.sortedMessages[section].count)
         return viewModel.sortedMessages[section].count
     }
     
