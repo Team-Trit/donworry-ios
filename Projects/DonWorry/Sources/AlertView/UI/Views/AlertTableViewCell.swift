@@ -96,10 +96,6 @@ class AlertTableViewCell: BaseTableViewCell {
         buttonLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true
     }
     
-    override func configUI() {
-        
-    }
-    
     func configure(message: AlertMessageInfomations){
         spaceName.text = message.spaceName
         

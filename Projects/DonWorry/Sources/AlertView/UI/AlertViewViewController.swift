@@ -18,10 +18,6 @@ final class AlertViewViewController: BaseViewController {
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = AlertViewViewModel()
     
-    var sortedMessages: [[AlertMessageInfomations]] {
-         chunkedMessages(messages: alertMessages.sorted(by: {$0.recievedDate > $1.recievedDate}))
-    }
-    
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -60,10 +56,6 @@ final class AlertViewViewController: BaseViewController {
 
 extension AlertViewViewController {
 
-    private func attributes() {
-
-    }
-
     private func layout() {
         view.addSubview(tableView)
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70).isActive = true
@@ -75,19 +67,18 @@ extension AlertViewViewController {
 
 extension AlertViewViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        print("섹션갯수\(sortedMessages)")
-        return sortedMessages.count
+        return viewModel.sortedMessages.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(sortedMessages[section].count)
-        return sortedMessages[section].count
+        print(viewModel.sortedMessages[section].count)
+        return viewModel.sortedMessages[section].count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AlertTableViewCell.identifier, for: indexPath) as? AlertTableViewCell else { return UITableViewCell()}
         
-        let messageTuple = sortedMessages[indexPath.section]
+        let messageTuple = viewModel.sortedMessages[indexPath.section]
         cell.configure(message: messageTuple[indexPath.row])
         
         return cell
@@ -99,8 +90,8 @@ extension AlertViewViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if !sortedMessages[section].isEmpty {
-            return "\(sortedMessages[section][0].recievedDate)"
+        if !viewModel.sortedMessages[section].isEmpty {
+            return "\(viewModel.sortedMessages[section][0].recievedDate)"
         }
         return nil
     }
