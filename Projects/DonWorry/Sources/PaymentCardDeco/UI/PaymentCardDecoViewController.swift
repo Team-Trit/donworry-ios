@@ -82,7 +82,7 @@ extension PaymentCardDecoViewController {
     }
     
     private func attributes() {
-        view.backgroundColor = .designSystem(.white)
+        view.backgroundColor = .designSystem(.white2)
     }
     
     private func layout() {

@@ -24,7 +24,7 @@ class AccountInputCell: UITableViewCell {
         super.awakeFromNib()
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
-        self.layout()
+        layout()
         
     }
 
@@ -34,15 +34,13 @@ class AccountInputCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func layout() {
+    private func layout() {
         bottomView.addSubview(accountStackView)
-        
         accountStackView.snp.makeConstraints { make in
               make.top.equalToSuperview().offset(10)
               make.leading.trailing.equalToSuperview()
               make.height.equalTo(200)
         }
-        
     }
     
 }

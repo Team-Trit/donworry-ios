@@ -10,14 +10,10 @@ import UIKit
 
 struct CardDecoItem {
     let title: String
-    let content: String
     var isHidden = true
    
-    init(title: String,
-         content: String,
-         isHidden: Bool = true){
+    init(title: String, isHidden: Bool = true){
         self.title = title
-        self.content = content
         self.isHidden = isHidden
     }
     
@@ -26,10 +22,10 @@ struct CardDecoItem {
 class PaymentCardDecoTableView: UITableView {
     
     private var cardDecoItems: [CardDecoItem] = [
-        CardDecoItem(title: "배경 선택", content: "날짜 선택"),
-        CardDecoItem(title: "날짜 선택", content: "날짜 달력있음"),
-        CardDecoItem(title: "계좌번호 입력 (선택)", content: "계좌번호 셀"),
-        CardDecoItem(title: "파일 추가 (선택)", content: "파일추가 셀"),
+        CardDecoItem(title: "배경 선택"),
+        CardDecoItem(title: "날짜 선택"),
+        CardDecoItem(title: "계좌번호 입력 (선택)"),
+        CardDecoItem(title: "파일 추가 (선택)"),
     ]
     
     // MARK: - Constructors
@@ -55,10 +51,10 @@ extension PaymentCardDecoTableView {
 
         /* register cell */
         self.register(UINib(nibName: "TestCell", bundle: nil), forCellReuseIdentifier: "TestCell")
-        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
+        self.register(UINib(nibName: "ColorPickerCell", bundle: nil), forCellReuseIdentifier: "ColorPickerCell")
         self.register(UINib(nibName: "PayDatePickerCell", bundle: nil), forCellReuseIdentifier: "PayDatePickerCell")
+        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
         self.register(AttachedPickerCell.self, forCellReuseIdentifier: AttachedPickerCell.cellID)
-        
         
         // 상단여백제거
         self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
@@ -88,11 +84,10 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let expandableItem = self.cardDecoItems[indexPath.row]
         if expandableItem.isHidden {
-//            return 48+15
             return 48+15
         }else {
             switch indexPath.row {
-            case 0: return 200
+            case 0: return 180
             case 1: return 400
             case 2: return 200
             case 3: return 200
@@ -119,50 +114,48 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        
         let expandableItem = self.cardDecoItems[indexPath.row]
-        
-//        cell.topTitleLabel.text = expandableItem.title
-//        cell.bottomDescriptionLabel.text = expandableItem.content
-        
             
         switch indexPath.row {
             case 0: // 배경선택
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ColorPickerCell", for: indexPath) as! ColorPickerCell
                 cell.bottomView.isHidden = expandableItem.isHidden
                 cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
                 cell.selectionStyle = .none
                 return cell
             
             case 1: // 날짜선택
-                let payDatePickerCell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
-                payDatePickerCell.selectionStyle = .none
-                payDatePickerCell.bottomView.isHidden = expandableItem.isHidden
-                payDatePickerCell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
-                return payDatePickerCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
+                    cell.selectionStyle = .none
+                    cell.bottomView.isHidden = expandableItem.isHidden
+                    cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
+                return cell
             
             case 2: // 계좌번호
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
-            cell.bottomView.isHidden = expandableItem.isHidden
-            cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
-            cell.selectionStyle = .none
-            return cell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
+                cell.bottomView.isHidden = expandableItem.isHidden
+                cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
+                cell.selectionStyle = .none
+                return cell
             
             case 3: // 파일추가
-            let cell = tableView.dequeueReusableCell(withIdentifier: AttachedPickerCell.cellID, for: indexPath) as! AttachedPickerCell
-            cell.bottomView.isHidden = expandableItem.isHidden
-//            cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
-            cell.selectionStyle = .none
-            return cell
-            
-            
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
+                cell.bottomView.isHidden = expandableItem.isHidden
+                cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
+                cell.selectionStyle = .none
+                return cell
+//                let cell = tableView.dequeueReusableCell(withIdentifier: AttachedPickerCell.cellID, for: indexPath) as! AttachedPickerCell
+//                cell.bottomView.isHidden = expandableItem.isHidden
+//    //            cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
+//                cell.selectionStyle = .none
+//                return cell
+
             default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
-            cell.bottomView.isHidden = expandableItem.isHidden
-            cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
-            cell.selectionStyle = .none
-            return cell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
+                cell.bottomView.isHidden = expandableItem.isHidden
+                cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
+                cell.selectionStyle = .none
+                return cell
         }
 
     }
