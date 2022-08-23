@@ -41,7 +41,6 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }(UILabel())
     
     private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
-    
     private lazy var nextButton = LargeButton(type: .next)
     
     // MARK: - LifeCycle
