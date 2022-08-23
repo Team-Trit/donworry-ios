@@ -44,7 +44,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
         return UIImageView(image: .init(.smartphone_with_bills))
     }()
     
-    private lazy var paymentNameLabel = LimitTextField(placeholder: setPlaceholderText(type: type), limit: 20)
+    private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
     
     private lazy var nextButton = LargeButton(type: .next)
     
