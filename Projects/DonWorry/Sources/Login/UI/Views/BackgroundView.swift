@@ -8,6 +8,7 @@
 
 import UIKit
 
+import DesignSystem
 import SnapKit
 
 final class BackgroundView: UIView {
@@ -28,7 +29,7 @@ final class BackgroundView: UIView {
     }()
     private lazy var backgroundImageView: UIImageView = {
         let v = UIImageView()
-        v.image = UIImage(named: "sign_in_image")
+        v.image = .init(.sign_in_image)
         return v
     }()
     

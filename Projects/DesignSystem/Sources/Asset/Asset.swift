@@ -13,6 +13,10 @@ public enum Asset: String {
     case test_avo
     case ic_calculation_3d
     case ic_check_white
+    case apple_login_button
+    case google_login_button
+    case kakao_login_button
+    case sign_in_image
     case 산림조합중앙회
     case 저축은행
     case 한국투자증권

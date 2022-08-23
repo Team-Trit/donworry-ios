@@ -9,15 +9,26 @@
 import UIKit
 
 import BaseArchitecture
+import DesignSystem
 import RxCocoa
 import RxSwift
 import SnapKit
 
 final class LoginViewController: BaseViewController {
     private lazy var labelStackView = LabelStackView()
-    private lazy var loginButtonStackView: LoginButtonStackView = {
-        let v = LoginButtonStackView()
-        v.delegate = self
+    private lazy var appleLoginButton: UIButton = {
+        let v = UIButton()
+        v.setBackgroundImage(.init(.apple_login_button), for: .normal)
+        return v
+    }()
+    private lazy var googleLoginButton: UIButton = {
+        let v = UIButton()
+        v.setBackgroundImage(.init(.google_login_button), for: .normal)
+        return v
+    }()
+    private lazy var kakaoLoginButton: UIButton = {
+        let v = UIButton()
+        v.setBackgroundImage(.init(.kakao_login_button), for: .normal)
         return v
     }()
     private lazy var backgroundView = BackgroundView()
@@ -32,7 +43,7 @@ final class LoginViewController: BaseViewController {
 // MARK: - Layout
 extension LoginViewController {
     private func setUI() {
-        view.addSubviews(backgroundView, labelStackView, loginButtonStackView)
+        view.addSubviews(backgroundView, labelStackView, appleLoginButton, googleLoginButton, kakaoLoginButton)
         
         backgroundView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
@@ -43,24 +54,19 @@ extension LoginViewController {
             make.centerX.equalToSuperview()
         }
         
-        loginButtonStackView.snp.makeConstraints { make in
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
+        appleLoginButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(200)
+        }
+        
+        googleLoginButton.snp.makeConstraints { make in
+            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
-    }
-}
-
-// MARK: - LoginButtonDelegate
-extension LoginViewController: LoginButtonDelegate {
-    func appleLogin(_ sender: UIButton) {
         
-    }
-    
-    func googleLogin(_ sender: UIButton) {
-        
-    }
-    
-    func kakaoLogin(_ sender: UIButton) {
-        
+        kakaoLoginButton.snp.makeConstraints { make in
+            make.top.equalTo(googleLoginButton.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+        }
     }
 }
