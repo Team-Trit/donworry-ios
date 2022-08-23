@@ -10,10 +10,11 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 
-final class EnterUserInfoViewController: BaseViewController {
+final class EnterUserInfoViewController: BaseViewController, View {
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "돈.워리"
@@ -27,11 +28,26 @@ final class EnterUserInfoViewController: BaseViewController {
         return v
     }()
     private lazy var nextButton = LargeButton(type: .next)
-    let viewModel = EnterUserInfoViewModel()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+    }
+    
+    func bind(reactor: EnterUserInfoViewReactor) {
+        dispatch(to: reactor)
+        render(reactor)
+    }
+}
+
+// MARK: - Bind
+extension EnterUserInfoViewController {
+    private func dispatch(to reactor: EnterUserInfoViewReactor) {
+        
+    }
+    
+    private func render(_ reactor: EnterUserInfoViewReactor) {
+        
     }
 }
 

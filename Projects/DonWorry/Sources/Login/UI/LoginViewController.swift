@@ -10,11 +10,12 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
 
-final class LoginViewController: BaseViewController {
+final class LoginViewController: BaseViewController, View {
     private lazy var labelStackView = LabelStackView()
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
@@ -32,11 +33,40 @@ final class LoginViewController: BaseViewController {
         return v
     }()
     private lazy var backgroundView = BackgroundView()
-    let viewModel = LoginViewModel()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+    }
+    
+    func bind(reactor: LoginViewReactor) {
+        dispatch(to: reactor)
+        render(reactor)
+        
+    }
+}
+
+// MARK: - Bind
+extension LoginViewController {
+    private func dispatch(to reactor: LoginViewReactor) {
+        appleLoginButton.rx.tap
+            .map { Reactor.Action.appleLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        googleLoginButton.rx.tap
+            .map { Reactor.Action.googleLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        kakaoLoginButton.rx.tap
+            .map { Reactor.Action.kakaoLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: LoginViewReactor) {
+        
     }
 }
 
