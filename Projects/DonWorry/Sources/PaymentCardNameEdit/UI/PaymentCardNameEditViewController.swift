@@ -40,10 +40,6 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
         return $0
     }(UILabel())
     
-    private lazy var imageView: UIImageView = {
-        return UIImageView(image: .init(.smartphone_with_bills))
-    }()
-    
     private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
     
     private lazy var nextButton = LargeButton(type: .next)
@@ -69,8 +65,8 @@ extension PaymentCardNameEditViewController {
     private func setUI() {
         navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
         view.backgroundColor = .designSystem(.white)
-        view.addSubviews(titleLabel, imageView, paymentNameLabel,nextButton)
-        
+        view.addSubviews(titleLabel, paymentNameLabel,nextButton)
+
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(30)
@@ -80,12 +76,6 @@ extension PaymentCardNameEditViewController {
         paymentNameLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(45)
             $0.leading.trailing.equalToSuperview().inset(25)
-        }
-        
-        imageView.snp.makeConstraints {
-            $0.top.equalTo(paymentNameLabel.snp.bottom).offset(100)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(245)
         }
         
         nextButton.snp.makeConstraints {
