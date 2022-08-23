@@ -39,7 +39,7 @@ class AlertTableViewCell: BaseTableViewCell {
         let alertInfo = UILabel()
         alertInfo.translatesAutoresizingMaskIntoConstraints = false
         alertInfo.font = .designSystem(weight: .regular, size: ._13)
-        alertInfo.textColor = .designSystem(.gray1)
+        alertInfo.textColor = .designSystem(.grayF6F6F6)
         return alertInfo
     }()
     
@@ -111,7 +111,7 @@ class AlertTableViewCell: BaseTableViewCell {
             iconImage.heightAnchor.constraint(equalToConstant: 24).isActive = true
             goToPayment.isHidden = false
             if message.isCompleted {
-                goToPayment.backgroundColor = .designSystem(.gray2)
+                goToPayment.backgroundColor = .designSystem(.grayF6F6F6)
                 buttonLabel.text = "완료"
                 buttonLabel.textColor = .designSystem(.white)
             }
