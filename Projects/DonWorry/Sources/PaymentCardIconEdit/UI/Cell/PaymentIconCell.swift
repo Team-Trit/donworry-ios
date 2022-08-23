@@ -21,10 +21,14 @@ class PaymentIconCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet{
             if isSelected {
-                contentView.backgroundColor = .designSystem(.grayC5C5C5)
+                UIView.animate(withDuration: 0.1) {
+                    self.contentView.backgroundColor = .designSystem(.grayC5C5C5)
+                }
             }
             else {
-                contentView.backgroundColor = .designSystem(.grayF6F6F6)
+                UIView.animate(withDuration: 0.1) {
+                    self.contentView.backgroundColor = .designSystem(.grayF6F6F6)
+                }
             }
         }
     }
