@@ -10,7 +10,7 @@ import UIKit
 import DesignSystem
 import SnapKit
 
-public enum LargeButtonType {
+public enum AlertLargeButtonType {
     case next   // 다음
     case done   // 완료
     case hurry  // 재촉하기
@@ -18,8 +18,8 @@ public enum LargeButtonType {
     case update // Payment 수정하기
 }
 
-public final class LargeButton: UIButton {
-    private lazy var largeButton: UIButton = {
+public final class AlertLargeButton: UIButton {
+    private lazy var alertLargeButton: UIButton = {
        let v = UIButton()
         v.isEnabled = false
         v.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
@@ -42,15 +42,15 @@ public final class LargeButton: UIButton {
         self.init()
         switch(type) {
         case .next:
-            largeButton.setTitle("다음", for: .normal)
+            alertLargeButton.setTitle("다음", for: .normal)
         case .done:
-            largeButton.setTitle("완료", for: .normal)
+            alertLargeButton.setTitle("완료", for: .normal)
         case .hurry:
-            largeButton.setTitle("재촉하기", for: .normal)
+            alertLargeButton.setTitle("재촉하기", for: .normal)
         case .enter:
-            largeButton.setTitle("정산방 참가하기", for: .normal)
+            alertLargeButton.setTitle("정산방 참가하기", for: .normal)
         case .update:
-            largeButton.setTitle("수정하기", for: .normal)
+            alertLargeButton.setTitle("수정하기", for: .normal)
         }
     }
 
@@ -60,11 +60,11 @@ public final class LargeButton: UIButton {
 }
 
 // MARK: - Layout
-extension LargeButton {
+extension AlertLargeButton {
     private func setUI() {
-        addSubview(largeButton)
+        addSubview(alertLargeButton)
 
-        largeButton.snp.makeConstraints { make in
+        alertLargeButton.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
     }
