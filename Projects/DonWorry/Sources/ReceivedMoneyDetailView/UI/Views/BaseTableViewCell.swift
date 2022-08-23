@@ -2,7 +2,7 @@
 //  BaseTableViewCell.swift
 //  DonWorry
 //
-//  Created by uiskim on 2022/08/10.
+//  Created by uiskim on 2022/08/13.
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
