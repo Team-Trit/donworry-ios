@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TestCell: UITableViewCell {
+class FilePickerCell: UITableViewCell {
     
     @IBOutlet private weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
@@ -24,6 +24,7 @@ class TestCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.topTitleLabel.textColor = UIColor(hex: "#606060FF")
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
         // Initialization code

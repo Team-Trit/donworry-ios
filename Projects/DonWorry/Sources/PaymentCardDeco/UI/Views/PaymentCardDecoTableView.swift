@@ -50,7 +50,7 @@ extension PaymentCardDecoTableView {
         self.dataSource = self
 
         /* register cell */
-        self.register(UINib(nibName: "TestCell", bundle: nil), forCellReuseIdentifier: "TestCell")
+        self.register(UINib(nibName: "FilePickerCell", bundle: nil), forCellReuseIdentifier: "FilePickerCell")
         self.register(UINib(nibName: "ColorPickerCell", bundle: nil), forCellReuseIdentifier: "ColorPickerCell")
         self.register(UINib(nibName: "PayDatePickerCell", bundle: nil), forCellReuseIdentifier: "PayDatePickerCell")
         self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
@@ -139,7 +139,7 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
                 return cell
             
             case 3: // 파일추가
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
                 cell.bottomView.isHidden = expandableItem.isHidden
                 cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
                 cell.selectionStyle = .none
@@ -151,7 +151,7 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
 //                return cell
 
             default:
-                let cell = tableView.dequeueReusableCell(withIdentifier: "TestCell", for: indexPath) as! TestCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
                 cell.bottomView.isHidden = expandableItem.isHidden
                 cell.chevronImageView.image = UIImage(systemName: expandableItem.isHidden ? "chevron.down" : "chevron.up")
                 cell.selectionStyle = .none

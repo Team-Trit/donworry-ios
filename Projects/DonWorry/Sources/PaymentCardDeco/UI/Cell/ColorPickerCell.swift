@@ -30,6 +30,7 @@ class ColorPickerCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.topTitleLabel.textColor = UIColor(hex: "#606060FF")
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
         setUI()
