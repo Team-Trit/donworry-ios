@@ -47,15 +47,12 @@ final class LoginFlow: Flow {
             
         case .agreeTermIsRequired:
             return self.navigateToAgreeTermView()
-            //
-            //        case .confirmTermIsRequired:
-            //            return self.presentConfirmTermView()
-            //
-            //        case .confirmTermIsComplete:
-            //            self.dismissConfirmTermView()
-            //            return .none
-            //        }
-        default:
+            
+        case .confirmTermIsRequired:
+            return self.presentConfirmTermView()
+            
+        case .confirmTermIsComplete:
+            self.dismissConfirmTermView()
             return .none
         }
     }
@@ -99,11 +96,17 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    //    private func presentConfirmTermView() -> FlowContributors {
-    //
-    //    }
-    //
-    //    private func dismissConfirmTermView() {
-    //
-    //    }
+    private func presentConfirmTermView() -> FlowContributors {
+        let vc = ConfirmTermViewController()
+        let reactor = ConfirmTermViewReactor()
+        vc.reactor = reactor
+        vc.modalPresentationStyle = .overCurrentContext
+        self.rootViewController.present(vc, animated: false)
+        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+    }
+    
+    private func dismissConfirmTermView() {
+        self.rootViewController.dismiss(animated: true)
+        // TODO: Switch window to navigate to HomeView
+    }
 }

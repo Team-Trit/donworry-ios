@@ -29,12 +29,7 @@ final class AgreeTermViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var doneButton: LargeButton = {
-        let v = LargeButton(type: .done)
-        v.addTarget(self, action: #selector(doneButtonPressed(_:)), for: .touchUpInside)
-        v.isEnabled = true
-        return v
-    }()
+    private lazy var doneButton = LargeButton(type: .done)
     private var expandedSections = Set<Int>()
     let viewModel = AgreeTermViewModel()
     
@@ -52,7 +47,10 @@ final class AgreeTermViewController: BaseViewController, View {
 // MARK: - Bind
 extension AgreeTermViewController {
     private func dispatch(to reactor: AgreeTermViewReactor) {
-        
+        doneButton.rx.tap
+            .map { Reactor.Action.doneButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func render(_ reactor: AgreeTermViewReactor) {
@@ -213,14 +211,5 @@ extension AgreeTermViewController: AgreeTermTableViewHeaderDelegate {
             expandedSections.insert(section)
             agreeTermTableView.insertRows(at: indexPathsForSection(), with: .fade)
         }
-    }
-}
-
-// MARK: - Interaction Functions
-extension AgreeTermViewController {
-    @objc private func doneButtonPressed(_ sender: UIButton) {
-        let vc = ConfirmTermViewController()
-        vc.modalPresentationStyle = .overCurrentContext
-        self.present(vc, animated: false)
     }
 }

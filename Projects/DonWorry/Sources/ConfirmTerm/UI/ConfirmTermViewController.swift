@@ -10,11 +10,12 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
 
-final class ConfirmTermViewController: BaseViewController {
+final class ConfirmTermViewController: BaseViewController, View {
     private lazy var confirmTableView: ConfirmTermTableView = {
         let v = ConfirmTermTableView()
         v.dataSource = self
@@ -61,6 +62,22 @@ final class ConfirmTermViewController: BaseViewController {
         super.viewDidAppear(animated)
         showDimmedView()
         presentContainer()
+    }
+    
+    func bind(reactor: ConfirmTermViewReactor) {
+        dispatch(to: reactor)
+        render(reactor)
+    }
+}
+
+// MARK: - Bind
+extension ConfirmTermViewController {
+    private func dispatch(to reactor: ConfirmTermViewReactor) {
+        
+    }
+    
+    private func render(_ reactor: ConfirmTermViewReactor) {
+        
     }
 }
 
