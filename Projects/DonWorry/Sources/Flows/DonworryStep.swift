@@ -17,5 +17,4 @@ enum DonworryStep: Step {
     case agreeTermIsRequired
     case confirmTermIsRequired
     case confirmTermIsComplete
-    
 }

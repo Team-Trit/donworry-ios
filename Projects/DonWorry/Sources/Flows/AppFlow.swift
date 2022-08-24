@@ -46,28 +46,18 @@ extension AppFlow {
         let nextStep = OneStepper(withSingleStep: DonworryStep.loginIsRequired)
         return .one(flowContributor: .contribute(withNextPresentable: loginFlow, withNextStepper: nextStep))
     }
-    
-    
-//    let loginFlow = LoginFlow(withServices: self.services)
-//    Flows.use(loginFlow, when: .created) { [unowned self] root in
-//        self.rootWindow.rootViewController = root
-//    }
-//    let nextStep = OneStepper(withSingleStep: MyStep.loginIsRequired)
-//    return .one(flowContributor: .contribute(withNextPresentable: loginFlow, withNextStepper: nextStep))
 }
 
 // MARK: - AppStepper
 final class AppStepper: Stepper {
     let steps = PublishRelay<Step>()
-    
-    init() {
-        
-    }
-    
     var initialStep: Step {
         return DonworryStep.loginIsRequired
     }
     
+    init() {
+        
+    }
 //    func readyToEmitSteps() {
 //
 //    }

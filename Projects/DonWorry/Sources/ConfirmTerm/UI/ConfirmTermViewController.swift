@@ -22,11 +22,7 @@ final class ConfirmTermViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var confirmButton: LargeButton = {
-        let v = LargeButton(type: .done)
-        v.addTarget(self, action: #selector(confirmButtonPressed(_:)), for: .touchUpInside)
-        return v
-    }()
+    private lazy var confirmButton = LargeButton(type: .done)
     private lazy var containerView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.white)
@@ -73,7 +69,10 @@ final class ConfirmTermViewController: BaseViewController, View {
 // MARK: - Bind
 extension ConfirmTermViewController {
     private func dispatch(to reactor: ConfirmTermViewReactor) {
-        
+        confirmButton.rx.tap
+            .map { Reactor.Action.confirmButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func render(_ reactor: ConfirmTermViewReactor) {
@@ -225,10 +224,5 @@ extension ConfirmTermViewController {
         default:
             break
         }
-    }
-    
-    @objc private func confirmButtonPressed(_ sender: UIButton) {
-        dismissContainerView()
-        // TODO: 회원가입 완료 후 HomeView로 이동
     }
 }
