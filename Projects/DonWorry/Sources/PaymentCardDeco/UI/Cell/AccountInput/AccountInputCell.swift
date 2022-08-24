@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DesignSystem
 
 class AccountInputCell: UITableViewCell {
     
@@ -18,7 +19,8 @@ class AccountInputCell: UITableViewCell {
             bottomView.isHidden = true
         }
     }
-    private lazy var accountStackView = AccountStackView()
+//    private lazy var accountStackView = AccountView()
+    lazy var accountInputField = AccountInputField(frame: .zero, type: .PaymentCardDeco)
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -40,10 +42,10 @@ class AccountInputCell: UITableViewCell {
 extension AccountInputCell {
     
     private func layout() {
-        bottomView.addSubview(accountStackView)
-        accountStackView.snp.makeConstraints { make in
+        bottomView.addSubview(accountInputField)
+        accountInputField.snp.makeConstraints { make in
               make.top.equalToSuperview().offset(10)
-              make.leading.trailing.equalToSuperview()
+              make.leading.trailing.equalToSuperview().inset(15)
               make.height.equalTo(200)
         }
     }
