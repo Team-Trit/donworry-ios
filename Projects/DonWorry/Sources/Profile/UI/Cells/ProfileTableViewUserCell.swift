@@ -27,6 +27,17 @@ final class ProfileTableViewUserCell: UITableViewCell {
         v.contentMode = .scaleAspectFill
         return v
     }()
+    private lazy var imagePlusButton: UIButton = {
+        let v = UIButton()
+        let plusImage = UIImage(.custom_plus_circle)?.withTintColor(.designSystem(.mainBlue))
+//        v.setImage(UIImage(.custom_plus_circle), for: .normal)
+        v.setImage(plusImage, for: .normal)
+//        v.setImage(UIImage(systemName: "plus.circle"), for: .normal)
+//        v.tintColor = .designSystem(.white)
+//        v.backgroundColor = .designSystem(.mainBlue)
+//        v.layer.cornerRadius = 10
+        return v
+    }()
     private lazy var nickNameLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .bold, size: ._20)
@@ -66,7 +77,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
 // MARK: - Layout
 extension ProfileTableViewUserCell {
     private func setUI() {
-        contentView.addSubviews(profileLabel, profileImageView, nickNameLabel, nameLabel, editButton)
+        contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, nameLabel, editButton)
         
         profileLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
@@ -76,6 +87,11 @@ extension ProfileTableViewUserCell {
             make.top.equalTo(profileLabel.snp.bottom).offset(26)
             make.leading.equalToSuperview()
             make.width.height.equalTo(50)
+        }
+        
+        imagePlusButton.snp.makeConstraints { make in
+            make.trailing.equalTo(profileImageView.snp.trailing)
+            make.bottom.equalTo(profileImageView.snp.bottom)
         }
         
         nickNameLabel.snp.makeConstraints { make in

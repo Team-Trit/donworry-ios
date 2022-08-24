@@ -19,8 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UserDefaults.standard.writeCodable(User.dummyUser2, key: .user)
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        let rootViewController = HomeViewController()
-        rootViewController.reactor = HomeViewReactor()
+        let rootViewController = ProfileViewController()
+        
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.setNavigationBarHidden(true, animated: false)
         window.rootViewController = rootViewController
