@@ -27,6 +27,7 @@ final class EnterUserInfoViewController: BaseViewController, View {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        nextButton.isUserInteractionEnabled = true
         setUI()
     }
     
@@ -43,6 +44,11 @@ extension EnterUserInfoViewController {
             .map { Reactor.Action.bankSelectButtonPressed }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        nextButton.rx.tap
+            .map { Reactor.Action.nextButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func render(_ reactor: EnterUserInfoViewReactor) {
@@ -54,6 +60,7 @@ extension EnterUserInfoViewController {
 extension EnterUserInfoViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
+        
         view.addSubviews(titleLabel, nickNameStackView, accountStackView, nextButton)
         
         titleLabel.snp.makeConstraints { make in
@@ -76,7 +83,10 @@ extension EnterUserInfoViewController {
         }
         
         nextButton.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.equalToSuperview().offset(25)
+            make.trailing.equalToSuperview().offset(-25)
+            make.bottom.equalToSuperview().offset(-50)
+            make.height.equalTo(50)
         }
     }
 }

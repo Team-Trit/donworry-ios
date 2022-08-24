@@ -44,9 +44,9 @@ final class LoginFlow: Flow {
         case .bankSelectIsComplete:
             self.dismissBankSelectView()
             return .none
-            //
-            //        case .agreeTermIsRequired:
-            //            return self.navigateToAgreeTermView()
+            
+        case .agreeTermIsRequired:
+            return self.navigateToAgreeTermView()
             //
             //        case .confirmTermIsRequired:
             //            return self.presentConfirmTermView()
@@ -91,10 +91,14 @@ extension LoginFlow {
         self.rootViewController.dismiss(animated: true)
     }
     
-    //    private func navigateToAgreeTermView() -> FlowContributors {
-    //
-    //    }
-    //
+    private func navigateToAgreeTermView() -> FlowContributors {
+        let vc = AgreeTermViewController()
+        let reactor = AgreeTermViewReactor()
+        vc.reactor = reactor
+        self.rootViewController.pushViewController(vc, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+    }
+    
     //    private func presentConfirmTermView() -> FlowContributors {
     //
     //    }

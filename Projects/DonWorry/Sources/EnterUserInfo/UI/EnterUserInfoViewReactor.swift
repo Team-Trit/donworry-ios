@@ -15,10 +15,12 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     
     enum Action {
         case bankSelectButtonPressed
+        case nextButtonPressed
     }
     
     enum Mutation {
         case showBankSelectSheet
+        case navigateToNextVC
     }
     
     struct State {
@@ -36,6 +38,10 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         case .bankSelectButtonPressed:
             self.steps.accept(DonworryStep.bankSelectIsRequired)
             return .just(Mutation.showBankSelectSheet)
+            
+        case .nextButtonPressed:
+            self.steps.accept(DonworryStep.agreeTermIsRequired)
+            return .just(Mutation.navigateToNextVC)
         }
     }
     
@@ -44,6 +50,9 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         
         switch mutation {
         case .showBankSelectSheet:
+            break
+            
+        case .navigateToNextVC:
             break
         }
         

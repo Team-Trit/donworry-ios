@@ -10,11 +10,12 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
 
-final class AgreeTermViewController: BaseViewController {
+final class AgreeTermViewController: BaseViewController, View {
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
         v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
@@ -40,6 +41,22 @@ final class AgreeTermViewController: BaseViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+    }
+    
+    func bind(reactor: AgreeTermViewReactor) {
+        dispatch(to: reactor)
+        render(reactor)
+    }
+}
+
+// MARK: - Bind
+extension AgreeTermViewController {
+    private func dispatch(to reactor: AgreeTermViewReactor) {
+        
+    }
+    
+    private func render(_ reactor: AgreeTermViewReactor) {
+        
     }
 }
 

@@ -20,38 +20,24 @@ public enum LargeButtonType {
 }
 
 public final class LargeButton: UIButton {
-    private lazy var largeButton: UIButton = {
-       let v = UIButton()
-        v.isEnabled = false
-        v.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
-        v.backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.grayC5C5C5)
-        v.layer.cornerRadius = 25
-        return v
-    }()
-    
-    init() {
-        super.init(frame: .zero)
-        setUI()
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setUI()
+        configure()
     }
     
     public convenience init(type: LargeButtonType) {
         self.init()
         switch(type) {
         case .next:
-            largeButton.setTitle("다음", for: .normal)
+            self.setTitle("다음", for: .normal)
         case .done:
-            largeButton.setTitle("완료", for: .normal)
+            self.setTitle("완료", for: .normal)
         case .hurry:
-            largeButton.setTitle("재촉하기", for: .normal)
+            self.setTitle("재촉하기", for: .normal)
         case .enter:
-            largeButton.setTitle("정산방 참가하기", for: .normal)
+            self.setTitle("정산방 참가하기", for: .normal)
         case .update:
-            largeButton.setTitle("수정하기", for: .normal)
+            self.setTitle("수정하기", for: .normal)
         }
     }
     
@@ -62,14 +48,10 @@ public final class LargeButton: UIButton {
 
 // MARK: - Layout
 extension LargeButton {
-    private func setUI() {
-        addSubview(largeButton)
-        
-        largeButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
-            make.bottom.equalToSuperview().offset(-50)
-            make.height.equalTo(50)
-        }
+    private func configure() {
+//        self.isEnabled = false
+        self.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+        self.backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.grayC5C5C5)
+        self.layer.cornerRadius = 25
     }
 }
