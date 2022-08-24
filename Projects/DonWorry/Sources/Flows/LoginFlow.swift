@@ -36,15 +36,14 @@ final class LoginFlow: Flow {
             return self.navigateToLoginView()
             
         case .userInfoIsRequired:
-            print("실행")
             return self.navigateToEnterUserInfoView()
             
-            //        case .bankSelectIsRequired:
-            //            return self.presentBankSelectView()
-            //
-            //        case .bankSelectIsComplete:
-            //            self.dismissBankSelectView()
-            //            return .none
+        case .bankSelectIsRequired:
+            return self.presentBankSelectView()
+            
+        case .bankSelectIsComplete:
+            self.dismissBankSelectView()
+            return .none
             //
             //        case .agreeTermIsRequired:
             //            return self.navigateToAgreeTermView()
@@ -68,7 +67,6 @@ extension LoginFlow {
         let vc = LoginViewController()
         let reactor = LoginViewReactor()
         vc.reactor = reactor
-        print("로그인 가자")
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
@@ -81,14 +79,18 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    //    private func presentBankSelectView() -> FlowContributors {
-    //
-    //    }
-    //
-    //    private func dismissBankSelectView() {
-    //
-    //    }
-    //
+    private func presentBankSelectView() -> FlowContributors {
+        let vc = SelectBankViewController()
+        let reactor = SelectBankViewReactor()
+        vc.reactor = reactor
+        self.rootViewController.present(vc, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+    }
+    
+    private func dismissBankSelectView() {
+        self.rootViewController.dismiss(animated: true)
+    }
+    
     //    private func navigateToAgreeTermView() -> FlowContributors {
     //
     //    }

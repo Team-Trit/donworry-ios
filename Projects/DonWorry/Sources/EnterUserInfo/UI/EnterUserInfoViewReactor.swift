@@ -12,12 +12,13 @@ import RxFlow
 
 final class EnterUserInfoViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
+    
     enum Action {
-        
+        case bankSelectButtonPressed
     }
     
     enum Mutation {
-        
+        case showBankSelectSheet
     }
     
     struct State {
@@ -32,14 +33,19 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        
+        case .bankSelectButtonPressed:
+            self.steps.accept(DonworryStep.bankSelectIsRequired)
+            return .just(Mutation.showBankSelectSheet)
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
         
-        
+        switch mutation {
+        case .showBankSelectSheet:
+            break
+        }
         
         return state
     }

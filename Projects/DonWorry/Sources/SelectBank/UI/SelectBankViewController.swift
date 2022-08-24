@@ -10,11 +10,12 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
 
-final class SelectBankViewController: BaseViewController {
+final class SelectBankViewController: BaseViewController, View {
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "은행선택"
@@ -26,28 +27,46 @@ final class SelectBankViewController: BaseViewController {
         v.setTitle("취소", for: .normal)
         v.setTitleColor(.black, for: .normal)
         v.titleLabel?.font = .designSystem(weight: .regular, size: ._15)
-        v.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
         return v
     }()
-    private lazy var bankSearchTextField: BankSearchTextField = {
-        let v = BankSearchTextField()
-        v.addTarget(self, action: #selector(searchBarEdit(_:)), for: .editingChanged)
-        return v
-    }()
+    private lazy var bankSearchTextField = BankSearchTextField()
     private lazy var bankCollectionView = SelectBankCollectionView()
-    let viewModel = SelectBankViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.performQuery(with: nil)
         setUI()
+    }
+    
+    func bind(reactor: SelectBankViewReactor) {
+        dispatch(to: reactor)
+        render(reactor)
+    }
+}
+// MARK: - Bind
+extension SelectBankViewController {
+    private func dispatch(to reactor: SelectBankViewReactor) {
+        dismissButton.rx.tap
+            .map { Reactor.Action.dismissButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        bankSearchTextField.rx.text.changed
+            .map { Reactor.Action.searchTextChanged(filter: $0 ?? "") }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: SelectBankViewReactor) {
+        reactor.state.map { $0.snapshot }
+            .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
+            .disposed(by: disposeBag)
     }
 }
 
 // MARK: - Layout
 extension SelectBankViewController {
     private func setUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .designSystem(.white)
         
         view.addSubviews(titleLabel, dismissButton, bankSearchTextField, bankCollectionView)
         
@@ -76,28 +95,5 @@ extension SelectBankViewController {
             make.trailing.equalToSuperview().offset(-25)
             make.bottom.equalToSuperview()
         }
-    }
-}
-
-// MARK: - Interaction Functions
-extension SelectBankViewController {
-    @objc private func dismissButtonPressed(_ sender: UIButton) {
-        dismiss(animated: true)
-    }
-    
-    @objc private func searchBarEdit(_ sender: UITextField) {
-        self.performQuery(with: sender.text)
-    }
-}
-
-// MARK: - Helper
-extension SelectBankViewController {
-    private func performQuery(with filter: String?) {
-        let bankList = viewModel.banks
-        let filtered = bankList.filter { $0.hasPrefix(filter ?? "") }
-        var snapshot = NSDiffableDataSourceSnapshot<Section, String>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(filtered)
-        bankCollectionView.diffableDataSouce.apply(snapshot, animatingDifferences: true)
     }
 }

@@ -41,8 +41,7 @@ final class LoginViewController: BaseViewController, View {
     
     func bind(reactor: LoginViewReactor) {
         dispatch(to: reactor)
-        render(reactor)
-        
+        render(reactor)   
     }
 }
 

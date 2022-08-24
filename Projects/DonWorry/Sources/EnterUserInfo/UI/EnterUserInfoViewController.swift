@@ -22,11 +22,7 @@ final class EnterUserInfoViewController: BaseViewController, View {
         return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
-    private lazy var accountStackView: AccountStackView = {
-        let v = AccountStackView()
-        v.accountInputField.delegate = self
-        return v
-    }()
+    private lazy var accountStackView = AccountStackView()
     private lazy var nextButton = LargeButton(type: .next)
     
     public override func viewDidLoad() {
@@ -43,7 +39,10 @@ final class EnterUserInfoViewController: BaseViewController, View {
 // MARK: - Bind
 extension EnterUserInfoViewController {
     private func dispatch(to reactor: EnterUserInfoViewReactor) {
-        
+        accountStackView.accountInputField.chooseBankButton.rx.tap
+            .map { Reactor.Action.bankSelectButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func render(_ reactor: EnterUserInfoViewReactor) {
@@ -54,7 +53,7 @@ extension EnterUserInfoViewController {
 // MARK: - Layout
 extension EnterUserInfoViewController {
     private func setUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .designSystem(.white)
         view.addSubviews(titleLabel, nickNameStackView, accountStackView, nextButton)
         
         titleLabel.snp.makeConstraints { make in
@@ -79,12 +78,5 @@ extension EnterUserInfoViewController {
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
         }
-    }
-}
-
-// MARK: - AccountTextFieldDelegate
-extension EnterUserInfoViewController: AccountInputFieldDelegate {
-    func showBankSelectSheet() {
-        present(SelectBankViewController(), animated: true)
     }
 }

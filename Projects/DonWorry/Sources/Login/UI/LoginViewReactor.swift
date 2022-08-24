@@ -28,19 +28,20 @@ final class LoginViewReactor: Reactor, Stepper {
     }
     
     struct State {
-        var isLoading: Bool = false
+        var isLoading: Bool
     }
     
     let initialState: State
     
     init() {
-        self.initialState = State()
+        self.initialState = State(
+            isLoading: false
+        )
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .appleLoginButtonPressed:
-            print("apple")
             // TODO: Social login
             return Observable.concat(
                 [.just(Mutation.updateLoading(true)),
@@ -49,7 +50,6 @@ final class LoginViewReactor: Reactor, Stepper {
                 ])
             
         case .googleLoginButtonPressed:
-            print("google")
             // TODO: Social login
             return Observable.concat(
                 [.just(Mutation.updateLoading(true)),
@@ -58,7 +58,6 @@ final class LoginViewReactor: Reactor, Stepper {
                 ])
             
         case .kakaoLoginButtonPressed:
-            print("kakao")
             // TODO: Social login
             return Observable.concat(
                 [.just(Mutation.updateLoading(true)),
@@ -74,7 +73,6 @@ final class LoginViewReactor: Reactor, Stepper {
         switch mutation {
         case .updateLoading(let isLoading):
             state.isLoading = isLoading
-            
         case .appleLogin:
             self.steps.accept(DonworryStep.userInfoIsRequired)
         case .googleLogin:
