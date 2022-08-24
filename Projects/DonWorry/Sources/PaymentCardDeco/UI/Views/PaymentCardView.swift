@@ -70,7 +70,7 @@ public class PaymentCardView: UIView {
     
     private let totalAmountLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.text = "총 130,000원"
+        $0.text = "130,000원"
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .heavy, size: ._20)
         $0.textAlignment = .left
@@ -145,7 +145,7 @@ public class PaymentCardView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .bold, size: ._9)
-        $0.backgroundColor = UIColor(hex: "#F6F6F6CC") // op 80
+        $0.backgroundColor = UIColor(hex: "#F6F6F6FF")?.withAlphaComponent(80) // op 80
         $0.textColor = UIColor(hex: "#FF5454FF") // op 100
         $0.textAlignment = .center
         $0.layer.cornerRadius = 11

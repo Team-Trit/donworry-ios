@@ -87,7 +87,7 @@ class ColorCircleCell: UICollectionViewCell {
     func configure(with color : cardColor) {
         self.colorView.backgroundColor = UIColor(hex: color.rawValue)
         self.innerColorView.backgroundColor = UIColor(hex: color.rawValue)
-        print(color)
+//        print(color)
     }
 
     required init?(coder: NSCoder) {

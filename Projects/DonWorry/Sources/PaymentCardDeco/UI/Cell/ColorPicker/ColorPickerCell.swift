@@ -55,8 +55,14 @@ extension ColorPickerCell {
             $0.width.equalTo(300)
             $0.edges.equalToSuperview().inset(10)
         }
-
     }
+    
+    func configure(isHidden: Bool) {
+        self.bottomView.isHidden = isHidden
+        self.chevronImageView.image = UIImage(systemName: isHidden ? "chevron.down" : "chevron.up")
+        self.selectionStyle = .none
+    }
+    
 }
 
 

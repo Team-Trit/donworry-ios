@@ -6,9 +6,11 @@
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
+import PhotosUI
 import UIKit
 import RxCocoa
 import RxSwift
+import SnapKit
 
 import BaseArchitecture
 import DesignSystem
@@ -19,8 +21,28 @@ final class PaymentCardDecoViewController: BaseViewController {
     
     //    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = PaymentCardDecoViewModel()
-    lazy var paymentCard = PaymentCardView()
-    lazy var tableView = PaymentCardDecoTableView()
+    var imageArray = [UIImage]()
+    
+    
+    private lazy var paymentCard = PaymentCardView()
+    private lazy var tableView = PaymentCardDecoTableView()
+    
+    private lazy var scrollView: UIScrollView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.showsVerticalScrollIndicator = false
+        return $0
+    }(UIScrollView())
+    
+    private lazy var stackView: UIStackView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.axis = .vertical
+        $0.distribution = .fill
+        $0.alignment = .center
+        $0.spacing = 20
+        return $0
+    }(UIStackView())
+    
+    private lazy var footerView = UIView()
     
     private lazy var headerView: UIStackView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +78,7 @@ final class PaymentCardDecoViewController: BaseViewController {
         $0.backgroundColor = .designSystem(.mainBlue)
         $0.layer.cornerRadius = 25
         $0.setTitle("완료", for: .normal)
+        $0.addTarget(self, action: #selector(photoSelectDidTap), for: .touchUpInside)
         return $0
     }(UIButton())
     
@@ -83,40 +106,115 @@ extension PaymentCardDecoViewController {
     
     private func attributes() {
         view.backgroundColor = .designSystem(.white2)
+        scrollView.isScrollEnabled = true
+        tableView.isScrollEnabled = false
+        tableView.paymentCardDecoTableViewDelegate = self
     }
     
     private func layout() {
+        self.view.addSubviews(self.scrollView, self.completeButton)
+        self.scrollView.addSubview(self.stackView)
         
-        view.addSubviews(headerView, paymentCard, tableView, completeButton)
-        headerView.addArrangedSubviews(cardIcon, titleLabel)
-        NSLayoutConstraint.activate([
-            cardIcon.widthAnchor.constraint(equalToConstant: 30),
-            cardIcon.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
-        ])
-
-        NSLayoutConstraint.activate([
-            
-            headerView.topAnchor.constraint(equalTo: paymentCard.bottomAnchor, constant: 20),
-            headerView.heightAnchor.constraint(equalToConstant: 55),
-            headerView.widthAnchor.constraint(equalToConstant: 340),
-            headerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            paymentCard.topAnchor.constraint(equalTo: view.topAnchor, constant: 122),
-            paymentCard.bottomAnchor.constraint(equalTo: paymentCard.topAnchor, constant: -10),
-            paymentCard.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            tableView.widthAnchor.constraint(equalToConstant: 340),
-            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
-           
-            completeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            completeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            completeButton.heightAnchor.constraint(equalToConstant: 50),
-            completeButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40)
-            
-        ])
-            
+        self.stackView.addArrangedSubviews(self.paymentCard, self.headerView, self.tableView, self.footerView)
+        self.stackView.setCustomSpacing(0, after: headerView)
+        self.headerView.addArrangedSubviews(self.cardIcon, self.titleLabel)
+        
+        self.scrollView.snp.makeConstraints { make in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        self.stackView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalToSuperview().offset(14)
+            make.width.equalToSuperview()
+            make.height.equalToSuperview().priority(.low)
+        }
+        self.headerView.snp.makeConstraints { make in
+            make.height.equalTo(55)
+            make.width.equalTo(340)
+        }
+        self.cardIcon.snp.makeConstraints { make in
+            make.width.equalTo(30)
+            make.leading.equalToSuperview().offset(20)
+        }
+        self.tableView.snp.makeConstraints { make in
+            make.width.equalTo(340)
+            let height: CGFloat = (48 + 15) * 4 + 5
+            make.height.equalTo(height)
+        }
+        self.footerView.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+        self.completeButton.snp.makeConstraints { make in
+            make.leading.equalTo(self.view.snp.leading).inset(25)
+            make.trailing.equalTo(self.view.snp.trailing).inset(25)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            make.height.equalTo(50)
+        }
+    }
+    
+    
+    /* 사진선택 테스트 */
+    @objc private func photoSelectDidTap() {
+        print("버튼선택")
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 3
+        
+        let phPickerVC = PHPickerViewController(configuration: config)
+        phPickerVC.delegate = self
+        self.present(phPickerVC, animated: true)
     }
 
+}
+
+//extension PaymentCardDecoViewController: PhotoSelectButtonDelegate  {
+//    func didSelectAddPhotoButton() {
+//        print("델리게이트")
+//        var config = PHPickerConfiguration()
+//        config.selectionLimit = 3
+//
+//        let phPickerVC = PHPickerViewController(configuration: config)
+//        self.present(phPickerVC, animated: true)
+//    }
+//
+//}
+//
+//protocol PhotoSelectButtonDelegate {
+//    func didSelectAddPhotoButton()
+//}
+
+extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        dismiss(animated: true)
+        for result in results {
+            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
+                error in
+                if let image = object as? UIImage {
+                    print(image)
+                    self.imageArray.append(image)
+                }
+                
+//                DispatchQueue.main.async {
+//                    self.collectioview.reloadData/
+//                }
+                
+            }
+        }
+    }
+    
+    
+}
+
+extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
+    
+    private func calculateTableViewHeight() {
+        
+    }
+    func updateTableViewHeight(to height: CGFloat) {
+        tableView.snp.updateConstraints { make in
+            make.height.equalTo(height)
+        }
+        tableView.reloadData()
+    }
 }
