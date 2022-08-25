@@ -9,8 +9,8 @@
 import UIKit
 
 enum CardColor: String {
-    case yellow = "#9036B5FF"
-    case purple = "#B24DA5FF"
+    case yellow = "#FFA114FF"
+    case purple = "#9036B5FF"
     case brown = "#A84E25FF"
     case red = "#B51A00FF"
     case skyblue = "#00A1D8FF"
