@@ -41,12 +41,12 @@ final class RoomNameEditViewController: BaseViewController, View {
     }(UILabel())
     
     private lazy var roomInfoLabel = LimitTextField(frame: .zero, type: .roomName)
-//    private lazy var nextButton = LargeButton(type: .next)
-    private lazy var nextButton: LargeButton = {
-        let v = LargeButton(type: .next)
-        v.addTarget(self, action: #selector(codeSheet), for: .touchUpInside)
-        return v
-    }()
+    private lazy var nextButton = LargeButton(type: .next)
+//    private lazy var nextButton: LargeButton = {
+//        let v = LargeButton(type: .next)
+//        v.addTarget(self, action: #selector(codeSheet), for: .touchUpInside)
+//        return v
+//    }()
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -63,10 +63,13 @@ final class RoomNameEditViewController: BaseViewController, View {
     
     // MARK: - 코드 테스트
     @objc func codeSheet() {
-        let enterCodeVC = EnterRoomViewController
-        enterCodeVC.delegate = self
-        if let sheet = enterCodeVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+        let enterCodeVC = EnterRoomViewController()
+        if #available(iOS 15.0, *) {
+            if let sheet = enterCodeVC.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+        } else {
+            // Fallback on earlier versions
         }
         present(enterCodeVC, animated: true)
     }
