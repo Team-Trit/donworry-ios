@@ -17,6 +17,7 @@ import SnapKit
 
 final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
+    typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "<"]
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
@@ -72,7 +73,15 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         setUI()
     }
     
-    func bind(reactor: PaymentCardAmountEditReactor) {
+    func bind(reactor: Reactor) {
+        dispatch(to: reactor)
+        render(reactor)
+    }
+}
+
+// MARK: - Bind
+extension PaymentCardAmountEditViewController {
+    private func dispatch(to reactor: Reactor) {
         nextButton.rx.tap
             .map { Reactor.Action.nextButtonPressed }
             .bind(to: reactor.action)
@@ -82,7 +91,9 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
             .map { Reactor.Action.numberPadPressed(pressedItem: self.padItems[$0.row]) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+    }
+    
+    private func render(_ reactor: Reactor) {
         reactor.state.map { $0.iconName }
             .distinctUntilChanged()
             .map { UIImage(.init(rawValue: $0)!) }

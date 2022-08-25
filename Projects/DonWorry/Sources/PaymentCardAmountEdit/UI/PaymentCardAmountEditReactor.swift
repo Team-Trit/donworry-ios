@@ -34,7 +34,7 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .numberPadPressed(let pressedItem):
+        case let .numberPadPressed(pressedItem):
             return .just(.updateAmount(with: pressedItem))
         case .nextButtonPressed:
             // TODO: Navigate to next VC
@@ -46,7 +46,7 @@ final class PaymentCardAmountEditReactor: Reactor {
         var state = state
         
         switch mutation {
-        case .updateAmount(let with):
+        case let .updateAmount(with):
             state.amount = setNewAmount(state.amount, with: with)
         case .navigateToNext:
             break
