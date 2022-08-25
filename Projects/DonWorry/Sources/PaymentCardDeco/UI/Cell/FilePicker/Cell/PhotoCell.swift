@@ -9,35 +9,40 @@
 import UIKit
 import DesignSystem
 
+
+protocol PhotoCellDelegate: AnyObject {
+    func deletePhoto()
+}
+
 class PhotoCell: UICollectionViewCell {
+    
+    weak var photoCellDelegate: PhotoCellDelegate?
 
     lazy var container : UIImageView = {
+        $0.contentMode = .scaleAspectFill
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIImageView())
     
-    lazy var deleteCircle: UIView = {
-        $0.backgroundColor = .red
+    lazy var deleteCircle: UIButton = {
+        $0.setImage(UIImage(.delete_mark), for: .normal)
         $0.layer.cornerRadius = 10
         $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.addTarget(self, action: #selector(deletePhoto(_:)), for: .touchUpInside)
+        $0.isUserInteractionEnabled = true
         return $0
-    }(UIView())
-    
-    override var isSelected: Bool {
-        didSet{
-            if isSelected {
-                self.backgroundColor = .orange
-            }
-            else {
-                self.backgroundColor = .blue
-            }
+    }(UIButton())
+
+    @objc private func deletePhoto(_ sender: UIButton) {
+        if !imageArray.isEmpty {
+            imageArray.remove(at: tag)
+            photoCellDelegate?.deletePhoto()
         }
     }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.roundCorners(15)
-        self.backgroundColor = .blue
         
         self.contentView.addSubview(self.container)
         container.snp.makeConstraints {
@@ -47,15 +52,12 @@ class PhotoCell: UICollectionViewCell {
             $0.right.equalTo(self.contentView.snp.right)
         }
         
-        
-        self.container.addSubview(self.deleteCircle)
+        self.contentView.addSubview(deleteCircle)
         deleteCircle.snp.makeConstraints {
-            $0.top.equalTo(self.container.snp.top).inset(8)
-            $0.right.equalTo(self.container.snp.right).inset(8)
-            $0.width.equalTo(20)
-            $0.height.equalTo(20)
+            $0.width.height.equalTo(20)
+            $0.top.equalTo(container.snp.top).inset(8)
+            $0.trailing.equalTo(container.snp.trailing).inset(8)
         }
-        
         
     }
     required init?(coder: NSCoder) {

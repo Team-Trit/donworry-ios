@@ -17,15 +17,12 @@ import DesignSystem
 import DonWorryExtensions
 
 
-
-// tmp
 final class PaymentCardDecoViewController: BaseViewController {
     
     //    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = PaymentCardDecoViewModel()
-    var imageArray = [UIImage]()
     
-    /* MARK: - Model 활용하여 교체 예정 */
+    // MARK: - Model 활용하여 교체 예정
     var cardColor: CardColor = .pink
     
     lazy var paymentCard = PaymentCardView()
@@ -82,7 +79,7 @@ final class PaymentCardDecoViewController: BaseViewController {
         $0.backgroundColor = .designSystem(.mainBlue)
         $0.layer.cornerRadius = 25
         $0.setTitle("완료", for: .normal)
-        $0.addTarget(self, action: #selector(photoSelectDidTap), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(didTapCompleteButton), for: .touchUpInside)
         return $0
     }(UIButton())
     
@@ -158,58 +155,28 @@ extension PaymentCardDecoViewController {
         }
     }
     
-    
-    /* 사진선택 테스트 */
-    @objc private func photoSelectDidTap() {
-        print("버튼선택")
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 3
-        
-        let phPickerVC = PHPickerViewController(configuration: config)
-        phPickerVC.delegate = self
-        self.present(phPickerVC, animated: true)
+    @objc private func didTapCompleteButton() {
+        // TODO: 완료 버튼
+        print("완료 버튼")
     }
 
 }
-
-//extension PaymentCardDecoViewController: PhotoSelectButtonDelegate  {
-//    func didSelectAddPhotoButton() {
-//        print("델리게이트")
-//        var config = PHPickerConfiguration()
-//        config.selectionLimit = 3
-//
-//        let phPickerVC = PHPickerViewController(configuration: config)
-//        self.present(phPickerVC, animated: true)
-//    }
-//
-//}
-//
-//protocol PhotoSelectButtonDelegate {
-//    func didSelectAddPhotoButton()
-//}
 
 extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         dismiss(animated: true)
+        var imageArray = [UIImage]()
         for result in results {
             result.itemProvider.loadObject(ofClass: UIImage.self){ object,
                 error in
                 if let image = object as? UIImage {
-                    print(image)
-                    self.imageArray.append(image)
+                    imageArray.append(image)
                 }
-                
-                self.tableView.paymentCardDecoTableViewDelegate?.reloadPhotoCell()
-                
-//                DispatchQueue.main.async {
-//                    self.collectioview.reloadData
-//                }
-                
+                self.tableView.updatePhotoCell(img: imageArray)
             }
         }
     }
-    
     
 }
 
@@ -236,21 +203,13 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         paymentCard.dateLabel.text = formmater.string(from: date)
     }
     
-    func reloadPhotoCell() {
-        tableView.reloadPhotoCell()
+    func showPhotoPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 3
+        let phPickerVC = PHPickerViewController(configuration: config)
+        phPickerVC.delegate = self
+        self.present(phPickerVC, animated: true)
     }
     
-}
 
-//extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
-//
-////    private func calculateTableViewHeight() {
-////
-////    }
-//    func updateTableViewHeight(to height: CGFloat) {
-//        tableView.snp.updateConstraints { make in
-//            make.height.equalTo(height)
-//        }
-//        tableView.reloadData()
-//    }
-//}
+}

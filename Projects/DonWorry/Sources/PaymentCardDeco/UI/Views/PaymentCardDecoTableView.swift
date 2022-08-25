@@ -23,11 +23,11 @@ protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateTableViewHeight(to height: CGFloat)
     func updateCardColor(with color: CardColor)
     func updatePayDate(with date : Date)
-    func reloadPhotoCell()
+    func showPhotoPicker()
 }
 
-protocol FilePickerCellCollectionViewDelegate: AnyObject {
-    func reloadPhotoCell()
+protocol PhotoUpdateDelegate: AnyObject {
+    func updatePhotoCell(img: [UIImage])
 }
 
 class PaymentCardDecoTableView: UITableView {
@@ -38,9 +38,10 @@ class PaymentCardDecoTableView: UITableView {
         CardDecoItem(title: "계좌번호 입력 (선택)"),
         CardDecoItem(title: "파일 추가 (선택)"),
     ]
-    var selectedIndex: Int = -1
+    private var selectedIndex: Int = -1
     
     weak var paymentCardDecoTableViewDelegate: PaymentCardDecoTableViewDelegate?
+    weak var photoUpdateDelegate: PhotoUpdateDelegate?
     
     // MARK: - Constructors
     override init(frame: CGRect, style: UITableView.Style) {
@@ -81,7 +82,6 @@ extension PaymentCardDecoTableView {
         self.register(UINib(nibName: "ColorPickerCell", bundle: nil), forCellReuseIdentifier: "ColorPickerCell")
         self.register(UINib(nibName: "PayDatePickerCell", bundle: nil), forCellReuseIdentifier: "PayDatePickerCell")
         self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
-        self.register(AttachedPickerCell.self, forCellReuseIdentifier: AttachedPickerCell.cellID)
         
         // 상단여백제거
         self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
@@ -104,8 +104,11 @@ extension PaymentCardDecoTableView {
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     
+    func updatePhotoCell(img : [UIImage]) {
+        photoUpdateDelegate?.updatePhotoCell(img: img)
+    }
+    
 }
-
 
 
 /* Cell Delegate 구현 */
@@ -122,12 +125,11 @@ extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorP
     }
     
     // FilePickerCellCollectionViewDelegate
-    func reloadPhotoCell(){
-        print("리로드")
+    func selectPhoto(){
+        paymentCardDecoTableViewDelegate?.showPhotoPicker()
     }
     
 }
-
 
 extension PaymentCardDecoTableView : UITableViewDelegate {
     
@@ -180,18 +182,12 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         
         paymentCardDecoTableViewDelegate?.updateTableViewHeight(to: height)
         
-//        if indexPath.row == 0 {
-//            paymentCardDecoTableViewDelegate?.updateCardColor(with: .skyblue)
-//        }
-
-//         tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic) -> 애니메이션
-        
     }
     
 }
 
 extension PaymentCardDecoTableView : UITableViewDataSource {
-
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return cardDecoItems.count
@@ -206,14 +202,12 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 0: // 배경선택
                 let cell = tableView.dequeueReusableCell(withIdentifier: "ColorPickerCell", for: indexPath) as! ColorPickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
-                /* ✅ MARK: - DELEGATE*/
                 cell.colorPickerCellDelegate = self
                 return cell
             
             case 1: // 날짜선택
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
-                /* ✅ MARK: - DELEGATE*/
                 cell.payDatePickerCellDelegate = self
                 return cell
             
@@ -225,9 +219,8 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 3: // 파일추가
                 let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
-            
-                /* ✅ MARK: - DELEGATE*/
                 cell.filePickerCellCollectionViewDelegate = self
+                self.photoUpdateDelegate = cell
             
                 return cell
 

@@ -9,14 +9,18 @@
 import PhotosUI
 import UIKit
 
+import DesignSystem
+
+protocol FilePickerCellCollectionViewDelegate: AnyObject {
+    func selectPhoto()
+}
+
+
+// MARK: - 도메인 로직 생기고 교체 예정 | 전역변수 죄송합니다
+var imageArray = [UIImage]()
 
 class FilePickerCell: UITableViewCell {
-    
-    #warning("작업중")
-//    var delegate: PhotoSelectButtonDelegate?
-    
-    var imageArray = [UIImage]()
-    
+
     weak var filePickerCellCollectionViewDelegate: FilePickerCellCollectionViewDelegate?
     
     @IBOutlet private weak var containerStackView: UIStackView!
@@ -28,9 +32,8 @@ class FilePickerCell: UITableViewCell {
             bottomView.isHidden = true
         }
     }
-    
-    
-    private lazy var pickerCollectionView: UICollectionView = {
+
+    lazy var pickerCollectionView: UICollectionView = {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
         cv.isScrollEnabled = false
         return cv
@@ -46,34 +49,24 @@ class FilePickerCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
-    // https://www.youtube.com/watch?v=yBHpKuTvfdA
-    @IBAction func buttonDidTap(_ sender: Any) {
-
-        print("select")
-//        self.present(phPickerVC, animated: true)
-//        delegate?.didSelectAddPhotoButton()
-        
     }
     
 }
 
 extension FilePickerCell {
     private func setUI() {
-        contentView.addSubview(pickerCollectionView)
         bottomView.addSubview(pickerCollectionView)
         pickerCollectionView.delegate = self
         pickerCollectionView.dataSource = self
         pickerCollectionView.backgroundColor = .designSystem(.white2)
         pickerCollectionView.register(PhotoCell.self, forCellWithReuseIdentifier: "PhotoCell")
+        pickerCollectionView.register(PhotoAddCell.self, forCellWithReuseIdentifier: "PhotoAddCell")
 
         pickerCollectionView.snp.makeConstraints {
             $0.width.equalTo(300)
             $0.edges.equalToSuperview().inset(10)
         }
+        
     }
     
     func configure(isHidden: Bool) {
@@ -107,32 +100,62 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageArray.count
-//        return 3
+        
+        if imageArray.count == 0 {
+            return 1
+        } else if imageArray.count == 3 {
+            return 3
+        } else {
+            return imageArray.count + 1
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-        cell.container.image = imageArray[indexPath.row]
-        return cell
+        
+        if imageArray.count > 2 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
+            cell.photoCellDelegate = self
+            cell.container.image = imageArray[indexPath.row]
+            cell.deleteCircle.tag = indexPath.row
+            return cell
+        } else {
+            if indexPath.row == 0 {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoAddCell", for: indexPath) as? PhotoAddCell else { return UICollectionViewCell() }
+                return cell
+            } else {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
+                cell.photoCellDelegate = self
+                cell.container.image = imageArray[(indexPath.row - 1)]
+                cell.deleteCircle.tag = (indexPath.row - 1)
+                return cell
+            }
+        }
     }
     
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // TODO: 선택된 셀 다루기
-//        print("선택된 셀 : \(colors[indexPath.row])")
+        if imageArray.count < 3 && indexPath.row == 0 {
+            filePickerCellCollectionViewDelegate?.selectPhoto()
+        }
+
     }
     
 }
 
 
-extension FilePickerCell {
-    
-    func reloadPhotoCell() {
+extension FilePickerCell: PhotoUpdateDelegate, PhotoCellDelegate {
+
+    func updatePhotoCell(img: [UIImage]) {
+        imageArray = img
         DispatchQueue.main.async {
             self.pickerCollectionView.reloadData()
         }
     }
     
+    func deletePhoto() {
+        DispatchQueue.main.async {
+            self.pickerCollectionView.reloadData()
+        }
+    }
+
 }

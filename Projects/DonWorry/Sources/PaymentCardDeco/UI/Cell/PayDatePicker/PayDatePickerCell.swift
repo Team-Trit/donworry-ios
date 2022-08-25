@@ -44,16 +44,10 @@ class PayDatePickerCell: UITableViewCell {
         self.chevronImageView.image = UIImage(systemName: isHidden ? "chevron.down" : "chevron.up")
         self.selectionStyle = .none
     }
-    
-    
 }
 
 extension PayDatePickerCell {
-    //addTarget 두번쨰 파라미터 셀렉터 메서드
-      @ objc private func datePickerValueDidChange(_ datePicker: UIDatePicker){
-          // DATE 넘기기
-//          datePicker.date
+      @objc private func datePickerValueDidChange(_ datePicker: UIDatePicker){
           payDatePickerCellDelegate?.updatePayDate(with: datePicker.date)
-          
       }
 }

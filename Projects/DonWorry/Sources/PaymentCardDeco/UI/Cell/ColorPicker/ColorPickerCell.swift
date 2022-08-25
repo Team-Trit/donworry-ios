@@ -16,7 +16,7 @@ protocol ColorPickerCellDelegate: AnyObject {
 class ColorPickerCell: UITableViewCell {
     
     private var colors: [CardColor] = [.yellow, .purple, .brown, .red, .skyblue,
-                                   .green, .pink, .navy, .blue1, .black]
+                                   .green, .pink, .navy, .blue, .black]
     
     weak var colorPickerCellDelegate: ColorPickerCellDelegate?
     
@@ -100,24 +100,16 @@ extension ColorPickerCell: UICollectionViewDelegate, UICollectionViewDataSource 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCircleCell", for: indexPath) as? ColorCircleCell else { return UICollectionViewCell() }
-        
         if (indexPath.row == 6){
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-            
-//             cell.layer.borderColor=UIColor.gray.cgColor
-            
-         }else{
-//             cell.layer.borderColor=UIColor.white.cgColor
          }
-        
         cell.configure(with: colors[indexPath.row])
-        
         return cell
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         colorPickerCellDelegate?.updateCardColor(with: colors[indexPath.row])
     }
     
 }
+
