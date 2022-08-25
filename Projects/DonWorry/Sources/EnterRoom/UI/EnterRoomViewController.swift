@@ -28,7 +28,9 @@ final class EnterRoomViewController: BaseViewController, View {
     }(UILabel())
     private lazy var ImageView: UIImageView = {
         let v = UIImageView()
+        v.translatesAutoresizingMaskIntoConstraints = false
         v.image = UIImage(named: "cash_and_coins")
+        v.contentMode = .scaleAspectFit
         return v
     }()
     
@@ -54,11 +56,11 @@ extension EnterRoomViewController {
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(ImageView, titleLabel, textField, nextButton)
         
-        ImageView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(30)
-            $0.leading.equalToSuperview().inset(110)
-            $0.trailing.equalToSuperview().inset(98)
-        }
+        ImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 95).isActive = true
+        ImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        ImageView.widthAnchor.constraint(equalToConstant: 181).isActive = true
+        ImageView.heightAnchor.constraint(equalToConstant: 118).isActive = true
+
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(ImageView.snp.bottom).offset(11)

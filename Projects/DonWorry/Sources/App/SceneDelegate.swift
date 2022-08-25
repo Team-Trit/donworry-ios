@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 //        let rootViewController = UIStoryboard(name: "EnterRoom", bundle: nil).instantiateInitialViewController()!
-        let rootViewController = EditNickNameViewController()
+        let rootViewController = EnterRoomViewController()
 //        rootViewController.view.backgroundColor = .systemIndigo
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.setNavigationBarHidden(true, animated: false)

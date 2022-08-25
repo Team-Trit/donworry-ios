@@ -77,7 +77,7 @@ final class EditRoomNameViewController: BaseViewController, View {
 
 // MARK: - setUI
 
-extension RoomNameEditViewController {
+extension EditRoomNameViewController {
 
     private func setUI() {
         navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
