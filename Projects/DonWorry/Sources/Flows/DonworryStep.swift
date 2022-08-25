@@ -13,8 +13,8 @@ enum DonworryStep: Step {
     case loginIsRequired
     case userInfoIsRequired
     case bankSelectIsRequired
-    case bankSelectIsComplete
+    case bankSelectIsComplete(selectedBank: String?)
     case agreeTermIsRequired
     case confirmTermIsRequired
-    case confirmTermIsComplete
+    case homeIsRequired
 }

@@ -20,6 +20,7 @@ final class SelectBankViewReactor: Reactor, Stepper {
     enum Action {
         case dismissButtonPressed
         case searchTextChanged(filter: String)
+        case selectBank(_ index: Int)
     }
     
     enum Mutation {
@@ -48,7 +49,7 @@ final class SelectBankViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .dismissButtonPressed:
-            self.steps.accept(DonworryStep.bankSelectIsComplete)
+            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: nil))
             return .just(Mutation.dismissSelectBankSheet)
             
         case let .searchTextChanged(filter):
@@ -58,6 +59,11 @@ final class SelectBankViewReactor: Reactor, Stepper {
                 .just(Mutation.performQuery(filteredBankList: filteredBankList)),
                 .just(Mutation.updateLoading(false))
             ])
+            
+        case let .selectBank(index):
+            let selectedBank = banks[index]
+            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
+            return .just(Mutation.dismissSelectBankSheet)
         }
     }
     

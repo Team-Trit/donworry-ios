@@ -17,7 +17,7 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
     }
     
     enum Mutation {
-        case dismissConfirmTermSheet
+        case navigateToHomeView
     }
     
     struct State {
@@ -33,8 +33,8 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-            self.steps.accept(DonworryStep.confirmTermIsComplete)
-            return .just(Mutation.dismissConfirmTermSheet)
+            self.steps.accept(DonworryStep.homeIsRequired)
+            return .just(Mutation.navigateToHomeView)
         }
     }
     
@@ -42,7 +42,7 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
-        case .dismissConfirmTermSheet:
+        case .navigateToHomeView:
             break
         }
         

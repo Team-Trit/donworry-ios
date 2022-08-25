@@ -30,6 +30,9 @@ final class AppFlow: Flow {
         case .loginIsRequired:
             return navigateToLoginScreen()
             
+        case .homeIsRequired:
+            return navigateToHomeScreen()
+            
         default:
             return .none
         }
@@ -45,6 +48,11 @@ extension AppFlow {
         }
         let nextStep = OneStepper(withSingleStep: DonworryStep.loginIsRequired)
         return .one(flowContributor: .contribute(withNextPresentable: loginFlow, withNextStepper: nextStep))
+    }
+    
+    private func navigateToHomeScreen() -> FlowContributors {
+        // TODO: Switch window to present HomeView
+        return .none
     }
 }
 

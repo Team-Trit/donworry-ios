@@ -41,8 +41,8 @@ final class LoginFlow: Flow {
         case .bankSelectIsRequired:
             return self.presentBankSelectView()
             
-        case .bankSelectIsComplete:
-            self.dismissBankSelectView()
+        case let .bankSelectIsComplete(selectedBank):
+            self.dismissBankSelectView(with: selectedBank)
             return .none
             
         case .agreeTermIsRequired:
@@ -51,9 +51,8 @@ final class LoginFlow: Flow {
         case .confirmTermIsRequired:
             return self.presentConfirmTermView()
             
-        case .confirmTermIsComplete:
-            self.dismissConfirmTermView()
-            return .none
+        case .homeIsRequired:
+            return .end(forwardToParentFlowWithStep: DonworryStep.homeIsRequired)
         }
     }
 }
@@ -84,7 +83,11 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func dismissBankSelectView() {
+    private func dismissBankSelectView(with selectedBank: String?) {
+        // MARK: Business logic here...
+        if let selectedBank = selectedBank, let vc = self.rootViewController.topViewController as? EnterUserInfoViewController {
+            vc.accountStackView.accountInputField.chooseBankButton.setTitle(selectedBank, for: .normal)
+        }
         self.rootViewController.dismiss(animated: true)
     }
     
@@ -103,10 +106,5 @@ extension LoginFlow {
         vc.modalPresentationStyle = .overCurrentContext
         self.rootViewController.present(vc, animated: false)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
-    }
-    
-    private func dismissConfirmTermView() {
-        self.rootViewController.dismiss(animated: true)
-        // TODO: Switch window to navigate to HomeView
     }
 }

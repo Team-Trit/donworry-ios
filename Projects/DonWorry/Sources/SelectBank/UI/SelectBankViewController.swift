@@ -54,6 +54,12 @@ extension SelectBankViewController {
             .map { Reactor.Action.searchTextChanged(filter: $0 ?? "") }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        bankCollectionView.rx.itemSelected
+            .map { Reactor.Action.selectBank($0.row) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+            
     }
     
     private func render(_ reactor: SelectBankViewReactor) {

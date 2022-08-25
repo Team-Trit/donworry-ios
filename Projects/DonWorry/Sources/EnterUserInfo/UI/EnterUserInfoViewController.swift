@@ -22,7 +22,7 @@ final class EnterUserInfoViewController: BaseViewController, View {
         return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
-    private lazy var accountStackView = AccountStackView()
+    lazy var accountStackView = AccountStackView()
     private lazy var nextButton = LargeButton(type: .next)
     
     public override func viewDidLoad() {
