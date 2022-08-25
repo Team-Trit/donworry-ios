@@ -16,7 +16,7 @@ import DonWorryExtensions
 import SnapKit
 
 
-final class RoomNameEditViewController: BaseViewController, View {
+final class EditRoomNameViewController: BaseViewController, View {
     
     // MARK: - Init
     enum RoomNameEditViewType {
@@ -56,7 +56,7 @@ final class RoomNameEditViewController: BaseViewController, View {
     }
 
     // MARK: - Binding
-    func bind(reactor: RoomNameEditViewReactor) {
+    func bind(reactor: EditRoomNameViewReactor) {
         //binding here
     }
     
@@ -102,7 +102,7 @@ extension RoomNameEditViewController {
 }
 
 // MARK: - Method
-extension RoomNameEditViewController {
+extension EditRoomNameViewController {
     private func setTitleLabelText(type: RoomNameEditViewType) -> String {
         switch type {
             case .create:

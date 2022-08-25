@@ -11,11 +11,14 @@ import BaseArchitecture
 import ReactorKit
 import RxCocoa
 import RxSwift
+import DesignSystem
+import DonWorryExtensions
+import SnapKit
 
 final class EditNickNameViewController: BaseViewController, View {
     
     private lazy var titleLabel: UILabel = {
-        $0.text = "닉네임을/n수정해볼까요?"
+        $0.text = "닉네임을\n수정해볼까요?"
         $0.numberOfLines = 2
         $0.setLineSpacing(spacing: 10.0)
         $0.font = .designSystem(weight: .heavy, size: ._25)
@@ -61,7 +64,5 @@ extension EditNickNameViewController {
         nextButton.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
         }
-    }
-
     }
 }

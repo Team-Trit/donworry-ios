@@ -8,9 +8,9 @@
 import Foundation
 import RxSwift
 
-protocol RoomNameEditRepository {}
+protocol EditRoomNameRepository {}
 
-final class RoomNameEditRepositoryImpl: RoomNameEditRepository {
+final class EditRoomNameRepositoryImpl: EditRoomNameRepository {
 
     public init() {}
 }

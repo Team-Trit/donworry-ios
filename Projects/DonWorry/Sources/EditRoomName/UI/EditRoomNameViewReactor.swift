@@ -1,8 +1,8 @@
 //
-//  RoomNameEditViewReactor.swift
+//  EditRoomNameViewReactor.swift
 //  App
 //
-//  Created by 임영후 on 2022/08/24.
+//  Created by 임영후 on 2022/08/25.
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import ReactorKit
 import RxSwift
 
-final class RoomNameEditViewReactor: Reactor {
+final class EditRoomNameViewReactor: Reactor {
 
     enum Action {
         // actiom cases
