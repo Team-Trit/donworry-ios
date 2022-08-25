@@ -35,7 +35,6 @@ final class ProfileTableView: UITableView {
         items.append(ProfileViewModelServiceItem(label: "1대1 문의"))
         
         configure()
-//        setUI()
     }
     
     required init?(coder: NSCoder) {
@@ -107,6 +106,7 @@ extension ProfileTableView: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension ProfileTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch items[indexPath.row].type {
@@ -118,4 +118,5 @@ extension ProfileTableView: UITableViewDelegate {
             return 80
         }
     }
+    
 }

@@ -54,6 +54,8 @@ extension ProfileViewController {
 // MARK: - Layout
 extension ProfileViewController {
     private func setUI() {
+        view.backgroundColor = .designSystem(.white)
+        
         view.addSubviews(profileTableView, inquiryButtonView, questionButtonView, blogButtonView, accountButtonStackView)
         
         profileTableView.snp.makeConstraints { make in

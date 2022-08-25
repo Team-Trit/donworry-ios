@@ -74,7 +74,8 @@ extension ProfileTableViewUserCell {
         contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, editButton)
         
         profileLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(15)
+            make.leading.equalToSuperview()
         }
         
         profileImageView.snp.makeConstraints { make in
