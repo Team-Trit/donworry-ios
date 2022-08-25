@@ -184,7 +184,7 @@ extension ConfirmTermViewController: UITableViewDataSource {
 // MARK: - TableViewDelegate
 extension ConfirmTermViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
-        return 3
+        return 1
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
