@@ -22,6 +22,7 @@ struct CardDecoItem {
 protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateTableViewHeight(to height: CGFloat)
     func updateCardColor(with color: CardColor)
+    func updatePayDate(with date : Date)
     func reloadPhotoCell()
 }
 
@@ -97,10 +98,6 @@ extension PaymentCardDecoTableView {
         self.layer.masksToBounds = true
         self.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
-        // ✅ DELEGATE
-//        let vc = PaymentCardDecoViewController()
-//        vc.paymentCardDecoViewDelegate = self
-        
     }
     
     func layout() {
@@ -111,11 +108,17 @@ extension PaymentCardDecoTableView {
 
 
 
-extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate{
+/* Cell Delegate 구현 */
+extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate, PayDatePickerCellDelegate{
     
     // ColorPickerCellDelegate
     func updateCardColor(with color : CardColor) {
         paymentCardDecoTableViewDelegate?.updateCardColor(with: color)
+    }
+    
+    // PayDatePickerCellDelegate
+    func updatePayDate(with date : Date) {
+        paymentCardDecoTableViewDelegate?.updatePayDate(with: date)
     }
     
     // FilePickerCellCollectionViewDelegate
@@ -210,7 +213,8 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 1: // 날짜선택
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
-            
+                /* ✅ MARK: - DELEGATE*/
+                cell.payDatePickerCellDelegate = self
                 return cell
             
             case 2: // 계좌번호

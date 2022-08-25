@@ -8,8 +8,14 @@
 
 import UIKit
 
+protocol PayDatePickerCellDelegate: AnyObject {
+    func updatePayDate(with date : Date)
+}
+
 class PayDatePickerCell: UITableViewCell {
 
+    weak var payDatePickerCellDelegate: PayDatePickerCellDelegate?
+    
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
     @IBOutlet weak var payDatePicker: UIDatePicker!
@@ -26,12 +32,11 @@ class PayDatePickerCell: UITableViewCell {
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
         self.payDatePicker.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        self.payDatePicker.addTarget(self, action: #selector(datePickerValueDidChange(_:)), for: .valueChanged)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
     func configure(isHidden: Bool) {
@@ -41,4 +46,14 @@ class PayDatePickerCell: UITableViewCell {
     }
     
     
+}
+
+extension PayDatePickerCell {
+    //addTarget 두번쨰 파라미터 셀렉터 메서드
+      @ objc private func datePickerValueDidChange(_ datePicker: UIDatePicker){
+          // DATE 넘기기
+//          datePicker.date
+          payDatePickerCellDelegate?.updatePayDate(with: datePicker.date)
+          
+      }
 }

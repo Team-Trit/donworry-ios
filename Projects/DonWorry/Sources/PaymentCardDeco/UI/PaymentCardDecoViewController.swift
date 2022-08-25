@@ -229,6 +229,13 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         tableView.reloadData()
     }
     
+    func updatePayDate(with date : Date) {
+        let formmater = DateFormatter()
+        formmater.dateFormat = "MM/dd"
+        formmater.locale = Locale(identifier: "ko_KR")
+        paymentCard.dateLabel.text = formmater.string(from: date)
+    }
+    
     func reloadPhotoCell() {
         tableView.reloadPhotoCell()
     }
