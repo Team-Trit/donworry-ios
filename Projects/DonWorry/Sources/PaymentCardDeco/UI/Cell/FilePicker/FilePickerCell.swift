@@ -9,11 +9,15 @@
 import PhotosUI
 import UIKit
 
+
 class FilePickerCell: UITableViewCell {
     
     #warning("작업중")
 //    var delegate: PhotoSelectButtonDelegate?
+    
     var imageArray = [UIImage]()
+    
+    weak var filePickerCellCollectionViewDelegate: FilePickerCellCollectionViewDelegate?
     
     @IBOutlet private weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
@@ -103,13 +107,13 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return imageArray.count
-        return 3
+        return imageArray.count
+//        return 3
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-//        cell.configure(with: colors[indexPath.row])
+        cell.container.image = imageArray[indexPath.row]
         return cell
     }
     
@@ -118,6 +122,17 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
         
         // TODO: 선택된 셀 다루기
 //        print("선택된 셀 : \(colors[indexPath.row])")
+    }
+    
+}
+
+
+extension FilePickerCell {
+    
+    func reloadPhotoCell() {
+        DispatchQueue.main.async {
+            self.pickerCollectionView.reloadData()
+        }
     }
     
 }

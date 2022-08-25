@@ -21,6 +21,12 @@ struct CardDecoItem {
 
 protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateTableViewHeight(to height: CGFloat)
+    func updateCardColor(with color: CardColor)
+    func reloadPhotoCell()
+}
+
+protocol FilePickerCellCollectionViewDelegate: AnyObject {
+    func reloadPhotoCell()
 }
 
 class PaymentCardDecoTableView: UITableView {
@@ -91,6 +97,10 @@ extension PaymentCardDecoTableView {
         self.layer.masksToBounds = true
         self.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
+        // ✅ DELEGATE
+//        let vc = PaymentCardDecoViewController()
+//        vc.paymentCardDecoViewDelegate = self
+        
     }
     
     func layout() {
@@ -99,13 +109,30 @@ extension PaymentCardDecoTableView {
     
 }
 
+
+
+extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate{
+    
+    // ColorPickerCellDelegate
+    func updateCardColor(with color : CardColor) {
+        paymentCardDecoTableViewDelegate?.updateCardColor(with: color)
+    }
+    
+    // FilePickerCellCollectionViewDelegate
+    func reloadPhotoCell(){
+        print("리로드")
+    }
+    
+}
+
+
 extension PaymentCardDecoTableView : UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let expandableItem = self.cardDecoItems[indexPath.row]
         if expandableItem.isHidden {
             return 48 + 15
-        }else {
+        } else {
             switch indexPath.row {
             case 0: return 180
             case 1: return 400
@@ -149,8 +176,12 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         }
         
         paymentCardDecoTableViewDelegate?.updateTableViewHeight(to: height)
+        
+//        if indexPath.row == 0 {
+//            paymentCardDecoTableViewDelegate?.updateCardColor(with: .skyblue)
+//        }
 
-        // tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic) -> 애니메이션
+//         tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic) -> 애니메이션
         
     }
     
@@ -172,11 +203,14 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 0: // 배경선택
                 let cell = tableView.dequeueReusableCell(withIdentifier: "ColorPickerCell", for: indexPath) as! ColorPickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
+                /* ✅ MARK: - DELEGATE*/
+                cell.colorPickerCellDelegate = self
                 return cell
             
             case 1: // 날짜선택
                 let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
+            
                 return cell
             
             case 2: // 계좌번호
@@ -187,6 +221,10 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 3: // 파일추가
                 let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
+            
+                /* ✅ MARK: - DELEGATE*/
+                cell.filePickerCellCollectionViewDelegate = self
+            
                 return cell
 
             default:

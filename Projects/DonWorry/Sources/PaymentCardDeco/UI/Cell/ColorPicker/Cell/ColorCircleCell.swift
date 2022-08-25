@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum cardColor: String {
+enum CardColor: String {
     case yellow = "#E8E358FF"
     case purple = "#B24DA5FF"
     case brown = "#A84E25FF"
@@ -84,7 +84,7 @@ class ColorCircleCell: UICollectionViewCell {
         
     }
     
-    func configure(with color : cardColor) {
+    func configure(with color : CardColor) {
         self.colorView.backgroundColor = UIColor(hex: color.rawValue)
         self.innerColorView.backgroundColor = UIColor(hex: color.rawValue)
 //        print(color)

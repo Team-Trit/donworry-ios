@@ -17,14 +17,18 @@ import DesignSystem
 import DonWorryExtensions
 
 
+
+// tmp
 final class PaymentCardDecoViewController: BaseViewController {
     
     //    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = PaymentCardDecoViewModel()
     var imageArray = [UIImage]()
     
+    /* MARK: - Model 활용하여 교체 예정 */
+    var cardColor: CardColor = .pink
     
-    private lazy var paymentCard = PaymentCardView()
+    lazy var paymentCard = PaymentCardView()
     private lazy var tableView = PaymentCardDecoTableView()
     
     private lazy var scrollView: UIScrollView = {
@@ -92,6 +96,7 @@ final class PaymentCardDecoViewController: BaseViewController {
         attributes()
         layout()
     }
+    
 }
 
 
@@ -195,8 +200,10 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
                     self.imageArray.append(image)
                 }
                 
+                self.tableView.paymentCardDecoTableViewDelegate?.reloadPhotoCell()
+                
 //                DispatchQueue.main.async {
-//                    self.collectioview.reloadData/
+//                    self.collectioview.reloadData
 //                }
                 
             }
@@ -208,13 +215,35 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
 
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
-    private func calculateTableViewHeight() {
-        
+    func updateCardColor(with color: CardColor) {
+        paymentCard.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
+        paymentCard.cardSideView.backgroundColor = UIColor(hex:color.rawValue)
+        paymentCard.dateLabel.textColor = UIColor(hex:color.rawValue)
+        cardColor = color
     }
+    
     func updateTableViewHeight(to height: CGFloat) {
         tableView.snp.updateConstraints { make in
             make.height.equalTo(height)
         }
         tableView.reloadData()
     }
+    
+    func reloadPhotoCell() {
+        tableView.reloadPhotoCell()
+    }
+    
 }
+
+//extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
+//
+////    private func calculateTableViewHeight() {
+////
+////    }
+//    func updateTableViewHeight(to height: CGFloat) {
+//        tableView.snp.updateConstraints { make in
+//            make.height.equalTo(height)
+//        }
+//        tableView.reloadData()
+//    }
+//}

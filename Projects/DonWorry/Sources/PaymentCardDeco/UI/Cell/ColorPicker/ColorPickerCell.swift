@@ -8,10 +8,17 @@
 
 import UIKit
 
+
+protocol ColorPickerCellDelegate: AnyObject {
+    func updateCardColor(with color : CardColor)
+}
+
 class ColorPickerCell: UITableViewCell {
     
-    private var colors: [cardColor] = [.yellow, .purple, .brown, .red, .skyblue,
+    private var colors: [CardColor] = [.yellow, .purple, .brown, .red, .skyblue,
                                    .green, .pink, .navy, .blue1, .black]
+    
+    weak var colorPickerCellDelegate: ColorPickerCellDelegate?
     
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
@@ -93,15 +100,24 @@ extension ColorPickerCell: UICollectionViewDelegate, UICollectionViewDataSource 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCircleCell", for: indexPath) as? ColorCircleCell else { return UICollectionViewCell() }
+        
+        if (indexPath.row == 6){
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+            
+//             cell.layer.borderColor=UIColor.gray.cgColor
+            
+         }else{
+//             cell.layer.borderColor=UIColor.white.cgColor
+         }
+        
         cell.configure(with: colors[indexPath.row])
+        
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // TODO: 선택된 셀 다루기
-        print("선택된 셀 : \(colors[indexPath.row])")
+        colorPickerCellDelegate?.updateCardColor(with: colors[indexPath.row])
     }
     
 }

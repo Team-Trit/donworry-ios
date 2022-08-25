@@ -44,7 +44,7 @@ public class PaymentCardView: UIView {
     
     //MARK: - Views
     
-    private let nameLabel: UILabel = {
+    lazy var nameLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "정산항목"
         $0.numberOfLines = 1
@@ -54,21 +54,21 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
 
-    private let iconBox: UIStackView = {
+    lazy var iconBox: UIStackView = {
         $0.backgroundColor = .designSystem(.white)
         $0.layer.cornerRadius = 5
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIStackView())
 
-    private let icon: UIImageView = {
+    lazy var icon: UIImageView = {
         $0.image = UIImage(named: "chicken")
         $0.contentMode = .scaleAspectFit
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIImageView())
     
-    private let totalAmountLabel: UILabel = {
+    lazy var totalAmountLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "130,000원"
         $0.numberOfLines = 1
@@ -78,7 +78,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let bankLabel: UILabel = {
+    lazy var bankLabel: UILabel = {
         let name = NSMutableAttributedString(string: "", attributes: [
             NSAttributedString.Key.foregroundColor: UIColor.white,
         ])
@@ -96,7 +96,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let accountNumberLabel: UILabel = {
+    lazy var accountNumberLabel: UILabel = {
         let name = NSMutableAttributedString(string: "", attributes: [
             NSAttributedString.Key.foregroundColor: UIColor.white,
         ])
@@ -114,7 +114,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let accountHodlerNameLabel: UILabel = { // 예금주
+    lazy var accountHodlerNameLabel: UILabel = { // 예금주
         let name = NSMutableAttributedString(string: "", attributes: [
             NSAttributedString.Key.foregroundColor: UIColor.white,
         ])
@@ -132,7 +132,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let dateLabel: UILabel = {
+    lazy var dateLabel: UILabel = {
         let name = NSMutableAttributedString(string: "", attributes: [
             NSAttributedString.Key.foregroundColor: UIColor.white,
         ])
@@ -153,7 +153,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let userStackView: UIStackView = {
+    lazy var userStackView: UIStackView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.distribution = .fill
         $0.axis = .vertical
@@ -162,7 +162,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UIStackView())
     
-    private let userImageView: UIImageView = {
+    lazy var userImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(named: "profile-sample")
 //        $0.layer.borderColor = UIColor.designSystem(.white)?.cgColor
@@ -175,7 +175,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UIImageView())
     
-    private let userNameLabel: UILabel = {
+    lazy var userNameLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "정산자"
         $0.numberOfLines = 1
@@ -185,7 +185,7 @@ public class PaymentCardView: UIView {
         return $0
     }(UILabel())
     
-    private let cardSideView: UIView = {
+    lazy var cardSideView: UIView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = UIColor(hex: "#FF5454FF")
         $0.layer.cornerRadius = 20
@@ -287,10 +287,10 @@ public class PaymentCardView: UIView {
     func attributes() {
         backgroundColor = UIColor(hex: "#FF5454B8") // op: 72
         layer.cornerRadius = 20
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowRadius = 20
-        layer.shadowOpacity = 0.4
-        layer.shadowOffset = CGSize(width: 0, height: 2)
+//        layer.shadowColor = UIColor.black.cgColor
+//        layer.shadowRadius = 20
+//        layer.shadowOpacity = 0.4
+//        layer.shadowOffset = CGSize(width: 0, height: 2)
         
     }
     
