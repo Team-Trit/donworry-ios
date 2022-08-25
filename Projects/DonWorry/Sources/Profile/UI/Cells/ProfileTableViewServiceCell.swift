@@ -21,9 +21,10 @@ final class ProfileTableViewServiceCell: UITableViewCell {
     private lazy var chevronImageView: UIImageView = {
         let v = UIImageView()
         v.image = UIImage(systemName: "chevron.right")
-        v.tintColor = .designSystem(.black)
+        v.tintColor = .designSystem(.gray4B4A4A)
         return v
     }()
+    private lazy var separatorLine = SeparatorLine()
     var service: ProfileViewModelItem? {
         didSet {
             guard let service = service as? ProfileViewModelServiceItem else { return }
@@ -44,7 +45,7 @@ final class ProfileTableViewServiceCell: UITableViewCell {
 // MARK: - Layout
 extension ProfileTableViewServiceCell {
     private func setUI() {
-        contentView.addSubviews(titleLabel, chevronImageView)
+        contentView.addSubviews(titleLabel, chevronImageView, separatorLine)
         
         titleLabel.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
@@ -52,6 +53,12 @@ extension ProfileTableViewServiceCell {
         
         chevronImageView.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
+        }
+        
+        separatorLine.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(30)
+            make.width.equalTo(340)
+            make.height.equalTo(1)
         }
     }
 }

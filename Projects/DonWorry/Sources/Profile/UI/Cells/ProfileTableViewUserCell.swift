@@ -29,13 +29,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
     }()
     private lazy var imagePlusButton: UIButton = {
         let v = UIButton()
-        let plusImage = UIImage(.custom_plus_circle)?.withTintColor(.designSystem(.mainBlue)!)
-//        v.setImage(UIImage(.custom_plus_circle), for: .normal)
-        v.setImage(plusImage, for: .normal)
-//        v.setImage(UIImage(systemName: "plus.circle"), for: .normal)
-//        v.tintColor = .designSystem(.white)
-//        v.backgroundColor = .designSystem(.mainBlue)
-//        v.layer.cornerRadius = 10
+        v.setImage(UIImage(.custom_plus_circle), for: .normal)
         return v
     }()
     private lazy var nickNameLabel: UILabel = {
@@ -46,13 +40,14 @@ final class ProfileTableViewUserCell: UITableViewCell {
     private lazy var editButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(systemName: "pencil"), for: .normal)
-        v.tintColor = .designSystem(.black)
-        //        v.addTarget(<#T##target: Any?##Any?#>, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
+        v.tintColor = .designSystem(.gray4B4A4A)
         return v
     }()
+    private lazy var separatorLine = SeparatorLine()
     var user: ProfileViewModelItem? {
         didSet {
             guard let user = user as? ProfileViewModelUserItem else { return }
+            // TODO: 프로필 이미지 가져오기
             profileImageView.image = UIImage(named: user.imageURL)
             nickNameLabel.text = user.nickName
         }
@@ -71,7 +66,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
 // MARK: - Layout
 extension ProfileTableViewUserCell {
     private func setUI() {
-        contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, editButton)
+        contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, editButton, separatorLine)
         
         profileLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(15)
@@ -97,6 +92,12 @@ extension ProfileTableViewUserCell {
         editButton.snp.makeConstraints { make in
             make.leading.equalTo(nickNameLabel.snp.trailing).offset(10)
             make.centerY.equalTo(profileImageView.snp.centerY)
+        }
+        
+        separatorLine.snp.makeConstraints { make in
+            make.top.equalTo(profileImageView.snp.bottom).offset(15)
+            make.width.equalTo(340)
+            make.height.equalTo(1)
         }
     }
 }

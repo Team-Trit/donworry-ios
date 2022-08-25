@@ -66,6 +66,7 @@ extension ServiceButtonView {
         
         iconImageView.snp.makeConstraints { make in
             make.width.height.equalTo(50)
+            make.center.equalToSuperview()
         }
         
         buttonLabel.snp.makeConstraints { make in

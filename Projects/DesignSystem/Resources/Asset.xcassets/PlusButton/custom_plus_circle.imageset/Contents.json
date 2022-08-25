@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "question_button_icon@1x.png",
+      "filename" : "custom_plus_circle@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "question_button_icon@2x.png",
+      "filename" : "custom_plus_circle@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

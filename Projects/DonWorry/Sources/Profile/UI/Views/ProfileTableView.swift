@@ -13,17 +13,6 @@ import SnapKit
 
 final class ProfileTableView: UITableView {
     var items = [ProfileViewModelItem]()
-//    private lazy var profileTableView: UITableView = {
-//        let v = UITableView()
-//        v.dataSource = self
-//        v.delegate = self
-//        v.register(ProfileTableViewUserCell.self, forCellReuseIdentifier: ProfileTableViewUserCell.identifier)
-//        v.register(ProfileTableViewAccountCell.self, forCellReuseIdentifier: ProfileTableViewAccountCell.identifier)
-//        v.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
-//        v.allowsSelection = false
-//        v.showsVerticalScrollIndicator = false
-//        return v
-//    }()
     
     init() {
         super.init(frame: .zero, style: .grouped)
@@ -53,23 +42,8 @@ extension ProfileTableView {
         self.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
         self.allowsSelection = false
         self.showsVerticalScrollIndicator = false
+        self.separatorStyle = .none
     }
-    
-//    private func setUI() {
-//        addSubview(profileTableView)
-//
-//        profileTableView.snp.makeConstraints { make in
-//            //            make.top.leading.trailing.bottom.equalToSuperview()
-//
-//            make.top.equalToSuperview().offset(70)
-//            make.leading.equalToSuperview().offset(25)
-//            make.trailing.equalToSuperview().offset(-25)
-//            make.bottom.equalToSuperview().offset(-50)
-//
-//            make.width.equalTo(340)
-//            make.height.equalToSuperview()
-//        }
-//    }
 }
 
 // MARK: - UITableViewDataSource
@@ -118,5 +92,4 @@ extension ProfileTableView: UITableViewDelegate {
             return 80
         }
     }
-    
 }

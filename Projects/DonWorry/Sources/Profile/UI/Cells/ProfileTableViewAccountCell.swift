@@ -32,16 +32,17 @@ final class ProfileTableViewAccountCell: UITableViewCell {
     }()
     private lazy var accountLabel: UILabel = {
         let v = UILabel()
-        v.textColor = .designSystem(.gray818181)
         v.font = .designSystem(weight: .regular, size: ._13)
+        v.textColor = .designSystem(.gray818181)
         return v
     }()
     private lazy var editButton: UIButton = {
         let v = UIButton()
-        v.tintColor = .designSystem(.black)
         v.setImage(UIImage(systemName: "pencil"), for: .normal)
+        v.tintColor = .designSystem(.gray4B4A4A)
         return v
     }()
+    private lazy var separatorLine = SeparatorLine()
     var account: ProfileViewModelItem? {
         didSet {
             guard let account = account as? ProfileViewModelAccountItem else { return }
@@ -65,7 +66,7 @@ final class ProfileTableViewAccountCell: UITableViewCell {
 extension ProfileTableViewAccountCell {
     private func setUI() {
         accountInfoView.addSubviews(bankLabel, accountLabel, editButton)
-        contentView.addSubviews(descriptionLabel, accountInfoView)
+        contentView.addSubviews(descriptionLabel, accountInfoView, separatorLine)
 
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
@@ -91,6 +92,12 @@ extension ProfileTableViewAccountCell {
         editButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalToSuperview()
+        }
+        
+        separatorLine.snp.makeConstraints { make in
+            make.top.equalTo(accountInfoView.snp.bottom).offset(15)
+            make.width.equalTo(340)
+            make.height.equalTo(1)
         }
     }
 }
