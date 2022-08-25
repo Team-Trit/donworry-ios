@@ -42,11 +42,6 @@ final class EditRoomNameViewController: BaseViewController, View {
     
     private lazy var roomInfoLabel = LimitTextField(frame: .zero, type: .roomName)
     private lazy var nextButton = LargeButton(type: .next)
-//    private lazy var nextButton: LargeButton = {
-//        let v = LargeButton(type: .next)
-//        v.addTarget(self, action: #selector(codeSheet), for: .touchUpInside)
-//        return v
-//    }()
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
