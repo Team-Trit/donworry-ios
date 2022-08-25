@@ -13,25 +13,29 @@ import SnapKit
 
 final class ProfileTableView: UITableView {
     var items = [ProfileViewModelItem]()
-    private lazy var profileTableView: UITableView = {
-        let v = UITableView()
-        v.dataSource = self
-        v.delegate = self
-        v.register(ProfileTableViewUserCell.self, forCellReuseIdentifier: ProfileTableViewUserCell.identifier)
-        v.register(ProfileTableViewAccountCell.self, forCellReuseIdentifier: ProfileTableViewAccountCell.identifier)
-        v.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
-        v.allowsSelection = false
-        return v
-    }()
+//    private lazy var profileTableView: UITableView = {
+//        let v = UITableView()
+//        v.dataSource = self
+//        v.delegate = self
+//        v.register(ProfileTableViewUserCell.self, forCellReuseIdentifier: ProfileTableViewUserCell.identifier)
+//        v.register(ProfileTableViewAccountCell.self, forCellReuseIdentifier: ProfileTableViewAccountCell.identifier)
+//        v.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
+//        v.allowsSelection = false
+//        v.showsVerticalScrollIndicator = false
+//        return v
+//    }()
     
     init() {
         super.init(frame: .zero, style: .grouped)
+        
         items.append(ProfileViewModelUserItem(nickName: "Charlie", name: "Kim", imageURL: "profile-sample"))
         items.append(ProfileViewModelAccountItem(bank: "우리은행", account: "1234-1234-1234", holder: "김승창"))
         items.append(ProfileViewModelServiceItem(label: "공지사항"))
         items.append(ProfileViewModelServiceItem(label: "이용약관"))
         items.append(ProfileViewModelServiceItem(label: "1대1 문의"))
-        setUI()
+        
+        configure()
+//        setUI()
     }
     
     required init?(coder: NSCoder) {
@@ -39,23 +43,34 @@ final class ProfileTableView: UITableView {
     }
 }
 
-// MARK: - Layout
+// MARK: - Helper
 extension ProfileTableView {
-    private func setUI() {
-        addSubview(profileTableView)
-        
-        profileTableView.snp.makeConstraints { make in
-            //            make.top.leading.trailing.bottom.equalToSuperview()
-            
-            make.top.equalToSuperview().offset(100)
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
-            make.bottom.equalToSuperview().offset(-50)
-            
-            make.width.equalTo(340)
-            make.height.equalToSuperview()
-        }
+    private func configure() {
+        self.backgroundColor = .designSystem(.white)
+        self.dataSource = self
+        self.delegate = self
+        self.register(ProfileTableViewUserCell.self, forCellReuseIdentifier: ProfileTableViewUserCell.identifier)
+        self.register(ProfileTableViewAccountCell.self, forCellReuseIdentifier: ProfileTableViewAccountCell.identifier)
+        self.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
+        self.allowsSelection = false
+        self.showsVerticalScrollIndicator = false
     }
+    
+//    private func setUI() {
+//        addSubview(profileTableView)
+//
+//        profileTableView.snp.makeConstraints { make in
+//            //            make.top.leading.trailing.bottom.equalToSuperview()
+//
+//            make.top.equalToSuperview().offset(70)
+//            make.leading.equalToSuperview().offset(25)
+//            make.trailing.equalToSuperview().offset(-25)
+//            make.bottom.equalToSuperview().offset(-50)
+//
+//            make.width.equalTo(340)
+//            make.height.equalToSuperview()
+//        }
+//    }
 }
 
 // MARK: - UITableViewDataSource

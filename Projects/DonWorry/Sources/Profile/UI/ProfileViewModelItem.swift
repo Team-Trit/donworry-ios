@@ -1,19 +1,10 @@
 //
-//  ProfileViewModel.swift
-//  App
+//  ProfileViewModelItem.swift
+//  DonWorry
 //
-//  Created by 김승창 on 2022/08/18.
-//  Copyright (c) 2022 Tr-iT. All rights reserved.
+//  Created by 김승창 on 2022/08/25.
+//  Copyright © 2022 Tr-iT. All rights reserved.
 //
-
-import Foundation
-
-import BaseArchitecture
-import RxSwift
-
-class ProfileViewModel: BaseViewModel {
-    
-}
 
 enum ProfileViewModelItemType {
     case user
@@ -25,7 +16,7 @@ protocol ProfileViewModelItem {
     var type: ProfileViewModelItemType { get }
 }
 
-class ProfileViewModelUserItem: ProfileViewModelItem {
+final class ProfileViewModelUserItem: ProfileViewModelItem {
     var type: ProfileViewModelItemType {
         return .user
     }
@@ -40,7 +31,7 @@ class ProfileViewModelUserItem: ProfileViewModelItem {
     }
 }
 
-class ProfileViewModelAccountItem: ProfileViewModelItem {
+final class ProfileViewModelAccountItem: ProfileViewModelItem {
     var type: ProfileViewModelItemType {
         return .account
     }
@@ -55,7 +46,7 @@ class ProfileViewModelAccountItem: ProfileViewModelItem {
     }
 }
 
-class ProfileViewModelServiceItem: ProfileViewModelItem {
+final class ProfileViewModelServiceItem: ProfileViewModelItem {
     var type: ProfileViewModelItemType {
         return .service
     }

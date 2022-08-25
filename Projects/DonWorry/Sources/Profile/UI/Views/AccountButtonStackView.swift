@@ -1,5 +1,5 @@
 //
-//  ButtonStackView.swift
+//  AccountButtonStackView.swift
 //  DonWorry
 //
 //  Created by 김승창 on 2022/08/18.
@@ -11,13 +11,7 @@ import UIKit
 import DesignSystem
 import SnapKit
 
-final class ButtonStackView: UIStackView {
-    private lazy var buttonStackView: UIStackView = {
-        let v = UIStackView()
-        v.axis = .horizontal
-        v.spacing = 10
-        return v
-    }()
+final class AccountButtonStackView: UIStackView {
     private lazy var logoutButton: UIButton = {
         let v = UIButton()
         v.setTitle("로그아웃", for: .normal)
@@ -43,6 +37,7 @@ final class ButtonStackView: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        configure()
         setUI()
     }
 
@@ -51,14 +46,22 @@ final class ButtonStackView: UIStackView {
     }
 }
 
-// MARK: - Layout
-extension ButtonStackView {
+// MARK: - Helper
+extension AccountButtonStackView {
+    private func configure() {
+        self.axis = .horizontal
+        self.spacing = 10
+    }
+    
     private func setUI() {
-        buttonStackView.addArrangedSubviews(logoutButton, borderLabel, deleteButton)
-        addSubview(buttonStackView)
+        self.addArrangedSubviews(logoutButton, borderLabel, deleteButton)
         
-        buttonStackView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+        borderLabel.snp.makeConstraints { make in
+            make.leading.equalTo(logoutButton.snp.trailing).offset(5)
+        }
+        
+        deleteButton.snp.makeConstraints { make in
+            make.leading.equalTo(borderLabel.snp.trailing).offset(5)
         }
     }
 }

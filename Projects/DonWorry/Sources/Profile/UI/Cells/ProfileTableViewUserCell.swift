@@ -29,7 +29,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
     }()
     private lazy var imagePlusButton: UIButton = {
         let v = UIButton()
-        let plusImage = UIImage(.custom_plus_circle)?.withTintColor(.designSystem(.mainBlue))
+        let plusImage = UIImage(.custom_plus_circle)?.withTintColor(.designSystem(.mainBlue)!)
 //        v.setImage(UIImage(.custom_plus_circle), for: .normal)
         v.setImage(plusImage, for: .normal)
 //        v.setImage(UIImage(systemName: "plus.circle"), for: .normal)
@@ -41,11 +41,6 @@ final class ProfileTableViewUserCell: UITableViewCell {
     private lazy var nickNameLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .bold, size: ._20)
-        return v
-    }()
-    private lazy var nameLabel: UILabel = {
-        let v = UILabel()
-        v.font = .designSystem(weight: .light, size: ._15)
         return v
     }()
     private lazy var editButton: UIButton = {
@@ -60,7 +55,6 @@ final class ProfileTableViewUserCell: UITableViewCell {
             guard let user = user as? ProfileViewModelUserItem else { return }
             profileImageView.image = UIImage(named: user.imageURL)
             nickNameLabel.text = user.nickName
-            nameLabel.text = user.name
         }
     }
     
@@ -77,7 +71,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
 // MARK: - Layout
 extension ProfileTableViewUserCell {
     private func setUI() {
-        contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, nameLabel, editButton)
+        contentView.addSubviews(profileLabel, profileImageView, imagePlusButton, nickNameLabel, editButton)
         
         profileLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
@@ -95,18 +89,13 @@ extension ProfileTableViewUserCell {
         }
         
         nickNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(profileLabel.snp.bottom).offset(26)
             make.leading.equalTo(profileImageView.snp.trailing).offset(30)
-        }
-        
-        nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(nickNameLabel.snp.bottom).offset(7)
-            make.leading.equalTo(profileImageView.snp.trailing).offset(30)
+            make.centerY.equalTo(profileImageView.snp.centerY)
         }
         
         editButton.snp.makeConstraints { make in
-            make.top.equalTo(profileLabel.snp.bottom).offset(26)
-            make.trailing.equalToSuperview()
+            make.leading.equalTo(nickNameLabel.snp.trailing).offset(10)
+            make.centerY.equalTo(profileImageView.snp.centerY)
         }
     }
 }

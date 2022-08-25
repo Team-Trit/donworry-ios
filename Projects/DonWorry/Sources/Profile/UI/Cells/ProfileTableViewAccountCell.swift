@@ -16,7 +16,7 @@ final class ProfileTableViewAccountCell: UITableViewCell {
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
         v.text = "나의 계좌"
-        v.font = .designSystem(weight: .bold, size: ._15)
+        v.font = .designSystem(weight: .heavy, size: ._15)
         return v
     }()
     private lazy var accountInfoView: UIView = {
