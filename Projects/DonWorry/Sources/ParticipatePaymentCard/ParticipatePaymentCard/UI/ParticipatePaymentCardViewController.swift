@@ -27,7 +27,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     fileprivate var numberOfselectedCardsLabel: UILabel = {
         let label = UILabel()
-        label.font = .designSystem(weight: .bold, size: ._18)//todo 원래 17
+        label.font = .designSystem(weight: .bold, size: ._17)
         label.textColor = .designSystem(.mainBlue)
         return label
     }()
@@ -36,7 +36,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         let button = UIButton(type: .system)
         button.setTitle("선택해제", for: .normal)
         button.tintColor = .black
-        button.titleLabel?.font = .designSystem(weight: .regular, size: ._18) //todo 원래 17
+        button.titleLabel?.font = .designSystem(weight: .regular, size: ._17) //todo 원래 17
         button.setTitleColor(.black, for: .normal)
         
         return button
@@ -46,7 +46,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         let button = UIButton(type: .system)
         button.setTitle("취소", for: .normal)
         button.tintColor = .black
-        button.titleLabel?.font = .designSystem(weight: .regular, size: ._18)
+        button.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         button.setTitleColor(.black, for: .normal)
         return button
     }()
