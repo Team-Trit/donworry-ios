@@ -51,11 +51,11 @@ final public class CustomNavigationBar: UIView {
 // MARK: - Layout
 extension CustomNavigationBar {
     private func setBackButton() {
-        self.addSubview(leftItem)
-        
         self.snp.makeConstraints { make in
             make.height.equalTo(100)
         }
+        
+        self.addSubview(leftItem)
         
         leftItem.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(70)
