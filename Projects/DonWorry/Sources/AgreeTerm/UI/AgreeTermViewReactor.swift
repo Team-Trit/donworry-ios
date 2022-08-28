@@ -12,6 +12,8 @@ import RxFlow
 
 final class AgreeTermViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
+    private let termUseCase: TermUseCase
+    
     enum Action {
         case doneButtonPressed
     }
@@ -26,8 +28,9 @@ final class AgreeTermViewReactor: Reactor, Stepper {
     
     let initialState: State
     
-    init() {
+    init(_ termUseCase: TermUseCase = TermUseCaseImpl()) {
         self.initialState = State()
+        self.termUseCase = termUseCase
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

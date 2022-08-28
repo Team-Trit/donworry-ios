@@ -31,7 +31,7 @@ final class AgreeTermViewController: BaseViewController, View {
     }()
     private lazy var doneButton = LargeButton(type: .done)
     private var expandedSections = Set<Int>()
-    let viewModel = AgreeTermViewModel()
+    private let viewModel = TermViewModel()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
