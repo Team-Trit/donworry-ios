@@ -22,7 +22,7 @@ public enum LargeButtonType {
 public final class LargeButton: UIButton {
     private lazy var largeButton: UIButton = {
        let v = UIButton()
-        v.isEnabled = false
+//        v.isEnabled = false
         v.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
         v.backgroundColor = isEnabled ? .designSystem(.mainBlue) : .designSystem(.grayC5C5C5)
         v.layer.cornerRadius = 25
