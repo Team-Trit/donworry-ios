@@ -10,7 +10,7 @@ import UIKit
 import DesignSystem
 import SnapKit
 
-class TestViewController: UIViewController {
+class TestComponentViewController: UIViewController {
 
     lazy var stackView: UIStackView = {
         let v = UIStackView()
@@ -20,9 +20,28 @@ class TestViewController: UIViewController {
         v.axis = .vertical
         return v
     }()
+
     lazy var button1: DWButton = {
         let v = DWButton.create(.halfLightBlue)
         v.isEnabled = false
+        v.title = "Next"
+        return v
+    }()
+    lazy var button2: DWButton = {
+        let v = DWButton.create(.halfMainBlue)
+        v.title = "Next"
+        return v
+    }()
+
+    lazy var button3: DWButton = {
+        let v = DWButton.create(.xlarge)
+        v.title = "Next"
+        v.isEnabled = false
+        return v
+    }()
+
+    lazy var button4: DWButton = {
+        let v = DWButton.create(.xlarge)
         v.title = "Next"
         return v
     }()
@@ -31,6 +50,9 @@ class TestViewController: UIViewController {
 
         view.addSubview(stackView)
         stackView.addArrangedSubview(self.button1)
+        stackView.addArrangedSubview(self.button2)
+        stackView.addArrangedSubview(self.button3)
+        stackView.addArrangedSubview(self.button4)
 
         stackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
