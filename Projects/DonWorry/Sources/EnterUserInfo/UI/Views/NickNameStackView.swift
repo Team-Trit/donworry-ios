@@ -18,7 +18,7 @@ final class NickNameStackView: UIStackView {
         v.font = .designSystem(weight: .bold, size: ._18)
         return v
     }()
-    private lazy var nickNameTextField = LimitTextField(frame: .zero, type: .nickName)
+    lazy var nickNameTextField = LimitTextField(frame: .zero, type: .nickName)
     
     override init(frame: CGRect) {
         super.init(frame: frame)

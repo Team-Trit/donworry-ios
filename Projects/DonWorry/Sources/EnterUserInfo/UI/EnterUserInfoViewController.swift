@@ -40,6 +40,24 @@ final class EnterUserInfoViewController: BaseViewController, View {
 // MARK: - Bind
 extension EnterUserInfoViewController {
     private func dispatch(to reactor: EnterUserInfoViewReactor) {
+        nickNameStackView.nickNameTextField.textField.rx.text
+            .distinctUntilChanged()
+            .map { Reactor.Action.textFieldUpdated(type: .nickName, length: $0!.count) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        accountStackView.accountInputField.accountTextField.textField.rx.text
+            .distinctUntilChanged()
+            .map { Reactor.Action.textFieldUpdated(type: .account, length: $0!.count) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        accountStackView.accountInputField.holderTextField.textField.rx.text
+            .distinctUntilChanged()
+            .map { Reactor.Action.textFieldUpdated(type: .holder, length: $0!.count) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         accountStackView.accountInputField.chooseBankButton.rx.tap
             .map { Reactor.Action.bankSelectButtonPressed }
             .bind(to: reactor.action)
@@ -52,7 +70,9 @@ extension EnterUserInfoViewController {
     }
     
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        
+        reactor.state.map { $0.isNextButtonAvailable.allSatisfy { $0 } }
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
     }
 }
 

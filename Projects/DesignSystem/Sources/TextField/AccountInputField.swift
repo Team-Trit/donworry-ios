@@ -26,8 +26,8 @@ final public class AccountInputField: UIView {
         v.backgroundColor = .designSystem(.grayC5C5C5)
         return v
     }()
-    private lazy var holderTextField = LimitTextField(frame: .zero, type: .holder)
-    private lazy var accountTextField = LimitTextField(frame: .zero, type: .account)
+    public lazy var holderTextField = LimitTextField(frame: .zero, type: .holder)
+    public lazy var accountTextField = LimitTextField(frame: .zero, type: .account)
     private var type: AccountInputFieldType
     
     public init(frame: CGRect, type: AccountInputFieldType) {
