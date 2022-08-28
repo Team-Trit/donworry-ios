@@ -32,7 +32,7 @@ class attendanceCollectionViewCell: UICollectionViewCell {
         imageView.setWidth(width: 48)
         imageView.setHeight(height: 48)
         imageView.layer.cornerRadius = 24
-        imageView.contentMode = .scaleToFill //
+        imageView.contentMode = .scaleAspectFill //
         imageView.clipsToBounds = true
         return imageView
     }()
