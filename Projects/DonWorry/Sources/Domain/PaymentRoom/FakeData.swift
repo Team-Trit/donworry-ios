@@ -11,7 +11,8 @@ import Models
 
 extension PaymentRoom {
     static let dummyPaymentRoom1: PaymentRoom = {
-        .init(
+
+        return PaymentRoom.init(
             id: "1",
             code: "213d42s3s5",
             name: "MC2 첫 회식",
@@ -115,3 +116,4 @@ extension User {
         )
     }()
 }
+

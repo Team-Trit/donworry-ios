@@ -8,13 +8,16 @@
 
 import Foundation
 
-enum AlertType {
-    case startAlert
-    case hurriedAlert
-    case completedAlert
-}
+
 
 struct AlertMessageInfomations {
+    
+    enum AlertType {
+        case startAlert
+        case hurriedAlert
+        case completedAlert
+    }
+    
     let recievedDate: String
     let senderName: String
     let spaceName: String

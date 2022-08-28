@@ -39,6 +39,7 @@ public final class NetworkService: NetworkServable {
             }
         
     }
+    public init() {}
 
     private let provider = DonWorryProvider<MultiTarget>()
 }

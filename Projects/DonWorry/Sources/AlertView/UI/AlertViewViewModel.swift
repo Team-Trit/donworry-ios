@@ -23,7 +23,14 @@ final class AlertViewViewModel: BaseViewModel {
         AlertMessageInfomations(recievedDate: "28일 토요일", senderName: "우디", spaceName: "우디생파", messageType: .completedAlert),
         AlertMessageInfomations(recievedDate: "24일 화요일", senderName: "에이버리", spaceName: "버리생파", messageType: .hurriedAlert)
     ]
+
+    struct Temp {
+        var senderName: String
+    }
     
+    func convert() -> Temp {
+        return Temp(senderName: alertMessages[0].senderName)
+    }
     func chunkedMessages(messages: [AlertMessageInfomations]) -> [[AlertMessageInfomations]] {
         var messagesByDate: [[AlertMessageInfomations]] = []
         var currentDateMessages: [AlertMessageInfomations] = []
