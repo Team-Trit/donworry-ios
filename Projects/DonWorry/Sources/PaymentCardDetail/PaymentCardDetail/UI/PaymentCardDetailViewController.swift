@@ -13,28 +13,13 @@ import RxCocoa
 import RxSwift
 import DesignSystem
 import Models
+import PhotosUI
 
-class abc: UIViewController {
-    
-    override func viewDidLoad() {
-//        self.viewDidLoad()
-        
-        let button = UIButton()
-        button.setTitle("qwe", for: .normal)
-        view.addSubview(button)
-        button.centerX(inView: view)
-        button.centerY(inView: view)
-        button.addTarget(self, action: #selector(abb), for: .touchUpInside)
-    }
-    @objc fileprivate func abb() {
-        let vc = PaymentCardDetailViewController()
-        navigationController?.pushViewController(vc, animated: true)
-    }
-}
+// MARK: - 도메인 로직 생기고 교체 합니다.
+var imageArray2 = [UIImage]()
 
-// anchor2 지우기
 final class PaymentCardDetailViewController: BaseViewController, View {
-
+    
     fileprivate var backButton: UIButton = {
         let button = UIButton(type: .system)
         
@@ -112,7 +97,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         let view = UICollectionView(frame: .zero, collectionViewLayout: attendanceCollectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
         view.register(attendanceCollectionViewCell.self, forCellWithReuseIdentifier: attendanceCollectionViewCell.cellID)
-        view.layer.cornerRadius = 16
+//        view.layer.cornerRadius = 16//?
         view.dataSource = self
         view.delegate = self
       return view
@@ -126,6 +111,30 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
+    fileprivate let fileBigContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15
+        return view
+    }()
+    
+    private let fileCollectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let view = UICollectionViewFlowLayout()
+        view.minimumLineSpacing = 15
+        view.scrollDirection = .horizontal
+        return view
+      }()
+    
+    private lazy var fileCollectionView: UICollectionView = {
+        let view = UICollectionView(frame: .zero, collectionViewLayout: fileCollectionViewFlowLayout)
+        view.showsHorizontalScrollIndicator = false
+        view.register(FileCollectionViewCell.self, forCellWithReuseIdentifier: FileCollectionViewCell.cellID)
+        view.register(FIleAddCollectionViewCell.self, forCellWithReuseIdentifier: FIleAddCollectionViewCell.cellID)
+        view.dataSource = self
+        view.delegate = self
+      return view
+    }()
+    
     var users: [User] = [User.dummyUser1, User.dummyUser2, User.dummyUser3, User.dummyUser4]
     
     override func viewDidLoad() {
@@ -135,8 +144,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         configNavigationBar()
     }
     
-    
-
     private func configNavigationBar() {
         
         navigationItem.title = "유쓰네 택시"
@@ -153,10 +160,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
 //
         let backButtonContainerForHstack = UIStackView(arrangedSubviews: [backEmptyViewForHstack, backButtonContainer])
 
-//        cancelButtonContainer.spacing = Constants.betweenNumberAndLabel
-//        let leftBarbutton = UIBarButtonItem(customView: cancelButtonContainer)
-//        navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: backButtonContainer)]
-        
         navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: backButtonContainerForHstack)]
         backButton.addTarget(self, action: #selector(popView), for: .touchUpInside)
     }
@@ -167,19 +170,15 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     private func attributes() {
         attendanceLabel.text = "참여자 : \(users.count)명"
 //        view.backgroundColor = .designSystem(.grayF6F6F6)
-        
     }
 
-    
-    
     func bind(reactor: PaymentCardDetailViewReactor) {
         //binding here
     }
 
 }
 
-// MARK: setUI
-
+//MARK: Layout
 extension PaymentCardDetailViewController {
     private func layout() {
         let totalTopView = UIView()
@@ -221,30 +220,126 @@ extension PaymentCardDetailViewController {
         attendacneBigContainerView.addSubview(attendanceCollectionView)
         attendanceCollectionView.anchor2(top: attendanceLabel.bottomAnchor, left: attendacneBigContainerView.leftAnchor, bottom: attendacneBigContainerView.bottomAnchor, right: attendacneBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
         
+        totalBottomView.addSubview(fileBigContainerView)
+        fileBigContainerView.anchor2(top: attendacneBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        
+        fileBigContainerView.addSubview(staticPictureLabel)
+        staticPictureLabel.anchor2(top: fileBigContainerView.topAnchor, left: fileBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        
+        fileBigContainerView.addSubview(fileCollectionView)
+        fileCollectionView.anchor2(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
     }
 }
 
+//MARK: CollectionView
 extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return users.count
+        switch collectionView {
+        case attendanceCollectionView:
+            return users.count
+        case fileCollectionView:
+            if imageArray2.count == 0 {
+                return 1
+            } else if imageArray2.count == 3 {
+                return 3
+            } else {
+                return imageArray2.count + 1
+            }
+        default:
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: attendanceCollectionViewCell.cellID, for: indexPath) as? attendanceCollectionViewCell else { return UICollectionViewCell() }
-        cell.user = users[indexPath.row]
-        
-        return cell
-        
+        switch collectionView {
+        case attendanceCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: attendanceCollectionViewCell.cellID, for: indexPath) as? attendanceCollectionViewCell else { return UICollectionViewCell() }
+            cell.user = users[indexPath.row]
+            return cell
+        case fileCollectionView:
+            if imageArray2.count > 2 {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+                cell.FileCollectionViewCellDelegate = self
+                cell.container.image = imageArray2[indexPath.row]
+                cell.deleteCircle.tag = indexPath.row
+                return cell
+            } else {
+                if indexPath.row == 0 {
+                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FIleAddCollectionViewCell.cellID, for: indexPath) as? FIleAddCollectionViewCell else { return UICollectionViewCell() }
+                    return cell
+                } else {
+                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+                    cell.FileCollectionViewCellDelegate = self
+                    cell.container.image = imageArray2[(indexPath.row - 1)]
+                    cell.deleteCircle.tag = (indexPath.row - 1)
+                    return cell
+                }
+            }
+        default: return UICollectionViewCell()
+        }
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case fileCollectionView:
+            if imageArray2.count < 3 && indexPath.row == 0 {
+                showPhotoPicker()
+            }
+        default:
+            break
+        }
+    }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width: CGFloat = 48
-        let height: CGFloat = 75
-        return CGSize(width: width, height: height)
+        switch collectionView {
+        case attendanceCollectionView:
+            let width: CGFloat = 48
+            let height: CGFloat = 75
+            return CGSize(width: width, height: height)
+        case fileCollectionView:
+            return CGSize(width: 84, height: 84)
+        default:
+            return CGSize(width: 84, height: 84)
+        }
     }
-    
 }
 
+extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
+    func deletePhoto() {
+        DispatchQueue.main.async {
+            self.fileCollectionView.reloadData()
+        }
+    }
+}
+extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
+
+    func showPhotoPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 3
+        let phPickerVC = PHPickerViewController(configuration: config)
+        phPickerVC.delegate = self
+        self.present(phPickerVC, animated: true)
+    }
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        dismiss(animated: true)
+        var img = [UIImage]()
+        for result in results {
+            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
+                error in
+                if let image = object as? UIImage {
+                    img.append(image)
+                }
+                imageArray2 = img
+                DispatchQueue.main.async {
+                    self.fileCollectionView.reloadData()
+                }
+            }
+        }
+    }
+}
+
+//MARK: 아래는 삭제될 부분입니다.
 extension UIView {
     // layout 하는 함수
     func anchor2(top: NSLayoutYAxisAnchor? = nil,
@@ -290,8 +385,7 @@ extension UIView {
         centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
 
-    func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil,
-                 paddingLeft: CGFloat = 0, constant: CGFloat = 0) {
+    func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0, constant: CGFloat = 0) {
 
         translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
