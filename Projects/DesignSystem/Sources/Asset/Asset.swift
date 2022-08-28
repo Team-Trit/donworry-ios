@@ -13,6 +13,7 @@ public enum Asset: String {
     case test_avo
     case ic_calculation_3d
     case ic_check_white
+    case btn_copy
     case ic_cake
     case ic_chicken
     case ic_cup

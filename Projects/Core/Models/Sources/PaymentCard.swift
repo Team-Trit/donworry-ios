@@ -10,7 +10,7 @@ import Foundation
 
 /// 정산 카드
 public struct PaymentCard {
-    public var id: String
+    public var id: Int
     public var name: String
     public var cardIcon: PaymentCardIcon
     public var totalAmount: Money
@@ -21,7 +21,7 @@ public struct PaymentCard {
     public var images: [String]?
     public var participatedUserList: [User]
     
-    public init(id: String,
+    public init(id: Int,
                 name: String,
                 cardIcon: PaymentCardIcon,
                 totalAmount: Money,

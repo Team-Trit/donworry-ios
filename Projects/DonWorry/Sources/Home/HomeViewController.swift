@@ -85,7 +85,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
     }
 
-    lazy var dataSource = paymentCardDataSourceOf()
+    lazy var dataSource = billCardDataSourceOf()
     lazy var headerView = HomeHeaderView()
     lazy var paymentRoomCollectionView = PaymentRoomCollectionView()
     lazy var billCardCollectionView = BillCardCollectionView()
@@ -165,25 +165,25 @@ extension HomeViewController {
 extension HomeViewController {
     typealias DataSource = RxCollectionViewSectionedReloadDataSource
 
-    func paymentCardDataSourceOf() -> DataSource<BillCardSection> {
-           return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
+    func billCardDataSourceOf() -> DataSource<BillCardSection> {
+        return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
 
-               switch dataSource[indexPath] {
-               case .GivePaymentCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(GiveBillCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = viewModel
-                   return cell
-               case .TakePaymentCard(let viewModel):
-                   let cell = collectionView.dequeueReusableCell(TakeBillCardCollectionViewCell.self, for: indexPath)
-                   cell.viewModel = viewModel
-                   return cell
-               case .StatePaymentCard:
-                   let cell = collectionView.dequeueReusableCell(StateBillCardCollectionViewCell.self, for: indexPath)
-                   return cell
-               case .LeavePaymentCard:
-                   let cell = collectionView.dequeueReusableCell(LeavePaymentRoomBillCardCollectionViewCell.self, for: indexPath)
-                   return cell
-               }
-           })
-       }
+            switch dataSource[indexPath] {
+            case .GiveBillCard(let viewModel):
+                let cell = collectionView.dequeueReusableCell(GiveBillCardCollectionViewCell.self, for: indexPath)
+                cell.viewModel = viewModel
+                return cell
+            case .TakeBillCard(let viewModel):
+                let cell = collectionView.dequeueReusableCell(TakeBillCardCollectionViewCell.self, for: indexPath)
+                cell.viewModel = viewModel
+                return cell
+            case .StateBillCard:
+                let cell = collectionView.dequeueReusableCell(StateBillCardCollectionViewCell.self, for: indexPath)
+                return cell
+            case .LeaveBillCard:
+                let cell = collectionView.dequeueReusableCell(LeavePaymentRoomBillCardCollectionViewCell.self, for: indexPath)
+                return cell
+            }
+        })
+    }
 }
