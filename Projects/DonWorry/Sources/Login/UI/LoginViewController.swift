@@ -45,30 +45,6 @@ final class LoginViewController: BaseViewController, View {
     }
 }
 
-// MARK: - Bind
-extension LoginViewController {
-    private func dispatch(to reactor: LoginViewReactor) {
-        appleLoginButton.rx.tap
-            .map { Reactor.Action.appleLoginButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        googleLoginButton.rx.tap
-            .map { Reactor.Action.googleLoginButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        kakaoLoginButton.rx.tap
-            .map { Reactor.Action.kakaoLoginButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func render(_ reactor: LoginViewReactor) {
-        
-    }
-}
-
 // MARK: - Layout
 extension LoginViewController {
     private func setUI() {
@@ -97,5 +73,29 @@ extension LoginViewController {
             make.top.equalTo(googleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
+    }
+}
+
+// MARK: - Bind
+extension LoginViewController {
+    private func dispatch(to reactor: LoginViewReactor) {
+        appleLoginButton.rx.tap
+            .map { Reactor.Action.appleLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        googleLoginButton.rx.tap
+            .map { Reactor.Action.googleLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        kakaoLoginButton.rx.tap
+            .map { Reactor.Action.kakaoLoginButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: LoginViewReactor) {
+        
     }
 }

@@ -16,6 +16,7 @@ import RxSwift
 import SnapKit
 
 final class AgreeTermViewController: BaseViewController, View {
+    private lazy var navigationBar = CustomNavigationBar(title: "돈워리 이용약관")
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
         v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
@@ -44,26 +45,16 @@ final class AgreeTermViewController: BaseViewController, View {
     }
 }
 
-// MARK: - Bind
-extension AgreeTermViewController {
-    private func dispatch(to reactor: AgreeTermViewReactor) {
-        doneButton.rx.tap
-            .map { Reactor.Action.doneButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func render(_ reactor: AgreeTermViewReactor) {
-        
-    }
-}
-
 // MARK: - Layout
 extension AgreeTermViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
-        view.addSubviews(descriptionLabel, agreeTermTableView, doneButton)
+        view.addSubviews(navigationBar, descriptionLabel, agreeTermTableView, doneButton)
+        
+        navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(150)
@@ -85,6 +76,20 @@ extension AgreeTermViewController {
             make.width.equalTo(297)
             make.height.equalTo(50)
         }
+    }
+}
+
+// MARK: - Bind
+extension AgreeTermViewController {
+    private func dispatch(to reactor: AgreeTermViewReactor) {
+        doneButton.rx.tap
+            .map { Reactor.Action.doneButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: AgreeTermViewReactor) {
+        
     }
 }
 

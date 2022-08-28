@@ -23,7 +23,7 @@ final class LoginFlow: Flow {
     
     private lazy var rootViewController: UINavigationController = {
         let v = UINavigationController()
-        
+        v.isNavigationBarHidden = true
         return v
     }()
     
@@ -84,7 +84,7 @@ extension LoginFlow {
     }
     
     private func dismissBankSelectView(with selectedBank: String?) {
-        // MARK: Business logic here...
+        // MARK: Business logic here is awkward...maybe?
         if let selectedBank = selectedBank, let vc = self.rootViewController.topViewController as? EnterUserInfoViewController {
             vc.accountStackView.accountInputField.chooseBankButton.setTitle(selectedBank, for: .normal)
         }

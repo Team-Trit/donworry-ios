@@ -66,20 +66,6 @@ final class ConfirmTermViewController: BaseViewController, View {
     }
 }
 
-// MARK: - Bind
-extension ConfirmTermViewController {
-    private func dispatch(to reactor: ConfirmTermViewReactor) {
-        confirmButton.rx.tap
-            .map { Reactor.Action.confirmButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func render(_ reactor: ConfirmTermViewReactor) {
-        
-    }
-}
-
 // MARK: - Helper
 extension ConfirmTermViewController {
     private func setUI() {
@@ -118,6 +104,20 @@ extension ConfirmTermViewController {
         panGesture.delaysTouchesBegan = false
         panGesture.delaysTouchesEnded = false
         view.addGestureRecognizer(panGesture)
+    }
+}
+
+// MARK: - Bind
+extension ConfirmTermViewController {
+    private func dispatch(to reactor: ConfirmTermViewReactor) {
+        confirmButton.rx.tap
+            .map { Reactor.Action.confirmButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: ConfirmTermViewReactor) {
+        
     }
 }
 

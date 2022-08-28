@@ -42,35 +42,6 @@ final class SelectBankViewController: BaseViewController, View {
         render(reactor)
     }
 }
-// MARK: - Bind
-extension SelectBankViewController {
-    private func dispatch(to reactor: SelectBankViewReactor) {
-        dismissButton.rx.tap
-            .map { Reactor.Action.dismissButtonPressed }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        bankSearchTextField.rx.text.changed
-            .map { Reactor.Action.searchTextChanged(filter: $0 ?? "") }
-            .observe(on: MainScheduler.asyncInstance)
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        bankCollectionView.rx.itemSelected
-            .map {
-                guard let cell = self.bankCollectionView.cellForItem(at: $0) as? SelectBankCollectionViewCell else { return Reactor.Action.dismissButtonPressed }
-                return Reactor.Action.selectBank(cell.bankLabel.text!)
-            }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func render(_ reactor: SelectBankViewReactor) {
-        reactor.state.map { $0.snapshot }
-            .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
-            .disposed(by: disposeBag)
-    }
-}
 
 // MARK: - Layout
 extension SelectBankViewController {
@@ -104,5 +75,35 @@ extension SelectBankViewController {
             make.trailing.equalToSuperview().offset(-25)
             make.bottom.equalToSuperview()
         }
+    }
+}
+
+// MARK: - Bind
+extension SelectBankViewController {
+    private func dispatch(to reactor: SelectBankViewReactor) {
+        dismissButton.rx.tap
+            .map { Reactor.Action.dismissButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        bankSearchTextField.rx.text.changed
+            .map { Reactor.Action.searchTextChanged(filter: $0 ?? "") }
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        bankCollectionView.rx.itemSelected
+            .map {
+                guard let cell = self.bankCollectionView.cellForItem(at: $0) as? SelectBankCollectionViewCell else { return Reactor.Action.dismissButtonPressed }
+                return Reactor.Action.selectBank(cell.bankLabel.text!)
+            }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func render(_ reactor: SelectBankViewReactor) {
+        reactor.state.map { $0.snapshot }
+            .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
+            .disposed(by: disposeBag)
     }
 }
