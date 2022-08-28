@@ -48,7 +48,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
             },
             dateString: Formatter.paymentCardDateFormatter.string(from: paymentCard.date),
             backgroundColor: paymentCard.backgroundColor,
-            yetComplete: yetComplete)
+            yetCompleted: yetComplete)
     }
 
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {
