@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignSystem
+import Models
 
 enum Section: CaseIterable {
     case main
@@ -33,7 +34,7 @@ final class SelectBankCollectionView: UICollectionView {
         self.diffableDataSouce = UICollectionViewDiffableDataSource<Section, String>(collectionView: self) { (collectionView, indexPath, bank) -> UICollectionViewCell? in
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectBankCollectionViewCell.identifier, for: indexPath) as? SelectBankCollectionViewCell else { return UICollectionViewCell() }
             cell.bankLabel.text = bank
-            cell.bankIconView.image = .init(Asset(rawValue: Banks[bank] ?? "")!)
+            cell.bankIconView.image = UIImage(Asset(rawValue: Bank.init(rawValue: bank)!.description)!)
             return cell
         }
     }

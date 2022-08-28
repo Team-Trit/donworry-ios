@@ -8,19 +8,20 @@
 
 import UIKit
 
+import Models
 import ReactorKit
 import RxCocoa
 import RxFlow
 
 final class SelectBankViewReactor: Reactor, Stepper {
-    private let banks = ["경남은행", "광주은행", "국민은행", "기업은행", "농협은행", "대구은행", "부산은행", "산림조합중앙회", "산업은행", "새마을금고", "수협은행", "신한은행", "신협중앙회", "우리은행", "우체국", "저축은행", "전북은행", "제주은행", "카카오뱅크", "케이뱅크", "토스뱅크", "하나은행", "한국씨티은행", "한국투자증권", "KB증권", "NH투자증권", "SC제일은행"
-    ]
+    private let banks = Bank.allCases.map { $0.rawValue }
+    
     let steps = PublishRelay<Step>()
     
     enum Action {
         case dismissButtonPressed
         case searchTextChanged(filter: String)
-        case selectBank(_ index: Int)
+        case selectBank(_ selectedBank: String)
     }
     
     enum Mutation {
@@ -60,8 +61,7 @@ final class SelectBankViewReactor: Reactor, Stepper {
                 .just(Mutation.updateLoading(false))
             ])
             
-        case let .selectBank(index):
-            let selectedBank = banks[index]
+        case let .selectBank(selectedBank):
             self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
             return .just(Mutation.dismissSelectBankSheet)
         }

@@ -52,14 +52,17 @@ extension SelectBankViewController {
         
         bankSearchTextField.rx.text.changed
             .map { Reactor.Action.searchTextChanged(filter: $0 ?? "") }
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         bankCollectionView.rx.itemSelected
-            .map { Reactor.Action.selectBank($0.row) }
+            .map {
+                guard let cell = self.bankCollectionView.cellForItem(at: $0) as? SelectBankCollectionViewCell else { return Reactor.Action.dismissButtonPressed }
+                return Reactor.Action.selectBank(cell.bankLabel.text!)
+            }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-            
     }
     
     private func render(_ reactor: SelectBankViewReactor) {
