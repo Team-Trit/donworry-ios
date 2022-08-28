@@ -36,7 +36,6 @@ final class SelectBankCollectionView: UICollectionView {
             
             cell.bankLabel.text = Bank(rawValue: bank)?.koreanName
             cell.bankIconView.image = UIImage(Asset(rawValue: bank)!)
-//            cell.bankIconView.image = UIImage(Asset(rawValue: Bank.init(rawValue: bank)!.description)!)
             return cell
         }
     }
