@@ -10,15 +10,13 @@ import UIKit
 import SnapKit
 
 public enum DonWorryButtonType {
-    case xlargeBlue
-    case xlargeGray
-    case largeBlue // 262
-    case mediumBlue // 222
-    case smallBlue // 106
-    case halfMainBlue // 162
-    case halfGray // 162
-    case halfLightBlue
-    case xsmallGray // 70
+    case xlarge // weight : 340 , height : 50
+    case largeBlue // weight : 262
+    case mediumBlue // weight : 222
+    case smallBlue // weight : 106
+    case halfMainBlue // weight : 162 절반 버튼
+    case halfLightBlue // weight : 162 절반 버튼
+    case xsmallGray // weight : 70
 }
 
 public extension DWButton {
@@ -26,23 +24,12 @@ public extension DWButton {
     static func create(_ type: DonWorryButtonType) -> DWButton {
         let button = DWButton(type: .system)
         switch type {
-        case .xlargeBlue:
+        case .xlarge:
             button.roundCorners(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
-            button.addGradient(
-                startColor: .designSystem(.blueTopGradient)!,
-                endColor: .designSystem(.blueBottomGradient)!
-            )
-            button.snp.makeConstraints { make in
-                make.width.equalTo(320)
-                make.height.equalTo(50)
-            }
-        case .xlargeGray:
-            button.roundCorners(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
-            button.setTitleColor(.designSystem(.white), for: .normal)
-            button.backgroundColor = .designSystem(.grayC5C5C5)
+            button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
+            button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
                 make.width.equalTo(320)
                 make.height.equalTo(50)
@@ -91,17 +78,8 @@ public extension DWButton {
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
-            button.backgroundColor = .designSystem(.mainBlue)
-            button.snp.makeConstraints { make in
-                make.width.equalTo(162)
-                make.height.equalTo(58)
-            }
-        case .halfGray:
-            button.roundCorners(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
-            button.setTitleColor(.designSystem(.white), for: .normal)
-            button.tintColor = .designSystem(.white)
-            button.backgroundColor = .designSystem(.grayC5C5C5)
+            button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
+            button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
                 make.width.equalTo(162)
                 make.height.equalTo(58)
@@ -111,7 +89,8 @@ public extension DWButton {
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
-            button.backgroundColor = .designSystem(.lightBlue)
+            button.setBackgroundColor(.designSystem(.lightBlue)!, for: .normal)
+            button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
                 make.width.equalTo(162)
                 make.height.equalTo(58)

@@ -20,8 +20,14 @@ struct PaymentCardInRoomViewModel {
     var totalAmount: String
     var backgroundColor: String
     var date: String
-    var payer: PaymentCardCellDdipUser
-    var participatedUserList: [PaymentCardCellDdipUser]
+    var payer: User
+    var participatedUserList: [User]
+
+    struct User: Equatable {
+        var id: Int
+        var nickName: String
+        var imageURL: String
+    }
 }
 
 public class PaymentCardInRoomView: UIView {
@@ -47,9 +53,9 @@ public class PaymentCardInRoomView: UIView {
         }
     }
 
-    private func drawParticipatedUser(_ users: [PaymentCardCellDdipUser]) {
+    private func drawParticipatedUser(_ users: [PaymentCardInRoomViewModel.User]) {
         participatedUserView.subviews.forEach { $0.removeFromSuperview() }
-        let imageViews = users.prefix(4).map { (user: PaymentCardCellDdipUser) -> UIImageView in
+        let imageViews = users.prefix(4).map { (user: PaymentCardInRoomViewModel.User) -> UIImageView in
             let imageView = UIImageView()
             imageView.kf.setImage(with: URL(string: user.imageURL))
             imageView.contentMode = .scaleAspectFill

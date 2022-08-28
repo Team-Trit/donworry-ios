@@ -10,23 +10,23 @@ import UIKit
 import DesignSystem
 import DonWorryExtensions
 
-struct PaymentCardCellDdipUser: Equatable {
-    var id: Int
-    var nickName: String
-    var imageURL: String
-}
-
 struct PaymentCardCellViewModel: Equatable {
     var id: Int
     var name: String
     var totalAmount: String
     var number: Int
     var cardIconImageName: String
-    var payer: PaymentCardCellDdipUser
-    var participatedUserList: [PaymentCardCellDdipUser]
+    var payer: User
+    var participatedUserList: [User]
     var dateString: String
     var backgroundColor: String
     var yetComplete: Bool
+
+    struct User: Equatable {
+        var id: Int
+        var nickName: String
+        var imageURL: String
+    }
 }
 
 final class PaymentCardCollectionViewCell: UICollectionViewCell {
@@ -45,8 +45,15 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                     totalAmount: model.totalAmount,
                     backgroundColor: model.backgroundColor,
                     date: model.dateString,
-                    payer: model.payer,
-                    participatedUserList: model.participatedUserList)
+                    payer: .init(
+                        id: model.payer.id,
+                        nickName: model.payer.nickName,
+                        imageURL: model.payer.imageURL
+                    ),
+                    participatedUserList: model.participatedUserList.map {
+                        .init(id: $0.id, nickName: $0.nickName, imageURL: $0.imageURL)
+                    }
+                )
             }
             self.completeCoverView.isHidden = (viewModel?.yetComplete ?? false)
         }

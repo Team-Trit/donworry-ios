@@ -38,8 +38,14 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
             totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
             number: paymentCard.participatedUserList.count,
             cardIconImageName: paymentCard.cardIcon.rawValue,
-            payer: .init(paymentCard.payer),
-            participatedUserList: paymentCard.participatedUserList.map(PaymentCardCellDdipUser.init),
+            payer: .init(
+                id: paymentCard.payer.id,
+                nickName: paymentCard.payer.nickName,
+                imageURL: paymentCard.payer.image
+            ),
+            participatedUserList: paymentCard.participatedUserList.map {
+                .init(id: $0.id, nickName: $0.nickName, imageURL: $0.image)
+            },
             dateString: Formatter.paymentCardDateFormatter.string(from: paymentCard.date),
             backgroundColor: paymentCard.backgroundColor,
             yetComplete: yetComplete)
@@ -53,13 +59,5 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
             result = "0원"
         }
         return result
-    }
-}
-
-extension PaymentCardCellDdipUser {
-    init(_ entity: User) {
-        self.id = entity.id
-        self.nickName = entity.nickName
-        self.imageURL = entity.image
     }
 }
