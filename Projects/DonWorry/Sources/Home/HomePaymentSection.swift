@@ -8,13 +8,12 @@
 
 import Foundation
 import RxDataSources
-import Models
 
 enum HomeBillCardItem: Equatable {
-    case TakePaymentCard(TakeBillCardCellViewModel)
-    case GivePaymentCard(GiveBillCardCellViewModel)
-    case StatePaymentCard
-    case LeavePaymentCard
+    case TakeBillCard(TakeBillCardCellViewModel)
+    case GiveBillCard(GiveBillCardCellViewModel)
+    case StateBillCard
+    case LeaveBillCard
 }
 
 enum BillCardSection: Equatable {

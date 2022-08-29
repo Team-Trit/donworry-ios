@@ -10,6 +10,21 @@ import UIKit
 
 import DesignSystem
 import DonWorryExtensions
+import Models
+
+struct PaymentCardViewModel {
+    public var id: String
+    public var name: String
+    public var cardIconImageName: String
+    public var totalAmount: Int
+    public var payer: User
+    public var backgroundColor: String
+    public var date: Date
+    public var bankAccount: BankAccount?
+    public var images: [String]?
+    public var participatedUserList: [User]
+
+}
 
 public class PaymentCardView: UIView {
     

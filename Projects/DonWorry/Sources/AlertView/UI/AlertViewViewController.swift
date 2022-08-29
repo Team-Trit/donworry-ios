@@ -46,7 +46,7 @@ extension AlertViewViewController {
     }
 }
 
-extension AlertViewViewController: UITableViewDataSource {
+extension AlertViewViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.sortedMessages.count
     }
@@ -70,7 +70,7 @@ extension AlertViewViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if !viewModel.sortedMessages[section].isEmpty {
+        if viewModel.sortedMessages[section].isNotEmpty {
             return "\(viewModel.sortedMessages[section][0].recievedDate)"
         }
         return nil
@@ -79,8 +79,4 @@ extension AlertViewViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
-}
-
-extension AlertViewViewController: UITableViewDelegate {
-    
 }

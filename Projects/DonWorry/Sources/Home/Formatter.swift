@@ -14,4 +14,10 @@ struct Formatter {
         formatter.numberStyle = .decimal
         return formatter
     }()
+
+    static let paymentCardDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd"
+        return formatter
+    }()
 }

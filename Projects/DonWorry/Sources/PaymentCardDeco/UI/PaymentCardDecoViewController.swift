@@ -45,6 +45,7 @@ extension PaymentCardDecoViewController {
     }
     
     private func attributes() {
+        
         view.backgroundColor = .designSystem(.white)
     }
     
