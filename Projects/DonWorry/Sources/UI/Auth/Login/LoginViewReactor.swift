@@ -10,6 +10,10 @@ import ReactorKit
 import RxCocoa
 import RxFlow
 
+enum LoginRouteTo {
+    case home
+}
+
 final class LoginViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
     
@@ -29,6 +33,8 @@ final class LoginViewReactor: Reactor, Stepper {
     
     struct State {
         var isLoading: Bool
+
+        @Pulse var routeTo: LoginRouteTo?
     }
     
     let initialState: State
@@ -74,7 +80,8 @@ final class LoginViewReactor: Reactor, Stepper {
         case .updateLoading(let isLoading):
             state.isLoading = isLoading
         case .appleLogin:
-            self.steps.accept(DonworryStep.userInfoIsRequired)
+            state.routeTo = .home
+            // self.steps.accept(DonworryStep.userInfoIsRequired)
         case .googleLogin:
             self.steps.accept(DonworryStep.userInfoIsRequired)
         case .kakaoLogin:

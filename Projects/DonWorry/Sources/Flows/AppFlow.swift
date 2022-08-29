@@ -26,13 +26,10 @@ final class AppFlow: Flow {
         guard let step = step as? DonworryStep else { return .none }
         
         switch step {
-            
         case .loginIsRequired:
             return navigateToLoginScreen()
-            
         case .homeIsRequired:
             return navigateToHomeScreen()
-            
         default:
             return .none
         }

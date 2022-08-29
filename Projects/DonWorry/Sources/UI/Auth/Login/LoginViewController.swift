@@ -96,6 +96,53 @@ extension LoginViewController {
     }
     
     private func render(_ reactor: LoginViewReactor) {
-        
+        reactor.pulse(\.$routeTo)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] routeTo in self?.move(to: routeTo) })
+            .disposed(by: disposeBag)
     }
 }
+
+extension LoginViewController {
+    private func move(to routeTo: LoginRouteTo) {
+        switch routeTo {
+        case .home:
+            let homeViewController = HomeViewController()
+            self.navigationController?.pushViewController(homeViewController, animated: true)
+        }
+    }
+}
+
+#if DEBUG
+
+extension LoginViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        super.motionEnded(motion, with: event)
+        if event?.subtype == .motionShake {
+            let testVC = UIViewController()
+            testVC.view.backgroundColor = .white
+            let button = UIButton(type: .system)
+            button.setTitle("로그인하기", for: .normal)
+            testVC.view.addSubview(button)
+            button.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+            }
+            button.addTarget(self, action: #selector(buttonDidTap), for: .touchUpInside)
+            present(testVC, animated: true)
+        }
+    }
+
+    @objc
+    private func buttonDidTap() {
+        let authUseCase = AuthUseCaseImpl()
+        authUseCase.fetchTestUser(2)
+            .subscribe(onNext: {
+                print($0)
+            })
+            .disposed(by: disposeBag)
+
+    }
+}
+
+#endif

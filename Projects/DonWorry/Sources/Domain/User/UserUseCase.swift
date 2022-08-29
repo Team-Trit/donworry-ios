@@ -10,6 +10,10 @@ import Foundation
 import Models
 import RxSwift
 
+protocol TestUserRepository {
+    func fetchTestUser(_ userID: Int) -> Observable<User>
+}
+
 protocol UserUseCase {
     func fetchUser() -> Observable<User>
 }
