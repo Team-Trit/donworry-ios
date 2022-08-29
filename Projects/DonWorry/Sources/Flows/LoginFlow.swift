@@ -32,6 +32,9 @@ final class LoginFlow: Flow {
         guard let step = step as? DonworryStep else { return .none }
         
         switch step {
+        case .popViewController:
+            return self.popViewController()
+            
         case .loginIsRequired:
             return self.navigateToLoginView()
             
@@ -59,6 +62,11 @@ final class LoginFlow: Flow {
 
 // MARK: - Navigate Methods
 extension LoginFlow {
+    private func popViewController() -> FlowContributors {
+        self.rootViewController.popViewController(animated: true)
+        return .none
+    }
+    
     private func navigateToLoginView() -> FlowContributors {
         let vc = LoginViewController()
         let reactor = LoginViewReactor()

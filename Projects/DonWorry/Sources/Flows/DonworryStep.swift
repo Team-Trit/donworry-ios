@@ -9,6 +9,9 @@
 import RxFlow
 
 enum DonworryStep: Step {
+    // Global
+    case popViewController
+    
     // Login Flow
     case loginIsRequired
     case userInfoIsRequired

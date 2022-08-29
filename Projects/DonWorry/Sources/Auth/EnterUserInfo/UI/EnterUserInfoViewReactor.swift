@@ -15,12 +15,14 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
     
     enum Action {
+        case backButtonPressed
         case textFieldUpdated(type: LimitTextFieldType, length: Int)
         case bankSelectButtonPressed
         case nextButtonPressed
     }
     
     enum Mutation {
+        case popViewController
         case updateValidation(_ flag: Bool, _ index: Int)
         case showBankSelectSheet
         case navigateToNextVC
@@ -40,6 +42,9 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .backButtonPressed:
+            return .just(Mutation.popViewController)
+            
         case let .textFieldUpdated(type, length):
             let flag = length == 0 ? false : true
             var index = 0
@@ -69,6 +74,9 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
+        case .popViewController:
+            self.steps.accept(DonworryStep.popViewController)
+            
         case let .updateValidation(flag, index):
             state.isNextButtonAvailable[index] = flag
             

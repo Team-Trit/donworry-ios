@@ -11,13 +11,13 @@ import UIKit
 import SnapKit
 
 final public class CustomNavigationBar: UIView {
-    private lazy var leftItem: UIButton = {
+    public lazy var leftItem: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(.back_button), for: .normal)
         return v
     }()
     private var titleLabel: UILabel?
-    private var rightItem: UIButton?
+    public var rightItem: UIButton?
     
     override init(frame: CGRect) {
         super.init(frame: frame)

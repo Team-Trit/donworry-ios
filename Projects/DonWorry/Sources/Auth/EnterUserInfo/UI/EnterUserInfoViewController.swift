@@ -84,6 +84,11 @@ extension EnterUserInfoViewController {
 // MARK: - Bind
 extension EnterUserInfoViewController {
     private func dispatch(to reactor: EnterUserInfoViewReactor) {
+        navigationBar.leftItem.rx.tap
+            .map { Reactor.Action.backButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         nickNameStackView.nickNameTextField.textField.rx.text
             .distinctUntilChanged()
             .map { Reactor.Action.textFieldUpdated(type: .nickName, length: $0!.count) }
