@@ -24,7 +24,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     }(UIImageView())
     lazy var deleteCircle: UIButton = {
         //todo
-//        $0.setImage(UIImage(.delete_mark), for: .normal)
+        //$0.setImage(UIImage(.delete_mark), for: .normal)
         $0.setImage(UIImage(systemName: "x.circle"), for: .normal)
         $0.layer.cornerRadius = 10
         $0.translatesAutoresizingMaskIntoConstraints = false

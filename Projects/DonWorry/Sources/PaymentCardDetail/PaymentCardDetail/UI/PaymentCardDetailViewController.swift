@@ -15,17 +15,20 @@ import DesignSystem
 import Models
 import PhotosUI
 
-// MARK: - 도메인 로직 생기고 교체 합니다.
-//var imageArray2 = [UIImage]()
+// MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
+
 var imageArray2 = [UIImage(.ic_cake), UIImage(.ic_chicken)]
+
 final class PaymentCardDetailViewController: BaseViewController, View {
     
-    var 주인이니 = true
+    // 교체 곧 || am sorry
     var 참석했니 = false
+    
+    let payer: User = User.dummyUser1
+    var paymentCard = PaymentCard.dummyPaymentCard1
     
     fileprivate var backButton: UIButton = {
         let button = UIButton(type: .system)
-        
         let boldConfig = UIImage.SymbolConfiguration(pointSize: 20.0, weight: .bold)
         let boldSearch = UIImage(systemName: "chevron.left", withConfiguration: boldConfig)
         button.setImage(boldSearch, for: .normal)
@@ -65,7 +68,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     fileprivate let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
-        label.text = "102,000원"
         label.textColor = .black
         return label
     }()
@@ -84,7 +86,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     fileprivate let attendanceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
-//        label.text = "참석자: 7명"
         label.textColor = .black
         return label
     }()
@@ -152,7 +153,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         
         참석했니.toggle()
 
-        if 주인이니 {
+        if payer.id == paymentCard.payer.id {
             let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
             "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
             alert.view.tintColor = .black
@@ -214,9 +215,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         navigationController?.popViewController(animated: true)
     }
     private func attributes() {
-        attendanceLabel.text = "참여자 : \(users.count)명"
+        attendanceLabel.text = "참여자 : \(paymentCard.participatedUserList.count)명"
         
-        if 주인이니 {
+        let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+        let amountString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
+        priceLabel.text = amountString + "원"
+        
+        if payer.id == paymentCard.payer.id {
             bottomButton.setTitle("삭제하기", for: .normal)
             bottomButton.backgroundColor = .designSystem(.redTopGradient)
         } else {
@@ -304,11 +310,11 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             return users.count
         case fileCollectionView:
             if imageArray2.count == 0 {
-                return 주인이니 ? 1 : 0
+                return payer.id == paymentCard.payer.id ? 1 : 0
             } else if imageArray2.count == 3 {
                 return 3
             } else {
-                return 주인이니 ? imageArray2.count + 1 : imageArray2.count
+                return payer.id == paymentCard.payer.id ? imageArray2.count + 1 : imageArray2.count
             }
         default:
             return 0
@@ -319,17 +325,16 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         switch collectionView {
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: attendanceCollectionViewCell.cellID, for: indexPath) as? attendanceCollectionViewCell else { return UICollectionViewCell() }
-            cell.user = users[indexPath.row]
+            cell.user = paymentCard.participatedUserList[indexPath.row]
             return cell
         case fileCollectionView:
             
-            if 주인이니 {
+            if payer.id == paymentCard.payer.id {
                 if imageArray2.count == 3 {
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                     cell.FileCollectionViewCellDelegate = self
                     cell.container.image = imageArray2[indexPath.row]
                     cell.deleteCircle.tag = indexPath.row
-                    print("tag", cell.deleteCircle.tag)
                     return cell
                 } else {
                     if indexPath.row == 0 {
@@ -357,7 +362,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
-        guard 주인이니 else { return }
+        guard payer.id == paymentCard.payer.id else { return }
         switch collectionView {
         case fileCollectionView:
             if imageArray2.count < 3 && indexPath.row == 0 {

@@ -12,7 +12,6 @@ import DesignSystem
 
 class attendanceCollectionViewCell: UICollectionViewCell {
     
-    
     static let cellID = "attendanceCollectionViewCell"
     
     var user: User? {
@@ -23,7 +22,7 @@ class attendanceCollectionViewCell: UICollectionViewCell {
             if let url = URL(string: user.image) {
                 userImageView.load2(url: url)
             }
-
+            userNicknameLabel.text = user.nickName
         }
     }
     
@@ -40,7 +39,6 @@ class attendanceCollectionViewCell: UICollectionViewCell {
     fileprivate let userNicknameLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .regular, size: ._13)
-        label.text = "정산자"//todo
         label.textColor = .designSystem(.gray818181)
         return label
     }()
@@ -58,12 +56,9 @@ class attendanceCollectionViewCell: UICollectionViewCell {
     
     fileprivate func setupUI() {
         contentView.addSubview(userImageView)
-        print("qwe",contentView.bounds.width)
-        
         let stackView = UIStackView(arrangedSubviews: [userImageView, userNicknameLabel])
         stackView.axis = .vertical
         stackView.spacing = 5
-        
         contentView.addSubview(stackView)
         stackView.alignment = .center
         stackView.anchor2(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
