@@ -17,36 +17,38 @@ public protocol NetworkServable {
 
 public final class NetworkService: NetworkServable {
 
+    public init() {}
 
     public func request<API>(_ api: API) -> Single<API.Response> where API : ServiceAPI {
-        return self._request(api)
-            .compactMap { $0.data }
-            .asSingle()
-    }
-
-    private func _request<API>(_ api: API) -> Observable<DonwWorryResponse<API.Response>> where API : ServiceAPI {
         let endpoint = MultiTarget.target(api)
         return provider.rx.request(endpoint)
-            .asObservable()
-            .map(DonwWorryResponse<API.Response>.self)
-            .map { response -> DonwWorryResponse<API.Response> in
-                guard let statusCode = response.statusCode else { throw DonWorryNetworkError.unknown(-100, response.message) }
-                guard statusCode == 500 else { throw DonWorryNetworkError.serverError }
-                guard statusCode >= 400 && statusCode < 500 else { throw DonWorryNetworkError.denyAuthentication }
-                guard statusCode < 400 else { throw DonWorryNetworkError.unknown(statusCode, response.message) }
+            .flatMap { response in
+                do {
+                    // statusCode 검사하기
+                    try self.httpProcess(response: response)
 
-                return response
+                    return .just(try response.map(API.Response.self))
+                } catch NetworkError.httpStatus(let statusCode) {
+                    return .error(NetworkError.httpStatus(statusCode))
+                }
             }
-        
+    }
+
+    private func httpProcess(response: Response) throws {
+        guard 200...299 ~= response.statusCode else {
+            let statusCode = try parsingErrorCode(response: response)
+            throw NetworkError.httpStatus(statusCode)
+        }
+    }
+
+    private func parsingErrorCode(response: Response) throws -> Int {
+        do {
+            let response = try response.map(ErrorResponse.self)
+            return response.status
+        } catch {
+            throw NetworkError.errorCodeMappingError
+        }
     }
 
     private let provider = DonWorryProvider<MultiTarget>()
-}
-
-enum DonWorryNetworkError: Error {
-    case hasNoAuthenticationToken
-    case accessTokenInvalidate
-    case denyAuthentication
-    case serverError
-    case unknown(_ code: Int, _ message: String?)
 }
