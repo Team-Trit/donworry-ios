@@ -16,9 +16,12 @@ import Models
 import PhotosUI
 
 // MARK: - 도메인 로직 생기고 교체 합니다.
-var imageArray2 = [UIImage]()
-
+//var imageArray2 = [UIImage]()
+var imageArray2 = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 final class PaymentCardDetailViewController: BaseViewController, View {
+    
+    var 주인이니 = true
+    var 참석했니 = false
     
     fileprivate var backButton: UIButton = {
         let button = UIButton(type: .system)
@@ -67,14 +70,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
-    fileprivate var editButton: UIButton = {
+    lazy fileprivate var editButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 16)
         button.setHeight(height: 22)
         button.contentMode = .scaleAspectFit
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.addTarget(self, action: #selector(editPrice), for: .touchUpInside)
         button.tintColor = .designSystem(.gray757474)
-//        button.addTarget(self, action: #selector(toggleCheck), for: .touchUpInside)
         return button
     }()
     
@@ -97,7 +100,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         let view = UICollectionView(frame: .zero, collectionViewLayout: attendanceCollectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
         view.register(attendanceCollectionViewCell.self, forCellWithReuseIdentifier: attendanceCollectionViewCell.cellID)
-//        view.layer.cornerRadius = 16//?
         view.dataSource = self
         view.delegate = self
       return view
@@ -135,6 +137,50 @@ final class PaymentCardDetailViewController: BaseViewController, View {
       return view
     }()
     
+    private lazy var bottomButton: UIButton = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
+        $0.layer.cornerRadius = 25
+        $0.addTarget(self, action: #selector(didTapBottomButton), for: .touchUpInside)
+        return $0
+    }(UIButton())
+    
+    @objc private func editPrice() {
+        print("edit")
+    }
+    @objc private func didTapBottomButton() {
+        
+        참석했니.toggle()
+
+        if 주인이니 {
+            let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
+            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
+            alert.view.tintColor = .black
+            alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
+
+            let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
+                //TODO: 삭제구현
+                print("삭제")
+            })
+            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+            
+            alert.addAction(action)
+            alert.addAction(cancel)
+            
+            present(alert, animated: true, completion: nil)
+            
+        } else {
+            if 참석했니 {
+                bottomButton.setTitle("참석 완료", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
+            } else {
+                bottomButton.setTitle("참석 확인", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.mainBlue)
+            }
+        }
+        
+        
+    }
     var users: [User] = [User.dummyUser1, User.dummyUser2, User.dummyUser3, User.dummyUser4]
     
     override func viewDidLoad() {
@@ -169,6 +215,21 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     }
     private func attributes() {
         attendanceLabel.text = "참여자 : \(users.count)명"
+        
+        if 주인이니 {
+            bottomButton.setTitle("삭제하기", for: .normal)
+            bottomButton.backgroundColor = .designSystem(.redTopGradient)
+        } else {
+            editButton.isHidden = true
+            if 참석했니 {
+                bottomButton.setTitle("참석 완료", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
+            } else {
+                bottomButton.setTitle("참석 확인", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.mainBlue)
+            }
+        }
+        
 //        view.backgroundColor = .designSystem(.grayF6F6F6)
     }
 
@@ -228,6 +289,9 @@ extension PaymentCardDetailViewController {
         
         fileBigContainerView.addSubview(fileCollectionView)
         fileCollectionView.anchor2(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
+        
+        totalBottomView.addSubview(bottomButton)
+        bottomButton.anchor2(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
     }
 }
 
@@ -240,11 +304,11 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             return users.count
         case fileCollectionView:
             if imageArray2.count == 0 {
-                return 1
+                return 주인이니 ? 1 : 0
             } else if imageArray2.count == 3 {
                 return 3
             } else {
-                return imageArray2.count + 1
+                return 주인이니 ? imageArray2.count + 1 : imageArray2.count
             }
         default:
             return 0
@@ -258,29 +322,42 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             cell.user = users[indexPath.row]
             return cell
         case fileCollectionView:
-            if imageArray2.count > 2 {
-                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                cell.FileCollectionViewCellDelegate = self
-                cell.container.image = imageArray2[indexPath.row]
-                cell.deleteCircle.tag = indexPath.row
-                return cell
-            } else {
-                if indexPath.row == 0 {
-                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FIleAddCollectionViewCell.cellID, for: indexPath) as? FIleAddCollectionViewCell else { return UICollectionViewCell() }
-                    return cell
-                } else {
+            
+            if 주인이니 {
+                if imageArray2.count == 3 {
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                     cell.FileCollectionViewCellDelegate = self
-                    cell.container.image = imageArray2[(indexPath.row - 1)]
-                    cell.deleteCircle.tag = (indexPath.row - 1)
+                    cell.container.image = imageArray2[indexPath.row]
+                    cell.deleteCircle.tag = indexPath.row
+                    print("tag", cell.deleteCircle.tag)
                     return cell
+                } else {
+                    if indexPath.row == 0 {
+                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FIleAddCollectionViewCell.cellID, for: indexPath) as? FIleAddCollectionViewCell else { return UICollectionViewCell() }
+                        return cell
+                    } else {
+                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+                        cell.FileCollectionViewCellDelegate = self
+                        cell.container.image = imageArray2[(indexPath.row - 1)]
+                        cell.deleteCircle.tag = (indexPath.row - 1)
+                        return cell
+                    }
                 }
+            } else {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+                cell.FileCollectionViewCellDelegate = self
+                cell.container.image = imageArray2[(indexPath.row)]
+                cell.deleteCircle.isHidden = true
+                return cell
             }
+            
         default: return UICollectionViewCell()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+        guard 주인이니 else { return }
         switch collectionView {
         case fileCollectionView:
             if imageArray2.count < 3 && indexPath.row == 0 {
@@ -323,14 +400,22 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         dismiss(animated: true)
-        var img = [UIImage]()
+        var images = [UIImage]()
         for result in results {
             result.itemProvider.loadObject(ofClass: UIImage.self){ object,
                 error in
                 if let image = object as? UIImage {
-                    img.append(image)
+                    images.append(image)
                 }
-                imageArray2 = img
+                for (index,image) in images.enumerated() {
+                    if imageArray2.count == 3 {
+                        imageArray2[0] = image
+                    }
+                    else {
+                        imageArray2 += [image]
+                    }
+                }
+                
                 DispatchQueue.main.async {
                     self.fileCollectionView.reloadData()
                 }
@@ -426,3 +511,4 @@ extension UIImageView {
         }
     }
 }
+

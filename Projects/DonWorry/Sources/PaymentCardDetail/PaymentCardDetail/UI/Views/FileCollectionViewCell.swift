@@ -18,11 +18,10 @@ class FileCollectionViewCell: UICollectionViewCell {
     weak var FileCollectionViewCellDelegate: FileCollectionViewCellDelegate?
     static let cellID = "FileCollectionViewCellID"
     lazy var container : UIImageView = {
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleToFill//scaleAspectFill하면 짤리는 사진 있었다.
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIImageView())
-    
     lazy var deleteCircle: UIButton = {
         //todo
 //        $0.setImage(UIImage(.delete_mark), for: .normal)
@@ -35,9 +34,9 @@ class FileCollectionViewCell: UICollectionViewCell {
     }(UIButton())
 
     @objc private func deletePhoto(_ sender: UIButton) {
-        print(imageArray2.count)
+        
         if !imageArray2.isEmpty {
-            imageArray2.remove(at: tag)
+            imageArray2.remove(at: deleteCircle.tag)
             FileCollectionViewCellDelegate?.deletePhoto()
         }
     }
