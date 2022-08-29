@@ -13,6 +13,22 @@ public enum Asset: String {
     case test_avo
     case ic_calculation_3d
     case ic_check_white
+    case custom_plus_circle
+    case blog_button_icon
+    case inquiry_button_icon
+    case question_button_icon
+    case btn_copy
+    case ic_cake
+    case ic_chicken
+    case ic_cup
+    case ic_debit_card
+    case ic_gas_station
+    case ic_icecream
+    case ic_shopping_cart
+    case ic_spoon_knife
+    case ic_video
+    case ic_wine
+    case smartphone_with_bills
     case 산림조합중앙회
     case 저축은행
     case 한국투자증권

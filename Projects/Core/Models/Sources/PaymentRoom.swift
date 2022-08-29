@@ -9,14 +9,14 @@
 import Foundation
 
 public struct PaymentRoom {
-    public var id: String
+    public var id: Int
     public var code: String
     public var name: String
     public var admin: User
     public var paymentCardList: [PaymentCard]
     public var transferList: [Transfer]?
 
-    public init(id: String,
+    public init(id: Int,
                 code: String,
                 name: String,
                 admin: User,

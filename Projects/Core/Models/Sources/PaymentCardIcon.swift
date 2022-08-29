@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum PaymentCardIcon {
+public enum PaymentCardIcon: String {
     case chicken
     case coffee
     case wine

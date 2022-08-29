@@ -26,7 +26,8 @@ public enum Pallete: String {
     case grayEEEEEE
     case grayF9F9F9
     case grayF5F4F4
-    
+    case gray4B4A4A
+
     var hexString: String {
         switch self {
         case .mainBlue:
@@ -63,6 +64,8 @@ public enum Pallete: String {
             return "#F9F9F9FF"
         case .grayF5F4F4:
             return "#F5F4F4FF"
+        case .gray4B4A4A:
+            return "#4B4A4AFF"
         }
     }
 }

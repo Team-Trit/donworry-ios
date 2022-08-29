@@ -12,7 +12,7 @@ import Models
 extension PaymentRoom {
     static let dummyPaymentRoom1: PaymentRoom = {
         .init(
-            id: "1",
+            id: 1,
             code: "213d42s3s5",
             name: "MC2 첫 회식",
             admin: .dummyUser1,
@@ -27,11 +27,11 @@ extension PaymentRoom {
     }()
     static let dummyPaymentRoom2: PaymentRoom = {
         .init(
-            id: "2",
+            id: 2,
             code: "5613d42s3s5",
             name: "서울 나들이",
             admin: .dummyUser2,
-            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2],
+            paymentCardList: [.dummyPaymentCard1, .dummyPaymentCard2,.dummyPaymentCard3],
             transferList: nil
         )
     }()
@@ -41,7 +41,7 @@ extension PaymentRoom {
 extension PaymentCard {
     static let  dummyPaymentCard1: PaymentCard = {
         .init(
-            id: "1",
+            id: 1,
             name: "1차 고깃집 파티",
             cardIcon: .chicken,
             totalAmount: 120000,
@@ -50,14 +50,14 @@ extension PaymentCard {
             date: Date(),
             bankAccount: nil,
             images: nil,
-            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4]
+            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4, .dummyUser5]
         )
     }()
     static let dummyPaymentCard2: PaymentCard = {
         .init(
-            id: "2",
+            id: 2,
             name: "2차 유스택시",
-            cardIcon: .dinner,
+            cardIcon: .chicken,
             totalAmount: 21000,
             payer: .dummyUser1,
             backgroundColor: "#FF5454",
@@ -65,6 +65,20 @@ extension PaymentCard {
             bankAccount: nil,
             images: nil,
             participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser5]
+        )
+    }()
+    static let dummyPaymentCard3: PaymentCard = {
+        .init(
+            id: 2,
+            name: "3차 볼링장",
+            cardIcon: .chicken,
+            totalAmount: 132000,
+            payer: .dummyUser2,
+            backgroundColor: "#4A2597",
+            date: Date(),
+            bankAccount: nil,
+            images: nil,
+            participatedUserList: [.dummyUser1, .dummyUser2, .dummyUser3, .dummyUser4 ,.dummyUser5]
         )
     }()
 }
@@ -82,7 +96,7 @@ extension User {
     static let dummyUser2: User = {
         .init(
             id: 2,
-            nickName: "에이브리",
+            nickName: "에이브리리리리",
             bankAccount: .init( bank: .toss, accountHolderName: "정찬희",  accountNumber: "1000-1831-4124"),
             image: "https://user-images.githubusercontent.com/56102421/179954565-010e44d2-7bf9-40de-b2af-345a3967031d.png"
         )
