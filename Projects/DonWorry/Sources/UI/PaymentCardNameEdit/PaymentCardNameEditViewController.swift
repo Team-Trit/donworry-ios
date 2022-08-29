@@ -41,7 +41,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }(UILabel())
 
     private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
-    private lazy var nextButton = LargeButton(type: .next)
+    private lazy var nextButton = DWButton.create(.xlarge)
 
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -62,6 +62,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 extension PaymentCardNameEditViewController {
 
     private func setUI() {
+        nextButton.title = "다음"
         navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(titleLabel, paymentNameLabel,nextButton)
