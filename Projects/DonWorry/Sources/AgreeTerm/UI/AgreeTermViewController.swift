@@ -30,7 +30,12 @@ final class AgreeTermViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var doneButton = LargeButton(type: .done)
+    private lazy var doneButton: DWButton = {
+        let v = DWButton.create(.xlarge)
+        v.title = "완료"
+        v.isEnabled = false
+        return v
+    }()
     private var expandedSections = Set<Int>()
     private let viewModel = TermViewModel()
     

@@ -61,20 +61,4 @@ public enum Asset: String {
     case bankNONGTOO    // NH투자증권
     case bankSC         // SC제일은행
     case back_button
-    case bankSINHYEOP   // 신협중앙회
-    case bankWOORI      // 우리은행
-    case bankEPOST      // 우체국
-    case bankJEOCHOOK   // 저축은행
-    case bankJEONBOOK   // 전북은행
-    case bankJEJU       // 제주은행
-    case bankKAKAO      // 카카오뱅크
-    case bankK          // 케이뱅크
-    case bankTOSS       // 토스뱅크
-    case bankHANA       // 하나은행
-    case bankCITI       // 한국씨티은행
-    case bankHANTOO     // 한국투자증권
-    case bankKBSEC      // KB증권
-    case bankNONGTOO    // NH투자증권
-    case bankSC         // SC제일은행
-    case back_button
 }

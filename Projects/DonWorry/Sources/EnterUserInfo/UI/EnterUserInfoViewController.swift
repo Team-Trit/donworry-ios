@@ -24,7 +24,12 @@ final class EnterUserInfoViewController: BaseViewController, View {
     }()
     private lazy var nickNameStackView = NickNameStackView()
     lazy var accountStackView = AccountStackView()
-    private lazy var nextButton = LargeButton(type: .next)
+    private lazy var nextButton: DWButton = {
+        let v = DWButton.create(.xlarge)
+        v.title = "다음"
+        v.isEnabled = false
+        return v
+    }()
     
     public override func viewDidLoad() {
         super.viewDidLoad()

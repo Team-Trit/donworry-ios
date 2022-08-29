@@ -22,7 +22,12 @@ final class ConfirmTermViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var confirmButton = LargeButton(type: .done)
+    private lazy var confirmButton: DWButton = {
+        let v = DWButton.create(.xlarge)
+        v.title = "완료"
+        v.isEnabled = false
+        return v
+    }()
     private lazy var containerView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.white)
