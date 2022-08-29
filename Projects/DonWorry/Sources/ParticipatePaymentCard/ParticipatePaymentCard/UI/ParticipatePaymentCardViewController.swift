@@ -13,7 +13,7 @@ import RxCocoa
 import RxSwift
 import Models
 import DesignSystem
-//네비 폰트, 쉐도우디테일
+//네비 폰트, 쉐도우디테일, 버튼 폰트 AppleSDGothicNeo?
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     var paymentRooms: [PaymentCard] = [.dummyPaymentCard1, .dummyPaymentCard2, ]
@@ -66,6 +66,37 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
       return view
     }()
     
+    private lazy var selectAllButton: UIButton = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+        $0.layer.cornerRadius = 25
+        $0.setHeight(height: 58)
+        $0.setTitle("모두 선택", for: .normal)
+        $0.backgroundColor = .designSystem(.mainBlue)
+        $0.setTitleColor(UIColor.designSystem(.white), for: .normal)
+        $0.addTarget(self, action: #selector(selectAllCard), for: .touchUpInside)
+        return $0
+    }(UIButton())
+    
+    private lazy var checkAttendanceButton: UIButton = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+        $0.layer.cornerRadius = 25
+        $0.setHeight(height: 58)
+        $0.setTitle("참석 확인", for: .normal)//AppleSDGothicNeo?
+        $0.backgroundColor = .designSystem(.lightBlue)
+        $0.setTitleColor(UIColor.designSystem(.mainBlue), for: .normal)
+        $0.addTarget(self, action: #selector(checkAttendance), for: .touchUpInside)
+        return $0
+    }(UIButton())
+    
+    @objc private func selectAllCard() {
+        checkedIDs = Set(paymentRooms.map{$0.id})
+    }
+    
+    @objc private func checkAttendance() {
+        //TODO: 참석확인
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,6 +154,12 @@ extension ParticipatePaymentCardViewController {
     private func layout() {
         view.addSubview(participateCollectionView)
         participateCollectionView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: Constants.collectionViewTopPadding, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
+        let bottomButtons = UIStackView(arrangedSubviews: [selectAllButton, checkAttendanceButton])
+        bottomButtons.distribution = .fillEqually
+        bottomButtons.spacing = 16
+        view.addSubview(bottomButtons)
+        bottomButtons.anchor(left: view.leftAnchor, bottom: view.bottomAnchor,right: view.rightAnchor, paddingLeft: 25, paddingBottom: 40, paddingRight: 25)
     }
 }
 
