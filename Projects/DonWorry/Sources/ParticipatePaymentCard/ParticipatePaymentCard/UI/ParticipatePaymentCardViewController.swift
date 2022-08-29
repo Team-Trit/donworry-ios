@@ -13,17 +13,13 @@ import RxCocoa
 import RxSwift
 import Models
 import DesignSystem
+import Combine
+
 //네비 폰트, 쉐도우디테일, 버튼 폰트 AppleSDGothicNeo?
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
-    var paymentRooms: [PaymentCard] = [.dummyPaymentCard1, .dummyPaymentCard2, ]
-    
-    var checkedIDs: Set<String> = [] {
-        willSet {
-            numberOfselectedCardsLabel.text = "\(newValue.count)"
-            participateCollectionView.reloadData()
-        }
-    }
+    let viewModel = ParticipatePaymentCardViewModel()
+    private var cancelBag = Set<AnyCancellable>()
     
     fileprivate var numberOfselectedCardsLabel: UILabel = {
         let label = UILabel()
@@ -36,7 +32,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         let button = UIButton(type: .system)
         button.setTitle("선택해제", for: .normal)
         button.tintColor = .black
-        button.titleLabel?.font = .designSystem(weight: .regular, size: ._17) //todo 원래 17
+        button.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         button.setTitleColor(.black, for: .normal)
         
         return button
@@ -91,7 +87,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     }(UIButton())
     
     @objc private func selectAllCard() {
-        checkedIDs = Set(paymentRooms.map{$0.id})
+        viewModel.checkAll()
     }
     
     @objc private func checkAttendance() {
@@ -100,12 +96,22 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        combineBind()
         attributes()
         layout()
         configNavigationBar()
     }
 
+    private func combineBind() {
+        viewModel.$checkedIDs
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.numberOfselectedCardsLabel.text = "\($0.count)"
+                self?.participateCollectionView.reloadData()
+            }
+            .store(in: &cancelBag)
+    }
+    
     func bind(reactor: ParticipatePaymentCardViewReactor) {
         //binding here
     }
@@ -119,7 +125,8 @@ extension ParticipatePaymentCardViewController {
     private func configNavigationBar() {
         
         navigationItem.title = "참석확인"
-        numberOfselectedCardsLabel.text = "\(checkedIDs.count)"
+        //TODO: chckedCards viewmodel에서 받아야함
+        numberOfselectedCardsLabel.text = "\(viewModel.numOfCheckedCards)"
         
         let cancelEmptyView = UIView()
         cancelEmptyView.setWidth(width: 4)
@@ -132,19 +139,18 @@ extension ParticipatePaymentCardViewController {
         
         let selectEmptyView = UIView()
         selectEmptyView.setWidth(width: 4)
+        
         let selectRelatedContainer = UIStackView(arrangedSubviews: [numberOfselectedCardsLabel, cancleSelectButton, selectEmptyView])
         cancleSelectButton.addTarget(self, action: #selector(cancelSelection), for: .touchUpInside)
-        
         selectRelatedContainer.spacing = Constants.betweenNumberAndLabel
-        let rightBarbutton = UIBarButtonItem(customView: selectRelatedContainer)
         
+        let rightBarbutton = UIBarButtonItem(customView: selectRelatedContainer)
         self.navigationItem.rightBarButtonItem = rightBarbutton
     }
     
     private func attributes() {
         
         view.backgroundColor = .designSystem(.white)
-        
         participateCollectionView.register(ParticipateCollectionViewCell.self, forCellWithReuseIdentifier: ParticipateCollectionViewCell.cellID)
         participateCollectionView.delegate = self
         participateCollectionView.dataSource = self
@@ -169,20 +175,20 @@ extension ParticipatePaymentCardViewController {
     }
     
     @objc fileprivate func cancelSelection() {
-        checkedIDs = []
+        viewModel.resetCheck()
     }
 }
 
 extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return paymentRooms.count
+        return viewModel.numOfPaymentCards
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ParticipateCollectionViewCell.cellID, for: indexPath) as? ParticipateCollectionViewCell else { return UICollectionViewCell() }
-        cell.paymentCard = paymentRooms[indexPath.row]
-        cell.isChecked = checkedIDs.contains(paymentRooms[indexPath.row].id) ? true : false
+        cell.paymentCard = viewModel.paymentCardAt(indexPath.row)
+        cell.isChecked =  viewModel.isCheckedAt(indexPath.row)
         cell.delegate = self
         return cell
     }
@@ -194,11 +200,7 @@ extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UIColl
 
 extension ParticipatePaymentCardViewController: CellCheckPress {
     func toggleCheckAt(_ id: String) {
-        if !checkedIDs.contains(id) {
-            checkedIDs.update(with: id)
-        } else {
-            checkedIDs.remove(id)
-        }
+        viewModel.checkCardAt(id)
     }
 }
 
