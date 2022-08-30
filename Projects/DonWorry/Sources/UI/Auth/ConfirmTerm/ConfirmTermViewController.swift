@@ -23,7 +23,7 @@ final class ConfirmTermViewController: BaseViewController, View {
         return v
     }()
     private lazy var confirmButton: DWButton = {
-        let v = DWButton.create(.xlarge)
+        let v = DWButton.create(.xlarge50)
         v.title = "완료"
         v.isEnabled = false
         return v
