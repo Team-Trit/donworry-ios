@@ -18,7 +18,7 @@ class FileCollectionViewCell: UICollectionViewCell {
     weak var FileCollectionViewCellDelegate: FileCollectionViewCellDelegate?
     static let cellID = "FileCollectionViewCellID"
     lazy var container : UIImageView = {
-        $0.contentMode = .scaleToFill//scaleAspectFill하면 짤리는 사진 있었다.
+        $0.contentMode = .scaleToFill
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIImageView())
