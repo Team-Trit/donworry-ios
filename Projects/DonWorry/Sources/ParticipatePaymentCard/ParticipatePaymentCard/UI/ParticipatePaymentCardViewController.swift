@@ -31,7 +31,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     fileprivate var cancleSelectButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("선택해제", for: .normal)
-        button.tintColor = .black
+        button.tintColor = .designSystem(.black)
         button.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         button.setTitleColor(.black, for: .normal)
         

@@ -6,12 +6,13 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import Foundation
-import Models
-import BaseArchitecture
 import Combine
+import Foundation
 
-class ParticipatePaymentCardViewModel: BaseViewModel {
+import BaseArchitecture
+import Models
+
+final class ParticipatePaymentCardViewModel: BaseViewModel {
     
     var cancellable = Set<AnyCancellable>()
     var paymentCards: [PaymentCard] = [.dummyPaymentCard1, .dummyPaymentCard2]
@@ -26,12 +27,12 @@ class ParticipatePaymentCardViewModel: BaseViewModel {
         Set(paymentCards.map{$0.id})
     }
     
-    func paymentCardAt(_ index: Int) -> PaymentCard {
-        paymentCards[index]
-    }
-    
     var numOfCheckedCards: Int {
         checkedIDs.count
+    }
+    
+    func paymentCardAt(_ index: Int) -> PaymentCard {
+        paymentCards[index]
     }
     
     func checkCardAt(_ id: String) {
