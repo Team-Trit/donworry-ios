@@ -110,14 +110,12 @@ extension LoginViewController {
         case .home:
             let homeViewController = HomeViewController()
             homeViewController.reactor = HomeReactor()
-            self.navigationController?.pushViewController(homeViewController, animated: false)
-            // .setViewControllers([homeViewController], animated: true)
+            self.navigationController?.pushViewController(homeViewController, animated: true)
         }
     }
 }
 
 #if DEBUG
-
 extension LoginViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionEnded(motion, with: event)
@@ -137,12 +135,11 @@ extension LoginViewController {
 
     @objc
     private func buttonDidTap() {
-        let authUseCase = AuthUseCaseImpl()
-        authUseCase.fetchTestUser(2)
-            .subscribe(onNext: {
-                print($0)
-            })
-            .disposed(by: disposeBag)
+//        let authUseCase = AuthUseCaseImpl()
+//        authUseCase.fetchTestUser(2)
+//            .subscribe(onNext: {
+//            })
+//            .disposed(by: disposeBag)
 
     }
 }

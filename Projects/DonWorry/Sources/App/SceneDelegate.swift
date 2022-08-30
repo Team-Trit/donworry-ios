@@ -30,7 +30,7 @@ import UIKit
          guard let windowScene = (scene as? UIWindowScene) else { return }
          let window = UIWindow(windowScene: windowScene)
          let rootViewController = HomeViewController()
-         rootViewController.reactor = HomeViewReactor()
+         rootViewController.reactor = HomeReactor()
          let navigationController = UINavigationController(rootViewController: rootViewController)
          navigationController.setNavigationBarHidden(true, animated: false)
          window.rootViewController = rootViewController

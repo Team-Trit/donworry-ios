@@ -18,6 +18,7 @@ enum HomeStep {
     case sentMoneyDetail
     case alert
     case profile
+    case paymentCardList
     case none
 }
 
@@ -31,12 +32,18 @@ final class HomeReactor: Reactor {
         case didTapSearchButton
         case didTapCreatePaymentRoomButton
         case didTapProfileImage
+        case didTapGiveBillCard
+        case didTapTakeBillCard
+        case didTapStateBillCard
+        case didTapLeaveBillCard(Int)
+        case none
     }
 
     enum Mutation {
         case updateHomeHeader(User)
         case updatePaymentRoom(Int)
         case updatePaymentRoomList([PaymentRoom])
+        case leavePaymentRoom(Int)
         case routeTo(HomeStep)
     }
 
@@ -45,7 +52,7 @@ final class HomeReactor: Reactor {
         var user: User?
         var selectedPaymentRoomIndex: Int = 0
         var paymentRoomList: [PaymentRoom] = []
-        var sections: [Section] = [.BillCardSection([.LeaveBillCard])]
+        var sections: [Section] = [.BillCardSection([])]
 
         @Pulse var step: HomeStep?
     }
@@ -81,6 +88,18 @@ final class HomeReactor: Reactor {
             return .just(.routeTo(.editRoom))
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
+        case .didTapGiveBillCard:
+            return .just(.routeTo(.sentMoneyDetail))
+        case .didTapTakeBillCard:
+            return .just(.routeTo(.recievedMoneyDetail))
+        case .didTapStateBillCard:
+            return .just(.routeTo(.paymentCardList))
+        case .didTapLeaveBillCard(let index):
+            return .concat([
+                .just(.leavePaymentRoom(index))
+            ])
+        case .none:
+            return .just(.routeTo(.none))
         }
     }
 
@@ -106,6 +125,8 @@ final class HomeReactor: Reactor {
             )
         case .routeTo(let step):
             newState.step = step
+        case .leavePaymentRoom(_):
+            break
         }
         print(newState)
         return newState

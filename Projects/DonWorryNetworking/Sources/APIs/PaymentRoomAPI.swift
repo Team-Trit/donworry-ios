@@ -21,3 +21,21 @@ extension PaymentRoomAPI {
         public let list: [DTO.PaymentRoom]?
     }
 }
+
+public struct GetPaymentCardListAPI: ServiceAPI {
+    public var method: Method { .get }
+    public var task: Task { .requestPlain }
+    public var spaceId: String
+    public var path: String {
+        return "/cards/spaces/\(spaceId)"
+    }
+    public init(spaceID: String) {
+        self.spaceId = spaceID
+    }
+}
+
+extension GetPaymentCardListAPI {
+    public struct Response: Decodable {
+        public let list: [DTO.PaymentRoom]?
+    }
+}
