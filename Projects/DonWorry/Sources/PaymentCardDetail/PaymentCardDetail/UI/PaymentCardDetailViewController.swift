@@ -407,7 +407,6 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
                         imageArray2 += [image]
                     }
                 }
-                
                 DispatchQueue.main.async {
                     self.fileCollectionView.reloadData()
                 }

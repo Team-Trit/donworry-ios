@@ -15,7 +15,7 @@ import Models
 class PaymentCardDetailViewModel {
     
     var cancellable = Set<AnyCancellable>()
-    let payer: User = User.dummyUser2
+    let payer: User = User.dummyUser1
     let paymentCard = PaymentCard.dummyPaymentCard1
     
     var isAttended: Bool = false
