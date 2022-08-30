@@ -100,7 +100,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     private lazy var attendanceCollectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: attendanceCollectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
-        view.register(attendanceCollectionViewCell.self, forCellWithReuseIdentifier: attendanceCollectionViewCell.cellID)
+        view.register(AttendanceCollectionViewCell.self, forCellWithReuseIdentifier: AttendanceCollectionViewCell.cellID)
         view.dataSource = self
         view.delegate = self
       return view
@@ -132,7 +132,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         let view = UICollectionView(frame: .zero, collectionViewLayout: fileCollectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
         view.register(FileCollectionViewCell.self, forCellWithReuseIdentifier: FileCollectionViewCell.cellID)
-        view.register(FIleAddCollectionViewCell.self, forCellWithReuseIdentifier: FIleAddCollectionViewCell.cellID)
+        view.register(FileAddCollectionViewCell.self, forCellWithReuseIdentifier: FileAddCollectionViewCell.cellID)
         view.dataSource = self
         view.delegate = self
       return view
@@ -324,7 +324,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView {
         case attendanceCollectionView:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: attendanceCollectionViewCell.cellID, for: indexPath) as? attendanceCollectionViewCell else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return UICollectionViewCell() }
             cell.user = paymentCard.participatedUserList[indexPath.row]
             return cell
         case fileCollectionView:
@@ -338,7 +338,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
                     return cell
                 } else {
                     if indexPath.row == 0 {
-                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FIleAddCollectionViewCell.cellID, for: indexPath) as? FIleAddCollectionViewCell else { return UICollectionViewCell() }
+                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
                         return cell
                     } else {
                         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
@@ -361,10 +361,12 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
-        guard payer.id == paymentCard.payer.id else { return }
         switch collectionView {
+        case attendanceCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
         case fileCollectionView:
+            guard payer.id == paymentCard.payer.id else { return }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
             if imageArray2.count < 3 && indexPath.row == 0 {
                 showPhotoPicker()
             }

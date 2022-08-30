@@ -9,7 +9,7 @@
 import UIKit
 import DesignSystem
 
-class FIleAddCollectionViewCell: UICollectionViewCell {
+class FileAddCollectionViewCell: UICollectionViewCell {
     
     var currentIdx: Int = -1
     static let cellID = "FIleAddCollectionViewCell"

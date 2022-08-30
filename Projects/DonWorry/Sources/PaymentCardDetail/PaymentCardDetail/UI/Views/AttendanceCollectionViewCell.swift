@@ -1,5 +1,5 @@
 //
-//  attendanceCollectionViewCell.swift
+//  AttendanceCollectionViewCell.swift
 //  DonWorry
 //
 //  Created by Hankyu Lee on 2022/08/28.
@@ -10,7 +10,7 @@ import UIKit
 import Models
 import DesignSystem
 
-class attendanceCollectionViewCell: UICollectionViewCell {
+class AttendanceCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "attendanceCollectionViewCell"
     
