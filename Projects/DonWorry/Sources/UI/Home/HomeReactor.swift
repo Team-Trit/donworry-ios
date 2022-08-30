@@ -128,7 +128,6 @@ final class HomeReactor: Reactor {
         case .leavePaymentRoom(_):
             break
         }
-        print(newState)
         return newState
     }
 

@@ -41,6 +41,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.headerView.profileButton.rx.tap.map { .didTapProfileImage }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         self.headerView.alarmButton.rx.tap.map { .didTapAlarm }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -107,8 +111,8 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: HomeStep.none)
             .compactMap { $0 }
-            .asDriver(onErrorJustReturn: .none)
             .drive(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
@@ -210,13 +214,14 @@ extension HomeViewController {
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()
-            self.present(alertViewController, animated: true)
+            self.navigationController?.pushViewController(alertViewController, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .paymentCardList:
             let paymentCardListViewController = PaymentCardListViewController()
             paymentCardListViewController.reactor = PaymentCardListViewReactor()
+            paymentCardListViewController.modalPresentationStyle = .fullScreen
             self.present(paymentCardListViewController, animated: true)
         case .none:
             break
