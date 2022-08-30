@@ -63,7 +63,6 @@ extension FilePickerCell {
         pickerCollectionView.register(PhotoAddCell.self, forCellWithReuseIdentifier: "PhotoAddCell")
 
         pickerCollectionView.snp.makeConstraints {
-            $0.width.equalTo(300)
             $0.edges.equalToSuperview().inset(10)
         }
         

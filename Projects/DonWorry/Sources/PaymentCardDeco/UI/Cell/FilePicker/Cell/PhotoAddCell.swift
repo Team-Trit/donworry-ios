@@ -33,10 +33,7 @@ class PhotoAddCell: UICollectionViewCell {
         self.contentView.addSubview(self.container)
         self.container.addSubview(self.plusMark)
         container.snp.makeConstraints {
-            $0.top.equalTo(self.contentView.snp.top)
-            $0.left.equalTo(self.contentView.snp.left)
-            $0.bottom.equalTo(self.contentView.snp.bottom)
-            $0.right.equalTo(self.contentView.snp.right)
+            $0.edges.equalToSuperview()
         }
         plusMark.snp.makeConstraints {
             $0.top.equalTo(self.container.snp.top).inset(27)

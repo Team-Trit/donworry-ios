@@ -18,7 +18,7 @@ class PhotoCell: UICollectionViewCell {
     
     weak var photoCellDelegate: PhotoCellDelegate?
 
-    lazy var container : UIImageView = {
+    lazy var container: UIImageView = {
         $0.contentMode = .scaleAspectFill
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -29,7 +29,6 @@ class PhotoCell: UICollectionViewCell {
         $0.layer.cornerRadius = 10
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.addTarget(self, action: #selector(deletePhoto(_:)), for: .touchUpInside)
-        $0.isUserInteractionEnabled = true
         return $0
     }(UIButton())
 

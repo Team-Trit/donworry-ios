@@ -51,7 +51,6 @@ class ColorPickerCell: UITableViewCell {
 
 extension ColorPickerCell {
     private func setUI() {
-        contentView.addSubview(colorCollectionView)
         bottomView.addSubview(colorCollectionView)
         colorCollectionView.delegate = self
         colorCollectionView.dataSource = self
@@ -59,7 +58,6 @@ extension ColorPickerCell {
         colorCollectionView.register(ColorCircleCell.self, forCellWithReuseIdentifier: "ColorCircleCell")
 
         colorCollectionView.snp.makeConstraints {
-            $0.width.equalTo(300)
             $0.edges.equalToSuperview().inset(10)
         }
     }
@@ -67,7 +65,6 @@ extension ColorPickerCell {
     func configure(isHidden: Bool) {
         self.bottomView.isHidden = isHidden
         self.chevronImageView.image = UIImage(systemName: isHidden ? "chevron.down" : "chevron.up")
-        self.selectionStyle = .none
     }
     
 }
@@ -87,7 +84,6 @@ extension ColorPickerCell: UICollectionViewDelegate, UICollectionViewDataSource 
         group.interItemSpacing = .fixed(10)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = CGFloat(0)
         
         let layout = UICollectionViewCompositionalLayout(section: section)
         
@@ -100,7 +96,7 @@ extension ColorPickerCell: UICollectionViewDelegate, UICollectionViewDataSource 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCircleCell", for: indexPath) as? ColorCircleCell else { return UICollectionViewCell() }
-        if (indexPath.row == 6){
+        if (indexPath.row == 6) {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
          }
         cell.configure(with: colors[indexPath.row])

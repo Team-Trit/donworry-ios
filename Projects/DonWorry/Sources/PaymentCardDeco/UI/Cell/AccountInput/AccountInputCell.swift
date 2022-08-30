@@ -19,7 +19,7 @@ class AccountInputCell: UITableViewCell {
             bottomView.isHidden = true
         }
     }
-//    private lazy var accountStackView = AccountView()
+    
     lazy var accountInputField = AccountInputField(frame: .zero, type: .PaymentCardDeco)
     
     override func awakeFromNib() {
@@ -29,12 +29,6 @@ class AccountInputCell: UITableViewCell {
         self.containerStackView.layer.masksToBounds = true
         layout()
         
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
 }

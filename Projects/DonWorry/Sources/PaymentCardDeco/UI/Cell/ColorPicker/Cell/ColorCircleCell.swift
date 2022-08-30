@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 enum CardColor: String {
     case yellow = "#FFA114FF"
@@ -23,21 +24,16 @@ enum CardColor: String {
 
 class ColorCircleCell: UICollectionViewCell {
 
-    lazy var container : UIView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        return $0
-    }(UIView())
+    lazy var container : UIView = UIView()
 
     lazy var colorView: UIView = {
         $0.layer.cornerRadius = 15
-        $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIView())
     
     
     lazy var innerColorView: UIView = {
         $0.layer.cornerRadius = 12
-        $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIView())
     
@@ -70,16 +66,14 @@ class ColorCircleCell: UICollectionViewCell {
         colorView.snp.makeConstraints {
             $0.centerX.equalTo(self.container.snp.centerX)
             $0.centerY.equalTo(self.container.snp.centerY)
-            $0.width.equalTo(30)
-            $0.height.equalTo(30)
+            $0.width.height.equalTo(30)
         }
         
         self.colorView.addSubview(self.innerColorView)
         innerColorView.snp.makeConstraints {
             $0.centerX.equalTo(self.colorView.snp.centerX)
             $0.centerY.equalTo(self.colorView.snp.centerY)
-            $0.width.equalTo(24)
-            $0.height.equalTo(24)
+            $0.width.height.equalTo(24)
         }
         
     }
