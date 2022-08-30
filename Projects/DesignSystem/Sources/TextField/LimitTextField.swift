@@ -22,7 +22,7 @@ public enum LimitTextFieldType {
 }
 
 final public class LimitTextField: UIView {
-    private lazy var textField: UITextField = {
+    public lazy var textField: UITextField = {
         let v = UITextField()
         v.clearButtonMode = .whileEditing
         v.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "bankNH.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
