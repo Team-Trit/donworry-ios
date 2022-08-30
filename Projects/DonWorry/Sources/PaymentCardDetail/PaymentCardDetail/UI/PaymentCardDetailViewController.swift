@@ -21,12 +21,8 @@ var imageArray2 = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 
 final class PaymentCardDetailViewController: BaseViewController, View {
     
-    // 교체 곧 || am sorry
-    var 참석했니 = false
-    
-    let payer: User = User.dummyUser1
-    var paymentCard = PaymentCard.dummyPaymentCard1
-    
+    let viewModel = PaymentCardDetailViewModel()
+
     fileprivate var backButton: UIButton = {
         let button = UIButton(type: .system)
         let boldConfig = UIImage.SymbolConfiguration(pointSize: 20.0, weight: .bold)
@@ -149,11 +145,10 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     @objc private func editPrice() {
         print("edit")
     }
+    
     @objc private func didTapBottomButton() {
         
-        참석했니.toggle()
-
-        if payer.id == paymentCard.payer.id {
+        if viewModel.isAdmin {
             let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
             "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
             alert.view.tintColor = .black
@@ -171,7 +166,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             present(alert, animated: true, completion: nil)
             
         } else {
-            if 참석했니 {
+            viewModel.toggleAttendance()
+            if viewModel.isAttended {
                 bottomButton.setTitle("참석 완료", for: .normal)
                 bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
             } else {
@@ -179,10 +175,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 bottomButton.backgroundColor = .designSystem(.mainBlue)
             }
         }
-        
-        
     }
-    var users: [User] = [User.dummyUser1, User.dummyUser2, User.dummyUser3, User.dummyUser4]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -201,10 +194,10 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         
         let backButtonContainer = UIStackView(arrangedSubviews: [backButton, backEmptyView])
         backButtonContainer.axis = .vertical
-//
+
         let backEmptyViewForHstack = UIView()
         backEmptyViewForHstack.setWidth(width: 7)
-//
+
         let backButtonContainerForHstack = UIStackView(arrangedSubviews: [backEmptyViewForHstack, backButtonContainer])
 
         navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: backButtonContainerForHstack)]
@@ -215,19 +208,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         navigationController?.popViewController(animated: true)
     }
     private func attributes() {
-        attendanceLabel.text = "참여자 : \(paymentCard.participatedUserList.count)명"
-        
-        let numberFormatter = NumberFormatter()
-            numberFormatter.numberStyle = .decimal
-        let amountString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
-        priceLabel.text = amountString + "원"
-        
-        if payer.id == paymentCard.payer.id {
+        attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
+        priceLabel.text = viewModel.totalAmountString
+        if viewModel.isAdmin {
             bottomButton.setTitle("삭제하기", for: .normal)
             bottomButton.backgroundColor = .designSystem(.redTopGradient)
         } else {
             editButton.isHidden = true
-            if 참석했니 {
+            if viewModel.isAttended {
                 bottomButton.setTitle("참석 완료", for: .normal)
                 bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
             } else {
@@ -235,8 +223,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 bottomButton.backgroundColor = .designSystem(.mainBlue)
             }
         }
-        
-//        view.backgroundColor = .designSystem(.grayF6F6F6)
     }
 
     func bind(reactor: PaymentCardDetailViewReactor) {
@@ -262,7 +248,6 @@ extension PaymentCardDetailViewController {
         totalBottomView.addSubview(spacingView)
         spacingView.anchor2(top: totalBottomView.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
         spacingView.backgroundColor = .white
-        
         
         totalBottomView.addSubview(priceBigContainerView)
         priceBigContainerView.anchor2(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
@@ -307,14 +292,14 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView {
         case attendanceCollectionView:
-            return users.count
+            return viewModel.numOfUsers
         case fileCollectionView:
             if imageArray2.count == 0 {
-                return payer.id == paymentCard.payer.id ? 1 : 0
+                return viewModel.numOfFilesWhenImage0
             } else if imageArray2.count == 3 {
                 return 3
             } else {
-                return payer.id == paymentCard.payer.id ? imageArray2.count + 1 : imageArray2.count
+                return viewModel.isAdmin ? imageArray2.count + 1 : imageArray2.count
             }
         default:
             return 0
@@ -325,11 +310,10 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         switch collectionView {
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return UICollectionViewCell() }
-            cell.user = paymentCard.participatedUserList[indexPath.row]
+            cell.user = viewModel.userAt(indexPath.row)
             return cell
         case fileCollectionView:
-            
-            if payer.id == paymentCard.payer.id {
+            if viewModel.isAdmin {
                 if imageArray2.count == 3 {
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                     cell.FileCollectionViewCellDelegate = self
@@ -355,7 +339,6 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
                 cell.deleteCircle.isHidden = true
                 return cell
             }
-            
         default: return UICollectionViewCell()
         }
     }
@@ -365,7 +348,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
         case fileCollectionView:
-            guard payer.id == paymentCard.payer.id else { return }
+            guard viewModel.isAdmin else { return }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
             if imageArray2.count < 3 && indexPath.row == 0 {
                 showPhotoPicker()
@@ -374,6 +357,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             break
         }
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView {
         case attendanceCollectionView:
@@ -395,6 +379,7 @@ extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
         }
     }
 }
+
 extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
 
     func showPhotoPicker() {
@@ -414,7 +399,7 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
                 if let image = object as? UIImage {
                     images.append(image)
                 }
-                for (index,image) in images.enumerated() {
+                for image in images {
                     if imageArray2.count == 3 {
                         imageArray2[0] = image
                     }
@@ -426,6 +411,7 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
                 DispatchQueue.main.async {
                     self.fileCollectionView.reloadData()
                 }
+                
             }
         }
     }
