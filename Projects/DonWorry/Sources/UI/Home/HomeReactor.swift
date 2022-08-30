@@ -45,7 +45,7 @@ final class HomeReactor: Reactor {
         var user: User?
         var selectedPaymentRoomIndex: Int = 0
         var paymentRoomList: [PaymentRoom] = []
-        var sections: [Section] = [.BillCardSection([])]
+        var sections: [Section] = [.BillCardSection([.LeaveBillCard])]
 
         @Pulse var step: HomeStep?
     }
@@ -60,7 +60,6 @@ final class HomeReactor: Reactor {
         self.userUseCase = userUseCase
         self.paymentRoomUseCase = paymentRoomUseCase
         self.homePresenter = homePresenter
-        print("HEllo HomeViewReactor")
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -107,8 +106,8 @@ final class HomeReactor: Reactor {
             )
         case .routeTo(let step):
             newState.step = step
-            print(newState)
         }
+        print(newState)
         return newState
     }
 

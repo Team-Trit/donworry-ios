@@ -33,7 +33,6 @@ final class HomeHeaderView: UIView {
         v.image = .init(.test_avo)
         v.contentMode = .scaleAspectFill
         v.isUserInteractionEnabled = true
-        v.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapProfileImageView)))
         return v
     }()
 
@@ -50,7 +49,6 @@ final class HomeHeaderView: UIView {
         v.contentEdgeInsets = UIEdgeInsets(top: 10, left: 13, bottom: 13, right: 12)
         v.tintColor = .designSystem(.white)
         v.setImage(UIImage(.icon_alarm), for: .normal)
-        v.addTarget(self, action: #selector(didTapAlarmButton), for: .touchUpInside)
         return v
     }()
 
@@ -105,17 +103,6 @@ final class HomeHeaderView: UIView {
         )
         self.profileImageView.roundCorners(25)
     }
-
-    @objc
-    private func didTapProfileImageView() {
-        print("didTapProfileImageView")
-    }
-
-    @objc
-    private func didTapAlarmButton() {
-        print("didTapAlarmButton")
-    }
-
 }
 
 

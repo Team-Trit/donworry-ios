@@ -109,7 +109,9 @@ extension LoginViewController {
         switch routeTo {
         case .home:
             let homeViewController = HomeViewController()
-            self.navigationController?.pushViewController(homeViewController, animated: true)
+            homeViewController.reactor = HomeReactor()
+            self.navigationController?.pushViewController(homeViewController, animated: false)
+            // .setViewControllers([homeViewController], animated: true)
         }
     }
 }
