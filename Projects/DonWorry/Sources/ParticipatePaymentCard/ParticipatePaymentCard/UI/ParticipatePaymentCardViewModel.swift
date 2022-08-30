@@ -15,15 +15,15 @@ import Models
 final class ParticipatePaymentCardViewModel: BaseViewModel {
     
     var cancellable = Set<AnyCancellable>()
-    var paymentCards: [PaymentCard] = [.dummyPaymentCard1, .dummyPaymentCard2]
+    var paymentCards: [PaymentCard] = [.dummyPaymentCard2]
     
-    @Published var checkedIDs: Set<String> = []
+    @Published var checkedIDs: Set<Int> = []
     
     var numOfPaymentCards: Int {
         paymentCards.count
     }
     
-    var idsOfPaymentCards: Set<String> {
+    var idsOfPaymentCards: Set<Int> {
         Set(paymentCards.map{$0.id})
     }
     
@@ -35,7 +35,7 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
         paymentCards[index]
     }
     
-    func checkCardAt(_ id: String) {
+    func checkCardAt(_ id: Int) {
         if !checkedIDs.contains(id) {
             checkedIDs.update(with: id)
         } else {

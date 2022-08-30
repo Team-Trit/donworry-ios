@@ -15,7 +15,6 @@ import Models
 import DesignSystem
 import Combine
 
-//네비 폰트, 쉐도우디테일, 버튼 폰트 AppleSDGothicNeo?
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     let viewModel = ParticipatePaymentCardViewModel()
@@ -63,28 +62,18 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     }()
     
     private lazy var selectAllButton: UIButton = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
-        $0.layer.cornerRadius = 25
-        $0.setHeight(height: 58)
-        $0.setTitle("모두 선택", for: .normal)
-        $0.backgroundColor = .designSystem(.mainBlue)
-        $0.setTitleColor(UIColor.designSystem(.white), for: .normal)
-        $0.addTarget(self, action: #selector(selectAllCard), for: .touchUpInside)
-        return $0
-    }(UIButton())
+        let bt = DWButton.create(.halfMainBlue)
+        bt.setTitle("모두 선택", for: .normal)
+        bt.addTarget(self, action: #selector(selectAllCard), for: .touchUpInside)
+        return bt
+    }()
     
     private lazy var checkAttendanceButton: UIButton = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
-        $0.layer.cornerRadius = 25
-        $0.setHeight(height: 58)
-        $0.setTitle("참석 확인", for: .normal)//AppleSDGothicNeo?
-        $0.backgroundColor = .designSystem(.lightBlue)
-        $0.setTitleColor(UIColor.designSystem(.mainBlue), for: .normal)
-        $0.addTarget(self, action: #selector(checkAttendance), for: .touchUpInside)
-        return $0
-    }(UIButton())
+        let bt = DWButton.create(.halfLightBlue)
+        bt.setTitle("참석 확인", for: .normal)//AppleSDGothicNeo?
+        bt.addTarget(self, action: #selector(checkAttendance), for: .touchUpInside)
+        return bt
+    }()
     
     @objc private func selectAllCard() {
         viewModel.checkAll()
@@ -199,7 +188,7 @@ extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UIColl
 }
 
 extension ParticipatePaymentCardViewController: CellCheckPress {
-    func toggleCheckAt(_ id: String) {
+    func toggleCheckAt(_ id: Int) {
         viewModel.checkCardAt(id)
     }
 }
@@ -214,3 +203,4 @@ extension ParticipatePaymentCardViewController {
         static let collectionViewHeight: CGFloat = 139
     }
 }
+

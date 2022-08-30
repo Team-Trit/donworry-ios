@@ -40,8 +40,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             let totalString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
             
             totalPriceLabel.text = "총 \(totalString)원"
-            //
-            
             if let url = URL(string: paymentCard.payer.image) {
                 userImageView.load(url: url)
             }
@@ -52,10 +50,10 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             dateformatter.locale = Locale(identifier: "ko_KR")
             
             dateLabel.text = dateformatter.string(from: paymentCard.date)
-            cardLeftView.backgroundColor = .designSystem(.redBottomGradient)
-            cardRightView.backgroundColor = .designSystem(.redTopGradient)
-            dateLabel.textColor = .designSystem(.redTopGradient)
-            dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)
+            cardLeftView.backgroundColor = UIColor(hex: paymentCard.backgroundColor + "FF")?.withAlphaComponent(0.72)
+            cardRightView.backgroundColor = UIColor(hex: paymentCard.backgroundColor + "FF")
+            dateLabel.textColor = UIColor(hex: paymentCard.backgroundColor + "FF")
+            dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
 
         }
     }
@@ -73,10 +71,8 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     
     fileprivate let cardTotalView :UIView = {
         let view = UIView()
+        view.backgroundColor = .clear
         view.layer.cornerRadius = 20
-        view.layer.shadowColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.layer.shadowOpacity = 1
         return view
     }()
     
@@ -85,6 +81,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         view.layer.cornerRadius = 20
         view.clipsToBounds = true
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+        
         return view
     }()
     
@@ -170,12 +167,14 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     }
     
     fileprivate func setUI() {
+        
         let hstack = UIStackView(arrangedSubviews: [checkButton, cardTotalView])
         hstack.spacing = 17
         hstack.alignment = .center
         contentView.addSubview(hstack)
         
         hstack.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
         cardTotalView.anchor(top: contentView.topAnchor, bottom: contentView.bottomAnchor, right: hstack.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingRight: 0, width: boundsWidth * 281 / 340)
         
         cardTotalView.addSubview(cardRightView)
@@ -212,7 +211,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         cardRightView.addSubview(dateLabelContainer)
         dateLabelContainer.anchor(top: userNickNameLabel.bottomAnchor, paddingTop: 18)
         dateLabelContainer.centerX(inView: userImageView)
-        
     }
     
     @objc fileprivate func toggleCheck() {
@@ -224,6 +222,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
 }
 
 protocol CellCheckPress: AnyObject {
-    func toggleCheckAt(_ id: String)
+    func toggleCheckAt(_ id: Int)
 }
 
