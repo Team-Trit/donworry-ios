@@ -15,12 +15,14 @@ public enum Font {
         case gmarketsans = "GmarketSans"
     }
     public enum Size: CGFloat {
+        case _50 = 50
         case _30 = 30
         case _25 = 25
         case _20 = 20
         case _18 = 18
         case _15 = 15
         case _13 = 13
+        case _10 = 10
         case _9 = 9
     }
 
