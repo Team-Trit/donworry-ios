@@ -61,4 +61,5 @@ public enum Asset: String {
     case bankNONGTOO    // NH투자증권
     case bankSC         // SC제일은행
     case back_button
+    case delete_mark
 }
