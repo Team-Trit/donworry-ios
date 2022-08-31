@@ -34,8 +34,8 @@ class FileCollectionViewCell: UICollectionViewCell {
 
     @objc private func deletePhoto(_ sender: UIButton) {
         
-        if !imageArray2.isEmpty {
-            imageArray2.remove(at: deleteCircle.tag)
+        if !cameraImageArray.isEmpty {
+            cameraImageArray.remove(at: deleteCircle.tag)
             FileCollectionViewCellDelegate?.deletePhoto()
         }
     }
@@ -46,10 +46,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         
         self.contentView.addSubview(self.container)
         container.snp.makeConstraints {
-            $0.top.equalTo(self.contentView.snp.top)
-            $0.left.equalTo(self.contentView.snp.left)
-            $0.bottom.equalTo(self.contentView.snp.bottom)
-            $0.right.equalTo(self.contentView.snp.right)
+            $0.edges.equalTo(self.contentView)
         }
         
         self.contentView.addSubview(deleteCircle)

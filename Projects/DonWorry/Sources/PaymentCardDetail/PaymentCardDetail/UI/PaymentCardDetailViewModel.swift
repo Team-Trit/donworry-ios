@@ -29,21 +29,18 @@ class PaymentCardDetailViewModel {
     }
     
     var totalAmountString: String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let amountString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
-        return amountString + "원"
+        return paymentCard.totalAmount.formatted() + "원"
     }
     
     var isAdmin: Bool {
         payer.id == paymentCard.payer.id
     }
     
-    var numOfFilesWhenImage0: Int {
+    var numOfFilesWhenNoImages: Int {
         isAdmin ? 1 : 0
     }
   
-    func userAt(_ index: Int) -> User {
+    func userCollectionViewAt(_ index: Int) -> User {
         paymentCard.participatedUserList[index]
     }
    

@@ -17,7 +17,7 @@ import PhotosUI
 
 // MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
 
-var imageArray2 = [UIImage(.ic_cake), UIImage(.ic_chicken)]
+var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 
 final class PaymentCardDetailViewController: BaseViewController, View {
     
@@ -294,12 +294,12 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             return viewModel.numOfUsers
         case fileCollectionView:
-            if imageArray2.count == 0 {
-                return viewModel.numOfFilesWhenImage0
-            } else if imageArray2.count == 3 {
+            if cameraImageArray.count == 0 {
+                return viewModel.numOfFilesWhenNoImages
+            } else if cameraImageArray.count == 3 {
                 return 3
             } else {
-                return viewModel.isAdmin ? imageArray2.count + 1 : imageArray2.count
+                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
             }
         default:
             return 0
@@ -310,14 +310,14 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         switch collectionView {
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return UICollectionViewCell() }
-            cell.user = viewModel.userAt(indexPath.row)
+            cell.user = viewModel.userCollectionViewAt(indexPath.row)
             return cell
         case fileCollectionView:
             if viewModel.isAdmin {
-                if imageArray2.count == 3 {
+                if cameraImageArray.count == 3 {
                     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                     cell.FileCollectionViewCellDelegate = self
-                    cell.container.image = imageArray2[indexPath.row]
+                    cell.container.image = cameraImageArray[indexPath.row]
                     cell.deleteCircle.tag = indexPath.row
                     return cell
                 } else {
@@ -327,7 +327,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
                     } else {
                         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                         cell.FileCollectionViewCellDelegate = self
-                        cell.container.image = imageArray2[(indexPath.row - 1)]
+                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
                         cell.deleteCircle.tag = (indexPath.row - 1)
                         return cell
                     }
@@ -335,7 +335,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             } else {
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
                 cell.FileCollectionViewCellDelegate = self
-                cell.container.image = imageArray2[(indexPath.row)]
+                cell.container.image = cameraImageArray[(indexPath.row)]
                 cell.deleteCircle.isHidden = true
                 return cell
             }
@@ -350,7 +350,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case fileCollectionView:
             guard viewModel.isAdmin else { return }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
-            if imageArray2.count < 3 && indexPath.row == 0 {
+            if cameraImageArray.count < 3 && indexPath.row == 0 {
                 showPhotoPicker()
             }
         default:
@@ -400,11 +400,11 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
                     images.append(image)
                 }
                 for image in images {
-                    if imageArray2.count == 3 {
-                        imageArray2[0] = image
+                    if cameraImageArray.count == 3 {
+                        cameraImageArray[0] = image
                     }
                     else {
-                        imageArray2 += [image]
+                        cameraImageArray += [image]
                     }
                 }
                 DispatchQueue.main.async {

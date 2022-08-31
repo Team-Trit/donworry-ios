@@ -43,11 +43,17 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    fileprivate lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [userImageView, userNicknameLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        return stackView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: .zero)
         setupUI()
     }
-    
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -56,11 +62,9 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
     
     fileprivate func setupUI() {
         contentView.addSubview(userImageView)
-        let stackView = UIStackView(arrangedSubviews: [userImageView, userNicknameLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 5
         contentView.addSubview(stackView)
         stackView.alignment = .center
         stackView.anchor2(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
     }
 }
+

@@ -1,5 +1,5 @@
 //
-//  FIleAddCollectionViewCell.swift
+//  FileAddCollectionViewCell.swift
 //  DonWorry
 //
 //  Created by Hankyu Lee on 2022/08/28.
@@ -12,15 +12,11 @@ import DesignSystem
 class FileAddCollectionViewCell: UICollectionViewCell {
     
     var currentIdx: Int = -1
-    static let cellID = "FIleAddCollectionViewCell"
+    static let cellID = "FileAddCollectionViewCell"
     
-    lazy var container : UIView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        return $0
-    }(UIView())
+    lazy var container = UIView()
     
     lazy var plusMark : UIImageView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(systemName: "plus")
         $0.tintColor = .white
         return $0
@@ -34,16 +30,10 @@ class FileAddCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.container)
         self.container.addSubview(self.plusMark)
         container.snp.makeConstraints {
-            $0.top.equalTo(self.contentView.snp.top)
-            $0.left.equalTo(self.contentView.snp.left)
-            $0.bottom.equalTo(self.contentView.snp.bottom)
-            $0.right.equalTo(self.contentView.snp.right)
+            $0.edges.equalTo(self.contentView)
         }
         plusMark.snp.makeConstraints {
-            $0.top.equalTo(self.container.snp.top).inset(27)
-            $0.left.equalTo(self.container.snp.left).inset(27)
-            $0.bottom.equalTo(self.container.snp.bottom).inset(27)
-            $0.right.equalTo(self.container.snp.right).inset(27)
+            $0.edges.equalTo(self.contentView).inset(27)
         }
         
     }
