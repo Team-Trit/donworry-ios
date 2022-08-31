@@ -17,6 +17,7 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController, View {
     typealias Reactor = ProfileViewReactor
+    private lazy var navigationBar = CustomNavigationBar()
     private lazy var profileTableView = ProfileTableView()
     private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
     private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
@@ -26,16 +27,6 @@ final class ProfileViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     func bind(reactor: Reactor) {
@@ -60,29 +51,32 @@ extension ProfileViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
-        view.addSubviews(profileTableView, inquiryButtonView, questionButtonView, blogButtonView, accountButtonStackView)
+        view.addSubviews(navigationBar, profileTableView, inquiryButtonView, questionButtonView, blogButtonView, accountButtonStackView)
+        
+        navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
         
         profileTableView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(25)
-            make.trailing.equalToSuperview().offset(-25)
+            make.top.equalTo(navigationBar.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().offset(-200)
         }
         
         inquiryButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(20)
+            make.top.equalTo(profileTableView.snp.bottom).offset(30)
             make.trailing.equalTo(questionButtonView.snp.leading).offset(-50)
             make.width.height.equalTo(50)
         }
         
         questionButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(20)
+            make.top.equalTo(profileTableView.snp.bottom).offset(30)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(50)
         }
         
         blogButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(20)
+            make.top.equalTo(profileTableView.snp.bottom).offset(30)
             make.leading.equalTo(questionButtonView.snp.trailing).offset(50)
             make.width.height.equalTo(50)
         }

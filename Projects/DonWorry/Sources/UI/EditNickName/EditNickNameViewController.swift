@@ -17,6 +17,7 @@ import SnapKit
 
 final class EditNickNameViewController: BaseViewController, View {
 
+    private lazy var navigationBar = CustomNavigationBar()
     private lazy var titleLabel: UILabel = {
         $0.text = "닉네임을\n수정해볼까요?"
         $0.numberOfLines = 2
@@ -48,12 +49,16 @@ extension EditNickNameViewController {
 
     private func setUI() {
         nextButton.title = "다음" // TODO: 수정해야해요
-        navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
-        view.backgroundColor = .designSystem(.white)
-        view.addSubviews(titleLabel, roomInfoLabel,nextButton)
 
+        view.backgroundColor = .designSystem(.white)
+        view.addSubviews(navigationBar, titleLabel, roomInfoLabel,nextButton)
+
+        navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+        
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(30)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
 
@@ -63,7 +68,9 @@ extension EditNickNameViewController {
         }
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(25)
+            $0.bottom.equalToSuperview().inset(50)
+            $0.height.equalTo(50)
         }
     }
 }

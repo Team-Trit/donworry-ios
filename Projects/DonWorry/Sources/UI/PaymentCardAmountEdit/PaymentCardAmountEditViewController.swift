@@ -19,6 +19,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "<"]
+    private lazy var navigationBar = CustomNavigationBar()
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -55,10 +56,10 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         v.font = .designSystem(weight: .regular, size: ._18)
         return v
     }()
-    private lazy var nextButton: UIButton = {
-        let v = UIButton()
-        // TODO: LargeButton 디자인시스템으로 교체
-        v.backgroundColor = .blue
+    private lazy var nextButton: DWButton = {
+        let v = DWButton.create(.xlarge50)
+        v.title = "다음"
+        v.isEnabled = false
         return v
     }()
     private lazy var numberPadCollectionView: NumberPadCollectionView = {
@@ -117,11 +118,15 @@ extension PaymentCardAmountEditViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
-        view.addSubviews(imageBackgroundView, iconImageView, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
+        view.addSubviews(navigationBar, imageBackgroundView, iconImageView, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
+        
+        navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
         
         imageBackgroundView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(50)
-            make.centerY.equalTo(view.snp.top).offset(150)
+            make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
             make.width.height.equalTo(37)
         }
         
@@ -132,12 +137,13 @@ extension PaymentCardAmountEditViewController {
         
         paymentTitleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconImageView.snp.trailing).offset(15)
-            make.centerY.equalTo(view.snp.top).offset(150)
+            make.centerY.equalTo(imageBackgroundView.snp.centerY)
             make.top.equalToSuperview().offset(134)
         }
         
         amountLabel.snp.makeConstraints { make in
             make.bottom.equalTo(nextButton.snp.top).offset(-100)
+            make.top.equalTo(paymentTitleLabel.snp.bottom).offset(30)
             make.trailing.equalTo(wonLabel.snp.leading).offset(-6)
             make.width.equalTo(230)
         }
@@ -148,8 +154,7 @@ extension PaymentCardAmountEditViewController {
         }
         
         nextButton.snp.makeConstraints { make in
-            make.width.equalTo(300)
-            make.height.equalTo(50)
+            make.width.equalTo(340)
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().offset(394)
         }
