@@ -26,6 +26,9 @@ final class PaymentCardDecoViewController: BaseViewController {
     var cardColor: CardColor = .pink
     
     lazy var paymentCard = PaymentCardView()
+    
+    // TODO: Navigation bar title 설정해주기
+    private lazy var navigationBar = CustomNavigationBar()
     private lazy var tableView = PaymentCardDecoTableView()
     
     private lazy var scrollView: UIScrollView = {
@@ -114,15 +117,19 @@ extension PaymentCardDecoViewController {
     }
     
     private func layout() {
-        self.view.addSubviews(self.scrollView, self.completeButton)
+        self.view.addSubviews(self.navigationBar, self.scrollView, self.completeButton)
         self.scrollView.addSubview(self.stackView)
         
         self.stackView.addArrangedSubviews(self.paymentCard, self.headerView, self.tableView, self.footerView)
         self.stackView.setCustomSpacing(0, after: headerView)
         self.headerView.addArrangedSubviews(self.cardIcon, self.titleLabel)
         
+        self.navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+        
         self.scrollView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(navigationBar.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
         }
         self.stackView.snp.makeConstraints { make in
