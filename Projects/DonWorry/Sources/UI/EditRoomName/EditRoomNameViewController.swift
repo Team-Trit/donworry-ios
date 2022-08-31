@@ -32,7 +32,15 @@ final class EditRoomNameViewController: BaseViewController, View {
     }
 
     // MARK: - Views
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var titleLabel: UILabel = {
         $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
