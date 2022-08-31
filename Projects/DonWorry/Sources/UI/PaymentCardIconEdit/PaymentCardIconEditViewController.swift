@@ -31,8 +31,17 @@
 //                                     Catogory(iconName: "ic_icecream")]
 //
 //    // MARK: - Views
-//    // TODO: Navigation title 설정해주기
-//    private lazy var navigationBar = CustomNavigationBar()
+//    private lazy var navigationBar: CustomNavigationBar = {
+//        // TODO: nav bar title 설정해주기
+//        let v = CustomNavigationBar()
+//        v.leftItem.rx.tap
+//            .bind {
+//                self.navigationController?.popViewController(animated: true)
+//            }
+//            .disposed(by: disposeBag)
+//        return v
+//    }()
+//
 //    private lazy var titleLabel: UILabel = {
 //        $0.text = "정산내역 아이콘을\n선택해주세요"
 //        $0.numberOfLines = 2
