@@ -43,6 +43,7 @@ extension ProfileTableView {
         self.allowsSelection = false
         self.showsVerticalScrollIndicator = false
         self.separatorStyle = .none
+        self.isScrollEnabled = false
     }
 }
 
