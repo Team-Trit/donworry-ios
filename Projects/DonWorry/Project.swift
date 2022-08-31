@@ -11,6 +11,7 @@ let project = Project.make(
             .project(target: "DesignSystem", path: "../DesignSystem"),
             .project(target: "CoreKit", path: "../Core/CoreKit"),
             .project(target: "DonWorryNetworking", path: "../DonWorryNetworking"),
+            .project(target: "DonWorryLocalStorage", path: "../DonWorryLocalStorage"),
             .project(target: "BaseArchitecture", path: "../Core/CoreKit"),
             .project(target: "DonWorryExtensions", path: "../Core/CoreKit"),
             .project(target: "DonWorryProtocols", path: "../Core/CoreKit"),
