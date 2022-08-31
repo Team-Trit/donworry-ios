@@ -12,6 +12,7 @@ import BaseArchitecture
 import RxSwift
 
 final class AlertViewViewModel: BaseViewModel {
+
     
     var alertMessages: [AlertMessageInfomations] = [
         AlertMessageInfomations(recievedDate: "21일 토요일", senderName: "유쓰", spaceName: "3차 애셔택시", messageType: .hurriedAlert),

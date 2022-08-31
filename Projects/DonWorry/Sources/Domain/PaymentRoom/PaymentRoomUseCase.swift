@@ -18,6 +18,10 @@ protocol PaymentRoomUseCase {
     func fetchPaymentRoomList() -> Observable<[PaymentRoom]>
 }
 
+
+
+
+
 final class PaymentRoomUseCaseImpl: PaymentRoomUseCase {
 
     init(

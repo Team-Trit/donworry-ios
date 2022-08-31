@@ -22,6 +22,7 @@ protocol AlertUseCase {
 final class AlertUseCaseImpl: AlertUseCase {
     var alertRepository: AlertRepository
     
+    
     init(
         _ alertRepository: AlertRepository = AlertRepositoryImpl()
     ) {
@@ -30,10 +31,10 @@ final class AlertUseCaseImpl: AlertUseCase {
 
     
     func fetchAlerts() {
-        
+        alertRepository.fetchAlert()
     }
     
     func deleteAllAlerts() {
-    
+        alertRepository.deleteAllAlerts()
     }
 }

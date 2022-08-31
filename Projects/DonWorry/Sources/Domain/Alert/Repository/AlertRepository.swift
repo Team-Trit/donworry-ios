@@ -18,11 +18,11 @@ final class AlertRepositoryImpl: AlertRepository {
     }
     
     func fetchAlert() {
-        
+        // fetch data
     }
     
     func deleteAllAlerts() {
-
+      //    delet Api
     }
     
 }
