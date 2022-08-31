@@ -17,6 +17,8 @@ class TestViewController: UIViewController {
 
     lazy var nicknameTextField: UITextField = {
         let v = UITextField()
+        v.placeholder = "닉네임적어주세요"
+        v.backgroundColor = .lightGray
         return v
     }()
     lazy var button: UIButton = {
@@ -26,7 +28,7 @@ class TestViewController: UIViewController {
         v.addTarget(self, action: #selector(buttonDidTap), for: .touchUpInside)
         return v
     }()
-    var authService: AuthService = AuthServiceImpl()
+    var authUseCase: AuthUseCase = AuthUseCaseImpl()
     var disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +37,8 @@ class TestViewController: UIViewController {
         self.view.addSubview(button)
         nicknameTextField.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(button.snp.top).inset(30)
+            make.centerY.equalToSuperview().offset(-200)
+            make.height.equalTo(40)
         }
         button.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -44,7 +47,7 @@ class TestViewController: UIViewController {
 
     @objc func buttonDidTap() {
         guard let nickName = self.nicknameTextField.text else { return }
-        authService.postTestUser(
+        authUseCase.postTestUser(
             provider: "KAKAO",
             nickname: nickName,
             email: "testuser@email.com",
@@ -52,7 +55,7 @@ class TestViewController: UIViewController {
             bankNumber: "1000-283821-28",
             bankHolder: "우디",
             isAgreeMarketing: true
-        ).subscribe(onNext: { [weak self] user in
+        ).subscribe(onNext: { user in
             print("성공", user)
         }).disposed(by: disposeBag)
     }

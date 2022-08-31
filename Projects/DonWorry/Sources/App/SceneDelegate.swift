@@ -14,19 +14,11 @@ import UIKit
  class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
      var window: UIWindow?
-
      var coordinator = FlowCoordinator()
-
- //    let userService = UserService()
- //    lazy var appServices = {
- //        return AppServices(userService: userService)
- //    }
      
      func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
          Font.registerFonts()
          #warning("테스트용, 배포할 때 데브버전으로 옮겨야 함.")
- #warning("테스트용, 배포할 때 데브버전으로 옮겨야 함.")
-         UserDefaults.standard.writeCodable(User.dummyUser2, key: .user)
          guard let windowScene = (scene as? UIWindowScene) else { return }
          let window = UIWindow(windowScene: windowScene)
          let rootViewController = HomeViewController()
@@ -42,7 +34,3 @@ import UIKit
          self.window = window
      }
  }
-
- //struct AppServices: HasUserService {
- //    let userService: UserService
- //}

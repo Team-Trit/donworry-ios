@@ -63,7 +63,7 @@ extension LoginFlow {
     
     private func navigateToLoginView() -> FlowContributors {
         let vc = LoginViewController()
-        let reactor = LoginViewReactor(authService: AuthServiceImpl())
+        let reactor = LoginViewReactor()
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))

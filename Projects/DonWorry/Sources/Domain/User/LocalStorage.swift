@@ -13,10 +13,12 @@ import DonWorryExtensions
 
 enum UserDefaultsKey: String {
     case token
+    case authentication
     case user
 }
 
 protocol LocalStorage {
+    func readToken() -> String?
     func read<T>(key: UserDefaultsKey) -> Observable<T?>
     func write<T>(_ data: T, key: UserDefaultsKey) -> Observable<Void>
     func remove(key: UserDefaultsKey) -> Observable<Void>
@@ -26,6 +28,9 @@ protocol LocalStorage {
 
 extension UserDefaults: LocalStorage {
 
+    func readToken() -> String? {
+        UserDefaults.standard.string(forKey: UserDefaultsKey.token.rawValue)
+    }
     func read<T>(key: UserDefaultsKey) -> Observable<T?> {
         let data = UserDefaults.standard.object(forKey: key.rawValue) as? T
         return .just(data)
