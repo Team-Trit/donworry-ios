@@ -11,19 +11,27 @@ import ReactorKit
 import RxSwift
 import Models
 
+enum PaymentCardListStep {
+    case dismiss
+    case none
+}
 final class PaymentCardListViewReactor: Reactor {
     typealias Section = PaymentCardSection
     enum Action {
         case setup
+        case didTapDismissButton
     }
 
     enum Mutation {
         case updateTitle(PaymentRoom)
+        case routeTo(PaymentCardListStep)
     }
 
     struct State {
         var paymentRoom: PaymentRoom?
         var section: [Section] = [.PaymentCardSection([.AddPaymentCard])]
+
+        @Pulse var step: PaymentCardListStep?
     }
 
     let initialState: State = State()
@@ -40,6 +48,8 @@ final class PaymentCardListViewReactor: Reactor {
             return Observable.concat([
                 .just(.updateTitle(dummyPaymentRoom))
             ])
+        case .didTapDismissButton:
+            return .just(.routeTo(.dismiss))
         }
     }
 
@@ -52,6 +62,8 @@ final class PaymentCardListViewReactor: Reactor {
                 from: paymentRoom.paymentCardList,
                 with: paymentRoom.transferList
             )
+        case .routeTo(let step):
+            newState.step = step
         }
         return newState
     }

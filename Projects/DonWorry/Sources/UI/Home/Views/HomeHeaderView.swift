@@ -11,6 +11,8 @@ import DesignSystem
 import DonWorryExtensions
 import SnapKit
 import Kingfisher
+import RxSwift
+import RxCocoa
 
 struct HomeHeaderViewModel {
     var imageURL: String
@@ -23,17 +25,15 @@ final class HomeHeaderView: UIView {
         let v = UIStackView()
         v.axis = .horizontal
         v.spacing = 15
-        v.distribution = .equalSpacing
+        v.distribution = .fill
         v.alignment = .center
         return v
     }()
 
-    lazy var profileImageView: UIImageView = {
-        let v = UIImageView()
-        v.image = .init(.test_avo)
-        v.contentMode = .scaleAspectFill
-        v.isUserInteractionEnabled = true
-        v.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapProfileImageView)))
+    lazy var profileButton: UIButton = {
+        let v = UIButton()
+        v.setImage(.init(.test_avo), for: .normal)
+        v.imageView?.contentMode = .scaleAspectFill
         return v
     }()
 
@@ -50,7 +50,6 @@ final class HomeHeaderView: UIView {
         v.contentEdgeInsets = UIEdgeInsets(top: 10, left: 13, bottom: 13, right: 12)
         v.tintColor = .designSystem(.white)
         v.setImage(UIImage(.icon_alarm), for: .normal)
-        v.addTarget(self, action: #selector(didTapAlarmButton), for: .touchUpInside)
         return v
     }()
 
@@ -59,7 +58,7 @@ final class HomeHeaderView: UIView {
             self.titleLabel.text = "\(viewModel?.nickName ?? "")님 안녕하세요"
             if let viewModel = viewModel {
                 let url = URL(string: viewModel.imageURL)
-                self.profileImageView.kf.setImage(with: url)
+                profileButton.kf.setImage(with: url, for: .normal)
             }
         }
     }
@@ -80,7 +79,7 @@ final class HomeHeaderView: UIView {
         self.backgroundColor = .clear
         self.addSubview(self.stackView)
         self.addSubview(self.alarmButton)
-        self.stackView.addArrangedSubview(self.profileImageView)
+        self.stackView.addArrangedSubview(self.profileButton)
         self.stackView.addArrangedSubview(self.titleLabel)
 
         self.snp.makeConstraints { make in
@@ -91,11 +90,11 @@ final class HomeHeaderView: UIView {
             make.leading.equalToSuperview().offset(25)
             make.bottom.equalToSuperview()
         }
-        self.profileImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(50)
+        self.profileButton.snp.makeConstraints { make in
+            make.width.height.equalTo(45)
         }
         self.alarmButton.snp.makeConstraints { make in
-            make.centerY.equalTo(self.profileImageView)
+            make.centerY.equalTo(self.profileButton)
             make.trailing.equalToSuperview().inset(25)
             make.width.height.equalTo(44)
         }
@@ -103,19 +102,6 @@ final class HomeHeaderView: UIView {
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
         )
-        self.profileImageView.roundCorners(25)
+        self.profileButton.roundCorners(22.5)
     }
-
-    @objc
-    private func didTapProfileImageView() {
-        print("didTapProfileImageView")
-    }
-
-    @objc
-    private func didTapAlarmButton() {
-        print("didTapAlarmButton")
-    }
-
 }
-
-

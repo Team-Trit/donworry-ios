@@ -9,11 +9,11 @@
 import Foundation
 
 public struct BankAccount: Codable {
-    public var bank: Bank
+    public var bank: String
     public var accountHolderName: String
     public var accountNumber: String
 
-    public init(bank: Bank,
+    public init(bank: String,
                 accountHolderName: String,
                 accountNumber: String) {
         self.bank = bank

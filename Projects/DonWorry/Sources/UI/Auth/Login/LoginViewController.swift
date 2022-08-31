@@ -17,6 +17,14 @@ import SnapKit
 
 final class LoginViewController: BaseViewController, View {
     private lazy var labelStackView = LabelStackView()
+    #if DEBUG
+    lazy var testUserButton: UIButton = {
+        let v = UIButton()
+        v.setTitle("", for: .normal)
+        v.setBackgroundColor(.clear, for: .normal)
+        return v
+    }()
+    #endif
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.apple_login_button), for: .normal)
@@ -49,11 +57,11 @@ final class LoginViewController: BaseViewController, View {
 extension LoginViewController {
     private func setUI() {
         view.addSubviews(backgroundView, labelStackView, appleLoginButton, googleLoginButton, kakaoLoginButton)
-        
+
         backgroundView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
-        
+
         labelStackView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(70)
             make.centerX.equalToSuperview()
@@ -73,6 +81,18 @@ extension LoginViewController {
             make.top.equalTo(googleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
+        #if DEBUG
+        view.addSubview(testUserButton)
+        testUserButton.snp.makeConstraints { make in
+            make.width.height.equalTo(100)
+            make.top.trailing.equalToSuperview().inset(30)
+        }
+        testUserButton.rx.tap
+            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
+            .map { .didTapTestUserButton }
+            .bind(to: reactor!.action)
+            .disposed(by: disposeBag)
+        #endif
     }
 }
 
@@ -96,6 +116,35 @@ extension LoginViewController {
     }
     
     private func render(_ reactor: LoginViewReactor) {
-        
+        reactor.pulse(\.$step)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] step in self?.move(to: step) })
+            .disposed(by: disposeBag)
     }
 }
+
+extension LoginViewController {
+    private func move(to step: LoginStep) {
+        switch step {
+        case .home:
+            let homeViewController = HomeViewController()
+            homeViewController.reactor = HomeReactor()
+            self.navigationController?.pushViewController(homeViewController, animated: true)
+        }
+    }
+}
+
+#if DEBUG
+extension LoginViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        switch motion {
+        case .motionShake:
+            let viewcontroller = TestViewController()
+            self.present(viewcontroller, animated: true)
+        default:
+            break
+        }
+    }
+}
+#endif

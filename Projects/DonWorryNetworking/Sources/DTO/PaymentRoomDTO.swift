@@ -9,5 +9,7 @@
 import Foundation
 
 extension DTO {
-    public struct PaymentRoom: Decodable {}
+    public struct PaymentRoom: Decodable {
+
+    }
 }

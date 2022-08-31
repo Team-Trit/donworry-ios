@@ -1,5 +1,5 @@
 //
-//  PaymentRoomAPI.swift
+//  GetPaymentRoomAPI.swift
 //  DonWorryNetworkingTests
 //
 //  Created by Woody on 2022/08/13.
@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import Moya
 
-public struct PaymentRoomAPI: ServiceAPI {
+public struct GetPaymentRoomAPI: ServiceAPI {
     public var path: String = ""
     public var method: Method { .get }
     public var task: Task { .requestPlain }
@@ -16,7 +17,7 @@ public struct PaymentRoomAPI: ServiceAPI {
     public init() {}
 }
 
-extension PaymentRoomAPI {
+extension GetPaymentRoomAPI {
     public struct Response: Decodable {
         public let list: [DTO.PaymentRoom]?
     }

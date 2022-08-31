@@ -11,7 +11,18 @@ import ReactorKit
 import RxSwift
 import Models
 
-final class HomeViewReactor: Reactor {
+enum HomeStep {
+    case editRoom
+    case enterRoom
+    case recievedMoneyDetail
+    case sentMoneyDetail
+    case alert
+    case profile
+    case paymentCardList
+    case none
+}
+
+final class HomeReactor: Reactor {
     typealias Section = BillCardSection
     typealias HeaderModel = HomeHeaderViewModel
     enum Action {
@@ -21,59 +32,71 @@ final class HomeViewReactor: Reactor {
         case didTapSearchButton
         case didTapCreatePaymentRoomButton
         case didTapProfileImage
+        case didTapGiveBillCard
+        case didTapTakeBillCard
+        case didTapStateBillCard
+        case didTapLeaveBillCard(Int)
+        case none
     }
 
     enum Mutation {
-        case updateLoading(Bool)
         case updateHomeHeader(User)
         case updatePaymentRoom(Int)
         case updatePaymentRoomList([PaymentRoom])
+        case leavePaymentRoom(Int)
+        case routeTo(HomeStep)
     }
 
     struct State {
         var homeHeader: HeaderModel?
         var user: User?
-        var isLoading: Bool = false
         var selectedPaymentRoomIndex: Int = 0
         var paymentRoomList: [PaymentRoom] = []
         var sections: [Section] = [.BillCardSection([])]
+
+        @Pulse var step: HomeStep?
     }
 
     let initialState = State()
 
     init(
-        _ paymentRoomUseCase: PaymentRoomUseCase = PaymentRoomUseCaseImpl(),
-        _ userUseCase: UserUseCase = UserUseCaseImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
-        self.userUseCase = userUseCase
-        self.paymentRoomUseCase = paymentRoomUseCase
         self.homePresenter = homePresenter
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .setup:
-            return Observable.concat([
-                .just(.updateLoading(true)),
-                self.userUseCase.fetchUser().compactMap { .updateHomeHeader($0) },
-                self.paymentRoomUseCase.fetchPaymentRoomList().compactMap { .updatePaymentRoomList($0) },
-                .just(.updateLoading(false))
+            return .concat([
+                .just(.updateHomeHeader(.dummyUser1)),
+                .just(.updatePaymentRoomList([.dummyPaymentRoom1, .dummyPaymentRoom2]))
             ])
         case .didSelectPaymentRoom(let index):
             return Observable.concat([
                 .just(.updatePaymentRoom(index))
             ])
         case .didTapAlarm:
-            break
+            return .just(.routeTo(.alert))
         case .didTapSearchButton:
-            break
+            return .just(.routeTo(.enterRoom))
         case .didTapCreatePaymentRoomButton:
-            break
+            return .just(.routeTo(.editRoom))
         case .didTapProfileImage:
-            break
+            return .just(.routeTo(.profile))
+        case .didTapGiveBillCard:
+            return .just(.routeTo(.sentMoneyDetail))
+        case .didTapTakeBillCard:
+            return .just(.routeTo(.recievedMoneyDetail))
+        case .didTapStateBillCard:
+            return .just(.routeTo(.paymentCardList))
+        case .didTapLeaveBillCard(let index):
+            return .concat([
+                .just(.leavePaymentRoom(index))
+            ])
+        case .none:
+            return .just(.routeTo(.none))
         }
-        return .just(.updateLoading(false))
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
@@ -89,8 +112,6 @@ final class HomeViewReactor: Reactor {
                 with: index,
                 user: currentState.user!
             )
-        case .updateLoading(let loading):
-            newState.isLoading = loading
         case .updatePaymentRoomList(let paymentRoomList):
             newState.paymentRoomList = paymentRoomList
             newState.sections = homePresenter.formatSection(
@@ -98,12 +119,14 @@ final class HomeViewReactor: Reactor {
                 with: currentState.selectedPaymentRoomIndex,
                 user: currentState.user!
             )
+        case .routeTo(let step):
+            newState.step = step
+        case .leavePaymentRoom(_):
+            break
         }
         return newState
     }
 
-    private let userUseCase: UserUseCase
-    private let paymentRoomUseCase: PaymentRoomUseCase
     private let homePresenter: HomePresenter
 }
 

@@ -34,14 +34,14 @@ class TestComponentViewController: UIViewController {
     }()
 
     lazy var button3: DWButton = {
-        let v = DWButton.create(.xlarge)
+        let v = DWButton.create(.xlarge50)
         v.title = "Next"
         v.isEnabled = false
         return v
     }()
 
     lazy var button4: DWButton = {
-        let v = DWButton.create(.xlarge)
+        let v = DWButton.create(.xlarge50)
         v.title = "Next"
         return v
     }()

@@ -31,7 +31,7 @@ final class AgreeTermViewController: BaseViewController, View {
         return v
     }()
     private lazy var doneButton: DWButton = {
-        let v = DWButton.create(.xlarge)
+        let v = DWButton.create(.xlarge50)
         v.title = "완료"
         v.isEnabled = false
         return v

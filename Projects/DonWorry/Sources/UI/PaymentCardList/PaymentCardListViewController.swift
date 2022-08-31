@@ -113,6 +113,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.navigationBar.dismissButton.rx.tap.map { .didTapDismissButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.collectionView.rx.itemHighlighted
             .subscribe(onNext: { [weak self] indexPath in
                 if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
@@ -141,8 +145,8 @@ final class PaymentCardListViewController: BaseViewController, View {
                 self?.navigationController?.setNavigationBarHidden(false, animated: false)
                 self?.navigationController?.pushViewController(viewController, animated: true)
             }).disposed(by: disposeBag)
-
     }
+
     private func render(reactor: Reactor) {
         reactor.state.map { $0.paymentRoom?.name }
             .bind(to: navigationBar.titleLabel.rx.text)
@@ -158,6 +162,13 @@ final class PaymentCardListViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .bind(to: self.collectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: PaymentCardListStep.none)
+            .compactMap { $0 }
+            .drive(onNext: { [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
     }
 
     lazy var dataSource = paymentCardDataSourceOf()
@@ -230,5 +241,18 @@ extension PaymentCardListViewController {
                 return cell
             }
         })
+    }
+}
+
+// MARK: Routing
+
+extension PaymentCardListViewController {
+    private func move(to step: PaymentCardListStep) {
+        switch step {
+        case .dismiss:
+            self.dismiss(animated: true)
+        case .none:
+            break
+        }
     }
 }

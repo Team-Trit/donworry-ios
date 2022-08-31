@@ -9,15 +9,20 @@
 import ReactorKit
 import RxCocoa
 import RxFlow
+import Models
+
+enum LoginStep {
+    case home
+}
 
 final class LoginViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
-    
-    //    let appServices: AppServices
+    private let testUserService: TestUserService
     enum Action {
         case appleLoginButtonPressed
         case googleLoginButtonPressed
         case kakaoLoginButtonPressed
+        case didTapTestUserButton
     }
     
     enum Mutation {
@@ -25,15 +30,19 @@ final class LoginViewReactor: Reactor, Stepper {
         case appleLogin
         case googleLogin
         case kakaoLogin
+        case routeTo(LoginStep)
     }
     
     struct State {
         var isLoading: Bool
+
+        @Pulse var step: LoginStep?
     }
     
     let initialState: State
     
-    init() {
+    init(testUserService: TestUserService = TestUserServiceImpl()) {
+        self.testUserService = testUserService
         self.initialState = State(
             isLoading: false
         )
@@ -64,6 +73,11 @@ final class LoginViewReactor: Reactor, Stepper {
                  .just(Mutation.kakaoLogin),
                  .just(Mutation.updateLoading(false))
                 ])
+        case .didTapTestUserButton:
+            // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
+            return testUserService.signInWithoutUserID()
+                .map { _ in .routeTo(.home) }
+
         }
     }
     
@@ -74,11 +88,13 @@ final class LoginViewReactor: Reactor, Stepper {
         case .updateLoading(let isLoading):
             state.isLoading = isLoading
         case .appleLogin:
-            self.steps.accept(DonworryStep.userInfoIsRequired)
+            state.step = .home
         case .googleLogin:
             self.steps.accept(DonworryStep.userInfoIsRequired)
         case .kakaoLogin:
             self.steps.accept(DonworryStep.userInfoIsRequired)
+        case .routeTo(let step):
+            state.step = step
         }
         
         return state

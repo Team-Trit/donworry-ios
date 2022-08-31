@@ -8,8 +8,7 @@
 
 import Foundation
 
-struct DonwWorryResponse<DTO: Decodable>: Decodable {
-    let statusCode: Int?
+struct ErrorResponse: Decodable {
+    let status: Int
     let message: String?
-    let data: DTO?
 }

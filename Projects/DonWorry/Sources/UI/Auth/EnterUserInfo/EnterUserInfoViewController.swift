@@ -25,7 +25,7 @@ final class EnterUserInfoViewController: BaseViewController, View {
     private lazy var nickNameStackView = NickNameStackView()
     lazy var accountStackView = AccountStackView()
     private lazy var nextButton: DWButton = {
-        let v = DWButton.create(.xlarge)
+        let v = DWButton.create(.xlarge50)
         v.title = "다음"
         v.isEnabled = false
         return v

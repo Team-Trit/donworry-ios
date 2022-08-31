@@ -12,10 +12,13 @@ import Moya
 final class DonWorryProvider<Target: TargetType>: MoyaProvider<Target> {
 
     init(
-        
-        plugins: [PluginType] = []
+        plugins: [PluginType] = [],
+        stubClosure: @escaping StubClosure = MoyaProvider.neverStub
     ) {
-        super.init(plugins: plugins + [loggin])
+        super.init(
+            stubClosure: stubClosure,
+            plugins: plugins + [loggin]
+        )
     }
 
     private let loggin = NetworkLogging()

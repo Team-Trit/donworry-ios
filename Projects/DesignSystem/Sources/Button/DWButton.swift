@@ -10,7 +10,8 @@ import UIKit
 import SnapKit
 
 public enum DonWorryButtonType {
-    case xlarge // weight : 340 , height : 50
+    case xlarge58 // weight : 340 , height : 58
+    case xlarge50 // weight : 340 , height : 50
     case largeBlue // weight : 262
     case mediumBlue // weight : 222
     case smallBlue // weight : 106
@@ -24,14 +25,22 @@ public extension DWButton {
     static func create(_ type: DonWorryButtonType) -> DWButton {
         let button = DWButton(type: .system)
         switch type {
-        case .xlarge:
+        case .xlarge58:
             button.roundCorners(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
             button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
-                make.width.equalTo(320)
+                make.height.equalTo(58)
+            }
+        case .xlarge50:
+            button.roundCorners(25)
+            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.setTitleColor(.designSystem(.white), for: .normal)
+            button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
+            button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
+            button.snp.makeConstraints { make in
                 make.height.equalTo(50)
             }
         case .largeBlue:
