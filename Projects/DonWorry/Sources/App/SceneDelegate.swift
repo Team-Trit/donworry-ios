@@ -23,7 +23,7 @@ import UIKit
          let appFlow = AppFlow(with: window)
          self.coordinator.coordinate(flow: appFlow, with: AppStepper())
 
-         window.makeKeyAndVisible() 
+         window.makeKeyAndVisible()
          self.window = window
      }
  }
