@@ -32,6 +32,8 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }
 
     // MARK: - Views
+    // TODO: Navigation bar title 설정해줘야함
+    private lazy var navigationBar = CustomNavigationBar()
     private lazy var titleLabel: UILabel = {
         $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
@@ -41,7 +43,12 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }(UILabel())
 
     private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
-    private lazy var nextButton = DWButton.create(.xlarge50)
+    private lazy var nextButton: DWButton = {
+        let v = DWButton.create(.xlarge50)
+        v.title = "다음"
+        v.isEnabled = false
+        return v
+    }()
 
     // MARK: - LifeCycle
     override func viewDidLoad() {
@@ -62,14 +69,15 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 extension PaymentCardNameEditViewController {
 
     private func setUI() {
-        nextButton.title = "다음"
-        navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
         view.backgroundColor = .designSystem(.white)
-        view.addSubviews(titleLabel, paymentNameLabel,nextButton)
+        view.addSubviews(navigationBar, titleLabel, paymentNameLabel, nextButton)
 
+        navigationBar.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+        }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(30)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(50)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
 
@@ -79,7 +87,8 @@ extension PaymentCardNameEditViewController {
         }
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(25)
+            $0.bottom.equalToSuperview().inset(50)
         }
 
 
