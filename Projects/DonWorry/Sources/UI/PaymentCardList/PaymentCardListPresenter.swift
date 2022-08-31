@@ -12,32 +12,30 @@ import DonWorryExtensions
 
 protocol PaymentCardListPresenter {
     func formatSection(
-        from paymentCardList: [PaymentCard],
-        with transfer: [Transfer]?
+        from paymentCardList: [PaymentCard]
     ) -> [PaymentCardSection]
 }
 
 final class PaymentCardPresenterImpl: PaymentCardListPresenter {
 
     func formatSection(
-        from paymentCardList: [PaymentCard],
-        with transferList: [Transfer]?
+        from paymentCardList: [PaymentCard]
     ) -> [PaymentCardSection] {
         guard paymentCardList.isNotEmpty else { return [.PaymentCardSection([.AddPaymentCard])]}
         var paymentCardItems = paymentCardList
-            .map { paymentCard in convert(paymentCard, yetComplete: transferList == nil) }
+            .map { paymentCard in convert(paymentCard) }
             .map { PaymentCardItem.PaymentCard($0) }
         paymentCardItems.append(.AddPaymentCard)
         return [.PaymentCardSection(paymentCardItems)]
     }
 
-    private func convert(_ paymentCard: PaymentCard, yetComplete: Bool) -> PaymentCardCellViewModel {
+    private func convert(_ paymentCard: PaymentCard) -> PaymentCardCellViewModel {
         return .init(
             id: paymentCard.id,
                      name: paymentCard.name,
             totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
             number: paymentCard.participatedUserList.count,
-            cardIconImageName: paymentCard.cardIcon.rawValue,
+            cardIconImageName: paymentCard.name,
             payer: .init(
                 id: paymentCard.payer.id,
                 nickName: paymentCard.payer.nickName,
@@ -47,8 +45,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
                 .init(id: $0.id, nickName: $0.nickName, imageURL: $0.image)
             },
             dateString: Formatter.paymentCardDateFormatter.string(from: paymentCard.date),
-            backgroundColor: paymentCard.backgroundColor,
-            yetCompleted: yetComplete)
+            backgroundColor: paymentCard.backgroundColor)
     }
 
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {

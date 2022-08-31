@@ -15,7 +15,7 @@ enum PaymentCardListStep {
     case dismiss
     case none
 }
-final class PaymentCardListViewReactor: Reactor {
+final class PaymentCardListReactor: Reactor {
     typealias Section = PaymentCardSection
     enum Action {
         case setup
@@ -23,22 +23,27 @@ final class PaymentCardListViewReactor: Reactor {
     }
 
     enum Mutation {
-        case updateTitle(PaymentRoom)
+        case updateTitle(String)
+        case updatePaymentCardList([PaymentCard])
         case routeTo(PaymentCardListStep)
     }
 
     struct State {
+        var spaceID: Int = 0
         var paymentRoom: PaymentRoom?
         var section: [Section] = [.PaymentCardSection([.AddPaymentCard])]
-
+        var title: String = ""
         @Pulse var step: PaymentCardListStep?
     }
 
-    let initialState: State = State()
-
+    var initialState: State = State()
+    
     init(
-        _ paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
+        _ paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
+        _ paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl(),
+        _ spaceID: Int = 0
     ) {
+        self.paymentCardService = paymentCardService
         self.paymentCardListPresenter =  paymentCardListPresenter
     }
 
@@ -46,7 +51,9 @@ final class PaymentCardListViewReactor: Reactor {
         switch action {
         case .setup:
             return Observable.concat([
-                .just(.updateTitle(dummyPaymentRoom))
+                paymentCardService.fetchPaymentCardList(spaceID: currentState.spaceID)
+                    .map { .updatePaymentCardList($0) },
+                .just(.updateTitle("이전 화면에서 받아올 제목"))
             ])
         case .didTapDismissButton:
             return .just(.routeTo(.dismiss))
@@ -56,11 +63,11 @@ final class PaymentCardListViewReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-        case .updateTitle(let paymentRoom):
-            newState.paymentRoom = paymentRoom
+        case .updateTitle(let title):
+            newState.title = title
+        case .updatePaymentCardList(let paymentCardList):
             newState.section = paymentCardListPresenter.formatSection(
-                from: paymentRoom.paymentCardList,
-                with: paymentRoom.transferList
+                from: paymentCardList
             )
         case .routeTo(let step):
             newState.step = step
@@ -68,10 +75,11 @@ final class PaymentCardListViewReactor: Reactor {
         return newState
     }
 
+    private let paymentCardService: PaymentCardService
     private let paymentCardListPresenter: PaymentCardListPresenter
 }
 
-extension PaymentCardListViewReactor {
+extension PaymentCardListReactor {
     var dummyPaymentRoom: PaymentRoom {
         .dummyPaymentRoom2
     }

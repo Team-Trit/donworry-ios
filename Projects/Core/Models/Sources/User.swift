@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct User: Codable {
+public struct User {
     public typealias ID = Int
 
     public var id: ID

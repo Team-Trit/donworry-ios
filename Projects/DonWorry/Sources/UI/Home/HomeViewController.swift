@@ -111,11 +111,18 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: HomeStep.none)
+            .observe(on: MainScheduler.instance)
             .compactMap { $0 }
-            .drive(onNext: { [weak self] step in
-                self?.move(to: step)
+            .subscribe(onNext: { [weak self] in
+                self?.move(to: $0)
             }).disposed(by: disposeBag)
+
+//        reactor.pulse(\.$step)
+//            .asDriver(onErrorJustReturn: HomeStep.none)
+//            .compactMap { $0 }
+//            .drive(onNext: { [weak self] step in
+//                self?.move(to: step)
+//            }).disposed(by: disposeBag)
     }
 
     var billCards: [HomeBillCardItem] = []
@@ -220,7 +227,7 @@ extension HomeViewController {
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .paymentCardList:
             let paymentCardListViewController = PaymentCardListViewController()
-            paymentCardListViewController.reactor = PaymentCardListViewReactor()
+            paymentCardListViewController.reactor = PaymentCardListReactor()
             paymentCardListViewController.modalPresentationStyle = .fullScreen
             self.present(paymentCardListViewController, animated: true)
         case .none:

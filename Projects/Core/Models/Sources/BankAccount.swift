@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct BankAccount: Codable {
+public struct BankAccount {
     public var bank: String
     public var accountHolderName: String
     public var accountNumber: String
@@ -20,4 +20,8 @@ public struct BankAccount: Codable {
         self.accountHolderName = accountHolderName
         self.accountNumber = accountNumber
     }
+}
+
+extension BankAccount {
+    public static let empty: BankAccount = .init(bank: "", accountHolderName: "", accountNumber: "") 
 }

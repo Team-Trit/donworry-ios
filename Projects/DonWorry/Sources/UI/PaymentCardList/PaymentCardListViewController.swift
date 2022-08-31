@@ -16,7 +16,7 @@ import DonWorryExtensions
 import RxDataSources
 
 final class PaymentCardListViewController: BaseViewController, View {
-    typealias Reactor = PaymentCardListViewReactor
+    typealias Reactor = PaymentCardListReactor
 
     lazy var navigationBar: NavigationBar = {
         let v = NavigationBar()
