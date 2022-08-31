@@ -12,6 +12,7 @@ import RxSwift
 
 protocol AuthService {
     func fetchTestUser(_ userID: Int) -> Observable<User>
+    func postTestUser(_ userID: Int)
 }
 
 final class AuthServiceImpl: AuthService {
@@ -21,12 +22,15 @@ final class AuthServiceImpl: AuthService {
     }
 
     func fetchTestUser(_ userID: Int) -> Observable<User> {
-        let api = TestUserAPI(userID: userID)
+        let api = GetTestUserAPI(userID: userID)
         return network.request(api)
             .compactMap { [weak self] in
                 self?.convertToUser($0)
             }.asObservable()
+    }
 
+    func postTestUser(_ userID: Int) {
+        
     }
 
     private func convertToUser(_ dto: DTO.TestUser) -> User {

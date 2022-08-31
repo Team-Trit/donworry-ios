@@ -18,7 +18,7 @@ final class PaymentRoomRepositoryImpl: PaymentRoomRepository {
     }
 
     func fetchPaymentRoomList() -> Observable<[PaymentRoom]> {
-        let api = PaymentRoomAPI()
+        let api = GetPaymentRoomAPI()
         return self.network.request(api)
             .compactMap { response in response.list?.compactMap { $0 } }
             .compactMap { list in return list.compactMap { self.translate(fromDTO: $0) }}

@@ -18,7 +18,7 @@ final class TestAuthRepositoryImpl: AuthRepository {
     }
 
     func fetchTestUser(_ userID: Int) -> Observable<User> {
-        let api = TestUserAPI(userID: userID)
+        let api = GetTestUserAPI(userID: userID)
         return network.request(api)
             .compactMap { [weak self] in
                 self?.convertToUser($0)

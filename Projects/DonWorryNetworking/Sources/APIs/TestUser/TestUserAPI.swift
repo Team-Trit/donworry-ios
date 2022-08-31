@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TestUserAPI: ServiceAPI {
+public struct GetTestUserAPI: ServiceAPI {
     public typealias Response = DTO.TestUser
     public var userID: Int
 
