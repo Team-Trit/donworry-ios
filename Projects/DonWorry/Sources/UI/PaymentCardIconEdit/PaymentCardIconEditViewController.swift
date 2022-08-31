@@ -76,7 +76,7 @@
 //        }
 //
 //        titleLabel.snp.makeConstraints {
-//            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
+//            $0.top.equalTo(navigationBar.snp.bottom).offset(50)
 //            $0.leading.trailing.equalToSuperview().inset(25)
 //        }
 //
