@@ -11,13 +11,15 @@ import BaseArchitecture
 
 import RxCocoa
 import RxSwift
-
+import SnapKit
+import DesignSystem
 
 final class AlertViewViewController: BaseViewController {
 
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = AlertViewViewModel()
     
+    private lazy var navigationBar = CustomNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -50,6 +52,12 @@ extension AlertViewViewController {
 
     private func layout() {
         view.addSubview(tableView)
+        view.addSubviews(navigationBar, tableView)
+        
+        navigationBar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+        
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
