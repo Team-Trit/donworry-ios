@@ -11,13 +11,7 @@ import RxSwift
 import Models
 import DonWorryExtensions
 
-enum UserDefaultsKey: String {
-    case accessToken
-    case refreshToken
-    case userAccount
-}
-
-protocol LocalStorage {
+public protocol LocalStorage {
     func readToken() -> String?
     func read<T>(key: UserDefaultsKey, type: T.Type) -> T?
     func write<T>(_ data: T, key: UserDefaultsKey) -> Void
@@ -28,19 +22,19 @@ protocol LocalStorage {
 
 extension UserDefaults: LocalStorage {
 
-    func readToken() -> String? {
+    public func readToken() -> String? {
         UserDefaults.standard.string(forKey: UserDefaultsKey.accessToken.rawValue)
     }
-    func read<T>(key: UserDefaultsKey, type: T.Type) -> T? {
+    public func read<T>(key: UserDefaultsKey, type: T.Type) -> T? {
         return UserDefaults.standard.object(forKey: key.rawValue) as? T
     }
-    func write<T>(_ data: T, key: UserDefaultsKey) -> Void {
+    public func write<T>(_ data: T, key: UserDefaultsKey) -> Void {
         UserDefaults.standard.setValue(data, forKey: key.rawValue)
     }
-    func remove(key: UserDefaultsKey) -> Void {
+    public func remove(key: UserDefaultsKey) -> Void {
         UserDefaults.standard.removeObject(forKey: key.rawValue)
     }
-    func writeCodable<T: Encodable>(_ object: T, key: UserDefaultsKey) -> Bool {
+    public func writeCodable<T: Encodable>(_ object: T, key: UserDefaultsKey) -> Bool {
         do {
             let data = try JSONEncoder().encode(object)
             UserDefaults.standard.set(data, forKey: key.rawValue)
@@ -50,7 +44,7 @@ extension UserDefaults: LocalStorage {
             return false
         }
     }
-    func readCodable<T: Decodable>(key: UserDefaultsKey, type: T.Type) -> T? {
+    public func readCodable<T: Decodable>(key: UserDefaultsKey, type: T.Type) -> T? {
         do {
             guard let data = UserDefaults.standard.data(forKey: key.rawValue) else {
                 return nil
