@@ -7,18 +7,15 @@
 //
 
 import Foundation
+import Moya
 
 public struct GetTestUserAPI: ServiceAPI {
     public typealias Response = DTO.TestUser
     public var userID: Int
-
     public init(userID: Int) {
         self.userID = userID
     }
-
-    public var path: String {
-        return "/test/user/\(userID)"
-    }
+    public var path: String { return "/test/user/\(userID)" }
     public var method: Method = .get
     public var task: Task { .requestPlain }
 }

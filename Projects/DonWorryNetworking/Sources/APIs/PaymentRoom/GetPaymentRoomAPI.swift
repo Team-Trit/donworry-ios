@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Moya
 
 public struct GetPaymentRoomAPI: ServiceAPI {
     public var path: String = ""

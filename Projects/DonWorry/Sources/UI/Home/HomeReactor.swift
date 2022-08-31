@@ -60,12 +60,10 @@ final class HomeReactor: Reactor {
     let initialState = State()
 
     init(
-        _ paymentRoomUseCase: PaymentRoomUseCase = PaymentRoomUseCaseImpl(),
         _ userUseCase: UserUseCase = UserUseCaseImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
         self.userUseCase = userUseCase
-        self.paymentRoomUseCase = paymentRoomUseCase
         self.homePresenter = homePresenter
     }
 
@@ -74,7 +72,7 @@ final class HomeReactor: Reactor {
         case .setup:
             return Observable.concat([
                 self.userUseCase.fetchUser().compactMap { .updateHomeHeader($0) },
-                self.paymentRoomUseCase.fetchPaymentRoomList().compactMap { .updatePaymentRoomList($0) }
+                Observable.just([PaymentRoom.dummyPaymentRoom1, PaymentRoom.dummyPaymentRoom2]).compactMap { .updatePaymentRoomList($0) }
             ])
         case .didSelectPaymentRoom(let index):
             return Observable.concat([
@@ -132,7 +130,7 @@ final class HomeReactor: Reactor {
     }
 
     private let userUseCase: UserUseCase
-    private let paymentRoomUseCase: PaymentRoomUseCase
+//    private let paymentRoomUseCase: PaymentRoomUseCase
     private let homePresenter: HomePresenter
 }
 
