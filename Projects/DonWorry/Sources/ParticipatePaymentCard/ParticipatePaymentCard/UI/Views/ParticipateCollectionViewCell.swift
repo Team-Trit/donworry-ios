@@ -5,8 +5,11 @@
 //  Created by Hankyu Lee on 2022/08/24.
 //
 import UIKit
+
 import DesignSystem
+import DonWorryExtensions
 import Models
+
 
 class ParticipateCollectionViewCell: UICollectionViewCell {
     
@@ -42,6 +45,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             totalPriceLabel.text = "총 \(totalString)원"
             if let url = URL(string: paymentCard.payer.image) {
                 userImageView.load(url: url)
+                
             }
             userNickNameLabel.text = paymentCard.payer.nickName
             
@@ -69,6 +73,16 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    fileprivate let wrappedCardTotalView :UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 20
+        view.layer.shadowColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowOpacity = 1
+        return view
+    }()
+        
     fileprivate let cardTotalView :UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -167,15 +181,17 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     }
     
     fileprivate func setUI() {
-        
-        let hstack = UIStackView(arrangedSubviews: [checkButton, cardTotalView])
+        let hstack = UIStackView(arrangedSubviews: [checkButton, wrappedCardTotalView])
         hstack.spacing = 17
         hstack.alignment = .center
         contentView.addSubview(hstack)
-        
+        wrappedCardTotalView.addSubview(cardTotalView)
+        cardTotalView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         hstack.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
-        cardTotalView.anchor(top: contentView.topAnchor, bottom: contentView.bottomAnchor, right: hstack.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingRight: 0, width: boundsWidth * 281 / 340)
+        wrappedCardTotalView.anchor(top: contentView.topAnchor, bottom: contentView.bottomAnchor, right: hstack.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingRight: 0, width: boundsWidth * 281 / 340)
         
         cardTotalView.addSubview(cardRightView)
         cardRightView.anchor(top: cardTotalView.topAnchor, bottom: cardTotalView.bottomAnchor, right: cardTotalView.rightAnchor, paddingTop: 0, paddingBottom: 0, paddingRight: 0, width: boundsWidth * 69 / 340)
