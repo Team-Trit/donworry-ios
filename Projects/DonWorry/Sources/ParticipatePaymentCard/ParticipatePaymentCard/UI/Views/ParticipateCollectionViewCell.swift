@@ -19,7 +19,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     
     var isChecked: Bool = false {
         willSet {
-            checkButton.setImage(newValue ? UIImage(named: "check_gradient_image") : nil , for: .normal)
+            checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
         }
     }
     
@@ -58,7 +58,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             cardRightView.backgroundColor = UIColor(hex: paymentCard.backgroundColor + "FF")
             dateLabel.textColor = UIColor(hex: paymentCard.backgroundColor + "FF")
             dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
-
         }
     }
 
@@ -66,7 +65,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.setWidth(width: 42)
         button.setHeight(height: 42)
-        button.layer.cornerRadius = 21
+        button.roundCorners(21)
         button.backgroundColor = .designSystem(.grayF6F6F6)
         button.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(toggleCheck), for: .touchUpInside)
@@ -76,23 +75,20 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     fileprivate let wrappedCardTotalView :UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 20
-        view.layer.shadowColor = CGColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        view.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.layer.shadowOpacity = 1
+        view.addShadowWithRoundedCorners(20.0, shadowColor: CGColor(red: 0, green: 0, blue: 0, alpha: 0.5), opacity: 1)
         return view
     }()
         
     fileprivate let cardTotalView :UIView = {
         let view = UIView()
         view.backgroundColor = .clear
-        view.layer.cornerRadius = 20
+        view.roundCorners(20)
         return view
     }()
     
     fileprivate let cardLeftView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 20
+        view.roundCorners(20)
         view.clipsToBounds = true
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
         
@@ -101,7 +97,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     
     fileprivate let cardRightView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 20
+        view.roundCorners(20)
         view.clipsToBounds = true
         view.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
         return view
@@ -125,7 +121,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     fileprivate let imageContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 5
+        view.roundCorners(5)
         view.setHeight(height: 33)
         view.setWidth(width: 33)
         return view
@@ -142,7 +138,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.setWidth(width: 25)
         imageView.setHeight(height: 25)
-        imageView.layer.cornerRadius = 12.5
+        imageView.roundCorners(12.5)
         imageView.contentMode = .scaleToFill //
         imageView.clipsToBounds = true
         return imageView
@@ -157,7 +153,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     
     fileprivate let dateLabelContainer: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 11
+        view.roundCorners(11)
         view.setWidth(width: 40)
         view.setHeight(height: 24)
         view.backgroundColor = .black
