@@ -1,5 +1,5 @@
 //
-//  AuthService.swift
+//  TestUserRepository.swift
 //  DonWorry
 //
 //  Created by Woody on 2022/08/31.
@@ -10,7 +10,12 @@ import DonWorryNetworking
 import Models
 import RxSwift
 
-final class AuthRepositoryImpl: AuthRepository {
+protocol TestUserRepository {
+    func fetchTestUser(_ userID: Int) -> Observable<(User, AuthenticationToken)>
+    func postTestUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> Observable<(User, AuthenticationToken)>
+}
+
+final class TestUserRepositoryImpl: TestUserRepository {
 
     init(_ network: NetworkServable = NetworkService()) {
         self.network = network

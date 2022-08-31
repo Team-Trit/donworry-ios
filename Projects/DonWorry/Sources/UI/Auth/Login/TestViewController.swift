@@ -28,7 +28,7 @@ class TestViewController: UIViewController {
         v.addTarget(self, action: #selector(buttonDidTap), for: .touchUpInside)
         return v
     }()
-    var authUseCase: AuthUseCase = AuthUseCaseImpl()
+    var authUseCase: TestUserUseCase = TestUserUseCaseImpl()
     var disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +47,7 @@ class TestViewController: UIViewController {
 
     @objc func buttonDidTap() {
         guard let nickName = self.nicknameTextField.text else { return }
-        authUseCase.postTestUser(
+        authUseCase.signUp(
             provider: "KAKAO",
             nickname: nickName,
             email: "testuser@email.com",
