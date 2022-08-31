@@ -20,6 +20,7 @@ public enum Font {
         case _25 = 25
         case _20 = 20
         case _18 = 18
+        case _17 = 17
         case _15 = 15
         case _13 = 13
         case _10 = 10
