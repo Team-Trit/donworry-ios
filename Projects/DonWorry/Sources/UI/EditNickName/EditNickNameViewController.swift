@@ -26,7 +26,7 @@ final class EditNickNameViewController: BaseViewController, View {
     }(UILabel())
 
     private lazy var roomInfoLabel = LimitTextField(frame: .zero, type: .nickName)
-    private lazy var nextButton = DWButton.create(.xlarge)
+    private lazy var nextButton = DWButton.create(.xlarge50)
 
 
     // MARK: - LifeCycle

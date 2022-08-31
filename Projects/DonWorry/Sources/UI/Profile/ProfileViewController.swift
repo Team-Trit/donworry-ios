@@ -23,11 +23,21 @@ final class ProfileViewController: BaseViewController, View {
     private lazy var blogButtonView = ServiceButtonView(frame: .zero, type: .blog)
     private lazy var accountButtonStackView = AccountButtonStackView()
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
     func bind(reactor: Reactor) {
         dispatch(to: reactor)
         render(reactor)
