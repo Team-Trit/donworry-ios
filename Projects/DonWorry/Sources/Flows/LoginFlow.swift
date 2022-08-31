@@ -15,12 +15,6 @@ final class LoginFlow: Flow {
         return self.rootViewController
     }
     
-    //    private let services: AppServices
-    //
-    //    init(withServices services: AppServices) {
-    //        self.services = services
-    //    }
-    
     private lazy var rootViewController: UINavigationController = {
         let v = UINavigationController()
         v.isNavigationBarHidden = true
@@ -69,7 +63,7 @@ extension LoginFlow {
     
     private func navigateToLoginView() -> FlowContributors {
         let vc = LoginViewController()
-        let reactor = LoginViewReactor()
+        let reactor = LoginViewReactor(authService: AuthServiceImpl())
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
