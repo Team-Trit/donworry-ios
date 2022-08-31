@@ -57,7 +57,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         return v
     }()
     private lazy var nextButton: DWButton = {
-        let v = DWButton()
+        let v = DWButton.create(.xlarge50)
         v.title = "다음"
         v.isEnabled = false
         return v
@@ -137,12 +137,13 @@ extension PaymentCardAmountEditViewController {
         
         paymentTitleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconImageView.snp.trailing).offset(15)
-            make.centerY.equalTo(view.snp.top).offset(150)
+            make.centerY.equalTo(imageBackgroundView.snp.centerY)
             make.top.equalToSuperview().offset(134)
         }
         
         amountLabel.snp.makeConstraints { make in
             make.bottom.equalTo(nextButton.snp.top).offset(-100)
+            make.top.equalTo(paymentTitleLabel.snp.bottom).offset(30)
             make.trailing.equalTo(wonLabel.snp.leading).offset(-6)
             make.width.equalTo(230)
         }
@@ -153,8 +154,7 @@ extension PaymentCardAmountEditViewController {
         }
         
         nextButton.snp.makeConstraints { make in
-            make.width.equalTo(300)
-            make.height.equalTo(50)
+            make.width.equalTo(340)
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().offset(394)
         }
