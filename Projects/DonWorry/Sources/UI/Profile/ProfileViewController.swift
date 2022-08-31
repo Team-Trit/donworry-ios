@@ -17,7 +17,15 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController, View {
     typealias Reactor = ProfileViewReactor
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var profileTableView = ProfileTableView()
     private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
     private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
