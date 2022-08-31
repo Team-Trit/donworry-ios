@@ -134,3 +134,17 @@ extension LoginViewController {
         }
     }
 }
+
+#if DEBUG
+extension LoginViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        switch motion {
+        case .motionShake:
+            let viewcontroller = TestViewController()
+            self.present(viewcontroller, animated: true)
+        default:
+            break
+        }
+    }
+}
+#endif

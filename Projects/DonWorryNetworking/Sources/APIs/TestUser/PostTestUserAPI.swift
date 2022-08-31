@@ -16,20 +16,38 @@ public struct PostTestUserAPI: ServiceAPI {
         self.request = request
     }
     public var path: String { return "/test/user/save" }
-    public var method: Method = .get
+    public var method: Method = .post
     public var task: Task {
-        .requestParameters(parameters: request.dicationary, encoding: URLEncoding.default)
+        .requestJSONEncodable(request)
     }
 }
 
 extension PostTestUserAPI {
     public struct Request: Encodable {
-        var provider: String
-        var nickname: String
-        var email: String
-        var bank: String
-        var bankNumber: String
-        var bankHolder: String
-        var isAgreeMarketing: Bool
+        public var provider: String
+        public var nickname: String
+        public var email: String
+        public var bank: String
+        public var bankNumber: String
+        public var bankHolder: String
+        public var isAgreeMarketing: Bool
+
+        public init(
+            provider: String,
+            nickname: String,
+            email: String,
+            bank: String,
+            bankNumber: String,
+            bankHolder: String,
+            isAgreeMarketing: Bool
+        ) {
+            self.provider = provider
+            self.nickname = nickname
+            self.email = email
+            self.bank = bank
+            self.bankNumber = bankNumber
+            self.bankHolder = bankHolder
+            self.isAgreeMarketing = isAgreeMarketing
+        }
     }
 }

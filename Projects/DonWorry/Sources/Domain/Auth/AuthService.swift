@@ -12,7 +12,7 @@ import RxSwift
 
 protocol AuthService {
     func fetchTestUser(_ userID: Int) -> Observable<User>
-    func postTestUser(_ userID: Int)
+    func postTestUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> Observable<User>
 }
 
 final class AuthServiceImpl: AuthService {
@@ -22,15 +22,38 @@ final class AuthServiceImpl: AuthService {
     }
 
     func fetchTestUser(_ userID: Int) -> Observable<User> {
-        let api = GetTestUserAPI(userID: userID)
-        return network.request(api)
-            .compactMap { [weak self] in
-                self?.convertToUser($0)
-            }.asObservable()
+        network.request(GetTestUserAPI(userID: userID))
+            .compactMap { [weak self] in self?.convertToUser($0) }.asObservable()
     }
 
-    func postTestUser(_ userID: Int) {
-        
+    func postTestUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> Observable<User> {
+        let api = PostTestUserAPI(
+            request: createTestUserRequest(
+                provider: provider,
+                nickname: nickname,
+                email: email,
+                bank: bank,
+                bankNumber: bankNumber,
+                bankHolder: bankHolder,
+                isAgreeMarketing: isAgreeMarketing
+            )
+        )
+
+        return network.request(api)
+            .compactMap { [weak self] in self?.convertToUser($0) }.asObservable()
+    }
+
+    private func createTestUserRequest(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> PostTestUserAPI.Request {
+        return .init(
+            provider: provider,
+            nickname: nickname,
+            email: email,
+            bank: bank,
+            bankNumber: bankNumber,
+            bankHolder: bankHolder,
+            isAgreeMarketing: isAgreeMarketing
+        )
+
     }
 
     private func convertToUser(_ dto: DTO.TestUser) -> User {
