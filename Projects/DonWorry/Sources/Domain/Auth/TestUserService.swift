@@ -10,7 +10,7 @@ import Foundation
 import Models
 import RxSwift
 
-protocol TestUserUseCase {
+protocol TestUserService {
     // 유저ID를 모를 때, 방금 가입한 회원으로 로그인하는 API
     // 만일 가입을 안했다면, dummyUser1로 로그인됩니다.
     func signInWithoutUserID() -> Observable<User>
@@ -20,7 +20,7 @@ protocol TestUserUseCase {
     func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> Observable<User>
 }
 
-final class TestUserUseCaseImpl: TestUserUseCase {
+final class TestUserServiceImpl: TestUserService {
     private let testUserRepository: TestUserRepository
     private let accessTokenRepository: AccessTokenRepository
     private let userAccountRepository: UserAccountRepository

@@ -17,7 +17,7 @@ enum LoginStep {
 
 final class LoginViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
-    private let testUserUseCase: TestUserUseCase
+    private let testUserService: TestUserService
     enum Action {
         case appleLoginButtonPressed
         case googleLoginButtonPressed
@@ -41,8 +41,8 @@ final class LoginViewReactor: Reactor, Stepper {
     
     let initialState: State
     
-    init(testUserUseCase: TestUserUseCase = TestUserUseCaseImpl()) {
-        self.testUserUseCase = testUserUseCase
+    init(testUserService: TestUserService = TestUserServiceImpl()) {
+        self.testUserService = testUserService
         self.initialState = State(
             isLoading: false
         )
@@ -75,7 +75,7 @@ final class LoginViewReactor: Reactor, Stepper {
                 ])
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
-            return testUserUseCase.signInWithoutUserID()
+            return testUserService.signInWithoutUserID()
                 .map { _ in .routeTo(.home) }
 
         }

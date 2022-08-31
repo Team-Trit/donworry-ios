@@ -28,7 +28,7 @@ class TestViewController: UIViewController {
         v.addTarget(self, action: #selector(buttonDidTap), for: .touchUpInside)
         return v
     }()
-    var authUseCase: TestUserUseCase = TestUserUseCaseImpl()
+    var authUseCase: TestUserService = TestUserServiceImpl()
     var disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
