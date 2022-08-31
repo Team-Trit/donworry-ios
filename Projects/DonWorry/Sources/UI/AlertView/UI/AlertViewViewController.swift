@@ -19,7 +19,20 @@ final class AlertViewViewController: BaseViewController {
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = AlertViewViewModel()
     
-    private lazy var navigationBar = CustomNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        v.rightItem!.rx.tap
+            .bind {
+                // TODO: 전체 삭제
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -35,16 +48,6 @@ final class AlertViewViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         layout()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
 }
 
