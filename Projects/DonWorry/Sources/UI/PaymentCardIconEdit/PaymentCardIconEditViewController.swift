@@ -31,6 +31,8 @@
 //                                     Catogory(iconName: "ic_icecream")]
 //
 //    // MARK: - Views
+//    // TODO: Navigation title 설정해주기
+//    private lazy var navigationBar = CustomNavigationBar()
 //    private lazy var titleLabel: UILabel = {
 //        $0.text = "정산내역 아이콘을\n선택해주세요"
 //        $0.numberOfLines = 2
@@ -66,12 +68,15 @@
 //extension PaymentCardIconEditViewController {
 //
 //    private func setUI() {
-//        navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
-//        view.backgroundColor = .white
-//        view.addSubviews(titleLabel, nextButton, iconCollectionView)
+//        view.backgroundColor = .designSystem(.white)
+//        view.addSubviews(navigationBar, titleLabel, nextButton, iconCollectionView)
+//
+//        navigationBar.snp.makeConstraints {
+//            $0.top.leading.trailing.equalToSuperview()
+//        }
 //
 //        titleLabel.snp.makeConstraints {
-//            $0.top.equalTo(view.safeAreaLayoutGuide).offset(30)
+//            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
 //            $0.leading.trailing.equalToSuperview().inset(25)
 //        }
 //
