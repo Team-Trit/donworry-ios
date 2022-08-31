@@ -40,6 +40,9 @@ class PaymentCardDetailViewModel {
         isAdmin ? 1 : 0
     }
   
+    var paymentCardName: String {
+        paymentCard.name
+    }
     func userCollectionViewAt(_ index: Int) -> User {
         paymentCard.participatedUserList[index]
     }

@@ -19,7 +19,16 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "<"]
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        // TODO: Nav bar title 설정해주기
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)

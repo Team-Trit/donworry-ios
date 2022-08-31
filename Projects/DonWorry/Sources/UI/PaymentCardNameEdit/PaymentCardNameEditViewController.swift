@@ -32,8 +32,16 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }
 
     // MARK: - Views
-    // TODO: Navigation bar title 설정해줘야함
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        // TODO: Navigation bar title 설정해줘야함
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var titleLabel: UILabel = {
         $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2

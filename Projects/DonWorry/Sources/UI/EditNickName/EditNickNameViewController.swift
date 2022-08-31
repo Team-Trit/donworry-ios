@@ -16,8 +16,15 @@ import DonWorryExtensions
 import SnapKit
 
 final class EditNickNameViewController: BaseViewController, View {
-
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var titleLabel: UILabel = {
         $0.text = "닉네임을\n수정해볼까요?"
         $0.numberOfLines = 2

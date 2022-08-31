@@ -202,7 +202,7 @@ extension HomeViewController {
         switch step {
         case .editRoom:
             let editRoomViewController = EditRoomNameViewController(type: .create)
-            self.present(editRoomViewController, animated: true)
+            self.navigationController?.pushViewController(editRoomViewController, animated: true)
         case .enterRoom:
             let enterRoomViewController = EnterRoomViewController()
             self.present(enterRoomViewController, animated: true)

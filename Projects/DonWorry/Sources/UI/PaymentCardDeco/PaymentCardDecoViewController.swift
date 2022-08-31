@@ -27,8 +27,16 @@ final class PaymentCardDecoViewController: BaseViewController {
     
     lazy var paymentCard = PaymentCardView()
     
-    // TODO: Navigation bar title 설정해주기
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        // TODO: Nav bar title 설정해주기
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
+    }()
     private lazy var tableView = PaymentCardDecoTableView()
     
     private lazy var scrollView: UIScrollView = {

@@ -22,14 +22,16 @@ var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 final class PaymentCardDetailViewController: BaseViewController, View {
     
     let viewModel = PaymentCardDetailViewModel()
-
-    fileprivate var backButton: UIButton = {
-        let button = UIButton(type: .system)
-        let boldConfig = UIImage.SymbolConfiguration(pointSize: 20.0, weight: .bold)
-        let boldSearch = UIImage(systemName: "chevron.left", withConfiguration: boldConfig)
-        button.setImage(boldSearch, for: .normal)
-        button.tintColor = .black
-        return button
+    
+    private lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar()
+        // TODO: Navigation bar title 설정해줘야합니다
+        v.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        return v
     }()
     
     fileprivate let priceBigContainerView: UIView = {
@@ -91,7 +93,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         view.minimumLineSpacing = 17
         view.scrollDirection = .horizontal
         return view
-      }()
+    }()
     
     private lazy var attendanceCollectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: attendanceCollectionViewFlowLayout)
@@ -99,7 +101,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         view.register(AttendanceCollectionViewCell.self, forCellWithReuseIdentifier: AttendanceCollectionViewCell.cellID)
         view.dataSource = self
         view.delegate = self
-      return view
+        return view
     }()
     
     fileprivate let staticPictureLabel: UILabel = {
@@ -122,7 +124,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         view.minimumLineSpacing = 15
         view.scrollDirection = .horizontal
         return view
-      }()
+    }()
     
     private lazy var fileCollectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: fileCollectionViewFlowLayout)
@@ -131,7 +133,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         view.register(FileAddCollectionViewCell.self, forCellWithReuseIdentifier: FileAddCollectionViewCell.cellID)
         view.dataSource = self
         view.delegate = self
-      return view
+        return view
     }()
     
     private lazy var bottomButton: UIButton = {
@@ -150,10 +152,10 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         
         if viewModel.isAdmin {
             let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
-            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
+                                            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
             alert.view.tintColor = .black
             alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
-
+            
             let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
                 //TODO: 삭제구현
                 print("삭제")
@@ -181,32 +183,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         super.viewDidLoad()
         attributes()
         layout()
-        configNavigationBar()
     }
     
-    private func configNavigationBar() {
-        
-        navigationItem.title = "유쓰네 택시"
-        navigationItem.hidesBackButton = true
-        
-        let backEmptyView = UIView()
-        backEmptyView.setHeight(height: 5)
-        
-        let backButtonContainer = UIStackView(arrangedSubviews: [backButton, backEmptyView])
-        backButtonContainer.axis = .vertical
-
-        let backEmptyViewForHstack = UIView()
-        backEmptyViewForHstack.setWidth(width: 7)
-
-        let backButtonContainerForHstack = UIStackView(arrangedSubviews: [backEmptyViewForHstack, backButtonContainer])
-
-        navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: backButtonContainerForHstack)]
-        backButton.addTarget(self, action: #selector(popView), for: .touchUpInside)
-    }
-    
-    @objc fileprivate func popView() {
-        navigationController?.popViewController(animated: true)
-    }
     private func attributes() {
         attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
         priceLabel.text = viewModel.totalAmountString
@@ -224,30 +202,26 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             }
         }
     }
-
+    
     func bind(reactor: PaymentCardDetailViewReactor) {
         //binding here
     }
-
+    
 }
 
 //MARK: Layout
 extension PaymentCardDetailViewController {
     private func layout() {
-        let totalTopView = UIView()
-        view.addSubview(totalTopView)
-        totalTopView.anchor2(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
-        totalTopView.backgroundColor = .white
         
         let totalBottomView = UIView()
         view.addSubview(totalBottomView)
-        totalBottomView.anchor2(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        totalBottomView.anchor2(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         totalBottomView.backgroundColor = .designSystem(.grayF6F6F6)
         
-        let spacingView = UIView()
+        let spacingView =  CustomNavigationBar.init(title: viewModel.paymentCardName)
         totalBottomView.addSubview(spacingView)
-        spacingView.anchor2(top: totalBottomView.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
-        spacingView.backgroundColor = .white
+        spacingView.anchor2(top: totalBottomView.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
+        //        spacingView.backgroundColor = .red
         
         totalBottomView.addSubview(priceBigContainerView)
         priceBigContainerView.anchor2(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
@@ -381,7 +355,7 @@ extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
 }
 
 extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
-
+    
     func showPhotoPicker() {
         var config = PHPickerConfiguration()
         config.selectionLimit = 3
@@ -420,74 +394,74 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
 extension UIView {
     // layout 하는 함수
     func anchor2(top: NSLayoutYAxisAnchor? = nil,
-                left: NSLayoutXAxisAnchor? = nil,
-                bottom: NSLayoutYAxisAnchor? = nil,
-                right: NSLayoutXAxisAnchor? = nil,
-                paddingTop: CGFloat = 0,
-                paddingLeft: CGFloat = 0,
-                paddingBottom: CGFloat = 0,
-                paddingRight: CGFloat = 0,
-                width: CGFloat? = nil,
-                height: CGFloat? = nil) {
-
+                 left: NSLayoutXAxisAnchor? = nil,
+                 bottom: NSLayoutYAxisAnchor? = nil,
+                 right: NSLayoutXAxisAnchor? = nil,
+                 paddingTop: CGFloat = 0,
+                 paddingLeft: CGFloat = 0,
+                 paddingBottom: CGFloat = 0,
+                 paddingRight: CGFloat = 0,
+                 width: CGFloat? = nil,
+                 height: CGFloat? = nil) {
+        
         translatesAutoresizingMaskIntoConstraints = false
-
+        
         if let top = top {
             topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true
         }
-
+        
         if let left = left {
             leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
         }
-
+        
         if let bottom = bottom {
             bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom).isActive = true
         }
-
+        
         if let right = right {
             rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
         }
-
+        
         if let width = width {
             widthAnchor.constraint(equalToConstant: width).isActive = true
         }
-
+        
         if let height = height {
             heightAnchor.constraint(equalToConstant: height).isActive = true
         }
     }
-
+    
     func centerX(inView view: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
-
+    
     func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0, constant: CGFloat = 0) {
-
+        
         translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
-
+        
         if let left = leftAnchor {
             anchor2(left: left, paddingLeft: paddingLeft)
         }
     }
-
+    
     func setDimensions(height: CGFloat, width: CGFloat) {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: height).isActive = true
         widthAnchor.constraint(equalToConstant: width).isActive = true
     }
-
+    
     func setHeight(height: CGFloat) {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: height).isActive = true
     }
-
+    
     func setWidth(width: CGFloat) {
         translatesAutoresizingMaskIntoConstraints = false
         widthAnchor.constraint(equalToConstant: width).isActive = true
     }
-
+    
 }
 
 extension UIImageView {
