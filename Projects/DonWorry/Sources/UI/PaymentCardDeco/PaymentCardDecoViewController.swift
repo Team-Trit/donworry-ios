@@ -27,16 +27,7 @@ final class PaymentCardDecoViewController: BaseViewController {
     
     lazy var paymentCard = PaymentCardView()
     
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        // TODO: Nav bar title 설정해주기
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var tableView = PaymentCardDecoTableView()
     
     private lazy var scrollView: UIScrollView = {
@@ -103,6 +94,7 @@ final class PaymentCardDecoViewController: BaseViewController {
         configNavigationBar()
         attributes()
         layout()
+        bind()
     }
     
 }
@@ -115,6 +107,12 @@ extension PaymentCardDecoViewController {
     // TODO: 임시 -> 나중에 앞쪽 페이지들에 맞춰서 해야함
     private func configNavigationBar() {
         self.navigationItem.title = "MC2 첫 회식"
+    }
+    
+    private func bind() {
+        navigationBar.leftItem.rx.tap
+            .bind { self.navigationController?.popViewController(animated: true) }
+            .disposed(by: disposeBag)
     }
     
     private func attributes() {
@@ -133,7 +131,8 @@ extension PaymentCardDecoViewController {
         self.headerView.addArrangedSubviews(self.cardIcon, self.titleLabel)
         
         self.navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         self.scrollView.snp.makeConstraints { make in
