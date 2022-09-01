@@ -43,6 +43,13 @@ final class AgreeTermViewController: BaseViewController, View, Stepper {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        bind()
+    }
+    
+    func bind() {
+        navigationBar.leftItem.rx.tap
+            .bind { self.navigationController?.popViewController(animated: true) }
+            .disposed(by: disposeBag)
     }
     
     func bind(reactor: Reactor) {
