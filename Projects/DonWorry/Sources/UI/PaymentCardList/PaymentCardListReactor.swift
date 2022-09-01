@@ -17,44 +17,47 @@ enum PaymentCardListStep {
 }
 final class PaymentCardListReactor: Reactor {
     typealias Section = PaymentCardSection
+    typealias Space = Entity.Space
+
     enum Action {
         case setup
         case didTapDismissButton
     }
 
     enum Mutation {
-        case updateTitle(String)
+        case updateSpace(Space)
         case updatePaymentCardList([PaymentCard])
         case routeTo(PaymentCardListStep)
     }
 
     struct State {
-        var spaceID: Int = 0
-        var paymentRoom: PaymentRoom?
-        var section: [Section] = [.PaymentCardSection([.AddPaymentCard])]
-        var title: String = ""
+        var space: Space
+        var paymentCardListViewModel: [PaymentCardCellViewModel] = []
+
         @Pulse var step: PaymentCardListStep?
     }
 
-    var initialState: State = State()
+    let initialState: State
     
     init(
-        _ paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
-        _ paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl(),
-        _ spaceID: Int = 0
+        space: Space,
+        paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
+        paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
     ) {
+        self.initialState = .init(space: space)
         self.paymentCardService = paymentCardService
         self.paymentCardListPresenter =  paymentCardListPresenter
+
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .setup:
-            return Observable.concat([
-                paymentCardService.fetchPaymentCardList(spaceID: currentState.spaceID)
-                    .map { .updatePaymentCardList($0) },
-                .just(.updateTitle("이전 화면에서 받아올 제목"))
-            ])
+            let cardList = paymentCardService
+                .fetchPaymentCardList(spaceID: currentState.space.id)
+                .map { Mutation.updatePaymentCardList($0) }
+            let space = Observable.just(Mutation.updateSpace(currentState.space))
+            return Observable.concat([cardList, space])
         case .didTapDismissButton:
             return .just(.routeTo(.dismiss))
         }
@@ -63,10 +66,10 @@ final class PaymentCardListReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-        case .updateTitle(let title):
-            newState.title = title
+        case .updateSpace(let space):
+            newState.space = space
         case .updatePaymentCardList(let paymentCardList):
-            newState.section = paymentCardListPresenter.formatSection(
+            newState.paymentCardListViewModel = paymentCardListPresenter.formatSection(
                 from: paymentCardList
             )
         case .routeTo(let step):

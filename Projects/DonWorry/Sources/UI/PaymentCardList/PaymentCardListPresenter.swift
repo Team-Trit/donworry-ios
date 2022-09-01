@@ -13,20 +13,15 @@ import DonWorryExtensions
 protocol PaymentCardListPresenter {
     func formatSection(
         from paymentCardList: [PaymentCard]
-    ) -> [PaymentCardSection]
+    ) -> [PaymentCardCellViewModel]
 }
 
 final class PaymentCardPresenterImpl: PaymentCardListPresenter {
 
     func formatSection(
         from paymentCardList: [PaymentCard]
-    ) -> [PaymentCardSection] {
-        guard paymentCardList.isNotEmpty else { return [.PaymentCardSection([.AddPaymentCard])]}
-        var paymentCardItems = paymentCardList
-            .map { paymentCard in convert(paymentCard) }
-            .map { PaymentCardItem.PaymentCard($0) }
-        paymentCardItems.append(.AddPaymentCard)
-        return [.PaymentCardSection(paymentCardItems)]
+    ) -> [PaymentCardCellViewModel] {
+        return paymentCardList.map { convert($0) }
     }
 
     private func convert(_ paymentCard: PaymentCard) -> PaymentCardCellViewModel {

@@ -29,7 +29,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     }
 
     private func dispatch(to reactor: Reactor) {
-        self.rx.viewWillAppear.map { _ in .setup }
+        self.rx.viewDidLoad.map { _ in .setup }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -55,7 +55,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
 
         self.paymentRoomCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] _ in
-                self?.billCardCollectionView.scrollToItem(at: .init(item: 0, section: 0), at: .centeredHorizontally, animated: false)
+                self?.billCardCollectionView.scrollToItem(
+                    at: .init(item: 0, section: 0),
+                    at: .centeredHorizontally, animated: false
+                )
             }).disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
@@ -69,7 +72,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 case 2:
                     return .didTapGiveBillCard
                 case 3:
-                    return .didTapLeaveBillCard(reactor.currentState.selectedPaymentRoomIndex)
+                    return .didTapLeaveBillCard(reactor.currentState.selectedSpaceIndex)
                 default:
                     return .none
                 }
@@ -83,21 +86,20 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.headerView.rx.viewModel)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentRoomList.isNotEmpty }
+        reactor.state.map { $0.spaceViewModelList.isNotEmpty }
             .bind(to: self.emptyView.rx.isHidden)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.sections.isEmpty }
+        reactor.state.map { $0.spaceViewModelList.isEmpty }
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentRoomList }
+        reactor.state.map { $0.spaceViewModelList }
             .bind(to: self.paymentRoomCollectionView.rx.items(
                 cellIdentifier: PaymentRoomCollectionViewCell.identifier,
                 cellType: PaymentRoomCollectionViewCell.self)
             ) { item, cellModel, cell in
-                let selectedIndex: Int = reactor.currentState.selectedPaymentRoomIndex
-                cell.viewModel = .init(title: cellModel.name, isSelected: selectedIndex == item)
+                cell.viewModel = cellModel
             }.disposed(by: disposeBag)
 
         reactor.state.map { $0.sections }
@@ -116,13 +118,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .subscribe(onNext: { [weak self] in
                 self?.move(to: $0)
             }).disposed(by: disposeBag)
-
-//        reactor.pulse(\.$step)
-//            .asDriver(onErrorJustReturn: HomeStep.none)
-//            .compactMap { $0 }
-//            .drive(onNext: { [weak self] step in
-//                self?.move(to: step)
-//            }).disposed(by: disposeBag)
     }
 
     var billCards: [HomeBillCardItem] = []
@@ -227,7 +222,8 @@ extension HomeViewController {
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .paymentCardList:
             let paymentCardListViewController = PaymentCardListViewController()
-            paymentCardListViewController.reactor = PaymentCardListReactor()
+            let selectedSpace = reactor!.currentState.selectedSpace!
+            paymentCardListViewController.reactor = PaymentCardListReactor(space: selectedSpace)
             paymentCardListViewController.modalPresentationStyle = .fullScreen
             self.present(paymentCardListViewController, animated: true)
         case .none:

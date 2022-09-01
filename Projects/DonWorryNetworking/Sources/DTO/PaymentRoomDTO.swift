@@ -10,35 +10,31 @@ import Foundation
 
 extension DTO {
     public struct PaymentRoom: Decodable {
-        let id, adminID: Int
-        let title, status, shareID: String
-        let cards: [Card]
+        public let id, adminID: Int
+        public let title, status, shareID: String
+        public let isTaker: Bool
+        public let payments: [Payment]
 
         enum CodingKeys: String, CodingKey {
             case id
             case adminID = "adminId"
             case title, status
             case shareID = "shareId"
-            case cards
-        }
-
-        struct Card: Decodable {
-            let id: Int
-            let isTaker: Bool
-            let payments: [Payment]
+            case isTaker
+            case payments
         }
 
         // MARK: - Payment
-        struct Payment: Decodable {
-            let id, amount: Int
-            let isCompleted: Bool
-            let user: User
+        public struct Payment: Decodable {
+            public let id, amount: Int
+            public let isCompleted: Bool
+            public let user: User
         }
 
         // MARK: - User
-        struct User: Decodable {
-            let id: Int
-            let nickname, imgURL: String
+        public struct User: Decodable {
+            public let id: Int
+            public let nickname, imgURL: String
 
             enum CodingKeys: String, CodingKey {
                 case id, nickname

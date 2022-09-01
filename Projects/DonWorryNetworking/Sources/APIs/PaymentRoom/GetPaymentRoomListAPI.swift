@@ -15,4 +15,7 @@ public struct GetPaymentRoomListAPI: ServiceAPI {
     public var path: String { "/spaces/users" }
     public var method: Method { .get }
     public var task: Task { .requestPlain }
+    public var headers: [String : String]? {
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
 }

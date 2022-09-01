@@ -9,7 +9,7 @@
 import Foundation
 import Moya
 
-public struct PaymentCardListAPI: ServiceAPI {
+public struct GetPaymentCardListAPI: ServiceAPI {
     public typealias Response = [DTO.PaymentCard]
     public var spaceID: Int
     public init(spaceID: Int) {
@@ -18,5 +18,8 @@ public struct PaymentCardListAPI: ServiceAPI {
     public var path: String { "/cards/spaces/\(spaceID)" }
     public var method: Method { .get }
     public var task: Task { .requestPlain }
+    public var headers: [String : String]? {
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
 
 }

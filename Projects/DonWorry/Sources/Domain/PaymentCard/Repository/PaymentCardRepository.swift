@@ -19,7 +19,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
     }
 
     func fetchPaymentCardList(spaceID: Int) -> Observable<[PaymentCard]> {
-        network.request(PaymentCardListAPI(spaceID: spaceID))
+        network.request(GetPaymentCardListAPI(spaceID: spaceID))
             .compactMap { response in
                 response.map { [weak self] dto in return self?.convertToPaymentCard(dto) ?? .dummyPaymentCard1 } // TODO: 더미 없애기
             }.asObservable()

@@ -25,6 +25,10 @@ enum HomeStep {
 final class HomeReactor: Reactor {
     typealias Section = BillCardSection
     typealias HeaderModel = HomeHeaderViewModel
+    typealias SpaceList = [Entity.Space]
+    typealias Space = Entity.Space
+    typealias Index = Int
+
     enum Action {
         case setup
         case didSelectPaymentRoom(at: Int)
@@ -41,41 +45,45 @@ final class HomeReactor: Reactor {
 
     enum Mutation {
         case updateHomeHeader(User)
-        case updatePaymentRoom(Int)
-        case updatePaymentRoomList([PaymentRoom])
-        case leavePaymentRoom(Int)
+        case updatePaymentRoomList(SpaceList)
+        case updatePaymentRoom(Index)
+        case leavePaymentRoom(Index)
         case routeTo(HomeStep)
     }
 
     struct State {
+        var spaceList: [Space]
+        var spaceViewModelList: [PaymentRoomCellViewModel]
+        var sections: [Section]
+        var selectedSpaceIndex: Int
         var homeHeader: HeaderModel?
-        var user: User?
-        var selectedPaymentRoomIndex: Int = 0
-        var paymentRoomList: [PaymentRoom] = []
-        var sections: [Section] = [.BillCardSection([])]
+        var selectedSpace: Space?
 
         @Pulse var step: HomeStep?
     }
 
-    let initialState = State()
+    let initialState: State
 
     init(
+        _ getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
+        _ paymentRoomService: PaymentRoomService = PaymentRoomServiceImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
+        self.getUserAccountUseCase = getUserAccountUseCase
+        self.paymentRoomService = paymentRoomService
         self.homePresenter = homePresenter
+        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .setup:
             return .concat([
-                .just(.updateHomeHeader(.dummyUser1)),
-                .just(.updatePaymentRoomList([.dummyPaymentRoom1, .dummyPaymentRoom2]))
+                getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) },
+                paymentRoomService.fetchPaymentRoomList().map { .updatePaymentRoomList($0) }
             ])
         case .didSelectPaymentRoom(let index):
-            return Observable.concat([
-                .just(.updatePaymentRoom(index))
-            ])
+            return .just(.updatePaymentRoom(index))
         case .didTapAlarm:
             return .just(.routeTo(.alert))
         case .didTapSearchButton:
@@ -103,21 +111,31 @@ final class HomeReactor: Reactor {
         var newState = state
         switch mutation {
         case .updateHomeHeader(let user):
-            newState.homeHeader = homePresenter.formHomeHeader(from: user)
-            newState.user = user
+            newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
+        case .updatePaymentRoomList(let spaceList):
+            newState.spaceList = spaceList
+            if let selectedSpace = spaceList.first {
+                newState.selectedSpace = selectedSpace
+                newState.spaceViewModelList = homePresenter.formatSection(
+                    spaceList: spaceList,
+                    selectedIndex: 0
+                )
+                newState.sections = homePresenter.formatSection(
+                    payments: selectedSpace.payments,
+                    isTaker: selectedSpace.isTaker
+                )
+            }
         case .updatePaymentRoom(let index):
-            newState.selectedPaymentRoomIndex = index
-            newState.sections = homePresenter.formatSection(
-                from: currentState.paymentRoomList,
-                with: index,
-                user: currentState.user!
+            let selectedSpace = currentState.spaceList[index]
+            newState.selectedSpace = selectedSpace
+            newState.selectedSpaceIndex = index
+            newState.spaceViewModelList = homePresenter.formatSection(
+                spaceList: currentState.spaceList,
+                selectedIndex: index
             )
-        case .updatePaymentRoomList(let paymentRoomList):
-            newState.paymentRoomList = paymentRoomList
             newState.sections = homePresenter.formatSection(
-                from: paymentRoomList,
-                with: currentState.selectedPaymentRoomIndex,
-                user: currentState.user!
+                payments: selectedSpace.payments,
+                isTaker: selectedSpace.isTaker
             )
         case .routeTo(let step):
             newState.step = step
@@ -127,6 +145,8 @@ final class HomeReactor: Reactor {
         return newState
     }
 
+    private let getUserAccountUseCase: GetUserAccountUseCase
+    private let paymentRoomService: PaymentRoomService
     private let homePresenter: HomePresenter
 }
 

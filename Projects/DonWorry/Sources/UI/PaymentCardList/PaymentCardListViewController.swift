@@ -53,8 +53,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     }()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        #warning("통일화시켜야 하는 카드 사이즈")
-        layout.estimatedItemSize = .init(width: 340, height: 0)
+        layout.estimatedItemSize = .init(width: 340, height: 20)
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -137,31 +136,31 @@ final class PaymentCardListViewController: BaseViewController, View {
             })
             .disposed(by: disposeBag)
 
+        self.collectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
+
+
         self.collectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                guard let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell else { return }
-                let viewController = UIViewController()
-                viewController.view.backgroundColor = .systemIndigo
-                self?.navigationController?.setNavigationBarHidden(false, animated: false)
-                self?.navigationController?.pushViewController(viewController, animated: true)
+
             }).disposed(by: disposeBag)
     }
 
     private func render(reactor: Reactor) {
-        reactor.state.map { $0.paymentRoom?.name }
+        reactor.state.map { $0.space.title }
             .bind(to: navigationBar.titleLabel.rx.text)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentRoom?.code }
-            .map { "정산방 ID : \($0 ?? "")"}
+        reactor.state.map { $0.space.shareID }
+            .map { "정산방 ID : \($0)" }
             .bind(to: paymentRoomIDLabel.rx.text)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.section }
-            .distinctUntilChanged()
+        reactor.state.map { $0.paymentCardListViewModel }
             .observe(on: MainScheduler.instance)
-            .bind(to: self.collectionView.rx.items(dataSource: dataSource))
-            .disposed(by: disposeBag)
+            .subscribe(onNext: { [weak self] _ in
+                self?.collectionView.reloadData()
+            }).disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: PaymentCardListStep.none)
@@ -170,8 +169,6 @@ final class PaymentCardListViewController: BaseViewController, View {
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
-
-    lazy var dataSource = paymentCardDataSourceOf()
 }
 
 // MARK: setUI
@@ -215,32 +212,8 @@ extension PaymentCardListViewController {
             make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(6)
             make.leading.trailing.equalToSuperview().inset(25)
         }
-        self.shareLinkButton.snp.makeConstraints { make in
-
-        }
 
         self.startPaymentAlgorithmButton.roundCorners(14)
-    }
-}
-
-// MARK: RxCollectionViewSectionedReloadDataSource
-
-extension PaymentCardListViewController {
-    typealias DataSource = RxCollectionViewSectionedReloadDataSource
-
-    func paymentCardDataSourceOf() -> DataSource<PaymentCardSection> {
-        return .init(configureCell: { dataSource, collectionView, indexPath, item -> UICollectionViewCell in
-
-            switch dataSource[indexPath] {
-            case .AddPaymentCard:
-                let cell = collectionView.dequeueReusableCell(AddPaymentCardCollectionViewCell.self, for: indexPath)
-                return cell
-            case .PaymentCard(let viewModel):
-                let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
-                cell.viewModel = viewModel
-                return cell
-            }
-        })
     }
 }
 
@@ -253,6 +226,30 @@ extension PaymentCardListViewController {
             self.dismiss(animated: true)
         case .none:
             break
+        }
+    }
+}
+
+extension PaymentCardListViewController: UICollectionViewDataSource {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
+        return (reactor?.currentState.paymentCardListViewModel.count ?? 0) + 1
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let reactor = reactor else { return .init() }
+        if indexPath.item == reactor.currentState.paymentCardListViewModel.count {
+            let cell = collectionView.dequeueReusableCell(AddPaymentCardCollectionViewCell.self, for: indexPath)
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
+            cell.viewModel = reactor.currentState.paymentCardListViewModel[indexPath.item]
+            return cell
         }
     }
 }

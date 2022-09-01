@@ -12,120 +12,66 @@ import DonWorryExtensions
 
 protocol HomePresenter {
     func formatSection(
-        from paymentRoomList: [PaymentRoom],
-        with selectedIndex: Int,
-        user: User
-    ) -> [BillCardSection]
+        spaceList: [Entity.Space],
+        selectedIndex: Int
+    ) -> [PaymentRoomCellViewModel]
 
-    func formHomeHeader(
-        from user: User
-    ) -> HomeHeaderViewModel
+    func formatSection(
+        payments: [Entity.SpacePayment],
+        isTaker: Bool
+    ) -> [BillCardSection]
 }
 
 final class HomePresenterImpl: HomePresenter {
 
-    func formHomeHeader(
-        from user: User
-    ) -> HomeHeaderViewModel {
-        return HomeHeaderViewModel(imageURL: user.image, nickName: user.nickName)
-    }
-
     func formatSection(
-        from paymentRoomList: [PaymentRoom],
-        with selectedIndex: Int,
-        user: User
+        spaceList: [Entity.Space],
+        selectedIndex: Int
+    ) -> [PaymentRoomCellViewModel] {
+        return spaceList.enumerated().map {
+            .init(title: $0.element.title, isSelected: $0.offset == selectedIndex)
+        }
+    }
+    func formatSection(
+        payments: [Entity.SpacePayment],
+        isTaker: Bool
     ) -> [BillCardSection] {
-        if paymentRoomList.isEmpty { return [.BillCardSection([])] }
-        let selectedPaymentRoom: PaymentRoom = paymentRoomList[selectedIndex]
-
-        guard selectedPaymentRoom.transferList != nil else { return
-            [.BillCardSection([.StateBillCard])] }
-
-        var billCardItemList: [HomeBillCardItem] = []
-        billCardItemList.append(.StateBillCard)
-        billCardItemList.append(contentsOf: formatBillCardList(from: selectedPaymentRoom, user: user))
-        return [.BillCardSection(billCardItemList)]
+        if payments.isEmpty { return [.BillCardSection([.StateBillCard])] }
+        var cards = formatBillCardList(from: payments, isTaker: isTaker)
+        cards.append(.LeaveBillCard)
+        return [.BillCardSection(cards)]
     }
 
-    private func formatBillCardList(from paymentRoom: PaymentRoom, user: User) -> [HomeBillCardItem] {
-        switch judgeGiveOrTakeBillCard(from: paymentRoom, user: user) {
-        case .give: return formatGiveBillCardList(from: paymentRoom, user: user)
-        case .take: return formatTakeBillCard(from: paymentRoom, user: user)
-        case .none: return []
-        }
-    }
-
-    private func formatTakeBillCard(from paymentRoom: PaymentRoom, user: User) -> [HomeBillCardItem] {
-        if let transferList = paymentRoom.transferList {
-            let filteredTransferList = transferList.filter { $0.taker.id == user.id }
-            var result = [HomeBillCardItem.TakeBillCard(TakeBillCardCellViewModel(filteredTransferList))]
-            result.append(.LeaveBillCard)
-            return result
-        }
-        return []
-    }
-
-    private func formatGiveBillCardList(from paymentRoom: PaymentRoom, user: User) -> [HomeBillCardItem] {
-        if let transferList = paymentRoom.transferList {
-            let filteredTransferList = transferList.filter { $0.giver.id == user.id }
-            var result = filteredTransferList
-                .map(GiveBillCardCellViewModel.init)
-                .map { HomeBillCardItem.GiveBillCard($0) }
-            result.append(.LeaveBillCard)
-            return result
-        }
-        return []
-    }
-
-    private func judgeGiveOrTakeBillCard(from paymentRoom: PaymentRoom, user: User) -> BillCardType? {
-        if let transfer = paymentRoom.transferList,
-           let firstTransfer = transfer.first {
-            return firstTransfer.giver.id == user.id ? .give : .take
-        }
-        return nil
-    }
-
-    private func isAllBillCardListCompleted(_ transferList: [Transfer]) -> Bool {
-        return transferList.filter({ $0.isCompleted }).count == transferList.count
-    }
-
-    private enum BillCardType {
-        case give
-        case take
-    }
-}
-
-extension GiveBillCardCellViewModel {
-    init(_ transfer: Transfer) {
-        self.takerID = transfer.taker.id
-        self.imageURL = transfer.taker.image
-        self.nickName = transfer.taker.nickName
-        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: transfer.amount)) {
-            self.amount = amountText + "원"
+    private func formatBillCardList(from payments: [Entity.SpacePayment], isTaker: Bool) -> [HomeBillCardItem] {
+        if isTaker {
+            return formatGiveBillCardList(from: payments, isTaker: isTaker)
         } else {
-            self.amount = "0원"
+            return formatTakeBillCard(from: payments, isTaker: isTaker)
         }
-        self.isCompleted = transfer.isCompleted
     }
-}
 
-extension TakeBillCardCellViewModel {
-    init(_ transfers: [Transfer]) {
-        self.giverID = transfers.first!.giver.id
-        let completedAmount = transfers.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
-        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: completedAmount)) {
-            self.amount = amountText + "원"
-        } else {
-            self.amount = "0원"
+    private func formatTakeBillCard(from payments: [Entity.SpacePayment], isTaker: Bool) -> [HomeBillCardItem] {
+        let completedAmount = payments.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
+        let totalAmount = payments.map { $0.amount }.reduce(0, +)
+        return [HomeBillCardItem.TakeBillCard(
+            .init(amount: formatter(completedAmount), isCompleted: totalAmount == completedAmount)
+        )]
+    }
+
+    private func formatGiveBillCardList(from payments: [Entity.SpacePayment], isTaker: Bool) -> [HomeBillCardItem] {
+        return payments.compactMap { [weak self] in
+            self?.convertToGiveCellModel(from: $0)
+        }.map { HomeBillCardItem.GiveBillCard($0)}
+    }
+
+    private func convertToGiveCellModel(from payment: Entity.SpacePayment) -> GiveBillCardCellViewModel {
+        return .init(takerID: payment.user.id, imageURL: payment.user.imgURL, nickName: payment.user.nickname, amount: formatter(payment.amount), isCompleted: payment.isCompleted)
+    }
+    
+    private func formatter(_ amount: Int) -> String {
+        if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: amount)) {
+            return amountText + "원"
         }
-        let totalAmount =  transfers.map { $0.amount }.reduce(0, +)
-        self.isCompleted =  totalAmount == completedAmount
-    }
-}
-
-extension HomeHeaderViewModel {
-    init(_ user: User) {
-        self.nickName = user.nickName
-        self.imageURL = user.image
+        return "0원"
     }
 }
