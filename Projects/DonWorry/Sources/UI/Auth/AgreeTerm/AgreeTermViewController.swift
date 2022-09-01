@@ -42,13 +42,6 @@ final class AgreeTermViewController: BaseViewController, View {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        bind()
-    }
-    
-    func bind() {
-        navigationBar.leftItem.rx.tap
-            .bind { self.navigationController?.popViewController(animated: true) }
-            .disposed(by: disposeBag)
     }
     
     func bind(reactor: AgreeTermViewReactor) {
@@ -95,6 +88,11 @@ extension AgreeTermViewController {
 // MARK: - Bind
 extension AgreeTermViewController {
     private func dispatch(to reactor: AgreeTermViewReactor) {
+        navigationBar.leftItem.rx.tap
+            .map { Reactor.Action.backButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         doneButton.rx.tap
             .map { Reactor.Action.doneButtonPressed }
             .bind(to: reactor.action)
