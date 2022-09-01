@@ -1,5 +1,5 @@
 //
-//  PaymentRoomUser.swift
+//  SpaceUser.swift
 //  DonWorryTests
 //
 //  Created by Woody on 2022/08/31.

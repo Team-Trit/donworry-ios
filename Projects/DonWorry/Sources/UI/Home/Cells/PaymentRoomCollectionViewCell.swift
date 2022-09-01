@@ -35,17 +35,25 @@ final class PaymentRoomCollectionViewCell: UICollectionViewCell {
             }
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = viewModel.title
-                let textColor: UIColor? = viewModel.isSelected ? .designSystem(.white) : .designSystem(.black)
-                self?.titleLabel.textColor = textColor
-                if viewModel.isSelected {
-                    guard let self = self else { return }
+                self?.isSelected = viewModel.isSelected
+            }
+        }
+    }
+
+    override var isSelected: Bool {
+        didSet {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let textColor: UIColor? = self.isSelected ? .designSystem(.white) : .designSystem(.black)
+                self.titleLabel.textColor = textColor
+                if self.isSelected {
                     let layer = self.contentView.addGradientWithOutput(
                         startColor: .designSystem(.blueTopGradient)!,
                         endColor: .designSystem(.blueBottomGradient)!
                     )
                     self.layersToRemoveLater.append(layer)
                 } else {
-                    self?.layersToRemoveLater.forEach { $0.removeFromSuperlayer() }
+                    self.layersToRemoveLater.forEach { $0.removeFromSuperlayer() }
                 }
             }
         }

@@ -52,13 +52,14 @@ final class HomeReactor: Reactor {
     }
 
     struct State {
-        var spaceList: [Space]
-        var spaceViewModelList: [PaymentRoomCellViewModel]
-        var sections: [Section]
-        var selectedSpaceIndex: Int
-        var homeHeader: HeaderModel?
-        var selectedSpace: Space?
+        var spaceList: [Space] // 새로 서버를 불러오지 않기 때문에 뷰에서 들고있어야 하는 정보
+        var spaceViewModelList: [PaymentRoomCellViewModel] // 정산방 뷰모델
+        var sections: [Section] // 정산카드 뷰모델
+        var selectedSpaceIndex: Int // 선택된 정산방 index
+        var beforeSelectedSpaceIndex: Int
+        var homeHeader: HeaderModel? // 헤더 뷰모델
 
+        @Pulse var reload: Void?
         @Pulse var step: HomeStep?
     }
 
@@ -72,7 +73,7 @@ final class HomeReactor: Reactor {
         self.getUserAccountUseCase = getUserAccountUseCase
         self.paymentRoomService = paymentRoomService
         self.homePresenter = homePresenter
-        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
+        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0, beforeSelectedSpaceIndex: 0)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -113,9 +114,7 @@ final class HomeReactor: Reactor {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
         case .updatePaymentRoomList(let spaceList):
-            newState.spaceList = spaceList
             if let selectedSpace = spaceList.first {
-                newState.selectedSpace = selectedSpace
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
                     selectedIndex: 0
@@ -124,11 +123,13 @@ final class HomeReactor: Reactor {
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
+                newState.spaceList = spaceList
+                newState.reload = ()
             }
         case .updatePaymentRoom(let index):
             let selectedSpace = currentState.spaceList[index]
-            newState.selectedSpace = selectedSpace
             newState.selectedSpaceIndex = index
+            newState.beforeSelectedSpaceIndex = currentState.selectedSpaceIndex
             newState.spaceViewModelList = homePresenter.formatSection(
                 spaceList: currentState.spaceList,
                 selectedIndex: index

@@ -49,10 +49,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.paymentRoomCollectionView.rx.itemSelected.map { .didSelectPaymentRoom(at: $0.item) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-
         self.paymentRoomCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] _ in
                 self?.billCardCollectionView.scrollToItem(
@@ -94,24 +90,28 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.spaceViewModelList }
-            .bind(to: self.paymentRoomCollectionView.rx.items(
-                cellIdentifier: PaymentRoomCollectionViewCell.identifier,
-                cellType: PaymentRoomCollectionViewCell.self)
-            ) { item, cellModel, cell in
-                cell.viewModel = cellModel
-            }.disposed(by: disposeBag)
-
         reactor.state.map { $0.sections }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] section in
-                self?.billCards = section[0].items
                 self?.billCardCollectionView.reloadData()
             }).disposed(by: disposeBag)
+
+        paymentRoomCollectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
+
+        paymentRoomCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
 
         billCardCollectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
+        reactor.pulse(\.$reload)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] in
+                self?.paymentRoomCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -120,7 +120,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             }).disposed(by: disposeBag)
     }
 
-    var billCards: [HomeBillCardItem] = []
     lazy var headerView = HomeHeaderView()
     lazy var paymentRoomCollectionView = PaymentRoomCollectionView()
     lazy var billCardCollectionView = BillCardCollectionView()
@@ -221,8 +220,10 @@ extension HomeViewController {
             let profileViewController = ProfileViewController()
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .paymentCardList:
+            guard let reactor = reactor else { return }
             let paymentCardListViewController = PaymentCardListViewController()
-            let selectedSpace = reactor!.currentState.selectedSpace!
+            let selectedIndex = reactor.currentState.selectedSpaceIndex
+            let selectedSpace = reactor.currentState.spaceList[selectedIndex]
             paymentCardListViewController.reactor = PaymentCardListReactor(space: selectedSpace)
             paymentCardListViewController.modalPresentationStyle = .fullScreen
             self.present(paymentCardListViewController, animated: true)
@@ -239,13 +240,44 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return billCards.count
+        switch collectionView {
+        case paymentRoomCollectionView:
+            return reactor?.currentState.spaceViewModelList.count ?? 0
+        case billCardCollectionView:
+            return reactor?.currentState.sections[0].items.count ?? 1
+        default:
+            return 0
+        }
     }
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        switch billCards[indexPath.item] {
+        switch collectionView {
+        case paymentRoomCollectionView:
+            return paymentRoomCollectionViewCell(for: indexPath)
+        case billCardCollectionView:
+            return billCardCollectionViewCell(for: indexPath)
+        default:
+            return .init()
+        }
+    }
+    private func paymentRoomCollectionViewCell(
+        for indexPath: IndexPath
+    ) -> PaymentRoomCollectionViewCell {
+        guard let reactor = reactor else { return .init() }
+        let cell = paymentRoomCollectionView.dequeueReusableCell(
+            PaymentRoomCollectionViewCell.self,
+            for: indexPath
+        )
+        cell.viewModel = reactor.currentState.spaceViewModelList[indexPath.item]
+        return cell
+    }
+    private func billCardCollectionViewCell(
+        for indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let reactor = reactor else { return .init() }
+        switch reactor.currentState.sections[0].items[indexPath.item] {
         case .GiveBillCard(let viewModel):
             return giveBillCardCollectionViewCell(for: indexPath, viewModel: viewModel)
         case .TakeBillCard(let viewModel):
@@ -254,7 +286,6 @@ extension HomeViewController: UICollectionViewDataSource {
             return stateBillCardCollectionViewCell(for: indexPath)
         case .LeaveBillCard:
             return leaveBillCardCollectionViewCell(for: indexPath)
-
         }
     }
     private func giveBillCardCollectionViewCell(
@@ -300,5 +331,16 @@ extension HomeViewController: UICollectionViewDataSource {
         )
         cell.tag = 3
         return cell
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let reactor = reactor else { return }
+        reactor.action.onNext(.didSelectPaymentRoom(at: indexPath.item))
+        paymentRoomCollectionView.reloadItems(at: [
+            IndexPath(item: reactor.currentState.selectedSpaceIndex, section: 0),
+            IndexPath(item: reactor.currentState.beforeSelectedSpaceIndex, section: 0)
+        ])
     }
 }

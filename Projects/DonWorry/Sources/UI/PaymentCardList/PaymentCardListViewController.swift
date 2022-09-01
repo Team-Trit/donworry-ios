@@ -193,6 +193,7 @@ extension PaymentCardListViewController {
             make.top.equalTo(self.navigationBar.snp.bottom).offset(20)
         }
         self.paymentRoomIDCopyButton.snp.makeConstraints { make in
+            make.trailing.equalTo(self.startPaymentAlgorithmButton.snp.leading).offset(-16)
             make.width.equalTo(47)
             make.height.equalTo(19)
         }
