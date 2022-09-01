@@ -16,7 +16,7 @@ import RxSwift
 import SnapKit
 
 final class AgreeTermViewController: BaseViewController, View {
-    private lazy var navigationBar = CustomNavigationBar(title: "돈워리 이용약관")
+    private lazy var navigationBar = DWNavigationBar(title: "돈워리 이용약관")
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
         v.text = "돈워리 이용을 위해\n약관에 동의해 주세요."
@@ -42,6 +42,13 @@ final class AgreeTermViewController: BaseViewController, View {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        bind()
+    }
+    
+    func bind() {
+        navigationBar.leftItem.rx.tap
+            .bind { self.navigationController?.popViewController(animated: true) }
+            .disposed(by: disposeBag)
     }
     
     func bind(reactor: AgreeTermViewReactor) {
@@ -58,7 +65,8 @@ extension AgreeTermViewController {
         view.addSubviews(navigationBar, descriptionLabel, agreeTermTableView, doneButton)
         
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         descriptionLabel.snp.makeConstraints { make in
