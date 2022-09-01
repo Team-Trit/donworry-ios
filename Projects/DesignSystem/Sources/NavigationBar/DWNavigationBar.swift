@@ -93,7 +93,7 @@ extension DWNavigationBar {
         leftItem.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(15)
-            make.width.height.equalTo(40)
+            make.width.height.equalTo(50)
         }
     }
     

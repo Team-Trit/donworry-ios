@@ -15,7 +15,7 @@ import RxCocoa
 import RxSwift
 
 final class EnterUserInfoViewController: BaseViewController, View {
-    private lazy var navigationBar = CustomNavigationBar()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "돈.워리"
@@ -50,7 +50,8 @@ extension EnterUserInfoViewController {
         view.addSubviews(navigationBar, titleLabel, nickNameStackView, accountStackView, nextButton)
         
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         titleLabel.snp.makeConstraints { make in
