@@ -35,13 +35,6 @@ final class NavigationBar: UIView {
         v.tintColor = .designSystem(.black)
         return v
     }()
-    lazy var dismissButton: UIButton = {
-        let v = UIButton(type: .system)
-        let configure = UIImage.SymbolConfiguration.init(font: UIFont.boldSystemFont(ofSize: 15))
-        v.setImage(UIImage(systemName: "xmark", withConfiguration: configure), for: .normal)
-        v.tintColor = .designSystem(.black)
-        return v
-    }()
 
     var viewModel: HomeHeaderViewModel? {
         didSet {
@@ -66,23 +59,19 @@ final class NavigationBar: UIView {
         self.addSubview(self.titleLabel)
         self.addSubview(self.stackView)
         self.stackView.addArrangedSubview(self.optionButton)
-        self.stackView.addArrangedSubview(self.dismissButton)
 
         self.snp.makeConstraints { make in
-            make.height.equalTo(65)
+            make.height.equalTo(70)
         }
         self.titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(25)
-            make.centerY.equalTo(self.stackView)
+            make.centerX.equalToSuperview()
+//            make.centerY.equalTo(leftItem.snp.centerY)
         }
         self.stackView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(8)
             make.trailing.equalToSuperview().inset(25)
         }
         self.optionButton.snp.makeConstraints { make in
-            make.width.height.equalTo(44)
-        }
-        self.dismissButton.snp.makeConstraints { make in
             make.width.height.equalTo(44)
         }
     }

@@ -18,8 +18,8 @@ import RxDataSources
 final class PaymentCardListViewController: BaseViewController, View {
     typealias Reactor = PaymentCardListReactor
 
-    lazy var navigationBar: NavigationBar = {
-        let v = NavigationBar()
+    lazy var navigationBar: CustomNavigationBar = {
+        let v = CustomNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
         return v
     }()
     lazy var paymentRoomStackView: UIStackView = {
@@ -112,10 +112,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.navigationBar.dismissButton.rx.tap.map { .didTapDismissButton }
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
+        
         self.collectionView.rx.itemHighlighted
             .subscribe(onNext: { [weak self] indexPath in
                 if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
@@ -142,13 +142,13 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         self.collectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-
+                // TODO: 화면전환
             }).disposed(by: disposeBag)
     }
 
     private func render(reactor: Reactor) {
         reactor.state.map { $0.space.title }
-            .bind(to: navigationBar.titleLabel.rx.text)
+            .bind(to: navigationBar.titleLabel!.rx.text)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.space.shareID }
@@ -182,6 +182,7 @@ extension PaymentCardListViewController {
         self.view.addSubview(self.startPaymentAlgorithmButton)
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.floatingStackView)
+
         self.floatingStackView.addArrangedSubviews(self.shareLinkButton, self.checkParticipatedButton)
         self.paymentRoomStackView.addArrangedSubviews(self.paymentRoomIDLabel, self.paymentRoomIDCopyButton)
 
@@ -223,8 +224,8 @@ extension PaymentCardListViewController {
 extension PaymentCardListViewController {
     private func move(to step: PaymentCardListStep) {
         switch step {
-        case .dismiss:
-            self.dismiss(animated: true)
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
         case .none:
             break
         }

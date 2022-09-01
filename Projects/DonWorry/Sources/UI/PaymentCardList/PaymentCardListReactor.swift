@@ -12,7 +12,7 @@ import RxSwift
 import Models
 
 enum PaymentCardListStep {
-    case dismiss
+    case pop
     case none
 }
 final class PaymentCardListReactor: Reactor {
@@ -21,7 +21,7 @@ final class PaymentCardListReactor: Reactor {
 
     enum Action {
         case setup
-        case didTapDismissButton
+        case didTapBackButton
     }
 
     enum Mutation {
@@ -58,8 +58,8 @@ final class PaymentCardListReactor: Reactor {
                 .map { Mutation.updatePaymentCardList($0) }
             let space = Observable.just(Mutation.updateSpace(currentState.space))
             return Observable.concat([cardList, space])
-        case .didTapDismissButton:
-            return .just(.routeTo(.dismiss))
+        case .didTapBackButton:
+            return .just(.routeTo(.pop))
         }
     }
 

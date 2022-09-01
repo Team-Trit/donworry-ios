@@ -225,8 +225,7 @@ extension HomeViewController {
             let selectedIndex = reactor.currentState.selectedSpaceIndex
             let selectedSpace = reactor.currentState.spaceList[selectedIndex]
             paymentCardListViewController.reactor = PaymentCardListReactor(space: selectedSpace)
-            paymentCardListViewController.modalPresentationStyle = .fullScreen
-            self.present(paymentCardListViewController, animated: true)
+            self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         case .none:
             break
         }

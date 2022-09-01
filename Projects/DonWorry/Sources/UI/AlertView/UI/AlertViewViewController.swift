@@ -21,16 +21,6 @@ final class AlertViewViewController: BaseViewController {
     
     private lazy var navigationBar: CustomNavigationBar = {
         let v = CustomNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        v.rightItem!.rx.tap
-            .bind {
-                // TODO: 전체 삭제
-            }
-            .disposed(by: disposeBag)
         return v
     }()
     private let tableView: UITableView = {
@@ -48,21 +38,34 @@ final class AlertViewViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         layout()
+        bind()
     }
 }
 
 extension AlertViewViewController {
 
+    private func bind() {
+        navigationBar.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        navigationBar.rightItem!.rx.tap
+            .bind {
+                // TODO: 전체 삭제
+            }
+            .disposed(by: disposeBag)
+    }
     private func layout() {
         view.addSubview(tableView)
         view.addSubviews(navigationBar, tableView)
         
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
-        tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70).isActive = true
-
+        tableView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true

@@ -12,37 +12,68 @@ import SnapKit
 
 final public class CustomNavigationBar: UIView {
     public lazy var leftItem: UIButton = {
-        let v = UIButton()
-        v.setImage(UIImage(.back_button), for: .normal)
+        let v = UIButton(type: .system)
+        let image = UIImage(
+            systemName: "chevron.backward",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .heavy)
+        )
+        v.setImage(image, for: .normal)
         return v
     }()
-    private var titleLabel: UILabel?
+    public var titleLabel: UILabel?
     public var rightItem: UIButton?
-    
+
+    public enum RightButtonType {
+        case text
+        case image
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setBackButton()
+        setUI()
     }
-    
-    public convenience init(title: String) {
-        self.init()
-        
-        titleLabel = UILabel()
-        titleLabel?.font = .designSystem(weight: .heavy, size: ._20)
-        titleLabel?.text = title
-        setTitleLabel()
+
+    public convenience init(title: String, type: RightButtonType, rightButtonTitle: String = "", rightButtonImageName: String = "") {
+        switch type {
+        case .text:
+            self.init(title: title, rightButtonTitle: rightButtonTitle)
+        case .image:
+            self.init(title: title, rightButtonImageName: rightButtonImageName)
+        }
     }
-    
+
     public convenience init(title: String, rightButtonTitle: String) {
         self.init(title: title)
-        
-        rightItem = UIButton()
+
+        rightItem = UIButton(type: .system)
         rightItem?.setTitle(rightButtonTitle, for: .normal)
         rightItem?.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
         rightItem?.titleLabel?.font = .designSystem(weight: .regular, size: ._18)
         setRightButton()
     }
-    
+
+    public convenience init(title: String, rightButtonImageName: String) {
+        self.init(title: title)
+        rightItem = UIButton(type: .system)
+        let image = UIImage(
+            systemName: rightButtonImageName,
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .heavy)
+        )
+        rightItem?.setImage(image, for: .normal)
+        rightItem?.tintColor = .designSystem(.black)
+        setRightButton()
+    }
+
+    public convenience init(title: String) {
+        self.init()
+
+        titleLabel = UILabel()
+        titleLabel?.font = .designSystem(weight: .heavy, size: ._20)
+        titleLabel?.text = title
+        setTitleLabel()
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,18 +81,19 @@ final public class CustomNavigationBar: UIView {
 
 // MARK: - Layout
 extension CustomNavigationBar {
-    private func setBackButton() {
+    private func setUI() {
         self.snp.makeConstraints { make in
-            make.height.equalTo(100)
+            make.height.equalTo(50)
         }
-        
+    }
+    private func setBackButton() {
+        leftItem.tintColor = .designSystem(.black)
         self.addSubview(leftItem)
         
         leftItem.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(70)
-            make.leading.equalToSuperview().offset(25)
-            make.width.equalTo(15)
-            make.height.equalTo(25)
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().offset(15)
+            make.width.height.equalTo(40)
         }
     }
     
