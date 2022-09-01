@@ -32,15 +32,7 @@ final class EditRoomNameViewController: BaseViewController, View {
     }
 
     // MARK: - Views
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
@@ -57,6 +49,7 @@ final class EditRoomNameViewController: BaseViewController, View {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
+        bindBackButton()
     }
 
     // MARK: - Binding
@@ -82,6 +75,11 @@ final class EditRoomNameViewController: BaseViewController, View {
 // MARK: - setUI
 
 extension EditRoomNameViewController {
+    private func bindBackButton() {
+        navigationBar.leftItem.rx.tap
+            .bind { self.navigationController?.popViewController(animated: true) }
+            .disposed(by: disposeBag)
+    }
 
     private func setUI() {
         nextButton.title = "정산방 참가하기"
@@ -90,7 +88,8 @@ extension EditRoomNameViewController {
         view.addSubviews(navigationBar, titleLabel, roomInfoLabel, nextButton)
 
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         titleLabel.snp.makeConstraints {
