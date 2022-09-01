@@ -38,6 +38,7 @@ extension NumberPadCollectionViewCell {
         
         numberLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(45)
         }
     }
 }
