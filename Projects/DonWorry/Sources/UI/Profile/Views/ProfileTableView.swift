@@ -93,4 +93,12 @@ extension ProfileTableView: UITableViewDelegate {
             return 80
         }
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let v = UIView()
+        v.snp.makeConstraints { make in
+            make.height.equalTo(1)
+        }
+        return v
+    }
 }

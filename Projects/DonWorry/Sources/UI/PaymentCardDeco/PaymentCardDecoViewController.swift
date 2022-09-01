@@ -94,7 +94,6 @@ final class PaymentCardDecoViewController: BaseViewController {
         configNavigationBar()
         attributes()
         layout()
-        bind()
     }
     
 }
@@ -108,13 +107,7 @@ extension PaymentCardDecoViewController {
     private func configNavigationBar() {
         self.navigationItem.title = "MC2 첫 회식"
     }
-    
-    private func bind() {
-        navigationBar.leftItem.rx.tap
-            .bind { self.navigationController?.popViewController(animated: true) }
-            .disposed(by: disposeBag)
-    }
-    
+
     private func attributes() {
         view.backgroundColor = .designSystem(.white2)
         scrollView.isScrollEnabled = true

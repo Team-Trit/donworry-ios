@@ -17,15 +17,7 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController, View {
     typealias Reactor = ProfileViewReactor
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var profileTableView = ProfileTableView()
     private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
     private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
@@ -46,11 +38,20 @@ final class ProfileViewController: BaseViewController, View {
 // MARK: - Bind
 extension ProfileViewController {
     private func dispatch(to reactor: Reactor) {
-        
+        navigationBar.leftItem.rx.tap
+            .map { Reactor.Action.backButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func render(_ reactor: Reactor) {
-        
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: ProfileStep.none)
+            .compactMap { $0 }
+            .drive(onNext: { [weak self] step in
+                self?.move(to: step)
+            })
+            .disposed(by: disposeBag)
     }
 }
 
@@ -62,7 +63,8 @@ extension ProfileViewController {
         view.addSubviews(navigationBar, profileTableView, inquiryButtonView, questionButtonView, blogButtonView, accountButtonStackView)
         
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         profileTableView.snp.makeConstraints { make in
@@ -92,6 +94,18 @@ extension ProfileViewController {
         accountButtonStackView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
+        }
+    }
+}
+
+// MARK: - Routing
+extension ProfileViewController {
+    private func move(to step: ProfileStep) {
+        switch step {
+        case .none:
+            break
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
         }
     }
 }

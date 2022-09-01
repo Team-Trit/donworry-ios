@@ -32,16 +32,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }
 
     // MARK: - Views
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        // TODO: Navigation bar title 설정해줘야함
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
@@ -81,11 +72,12 @@ extension PaymentCardNameEditViewController {
         view.addSubviews(navigationBar, titleLabel, paymentNameLabel, nextButton)
 
         navigationBar.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom).offset(50)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
 

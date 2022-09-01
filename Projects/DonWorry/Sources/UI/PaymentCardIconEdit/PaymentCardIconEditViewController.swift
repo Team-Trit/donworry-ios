@@ -31,17 +31,7 @@
 //                                     Catogory(iconName: "ic_icecream")]
 //
 //    // MARK: - Views
-//    private lazy var navigationBar: CustomNavigationBar = {
-//        // TODO: nav bar title 설정해주기
-//        let v = CustomNavigationBar()
-//        v.leftItem.rx.tap
-//            .bind {
-//                self.navigationController?.popViewController(animated: true)
-//            }
-//            .disposed(by: disposeBag)
-//        return v
-//    }()
-//
+//    private lazy var navigationBar = DWNavigationBar()
 //    private lazy var titleLabel: UILabel = {
 //        $0.text = "정산내역 아이콘을\n선택해주세요"
 //        $0.numberOfLines = 2
@@ -75,17 +65,17 @@
 //// MARK: - setUI
 //
 //extension PaymentCardIconEditViewController {
-//
 //    private func setUI() {
 //        view.backgroundColor = .designSystem(.white)
 //        view.addSubviews(navigationBar, titleLabel, nextButton, iconCollectionView)
 //
 //        navigationBar.snp.makeConstraints {
-//            $0.top.leading.trailing.equalToSuperview()
+//            $0.top.equalTo(view.safeAreaLayoutGuide)
+//            $0.leading.trailing.equalToSuperview()
 //        }
 //
 //        titleLabel.snp.makeConstraints {
-//            $0.top.equalTo(navigationBar.snp.bottom).offset(50)
+//            $0.top.equalTo(navigationBar.snp.bottom).offset(30)
 //            $0.leading.trailing.equalToSuperview().inset(25)
 //        }
 //

@@ -218,6 +218,7 @@ extension HomeViewController {
             self.navigationController?.pushViewController(alertViewController, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()
+            profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .paymentCardList:
             guard let reactor = reactor else { return }

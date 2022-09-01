@@ -8,8 +8,15 @@
 
 import ReactorKit
 
+enum ProfileStep {
+    case pop
+    case none
+}
+
 final class ProfileViewReactor: Reactor {
     enum Action {
+        case backButtonPressed
+        
         case updateProfileImageButtonPressed
         case updateNickNameButtonPressed
         case updateAccountButtonPressed
@@ -27,6 +34,8 @@ final class ProfileViewReactor: Reactor {
     }
     
     enum Mutation {
+        case routeTo(ProfileStep)
+        
         case showUpdateImageSheet
         case navigateToUpdateNickNameVC
         case navigateToUpdateAccountVC
@@ -45,7 +54,7 @@ final class ProfileViewReactor: Reactor {
     }
     
     struct State {
-        
+        @Pulse var step: ProfileStep?
     }
     
     let initialState: State
@@ -56,6 +65,9 @@ final class ProfileViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .backButtonPressed:
+            return .just(.routeTo(.pop))
+            
         case .updateProfileImageButtonPressed:
             return .just(Mutation.showUpdateImageSheet)
             
@@ -95,6 +107,9 @@ final class ProfileViewReactor: Reactor {
         var state = state
         
         switch mutation {
+        case .routeTo(let step):
+            state.step = step
+            
         case .showUpdateImageSheet:
             break
         case .navigateToUpdateNickNameVC:

@@ -23,16 +23,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     let viewModel = PaymentCardDetailViewModel()
     
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        // TODO: Navigation bar title 설정해줘야합니다
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     
     fileprivate let priceBigContainerView: UIView = {
         let view = UIView()
@@ -183,6 +174,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         super.viewDidLoad()
         attributes()
         layout()
+        bind()
     }
     
     private func attributes() {
@@ -211,6 +203,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
 
 //MARK: Layout
 extension PaymentCardDetailViewController {
+    private func bind() {
+        navigationBar.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+    }
+    
     private func layout() {
         
         let totalBottomView = UIView()
@@ -218,7 +218,7 @@ extension PaymentCardDetailViewController {
         totalBottomView.anchor2(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         totalBottomView.backgroundColor = .designSystem(.grayF6F6F6)
         
-        let spacingView =  CustomNavigationBar.init(title: viewModel.paymentCardName)
+        let spacingView =  DWNavigationBar.init(title: viewModel.paymentCardName)
         totalBottomView.addSubview(spacingView)
         spacingView.anchor2(top: totalBottomView.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
         //        spacingView.backgroundColor = .red
