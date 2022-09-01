@@ -12,7 +12,7 @@ import Foundation
 public struct PaymentCard {
     public var id: Int
     public var name: String
-    public var cardIcon: PaymentCardIcon
+    public var cardIcon: CategoryIcon
     public var totalAmount: Money
     public var payer: User
     public var backgroundColor: String
@@ -23,7 +23,7 @@ public struct PaymentCard {
     
     public init(id: Int,
                 name: String,
-                cardIcon: PaymentCardIcon,
+                cardIcon: CategoryIcon,
                 totalAmount: Money,
                 payer: User,
                 backgroundColor: String,

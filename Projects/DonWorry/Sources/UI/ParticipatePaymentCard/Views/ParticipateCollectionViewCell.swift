@@ -31,12 +31,12 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             
             cardNameLabel.text = paymentCard.name
             
-            switch paymentCard.cardIcon {
-            case .chicken:
-                iconImageView.image = UIImage(named: "chicken")
-            default:
-                iconImageView.image = UIImage(named: "chicken")
-            }
+//            switch paymentCard.cardIcon {
+//            case .chicken:
+//                iconImageView.image = UIImage(named: "chicken")
+//            default:
+//                iconImageView.image = UIImage(named: "chicken")
+//            }
             
             let numberFormatter = NumberFormatter()
             numberFormatter.numberStyle = .decimal

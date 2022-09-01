@@ -20,7 +20,6 @@ struct PaymentCardCellViewModel: Equatable {
     var participatedUserList: [User]
     var dateString: String
     var backgroundColor: String
-    var yetCompleted: Bool
 
     struct User: Equatable {
         var id: Int
@@ -55,7 +54,7 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                     }
                 )
             }
-            self.completeCoverView.isHidden = (viewModel?.yetCompleted ?? false)
+//            self.completeCoverView.isHidden = (viewModel?.yetCompleted ?? false)
         }
     }
     override init(frame: CGRect) {

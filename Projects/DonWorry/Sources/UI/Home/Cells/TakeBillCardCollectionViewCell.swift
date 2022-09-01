@@ -10,7 +10,6 @@ import UIKit
 import DesignSystem
 
 struct TakeBillCardCellViewModel: Equatable {
-    var giverID: Int
     var amount: String
     var isCompleted: Bool
 }

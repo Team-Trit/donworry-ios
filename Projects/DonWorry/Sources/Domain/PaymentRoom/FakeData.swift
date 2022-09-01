@@ -43,7 +43,7 @@ extension PaymentCard {
         .init(
             id: 1,
             name: "1차 고깃집 파티",
-            cardIcon: .chicken,
+            cardIcon: .init(id: 1, content: "", imageURL: ""),
             totalAmount: 120000,
             payer: .dummyUser1,
             backgroundColor: "#4A2597",
@@ -57,7 +57,7 @@ extension PaymentCard {
         .init(
             id: 2,
             name: "2차 유스택시",
-            cardIcon: .chicken,
+            cardIcon: .init(id: 2, content: "", imageURL: ""),
             totalAmount: 21000,
             payer: .dummyUser1,
             backgroundColor: "#FF5454",
@@ -71,7 +71,7 @@ extension PaymentCard {
         .init(
             id: 2,
             name: "3차 볼링장",
-            cardIcon: .chicken,
+            cardIcon: .init(id: 3, content: "", imageURL: ""),
             totalAmount: 132000,
             payer: .dummyUser2,
             backgroundColor: "#4A2597",
