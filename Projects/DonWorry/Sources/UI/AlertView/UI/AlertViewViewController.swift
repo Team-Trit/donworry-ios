@@ -19,10 +19,7 @@ final class AlertViewViewController: BaseViewController {
     #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
     let viewModel = AlertViewViewModel()
     
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,19 +40,20 @@ final class AlertViewViewController: BaseViewController {
 }
 
 extension AlertViewViewController {
-
     private func bind() {
         navigationBar.leftItem.rx.tap
             .bind {
                 self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
+        
         navigationBar.rightItem!.rx.tap
             .bind {
                 // TODO: 전체 삭제
             }
             .disposed(by: disposeBag)
     }
+    
     private func layout() {
         view.addSubview(tableView)
         view.addSubviews(navigationBar, tableView)
@@ -68,7 +66,8 @@ extension AlertViewViewController {
         tableView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 25).isActive = true
     }
 }
 
