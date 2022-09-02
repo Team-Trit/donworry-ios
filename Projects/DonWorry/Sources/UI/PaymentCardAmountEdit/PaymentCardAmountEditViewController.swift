@@ -19,16 +19,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "<"]
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        // TODO: Nav bar title 설정해주기
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -81,6 +72,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         super.viewDidLoad()
         self.reactor = PaymentCardAmountEditReactor()
         setUI()
+        bindBackButton()
     }
     
     func bind(reactor: Reactor) {
@@ -119,18 +111,32 @@ extension PaymentCardAmountEditViewController {
             .distinctUntilChanged()
             .bind(to: amountLabel.rx.text)
             .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.amount != "0" }
+            .distinctUntilChanged()
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
     }
 }
 
 // MARK: - Layout
 extension PaymentCardAmountEditViewController {
+    private func bindBackButton() {
+        navigationBar.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+    }
+    
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
         view.addSubviews(navigationBar, imageBackgroundView, iconImageView, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
         
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         imageBackgroundView.snp.makeConstraints { make in

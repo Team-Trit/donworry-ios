@@ -15,6 +15,7 @@ final class AgreeTermViewReactor: Reactor, Stepper {
     private let termUseCase: TermUseCase
     
     enum Action {
+        case backButtonPressed
         case doneButtonPressed
     }
     
@@ -35,6 +36,10 @@ final class AgreeTermViewReactor: Reactor, Stepper {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .backButtonPressed:
+            self.steps.accept(DonworryStep.popViewController)
+            return .empty()
+            
         case .doneButtonPressed:
             self.steps.accept(DonworryStep.confirmTermIsRequired)
             return .just(Mutation.presentConfirmTermSheet)

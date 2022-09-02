@@ -18,8 +18,8 @@ import RxDataSources
 final class PaymentCardListViewController: BaseViewController, View {
     typealias Reactor = PaymentCardListReactor
 
-    lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
+    lazy var navigationBar: DWNavigationBar = {
+        let v = DWNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
         return v
     }()
     lazy var paymentRoomStackView: UIStackView = {

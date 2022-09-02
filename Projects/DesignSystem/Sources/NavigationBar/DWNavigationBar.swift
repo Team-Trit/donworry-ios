@@ -1,5 +1,5 @@
 //
-//  CustomNavigationBar.swift
+//  DWNavigationBar.swift
 //  DesignSystem
 //
 //  Created by 김승창 on 2022/08/29.
@@ -10,7 +10,7 @@ import UIKit
 
 import SnapKit
 
-final public class CustomNavigationBar: UIView {
+final public class DWNavigationBar: UIView {
     public lazy var leftItem: UIButton = {
         let v = UIButton(type: .system)
         let image = UIImage(
@@ -80,7 +80,7 @@ final public class CustomNavigationBar: UIView {
 }
 
 // MARK: - Layout
-extension CustomNavigationBar {
+extension DWNavigationBar {
     private func setUI() {
         self.snp.makeConstraints { make in
             make.height.equalTo(50)
@@ -93,7 +93,7 @@ extension CustomNavigationBar {
         leftItem.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(15)
-            make.width.height.equalTo(40)
+            make.width.height.equalTo(50)
         }
     }
     

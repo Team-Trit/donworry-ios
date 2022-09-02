@@ -16,15 +16,7 @@ import DonWorryExtensions
 import SnapKit
 
 final class EditNickNameViewController: BaseViewController, View {
-    private lazy var navigationBar: CustomNavigationBar = {
-        let v = CustomNavigationBar()
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         $0.text = "닉네임을\n수정해볼까요?"
         $0.numberOfLines = 2
@@ -42,6 +34,7 @@ final class EditNickNameViewController: BaseViewController, View {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
+        bindBackButton()
     }
 
     func bind(reactor: EditNickNameViewReactor) {
@@ -53,6 +46,13 @@ final class EditNickNameViewController: BaseViewController, View {
 // MARK: setUI
 
 extension EditNickNameViewController {
+    func bindBackButton() {
+        navigationBar.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+    }
 
     private func setUI() {
         nextButton.title = "다음" // TODO: 수정해야해요
@@ -61,7 +61,8 @@ extension EditNickNameViewController {
         view.addSubviews(navigationBar, titleLabel, roomInfoLabel,nextButton)
 
         navigationBar.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
         }
         
         titleLabel.snp.makeConstraints {
