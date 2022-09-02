@@ -163,8 +163,8 @@ extension PaymentCardDecoViewController {
     }
     
     @objc private func didTapCompleteButton() {
-        // TODO: 완료 버튼
-        print("완료 버튼")
+        // TODO: 수정해야합니다.
+        NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
     }
 
 }

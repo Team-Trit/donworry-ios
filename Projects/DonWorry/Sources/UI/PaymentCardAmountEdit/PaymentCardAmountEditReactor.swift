@@ -8,6 +8,11 @@
 
 import ReactorKit
 
+enum PaymentCardAmountEditStep {
+    case pop
+    case paymentCardDeco
+}
+
 final class PaymentCardAmountEditReactor: Reactor {
     // TODO: RxFlow, Service 추가
     enum Action {
@@ -17,13 +22,15 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     enum Mutation {
         case updateAmount(with: String)
-        case navigateToNext
+        case routeTo(PaymentCardAmountEditStep)
     }
     
     struct State {
         let iconName: String
         let paymentTitle: String
         var amount: String
+
+        @Pulse var step: PaymentCardAmountEditStep?
     }
     
     let initialState: State
@@ -37,22 +44,21 @@ final class PaymentCardAmountEditReactor: Reactor {
         case let .numberPadPressed(pressedItem):
             return .just(.updateAmount(with: pressedItem))
         case .nextButtonPressed:
-            // TODO: Navigate to next VC
-            return .just(.navigateToNext)
+            return .just(.routeTo(.paymentCardDeco))
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
         case let .updateAmount(with):
-            state.amount = setNewAmount(state.amount, with: with)
-        case .navigateToNext:
-            break
+            newState.amount = setNewAmount(state.amount, with: with)
+        case .routeTo(let step):
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }
 

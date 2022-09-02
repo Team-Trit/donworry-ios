@@ -8,7 +8,6 @@
 
 import UIKit
 
-#if DEBUG
 import SwiftUI
 
 public extension UIViewController {
@@ -40,4 +39,3 @@ public extension UIViewController {
     }
     
 }
-#endif

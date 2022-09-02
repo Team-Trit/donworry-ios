@@ -10,7 +10,7 @@ import UIKit
 
 public extension UIImage {
     convenience init?(_ asset: Asset) {
-        guard let bundle = Bundle(identifier: "com.Tr-iT.DesignSystem") else {
+        guard let bundle = Bundle(identifier: "com.TriT.DesignSystem") else {
             return nil
         }
         self.init(named: asset.rawValue, in: bundle, with: nil)

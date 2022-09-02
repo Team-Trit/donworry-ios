@@ -100,6 +100,17 @@ final class PaymentCardListViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        setNotification()
+    }
+
+    func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(popToSelf), name: .init("popToPaymentCardList"), object: nil)
+    }
+
+    @objc
+    private func popToSelf() {
+        self.navigationController?.popToViewController(self, animated: true)
+
     }
 
     func bind(reactor: Reactor) {
@@ -139,10 +150,17 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.collectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
-
+        self.checkParticipatedButton.rx.tap.map { .didTapPaymentCardDetail }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         self.collectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 // TODO: 화면전환
+                let createCard = PaymentCardNameEditViewController(type: .create)
+                createCard.reactor = PaymentCardNameEditViewReactor()
+                self?.navigationController?.pushViewController(createCard, animated: true)
+
             }).disposed(by: disposeBag)
     }
 
@@ -228,6 +246,10 @@ extension PaymentCardListViewController {
             self.navigationController?.popViewController(animated: true)
         case .none:
             break
+        case .paymentCardDetail:
+            let paymentCardDetailViewController = PaymentCardDetailViewController()
+            paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
+            self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
         }
     }
 }

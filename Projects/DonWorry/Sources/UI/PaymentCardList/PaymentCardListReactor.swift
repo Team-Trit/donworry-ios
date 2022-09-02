@@ -14,7 +14,9 @@ import Models
 enum PaymentCardListStep {
     case pop
     case none
+    case paymentCardDetail
 }
+
 final class PaymentCardListReactor: Reactor {
     typealias Section = PaymentCardSection
     typealias Space = Entity.Space
@@ -22,6 +24,7 @@ final class PaymentCardListReactor: Reactor {
     enum Action {
         case setup
         case didTapBackButton
+        case didTapPaymentCardDetail
     }
 
     enum Mutation {
@@ -60,6 +63,8 @@ final class PaymentCardListReactor: Reactor {
             return Observable.concat([cardList, space])
         case .didTapBackButton:
             return .just(.routeTo(.pop))
+        case .didTapPaymentCardDetail:
+            return .just(.routeTo(.paymentCardDetail))
         }
     }
 

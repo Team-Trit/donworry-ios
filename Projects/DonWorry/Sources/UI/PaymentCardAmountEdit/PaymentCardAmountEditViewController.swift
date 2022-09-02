@@ -59,7 +59,6 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
-        v.isEnabled = false
         return v
     }()
     private lazy var numberPadCollectionView: NumberPadCollectionView = {
@@ -111,11 +110,33 @@ extension PaymentCardAmountEditViewController {
             .distinctUntilChanged()
             .bind(to: amountLabel.rx.text)
             .disposed(by: disposeBag)
-        
+
+        // TODO: 화면연결을위해 주석처리했어요
+        /*
         reactor.state.map { $0.amount != "0" }
             .distinctUntilChanged()
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
+        */
+
+        reactor.pulse(\.$step)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext:{ [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
+    }
+}
+
+extension PaymentCardAmountEditViewController {
+    func move(to step: PaymentCardAmountEditStep) {
+        switch step {
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        case .paymentCardDeco:
+            let deco = PaymentCardDecoViewController()
+            self.navigationController?.pushViewController(deco, animated: true)
+        }
     }
 }
 

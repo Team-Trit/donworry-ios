@@ -17,14 +17,12 @@ import SnapKit
 
 final class LoginViewController: BaseViewController, View {
     private lazy var labelStackView = LabelStackView()
-    #if DEBUG
     lazy var testUserButton: UIButton = {
         let v = UIButton()
         v.setTitle("", for: .normal)
         v.setBackgroundColor(.clear, for: .normal)
         return v
     }()
-    #endif
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.apple_login_button), for: .normal)
@@ -81,7 +79,7 @@ extension LoginViewController {
             make.top.equalTo(googleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
-        #if DEBUG
+        
         view.addSubview(testUserButton)
         testUserButton.snp.makeConstraints { make in
             make.width.height.equalTo(100)
@@ -92,7 +90,6 @@ extension LoginViewController {
             .map { .didTapTestUserButton }
             .bind(to: reactor!.action)
             .disposed(by: disposeBag)
-        #endif
     }
 }
 
@@ -135,7 +132,6 @@ extension LoginViewController {
     }
 }
 
-#if DEBUG
 extension LoginViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         switch motion {
@@ -147,4 +143,3 @@ extension LoginViewController {
         }
     }
 }
-#endif

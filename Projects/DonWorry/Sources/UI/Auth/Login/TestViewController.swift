@@ -6,7 +6,6 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-#if DEBUG
 import UIKit
 import DonWorryExtensions
 import SnapKit
@@ -65,4 +64,3 @@ class TestViewController: UIViewController {
         view.endEditing(true)
     }
 }
-#endif
