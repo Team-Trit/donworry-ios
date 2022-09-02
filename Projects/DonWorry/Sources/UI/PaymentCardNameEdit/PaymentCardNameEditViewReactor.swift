@@ -10,35 +10,50 @@ import Foundation
 import ReactorKit
 import RxSwift
 
+enum PaymentCardNameEditStep {
+    case pop
+    case paymentCardIconEdit
+}
+
+enum PaymentCardNameEditViewType {
+    case create //default
+    case update
+}
+
 final class PaymentCardNameEditViewReactor: Reactor {
 
     enum Action {
-        // actiom cases
+        case didTapNextButton(PaymentCardNameEditViewType)
     }
 
     enum Mutation {
-        // mutation cases
+        case routeTo(PaymentCardNameEditStep)
     }
 
     struct State {
-        //state
+        @Pulse var step: PaymentCardNameEditStep?
     }
 
-    let initialState: State = State()
+    let initialState: State
 
     init() {
-        // init state initialState = State(...)
+        self.initialState = .init()
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
-        // switch action {
-        // }
+         switch action {
+         case .didTapNextButton(let type):
+             let step: PaymentCardNameEditStep = type == .create ? .paymentCardIconEdit : .pop
+             return .just(.routeTo(step))
+         }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        // switch mutation {
-        // }
+         switch mutation {
+         case .routeTo(let step):
+             newState.step = step
+         }
         return newState
     }
 }

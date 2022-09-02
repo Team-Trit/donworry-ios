@@ -19,10 +19,6 @@ import SnapKit
 final class PaymentCardNameEditViewController: BaseViewController, View {
 
     // MARK: - Init
-    enum PaymentCardNameEditViewType {
-        case create //default
-        case update
-    }
 
     var type: PaymentCardNameEditViewType = .create
 
@@ -45,7 +41,6 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
-        v.isEnabled = false
         return v
     }()
 
@@ -58,11 +53,32 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 
     // MARK: - Binding
     func bind(reactor: PaymentCardNameEditViewReactor) {
-        //binding here
+        nextButton.rx.tap.map { .didTapNextButton(self.type) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
     }
 
 }
 
+extension PaymentCardNameEditViewController {
+    func move(to step: PaymentCardNameEditStep) {
+        switch step {
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        case .paymentCardIconEdit:
+            let paymentCardIconEditViewController = PaymentCardIconEditViewController()
+            paymentCardIconEditViewController.reactor = PaymentCardIconEditViewReactor()
+            self.navigationController?.pushViewController(paymentCardIconEditViewController, animated: true)
+        }
+    }
+}
 // MARK: - setUI
 
 extension PaymentCardNameEditViewController {
