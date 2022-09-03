@@ -82,6 +82,42 @@ final class SelectBankViewReactor: Reactor, Stepper {
 // MARK: - Helper
 extension SelectBankViewReactor {
     private func performQuery(with filter: String) -> [String] {
-        return banks.filter { $0.hasPrefix(filter) }
+        let banks = banks.map { Bank(rawValue: $0)!.koreanName }
+            .filter { $0.hasPrefix(filter) }
+            .map { convertToBank($0) }
+        return banks
+    }
+    
+    private func convertToBank(_ koreanBank: String) -> String {
+        switch koreanBank {
+        case "경남은행": return "bankGYEONGNAM"
+        case "광주은행": return "bankGWANGJU"
+        case "국민은행": return "bankKB"
+        case "기업은행": return "bankIBK"
+        case "농협은행": return "bankNH"
+        case "대구은행": return "bankDAEGU"
+        case "부산은행": return "bankBUSAN"
+        case "산림조합중앙회": return "bankSANLIM"
+        case "산업은행": return "bankSANUP"
+        case "새마을금고": return "bankSAEMAEUL"
+        case "수협은행": return "bankSUHYUP"
+        case "신한은행": return "bankSHINHAN"
+        case "신협중앙회": return "bankSINHYEOP"
+        case "우리은행": return "bankWOORI"
+        case "우체국": return "bankEPOST"
+        case "저축은행": return "bankJEOCHOOK"
+        case "전북은행": return "bankJEONBOOK"
+        case "제주은행": return "bankJEJU"
+        case "카카오뱅크": return "bankKAKAO"
+        case "케이뱅크": return "bankK"
+        case "토스뱅크": return "bankTOSS"
+        case "하나은행": return "bankHANA"
+        case "한국씨티은행": return "bankCITI"
+        case "한국투자증권": return "bankHANTOO"
+        case "KB증권": return "bankKBSEC"
+        case "NH투자증권": return "bankNONGTOO"
+        case "SC제일은행": return "bankSC"
+        default: return ""
+        }
     }
 }
