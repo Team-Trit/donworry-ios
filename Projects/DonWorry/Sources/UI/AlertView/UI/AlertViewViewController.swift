@@ -85,10 +85,11 @@ extension AlertViewViewController: UITableViewDataSource, UITableViewDelegate {
         
         let messageTuple = viewModel.sortedMessages[indexPath.section]
         cell.configure(message: messageTuple[indexPath.row])
+        cell.selectionStyle = .none
         
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 10.0
     }
