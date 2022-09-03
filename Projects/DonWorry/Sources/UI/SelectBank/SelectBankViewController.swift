@@ -10,6 +10,7 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import Models
 import ReactorKit
 import RxCocoa
 import RxSwift
@@ -34,6 +35,7 @@ final class SelectBankViewController: BaseViewController, View {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         setUI()
     }
     
@@ -95,7 +97,7 @@ extension SelectBankViewController {
         bankCollectionView.rx.itemSelected
             .map {
                 guard let cell = self.bankCollectionView.cellForItem(at: $0) as? SelectBankCollectionViewCell else { return Reactor.Action.dismissButtonPressed }
-                return Reactor.Action.selectBank(cell.bankLabel.text!)
+                return Reactor.Action.selectBank(cell.bank!)
             }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)

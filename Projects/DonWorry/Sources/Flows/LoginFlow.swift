@@ -38,8 +38,8 @@ final class LoginFlow: Flow {
         case .bankSelectIsRequired:
             return self.presentBankSelectView()
             
-        case let .bankSelectIsComplete(selectedBank):
-            self.dismissBankSelectView(with: selectedBank)
+        case .bankSelectIsComplete:
+            self.dismissBankSelectView()
             return .none
             
         case .agreeTermIsRequired:
@@ -85,11 +85,7 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func dismissBankSelectView(with selectedBank: String?) {
-        // MARK: Business logic here is awkward...maybe?
-        if let selectedBank = selectedBank, let vc = self.rootViewController.topViewController as? EnterUserInfoViewController {
-            vc.accountStackView.accountInputField.chooseBankButton.setTitle(selectedBank, for: .normal)
-        }
+    private func dismissBankSelectView() {
         self.rootViewController.dismiss(animated: true)
     }
     

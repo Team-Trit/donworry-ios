@@ -14,6 +14,7 @@ import RxCocoa
 import RxFlow
 
 final class SelectBankViewReactor: Reactor, Stepper {
+    private let authViewModel = AuthViewModel.shared
     private let banks = Bank.allCases.map { $0.rawValue }
     
     let steps = PublishRelay<Step>()
@@ -21,17 +22,15 @@ final class SelectBankViewReactor: Reactor, Stepper {
     enum Action {
         case dismissButtonPressed
         case searchTextChanged(filter: String)
-        case selectBank(_ selectedBank: String)
+        case selectBank(_ selectedBank: Bank)
     }
     
     enum Mutation {
-        case updateLoading(Bool)
         case dismissSelectBankSheet
         case performQuery(filteredBankList: [String])
     }
     
     struct State {
-        var isLoading: Bool
         var snapshot: NSDiffableDataSourceSnapshot<Section, String>
     }
     
@@ -42,7 +41,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
         initialSnapshot.appendSections([.main])
         initialSnapshot.appendItems(banks)
         self.initialState = State(
-            isLoading: false,
             snapshot: initialSnapshot
         )
     }
@@ -50,19 +48,16 @@ final class SelectBankViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .dismissButtonPressed:
-            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: nil))
+            self.steps.accept(DonworryStep.bankSelectIsComplete)
             return .just(Mutation.dismissSelectBankSheet)
             
         case let .searchTextChanged(filter):
             let filteredBankList = performQuery(with: filter)
-            return Observable.concat([
-                .just(Mutation.updateLoading(true)),
-                .just(Mutation.performQuery(filteredBankList: filteredBankList)),
-                .just(Mutation.updateLoading(false))
-            ])
+            return .just(Mutation.performQuery(filteredBankList: filteredBankList))
             
         case let .selectBank(selectedBank):
-            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
+            self.authViewModel.bank.onNext(selectedBank)
+            self.steps.accept(DonworryStep.bankSelectIsComplete)
             return .just(Mutation.dismissSelectBankSheet)
         }
     }
@@ -71,9 +66,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
-        case .updateLoading(let isLoading):
-            state.isLoading = isLoading
-            
         case .dismissSelectBankSheet:
             break
             

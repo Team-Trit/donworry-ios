@@ -30,9 +30,11 @@ final class EnterUserInfoViewController: BaseViewController, View {
         v.isEnabled = false
         return v
     }()
+    private let authViewModel = AuthViewModel.shared
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         setUI()
     }
     
@@ -120,6 +122,13 @@ extension EnterUserInfoViewController {
     }
     
     private func render(_ reactor: EnterUserInfoViewReactor) {
+        authViewModel.bank
+            .asDriver(onErrorJustReturn: .bankBUSAN)
+            .drive(onNext: { [weak self] in
+                self?.accountStackView.accountInputField.chooseBankButton.setTitle($0.koreanName, for: .normal)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.isNextButtonAvailable.allSatisfy { $0 } }
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)

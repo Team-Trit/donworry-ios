@@ -16,7 +16,7 @@ enum DonworryStep: Step {
     case loginIsRequired
     case userInfoIsRequired
     case bankSelectIsRequired
-    case bankSelectIsComplete(selectedBank: String?)
+    case bankSelectIsComplete
     case agreeTermIsRequired
     case confirmTermIsRequired
     case homeIsRequired
