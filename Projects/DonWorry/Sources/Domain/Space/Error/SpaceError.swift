@@ -1,5 +1,5 @@
 //
-//  PaymentRoomErro.swift
+//  SpaceError.swift
 //  DonWorry
 //
 //  Created by Woody on 2022/08/13.
@@ -8,4 +8,4 @@
 
 import Foundation
 
-enum PaymentRoomError: Error {}
+enum SpaceError: Error {}

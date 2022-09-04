@@ -1,5 +1,5 @@
 //
-//  GetPaymentRoomListAPI.swift
+//  GetSpaceListAPI.swift
 //  DonWorryNetworking
 //
 //  Created by Woody on 2022/08/31.
@@ -9,8 +9,8 @@
 import Foundation
 import Moya
 
-public struct GetPaymentRoomListAPI: ServiceAPI {
-    public typealias Response = [DTO.PaymentRoom]
+public struct GetSpaceListAPI: ServiceAPI {
+    public typealias Response = [DTO.Space]
     public init() {}
     public var path: String { "/spaces/users" }
     public var method: Method { .get }

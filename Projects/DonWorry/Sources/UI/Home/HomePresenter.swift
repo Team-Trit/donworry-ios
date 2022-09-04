@@ -14,7 +14,7 @@ protocol HomePresenter {
     func formatSection(
         spaceList: [Entity.Space],
         selectedIndex: Int
-    ) -> [PaymentRoomCellViewModel]
+    ) -> [SpaceCellViewModel]
 
     func formatSection(
         payments: [Entity.SpacePayment],
@@ -27,7 +27,7 @@ final class HomePresenterImpl: HomePresenter {
     func formatSection(
         spaceList: [Entity.Space],
         selectedIndex: Int
-    ) -> [PaymentRoomCellViewModel] {
+    ) -> [SpaceCellViewModel] {
         return spaceList.enumerated().map {
             .init(title: $0.element.title, isSelected: $0.offset == selectedIndex)
         }
