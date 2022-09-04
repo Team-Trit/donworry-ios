@@ -20,4 +20,10 @@ struct Formatter {
         formatter.dateFormat = "MM/dd"
         return formatter
     }()
+
+    static let fullDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
 }

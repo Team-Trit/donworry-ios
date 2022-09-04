@@ -18,32 +18,38 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         self.network = network
     }
 
-    func fetchPaymentCardList(spaceID: Int) -> Observable<[PaymentCard]> {
-        network.request(GetPaymentCardListAPI(spaceID: spaceID))
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList> {
+        return network.request(GetPaymentCardListAPI(spaceID: spaceID))
             .compactMap { response in
-                response.map { [weak self] dto in return self?.convertToPaymentCard(dto) ?? .dummyPaymentCard1 } // TODO: 더미 없애기
+                return response.compactMap { [weak self] dto in
+                    return self?.convertToPaymentCard(dto)
+                }
             }.asObservable()
     }
 
-    private func convertToPaymentCard(_ dto: DTO.PaymentCard) -> PaymentCard {
+    private func convertToPaymentCard(_ dto: DTO.PaymentCard) -> PaymentCardModels.FetchCardList.Response {
         return .init(
             id: dto.id,
+            categoryID: dto.categoryID,
+            taker: .init(id: dto.taker.id, nickname: dto.taker.nickname, imgURL: dto.taker.imgURL),
+            givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL)},
+            spaceJoinUserCount: dto.spaceJoinUserCount,
+            cardJoinUserCount: dto.cardJoinUserCount,
+            bank: dto.bank,
+            number: dto.number,
+            holder: dto.holder,
             name: dto.name,
-            cardIcon: .init(id: 1, content: "", imageURL: ""), // TODO: 카테고리 아이콘 요청
             totalAmount: dto.totalAmount,
-            payer: convertToUser(dto.taker),
-            backgroundColor: dto.bgColor,
-            date: Formatter.paymentCardDateFormatter.date(from: dto.paymentDate) ?? Date(),
-            bankAccount: .init(bank: dto.bank, accountHolderName: "", accountNumber: ""), // TODO: 이것도 필요하지않나? 흐음...
-            images: [],
-            participatedUserList: dto.givers.map { .init(id: $0.id, nickName: $0.nickname, bankAccount: .empty, image: $0.imgURL) }
+            status: dto.status,
+            bgColor: dto.bgColor,
+            paymentDate: dto.paymentDate
         )
     }
-    private func convertToUser(_ dto: DTO.PaymentCard.User) -> User {
+    private func convertToUser(_ dto: DTO.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.Taker {
         return .init(
             id: dto.id,
-            nickName: dto.nickname,
-            bankAccount: .empty,
-            image: dto.imgURL)
+            nickname: dto.nickname,
+            imgURL: dto.imgURL
+        )
     }
 }

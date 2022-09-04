@@ -53,13 +53,7 @@ final class AddPaymentCardCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.plusStackView)
         self.plusStackView.addArrangedSubviews(self.plusButton, self.plusLabel)
 
-        self.contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(340)
-            make.height.equalTo(127)
-        }
         self.plusStackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
             make.top.bottom.equalToSuperview().inset(30)
             make.leading.trailing.equalToSuperview().inset(30)
         }
@@ -67,7 +61,5 @@ final class AddPaymentCardCollectionViewCell: UICollectionViewCell {
             make.width.height.equalTo(36)
         }
         self.plusButton.roundCorners(18)
-
     }
-
 }

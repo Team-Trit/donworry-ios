@@ -10,25 +10,27 @@ import Foundation
 
 extension DTO {
     public struct PaymentCard: Decodable {
-        public let id, spaceID, categoryID: Int
+        public let id, categoryID: Int
         public let taker: User
         public let givers: [User]
+        public let spaceJoinUserCount, cardJoinUserCount: Int
         public let bank, number, holder, name: String
         public let totalAmount: Int
-        public let status: String
-        public let position: Int
-        public let bgColor, paymentDate: String
+        public let status, bgColor, paymentDate: String
 
         enum CodingKeys: String, CodingKey {
             case id
-            case spaceID = "spaceId"
             case categoryID = "categoryId"
-            case taker, givers, bank, number, holder, name, totalAmount, status, position, bgColor, paymentDate
+            case taker
+            case spaceJoinUserCount, cardJoinUserCount
+            case givers, bank, number, holder, name
+            case totalAmount, status, bgColor, paymentDate
         }
 
         public struct User: Codable {
             public let id: Int
-            public let nickname, imgURL: String
+            public let nickname: String
+            public let imgURL: String?
 
             enum CodingKeys: String, CodingKey {
                 case id, nickname
