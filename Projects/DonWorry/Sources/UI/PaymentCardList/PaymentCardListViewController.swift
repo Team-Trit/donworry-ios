@@ -53,7 +53,6 @@ final class PaymentCardListViewController: BaseViewController, View {
     }()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.estimatedItemSize = .init(width: 340, height: 20)
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -145,6 +144,10 @@ final class PaymentCardListViewController: BaseViewController, View {
                     }
                 }
             })
+            .disposed(by: disposeBag)
+
+
+        self.collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
         self.collectionView.rx.setDataSource(self)
@@ -274,6 +277,20 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
             cell.viewModel = reactor.currentState.paymentCardListViewModel[indexPath.item]
             return cell
+        }
+    }
+}
+
+extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        if indexPath.item == (reactor?.currentState.paymentCardListViewModel.count ?? 0) {
+            return .init(width: 340, height: 127)
+        } else {
+            return .init(width: 340, height: 216)
         }
     }
 }

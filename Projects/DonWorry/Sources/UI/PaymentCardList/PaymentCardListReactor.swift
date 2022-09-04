@@ -9,7 +9,6 @@
 import Foundation
 import ReactorKit
 import RxSwift
-import Models
 
 enum PaymentCardListStep {
     case pop
@@ -29,7 +28,7 @@ final class PaymentCardListReactor: Reactor {
 
     enum Mutation {
         case updateSpace(Space)
-        case updatePaymentCardList([PaymentCard])
+        case updatePaymentCardList(PaymentCardModels.FetchCardList.ResponseList)
         case routeTo(PaymentCardListStep)
     }
 
@@ -85,10 +84,4 @@ final class PaymentCardListReactor: Reactor {
 
     private let paymentCardService: PaymentCardService
     private let paymentCardListPresenter: PaymentCardListPresenter
-}
-
-extension PaymentCardListReactor {
-    var dummyPaymentRoom: PaymentRoom {
-        .dummyPaymentRoom2
-    }
 }

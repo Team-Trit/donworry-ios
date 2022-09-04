@@ -7,40 +7,39 @@
 //
 
 import Foundation
-import Models
 import DonWorryExtensions
 
 protocol PaymentCardListPresenter {
     func formatSection(
-        from paymentCardList: [PaymentCard]
+        from paymentCardList: PaymentCardModels.FetchCardList.ResponseList
     ) -> [PaymentCardCellViewModel]
 }
 
 final class PaymentCardPresenterImpl: PaymentCardListPresenter {
 
     func formatSection(
-        from paymentCardList: [PaymentCard]
+        from paymentCardList: PaymentCardModels.FetchCardList.ResponseList
     ) -> [PaymentCardCellViewModel] {
         return paymentCardList.map { convert($0) }
     }
 
-    private func convert(_ paymentCard: PaymentCard) -> PaymentCardCellViewModel {
+    private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response) -> PaymentCardCellViewModel {
         return .init(
             id: paymentCard.id,
                      name: paymentCard.name,
             totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
-            number: paymentCard.participatedUserList.count,
+            number: paymentCard.spaceJoinUserCount,
             cardIconImageName: paymentCard.name,
             payer: .init(
-                id: paymentCard.payer.id,
-                nickName: paymentCard.payer.nickName,
-                imageURL: paymentCard.payer.image
+                id: paymentCard.taker.id,
+                nickName: paymentCard.taker.nickname,
+                imageURL: paymentCard.taker.imgURL
             ),
-            participatedUserList: paymentCard.participatedUserList.map {
-                .init(id: $0.id, nickName: $0.nickName, imageURL: $0.image)
+            participatedUserList: paymentCard.givers.map {
+                .init(id: $0.id, nickName: $0.nickname, imageURL: $0.imgURL)
             },
-            dateString: Formatter.paymentCardDateFormatter.string(from: paymentCard.date),
-            backgroundColor: paymentCard.backgroundColor)
+            dateString: dateFormatting(paymentCard.paymentDate),
+            backgroundColor: paymentCard.bgColor)
     }
 
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {
@@ -51,5 +50,12 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
             result = "0원"
         }
         return result
+    }
+
+    private func dateFormatting(_ dateString: String) -> String {
+        if let date = Formatter.fullDateFormatter.date(from: dateString) {
+            return Formatter.paymentCardDateFormatter.string(from: date)
+        }
+        return "00/00"
     }
 }
