@@ -30,7 +30,8 @@ final class HomeReactor: Reactor {
     typealias Index = Int
 
     enum Action {
-        case setup
+        case viewDidLoad
+        case viewWillAppear
         case didSelectSpace(at: Int)
         case didTapAlarm
         case didTapSearchButton
@@ -56,7 +57,6 @@ final class HomeReactor: Reactor {
         var spaceViewModelList: [SpaceCellViewModel] // 정산방 뷰모델
         var sections: [Section] // 정산카드 뷰모델
         var selectedSpaceIndex: Int // 선택된 정산방 index
-        var beforeSelectedSpaceIndex: Int
         var homeHeader: HeaderModel? // 헤더 뷰모델
 
         @Pulse var reload: Void?
@@ -71,18 +71,20 @@ final class HomeReactor: Reactor {
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
-        self.SpaceService = SpaceService
+        self.spaceService = SpaceService
         self.homePresenter = homePresenter
-        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0, beforeSelectedSpaceIndex: 0)
+        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .setup:
+        case .viewDidLoad:
             return .concat([
                 getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) },
-                SpaceService.fetchSpaceList().map { .updateSpaceList($0) }
+                spaceService.fetchSpaceList().map { .updateSpaceList($0) }
             ])
+        case .viewWillAppear:
+            return spaceService.fetchSpaceList().map { .updateSpaceList($0) }
         case .didSelectSpace(let index):
             return .just(.updateSpace(index))
         case .didTapAlarm:
@@ -117,7 +119,7 @@ final class HomeReactor: Reactor {
             if let selectedSpace = spaceList.first {
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
-                    selectedIndex: 0
+                    selectedIndex: currentState.selectedSpaceIndex
                 )
                 newState.sections = homePresenter.formatSection(
                     payments: selectedSpace.payments,
@@ -129,7 +131,6 @@ final class HomeReactor: Reactor {
         case .updateSpace(let index):
             let selectedSpace = currentState.spaceList[index]
             newState.selectedSpaceIndex = index
-            newState.beforeSelectedSpaceIndex = currentState.selectedSpaceIndex
             newState.spaceViewModelList = homePresenter.formatSection(
                 spaceList: currentState.spaceList,
                 selectedIndex: index
@@ -147,7 +148,7 @@ final class HomeReactor: Reactor {
     }
 
     private let getUserAccountUseCase: GetUserAccountUseCase
-    private let SpaceService: SpaceService
+    private let spaceService: SpaceService
     private let homePresenter: HomePresenter
 }
 

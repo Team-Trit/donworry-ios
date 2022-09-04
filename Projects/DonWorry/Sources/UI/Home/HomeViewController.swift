@@ -29,7 +29,11 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     }
 
     private func dispatch(to reactor: Reactor) {
-        self.rx.viewDidLoad.map { _ in .setup }
+        self.rx.viewDidLoad.map { _ in .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.rx.viewWillAppear.map { _ in .viewWillAppear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -50,12 +54,16 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         self.spaceCollectionView.rx.itemSelected
-            .subscribe(onNext: { [weak self] _ in
+            .do(onNext: { [weak self] _ in
                 self?.billCardCollectionView.scrollToItem(
                     at: .init(item: 0, section: 0),
                     at: .centeredHorizontally, animated: false
                 )
-            }).disposed(by: disposeBag)
+            })
+            .map { .didSelectSpace(at: $0.item) }
+            .bind(to: reactor.action)
+
+            .disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in self?.billCardCollectionView.cellForItem(at: indexPath) }
@@ -90,16 +98,19 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
+        reactor.state.map { $0.selectedSpaceIndex }
+            .subscribe(onNext: { [weak self] _ in
+                self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
+            }).disposed(by: disposeBag)
+
         reactor.state.map { $0.sections }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] section in
                 self?.billCardCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
         spaceCollectionView.rx.setDataSource(self)
-            .disposed(by: disposeBag)
-
-        spaceCollectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
         billCardCollectionView.rx.setDataSource(self)
@@ -222,15 +233,21 @@ extension HomeViewController {
             profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
         case .spaceList:
-            guard let reactor = reactor else { return }
-            let paymentCardListViewController = PaymentCardListViewController()
-            let selectedIndex = reactor.currentState.selectedSpaceIndex
-            let selectedSpace = reactor.currentState.spaceList[selectedIndex]
-            paymentCardListViewController.reactor = PaymentCardListReactor(space: selectedSpace)
-            self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
+            self.navigationController?.pushViewController(paymentCardListViewController(), animated: true)
         case .none:
             break
         }
+    }
+
+    private func paymentCardListViewController() -> PaymentCardListViewController {
+        guard let reactor = reactor else { return .init() }
+        let paymentCardListViewController = PaymentCardListViewController()
+        let selectedIndex = reactor.currentState.selectedSpaceIndex
+        let selectedSpace = reactor.currentState.spaceList[selectedIndex]
+        paymentCardListViewController.reactor = PaymentCardListReactor(
+            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, shareID: selectedSpace.shareID)
+        )
+        return paymentCardListViewController
     }
 }
 
@@ -332,16 +349,5 @@ extension HomeViewController: UICollectionViewDataSource {
         )
         cell.tag = 3
         return cell
-    }
-}
-
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let reactor = reactor else { return }
-        reactor.action.onNext(.didSelectSpace(at: indexPath.item))
-        spaceCollectionView.reloadItems(at: [
-            IndexPath(item: reactor.currentState.selectedSpaceIndex, section: 0),
-            IndexPath(item: reactor.currentState.beforeSelectedSpaceIndex, section: 0)
-        ])
     }
 }
