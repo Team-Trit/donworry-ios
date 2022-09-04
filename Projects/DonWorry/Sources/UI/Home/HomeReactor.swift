@@ -25,8 +25,8 @@ enum HomeStep {
 final class HomeReactor: Reactor {
     typealias Section = BillCardSection
     typealias HeaderModel = HomeHeaderViewModel
-    typealias SpaceList = [Entity.Space]
-    typealias Space = Entity.Space
+    typealias SpaceList = [SpaceModels.FetchSpaceList.Space]
+    typealias Space = SpaceModels.FetchSpaceList.Space
     typealias Index = Int
 
     enum Action {
