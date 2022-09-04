@@ -6,6 +6,8 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Foundation
+import DonWorryExtensions
 import DonWorryNetworking
 import RxSwift
 
@@ -69,4 +71,22 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             imgURL: dto.imgURL
         )
     }
+    
+    
+    private func convertToPostPaymentCard(spaceId: Int, paymentCard: PaymentCard) -> PostPaymentCardAPI.Request {
+        return .init(
+            spaceID: spaceId,
+            categoryID: 0,
+            bank: paymentCard.bankAccount?.bank ?? "",
+            number: paymentCard.bankAccount?.accountNumber ?? "",
+            holder: paymentCard.bankAccount?.accountHolderName ?? "",
+            name: paymentCard.name,
+            totalAmount: paymentCard.totalAmount,
+            position: 0,
+            bgColor: paymentCard.backgroundColor,
+            paymentDate: paymentCard.date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss")
+        )
+    }
+    
+    
 }
