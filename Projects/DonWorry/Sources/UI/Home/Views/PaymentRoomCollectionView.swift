@@ -1,5 +1,5 @@
 //
-//  PaymentRoomCollectionView.swift
+//  SpaceCollectionView.swift
 //  DonWorry
 //
 //  Created by Woody on 2022/08/09.
@@ -9,7 +9,7 @@
 import UIKit
 import DonWorryExtensions
 
-final class PaymentRoomCollectionView: UICollectionView {
+final class SpaceCollectionView: UICollectionView {
 
     convenience init() {
         let flowLayout = UICollectionViewFlowLayout()
@@ -23,7 +23,7 @@ final class PaymentRoomCollectionView: UICollectionView {
         self.showsVerticalScrollIndicator = false
         self.showsHorizontalScrollIndicator = false
         self.contentInset = .init(top: 0, left: 25, bottom: 0, right: 25)
-        self.register(PaymentRoomCollectionViewCell.self)
+        self.register(SpaceCollectionViewCell.self)
         self.backgroundColor = .clear
         self.allowsSelection = true
         self.allowsMultipleSelection = false

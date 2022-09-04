@@ -39,12 +39,12 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         return spaceIcon
     }()
     
-    private let paymentRoomName: UILabel = {
-        let paymentRoomName = UILabel()
-        paymentRoomName.translatesAutoresizingMaskIntoConstraints = false
-        paymentRoomName.font = .designSystem(weight: .bold, size: ._15)
-        paymentRoomName.textColor = .black
-        return paymentRoomName
+    private let spaceNameLabel: UILabel = {
+        let v = UILabel()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.font = .designSystem(weight: .bold, size: ._15)
+        v.textColor = .black
+        return v
     }()
     
     private let paymentDate: UILabel = {
@@ -91,9 +91,9 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         spaceIcon.widthAnchor.constraint(equalToConstant: 27).isActive = true
         spaceIcon.heightAnchor.constraint(equalToConstant: 24).isActive = true
         
-        contentView.addSubview(paymentRoomName)
-        paymentRoomName.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
-        paymentRoomName.leadingAnchor.constraint(equalTo: smallRoundRectangle.trailingAnchor, constant: 10).isActive = true
+        contentView.addSubview(spaceNameLabel)
+        spaceNameLabel.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
+        spaceNameLabel.leadingAnchor.constraint(equalTo: smallRoundRectangle.trailingAnchor, constant: 10).isActive = true
 
         contentView.addSubview(paymentDate)
         paymentDate.bottomAnchor.constraint(equalTo: smallRoundRectangle.bottomAnchor).isActive = true
@@ -113,7 +113,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
     func configure(icon: String, myPayment: SendingMoneyInfo) {
         numberformatter.numberStyle = .decimal
         spaceIcon.image = UIImage(named: "baconImage")
-        paymentRoomName.text = myPayment.name
+        spaceNameLabel.text = myPayment.name
         paymentDate.text = myPayment.date
         dividedAmountDetail.attributedText = makeAtrributedString(myPayment: myPayment)
         dividedAmount.text = numberformatter.string(for: myPayment.myAmount)! + "원"

@@ -12,13 +12,13 @@ import RxSwift
 import Models
 
 enum HomeStep {
-    case editRoom
+    case spaceName
     case enterRoom
     case recievedMoneyDetail
     case sentMoneyDetail
     case alert
     case profile
-    case paymentCardList
+    case spaceList
     case none
 }
 
@@ -31,10 +31,10 @@ final class HomeReactor: Reactor {
 
     enum Action {
         case setup
-        case didSelectPaymentRoom(at: Int)
+        case didSelectSpace(at: Int)
         case didTapAlarm
         case didTapSearchButton
-        case didTapCreatePaymentRoomButton
+        case didTapCreateSpaceButton
         case didTapProfileImage
         case didTapGiveBillCard
         case didTapTakeBillCard
@@ -45,15 +45,15 @@ final class HomeReactor: Reactor {
 
     enum Mutation {
         case updateHomeHeader(User)
-        case updatePaymentRoomList(SpaceList)
-        case updatePaymentRoom(Index)
-        case leavePaymentRoom(Index)
+        case updateSpaceList(SpaceList)
+        case updateSpace(Index)
+        case leaveSpace(Index)
         case routeTo(HomeStep)
     }
 
     struct State {
         var spaceList: [Space] // 새로 서버를 불러오지 않기 때문에 뷰에서 들고있어야 하는 정보
-        var spaceViewModelList: [PaymentRoomCellViewModel] // 정산방 뷰모델
+        var spaceViewModelList: [SpaceCellViewModel] // 정산방 뷰모델
         var sections: [Section] // 정산카드 뷰모델
         var selectedSpaceIndex: Int // 선택된 정산방 index
         var beforeSelectedSpaceIndex: Int
@@ -67,11 +67,11 @@ final class HomeReactor: Reactor {
 
     init(
         _ getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
-        _ paymentRoomService: PaymentRoomService = PaymentRoomServiceImpl(),
+        _ SpaceService: SpaceService = SpaceServiceImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
-        self.paymentRoomService = paymentRoomService
+        self.SpaceService = SpaceService
         self.homePresenter = homePresenter
         self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0, beforeSelectedSpaceIndex: 0)
     }
@@ -81,16 +81,16 @@ final class HomeReactor: Reactor {
         case .setup:
             return .concat([
                 getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) },
-                paymentRoomService.fetchPaymentRoomList().map { .updatePaymentRoomList($0) }
+                SpaceService.fetchSpaceList().map { .updateSpaceList($0) }
             ])
-        case .didSelectPaymentRoom(let index):
-            return .just(.updatePaymentRoom(index))
+        case .didSelectSpace(let index):
+            return .just(.updateSpace(index))
         case .didTapAlarm:
             return .just(.routeTo(.alert))
         case .didTapSearchButton:
             return .just(.routeTo(.enterRoom))
-        case .didTapCreatePaymentRoomButton:
-            return .just(.routeTo(.editRoom))
+        case .didTapCreateSpaceButton:
+            return .just(.routeTo(.spaceName))
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
         case .didTapGiveBillCard:
@@ -98,10 +98,10 @@ final class HomeReactor: Reactor {
         case .didTapTakeBillCard:
             return .just(.routeTo(.recievedMoneyDetail))
         case .didTapStateBillCard:
-            return .just(.routeTo(.paymentCardList))
+            return .just(.routeTo(.spaceList))
         case .didTapLeaveBillCard(let index):
             return .concat([
-                .just(.leavePaymentRoom(index))
+                .just(.leaveSpace(index))
             ])
         case .none:
             return .just(.routeTo(.none))
@@ -113,7 +113,7 @@ final class HomeReactor: Reactor {
         switch mutation {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
-        case .updatePaymentRoomList(let spaceList):
+        case .updateSpaceList(let spaceList):
             if let selectedSpace = spaceList.first {
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
@@ -126,7 +126,7 @@ final class HomeReactor: Reactor {
                 newState.spaceList = spaceList
                 newState.reload = ()
             }
-        case .updatePaymentRoom(let index):
+        case .updateSpace(let index):
             let selectedSpace = currentState.spaceList[index]
             newState.selectedSpaceIndex = index
             newState.beforeSelectedSpaceIndex = currentState.selectedSpaceIndex
@@ -140,14 +140,14 @@ final class HomeReactor: Reactor {
             )
         case .routeTo(let step):
             newState.step = step
-        case .leavePaymentRoom(_):
+        case .leaveSpace(_):
             break
         }
         return newState
     }
 
     private let getUserAccountUseCase: GetUserAccountUseCase
-    private let paymentRoomService: PaymentRoomService
+    private let SpaceService: SpaceService
     private let homePresenter: HomePresenter
 }
 

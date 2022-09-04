@@ -33,11 +33,11 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.gotoSearchPaymentRoomButton.rx.tap.map { .didTapSearchButton }
+        self.gotoSearchSpaceButton.rx.tap.map { .didTapSearchButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.goToCreatePaymentRoomButton.rx.tap.map { .didTapCreatePaymentRoomButton }
+        self.goToCreateSpaceButton.rx.tap.map { .didTapCreateSpaceButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -49,7 +49,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.paymentRoomCollectionView.rx.itemSelected
+        self.spaceCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] _ in
                 self?.billCardCollectionView.scrollToItem(
                     at: .init(item: 0, section: 0),
@@ -96,10 +96,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 self?.billCardCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
-        paymentRoomCollectionView.rx.setDataSource(self)
+        spaceCollectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
-        paymentRoomCollectionView.rx.setDelegate(self)
+        spaceCollectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
         billCardCollectionView.rx.setDataSource(self)
@@ -109,7 +109,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] in
-                self?.paymentRoomCollectionView.reloadData()
+                self?.spaceCollectionView.reloadData()
             }).disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
@@ -121,10 +121,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     }
 
     lazy var headerView = HomeHeaderView()
-    lazy var paymentRoomCollectionView = PaymentRoomCollectionView()
+    lazy var spaceCollectionView = SpaceCollectionView()
     lazy var billCardCollectionView = BillCardCollectionView()
     lazy var emptyView = EmptyPaymentCardView()
-    lazy var gotoSearchPaymentRoomButton: UIButton = {
+    lazy var gotoSearchSpaceButton: UIButton = {
         let v = UIButton(type: .system)
         let configuration = UIImage.SymbolConfiguration(pointSize: 15, weight: .heavy)
         v.setImage(UIImage(systemName: "magnifyingglass", withConfiguration: configuration), for: .normal)
@@ -132,7 +132,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         v.backgroundColor = .designSystem(.grayC5C5C5)
         return v
     }()
-    lazy var goToCreatePaymentRoomButton: UIButton = {
+    lazy var goToCreateSpaceButton: UIButton = {
         let v = UIButton(type: .system)
         v.setTitle("정산방 만들기", for: .normal)
         v.setTitleColor(.designSystem(.white), for: .normal)
@@ -148,48 +148,48 @@ extension HomeViewController {
     private func setUI() {
         self.view.backgroundColor = .designSystem(.white)
         self.view.addSubview(self.headerView)
-        self.view.addSubview(self.paymentRoomCollectionView)
+        self.view.addSubview(self.spaceCollectionView)
         self.view.addSubview(self.billCardCollectionView)
-        self.view.addSubview(self.gotoSearchPaymentRoomButton)
-        self.view.addSubview(self.goToCreatePaymentRoomButton)
+        self.view.addSubview(self.gotoSearchSpaceButton)
+        self.view.addSubview(self.goToCreateSpaceButton)
         self.view.addSubview(self.emptyView)
 
         self.headerView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
-        self.paymentRoomCollectionView.snp.makeConstraints { make in
+        self.spaceCollectionView.snp.makeConstraints { make in
             make.top.equalTo(self.headerView.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(80)
         }
         self.billCardCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentRoomCollectionView.snp.bottom)
+            make.top.equalTo(self.spaceCollectionView.snp.bottom)
             make.leading.trailing.equalToSuperview()
         }
-        self.gotoSearchPaymentRoomButton.snp.makeConstraints { make in
+        self.gotoSearchSpaceButton.snp.makeConstraints { make in
             make.top.equalTo(self.billCardCollectionView.snp.bottom).offset(20)
             make.leading.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().inset(34)
             make.height.equalTo(58)
         }
-        self.goToCreatePaymentRoomButton.snp.makeConstraints { make in
+        self.goToCreateSpaceButton.snp.makeConstraints { make in
             make.top.equalTo(self.billCardCollectionView.snp.bottom).offset(20)
-            make.leading.equalTo(self.gotoSearchPaymentRoomButton.snp.trailing).offset(8)
+            make.leading.equalTo(self.gotoSearchSpaceButton.snp.trailing).offset(8)
             make.trailing.equalToSuperview().inset(25)
-            make.width.equalTo(self.gotoSearchPaymentRoomButton.snp.width).multipliedBy(262/70)
+            make.width.equalTo(self.gotoSearchSpaceButton.snp.width).multipliedBy(262/70)
             make.bottom.equalToSuperview().inset(34)
             make.height.equalTo(58)
         }
         self.emptyView.snp.makeConstraints { make in
             make.top.equalTo(self.headerView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(self.goToCreatePaymentRoomButton.snp.top)
+            make.bottom.equalTo(self.goToCreateSpaceButton.snp.top)
         }
 
-        self.gotoSearchPaymentRoomButton.roundCorners(29)
-        self.goToCreatePaymentRoomButton.roundCorners(29)
-        self.goToCreatePaymentRoomButton.addGradient(
+        self.gotoSearchSpaceButton.roundCorners(29)
+        self.goToCreateSpaceButton.roundCorners(29)
+        self.goToCreateSpaceButton.addGradient(
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
         )
@@ -201,9 +201,10 @@ extension HomeViewController {
 extension HomeViewController {
     private func move(to step: HomeStep) {
         switch step {
-        case .editRoom:
-            let editRoomViewController = EditRoomNameViewController(type: .create)
-            self.navigationController?.pushViewController(editRoomViewController, animated: true)
+        case .spaceName:
+            let spaceNameViewController = SpaceNameViewController()
+            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
+            self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .enterRoom:
             let enterRoomViewController = EnterRoomViewController()
             self.present(enterRoomViewController, animated: true)
@@ -220,7 +221,7 @@ extension HomeViewController {
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
-        case .paymentCardList:
+        case .spaceList:
             guard let reactor = reactor else { return }
             let paymentCardListViewController = PaymentCardListViewController()
             let selectedIndex = reactor.currentState.selectedSpaceIndex
@@ -241,7 +242,7 @@ extension HomeViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         switch collectionView {
-        case paymentRoomCollectionView:
+        case spaceCollectionView:
             return reactor?.currentState.spaceViewModelList.count ?? 0
         case billCardCollectionView:
             return reactor?.currentState.sections[0].items.count ?? 1
@@ -254,20 +255,20 @@ extension HomeViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch collectionView {
-        case paymentRoomCollectionView:
-            return paymentRoomCollectionViewCell(for: indexPath)
+        case spaceCollectionView:
+            return spaceCollectionViewCell(for: indexPath)
         case billCardCollectionView:
             return billCardCollectionViewCell(for: indexPath)
         default:
             return .init()
         }
     }
-    private func paymentRoomCollectionViewCell(
+    private func spaceCollectionViewCell(
         for indexPath: IndexPath
-    ) -> PaymentRoomCollectionViewCell {
+    ) -> SpaceCollectionViewCell {
         guard let reactor = reactor else { return .init() }
-        let cell = paymentRoomCollectionView.dequeueReusableCell(
-            PaymentRoomCollectionViewCell.self,
+        let cell = spaceCollectionView.dequeueReusableCell(
+            SpaceCollectionViewCell.self,
             for: indexPath
         )
         cell.viewModel = reactor.currentState.spaceViewModelList[indexPath.item]
@@ -324,9 +325,9 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     private func leaveBillCardCollectionViewCell(
         for indexPath: IndexPath
-    ) -> LeavePaymentRoomBillCardCollectionViewCell {
+    ) -> LeaveSpaceBillCardCollectionViewCell {
         let cell = billCardCollectionView.dequeueReusableCell(
-            LeavePaymentRoomBillCardCollectionViewCell.self,
+            LeaveSpaceBillCardCollectionViewCell.self,
             for: indexPath
         )
         cell.tag = 3
@@ -337,8 +338,8 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let reactor = reactor else { return }
-        reactor.action.onNext(.didSelectPaymentRoom(at: indexPath.item))
-        paymentRoomCollectionView.reloadItems(at: [
+        reactor.action.onNext(.didSelectSpace(at: indexPath.item))
+        spaceCollectionView.reloadItems(at: [
             IndexPath(item: reactor.currentState.selectedSpaceIndex, section: 0),
             IndexPath(item: reactor.currentState.beforeSelectedSpaceIndex, section: 0)
         ])

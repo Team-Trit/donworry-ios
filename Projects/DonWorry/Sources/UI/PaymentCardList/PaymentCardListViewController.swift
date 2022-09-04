@@ -22,7 +22,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         let v = DWNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
         return v
     }()
-    lazy var paymentRoomStackView: UIStackView = {
+    lazy var spaceStackView: UIStackView = {
         let v = UIStackView()
         v.axis = .horizontal
         v.spacing = 4
@@ -30,14 +30,14 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.distribution = .fill
         return v
     }()
-    lazy var paymentRoomIDLabel: UILabel = {
+    lazy var spaceIDLabel: UILabel = {
         let v = UILabel()
         v.text = "정산방 ID : "
         v.font = .designSystem(weight: .regular, size: ._13)
         v.textColor = .designSystem(.grayC5C5C5)
         return v
     }()
-    lazy var paymentRoomIDCopyButton: UIButton = {
+    lazy var spaceIDCopyButton: UIButton = {
         let v = UIButton(type: .system)
         v.setImage(.init(.btn_copy), for: .normal)
         
@@ -126,6 +126,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.navigationBar.rightItem?.rx.tap.map { .didTapOptionButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
@@ -154,7 +158,7 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         reactor.state.map { $0.space.shareID }
             .map { "정산방 ID : \($0)" }
-            .bind(to: paymentRoomIDLabel.rx.text)
+            .bind(to: spaceIDLabel.rx.text)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.paymentCardListViewModel }
@@ -179,22 +183,22 @@ extension PaymentCardListViewController {
     private func setUI() {
         self.view.backgroundColor = .designSystem(.white)
         self.view.addSubview(self.navigationBar)
-        self.view.addSubview(self.paymentRoomStackView)
+        self.view.addSubview(self.spaceStackView)
         self.view.addSubview(self.startPaymentAlgorithmButton)
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.floatingStackView)
 
         self.floatingStackView.addArrangedSubviews(self.shareLinkButton, self.checkParticipatedButton)
-        self.paymentRoomStackView.addArrangedSubviews(self.paymentRoomIDLabel, self.paymentRoomIDCopyButton)
+        self.spaceStackView.addArrangedSubviews(self.spaceIDLabel, self.spaceIDCopyButton)
 
         self.navigationBar.snp.makeConstraints { make in
             make.top.leading.trailing.equalTo(self.view.safeAreaLayoutGuide)
         }
-        self.paymentRoomStackView.snp.makeConstraints { make in
+        self.spaceStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(25)
             make.top.equalTo(self.navigationBar.snp.bottom).offset(20)
         }
-        self.paymentRoomIDCopyButton.snp.makeConstraints { make in
+        self.spaceIDCopyButton.snp.makeConstraints { make in
             make.trailing.equalTo(self.startPaymentAlgorithmButton.snp.leading).offset(-16)
             make.width.equalTo(47)
             make.height.equalTo(19)
@@ -203,10 +207,10 @@ extension PaymentCardListViewController {
             make.width.equalTo(98)
             make.height.equalTo(34)
             make.trailing.equalToSuperview().inset(25)
-            make.centerY.equalTo(self.paymentRoomStackView)
+            make.centerY.equalTo(self.spaceStackView)
         }
         self.collectionView.snp.makeConstraints { make in
-            make.top.equalTo(self.paymentRoomIDLabel.snp.bottom).offset(15)
+            make.top.equalTo(self.spaceIDLabel.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -227,15 +231,38 @@ extension PaymentCardListViewController {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
-        case .none:
-            break
         case .paymentCardDetail:
             let paymentCardDetailViewController = PaymentCardDetailViewController()
             paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
             self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
+        case .actionSheet:
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
+                self.dismiss(animated: true) { [weak self] in
+                    self?.reactor?.action.onNext(.routeToNameEdit)
+                }
+            }
+            let item2 =  UIAlertAction(title: "정산방 나가기", style: .default) { _ in
+                self.dismiss(animated: true) { [weak self] in
+                    self?.reactor?.action.onNext(.routeToNameEdit)
+                }
+            }
+
+            actionSheet.addAction(item1)
+            actionSheet.addAction(item2)
+            self.present(actionSheet, animated: true)
+        case .nameEdit:
+            let editRoomNameViewController = SpaceNameViewController()
+            editRoomNameViewController.reactor = SpaceNameReactor(type: .rename)
+            self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
+        case .none:
+            break
+
         }
     }
 }
+
+// MARK: UICollectionViewDataSource
 
 extension PaymentCardListViewController: UICollectionViewDataSource {
     func collectionView(
@@ -260,6 +287,8 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         }
     }
 }
+
+// MARK: UICollectionViewDelegateFlowLayout
 
 extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(

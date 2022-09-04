@@ -1,5 +1,5 @@
 //
-//  PaymentRoomRepository.swift
+//  SpaceRepository.swift
 //  DonWorryTests
 //
 //  Created by Woody on 2022/08/31.
@@ -9,24 +9,24 @@
 import DonWorryNetworking
 import RxSwift
 
-protocol PaymentRoomRepository {
-    func fetchPaymentRoomList() -> Observable<[Entity.Space]>
+protocol SpaceRepository {
+    func fetchSpaceList() -> Observable<[Entity.Space]>
 }
 
-final class PaymentRoomRepositoryImpl: PaymentRoomRepository {
+final class SpaceRepositoryImpl: SpaceRepository {
     private let network: NetworkServable
 
     init(_ network: NetworkServable = NetworkService()) {
         self.network = network
     }
 
-    func fetchPaymentRoomList() -> Observable<[Entity.Space]> {
-        network.request(GetPaymentRoomListAPI())
+    func fetchSpaceList() -> Observable<[Entity.Space]> {
+        network.request(GetSpaceListAPI())
             .compactMap { response in response.compactMap { self.convert(from: $0) }}
             .asObservable()
     }
 
-    private func convert(from dto: DTO.PaymentRoom) -> Entity.Space {
+    private func convert(from dto: DTO.Space) -> Entity.Space {
         return .init(
             id: dto.id,
             adminID: dto.adminID,
@@ -37,10 +37,10 @@ final class PaymentRoomRepositoryImpl: PaymentRoomRepository {
             payments: dto.payments.map { convert(from: $0) }
         )
     }
-    private func convert(from dto: DTO.PaymentRoom.Payment) -> Entity.SpacePayment {
+    private func convert(from dto: DTO.Space.Payment) -> Entity.SpacePayment {
         return .init(id: dto.id, amount: dto.amount, isCompleted: dto.isCompleted, user: convert(from: dto.user))
     }
-    private func convert(from dto: DTO.PaymentRoom.User) -> Entity.SpaceUser {
+    private func convert(from dto: DTO.Space.User) -> Entity.SpaceUser {
         return .init(id: dto.id, nickname: dto.nickname, imgURL: dto.imgURL)
     }
 }

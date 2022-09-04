@@ -17,7 +17,7 @@ final class BillCardCollectionView: UICollectionView {
         self.register(TakeBillCardCollectionViewCell.self)
         self.register(GiveBillCardCollectionViewCell.self)
         self.register(StateBillCardCollectionViewCell.self)
-        self.register(LeavePaymentRoomBillCardCollectionViewCell.self)
+        self.register(LeaveSpaceBillCardCollectionViewCell.self)
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
         self.backgroundColor = .clear

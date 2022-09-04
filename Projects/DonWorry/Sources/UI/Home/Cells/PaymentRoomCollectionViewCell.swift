@@ -1,5 +1,5 @@
 //
-//  PaymentRoomCollectionViewCell.swift
+//  SpaceCollectionViewCell.swift
 //  DonWorry
 //
 //  Created by Woody on 2022/08/09.
@@ -11,13 +11,13 @@ import DesignSystem
 import SnapKit
 import DonWorryExtensions
 
-struct PaymentRoomCellViewModel {
+struct SpaceCellViewModel {
     var title: String
     var isSelected: Bool
 }
 
-final class PaymentRoomCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "PaymentRoomCollectionViewCell"
+final class SpaceCollectionViewCell: UICollectionViewCell {
+    static let identifier: String = "SpaceCollectionViewCell"
 
     lazy var titleLabel: UILabel = {
         let v = UILabel()
@@ -28,7 +28,7 @@ final class PaymentRoomCollectionViewCell: UICollectionViewCell {
     }()
 
     var layersToRemoveLater: [CALayer] = []
-    var viewModel: PaymentRoomCellViewModel? {
+    var viewModel: SpaceCellViewModel? {
         didSet {
             guard let viewModel = viewModel else {
                 return

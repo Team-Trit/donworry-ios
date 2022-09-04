@@ -1,5 +1,5 @@
 //
-//  PaymentRoomDTO.swift
+//  SpaceDTO.swift
 //  DonWorryNetworking
 //
 //  Created by Woody on 2022/08/31.
@@ -9,7 +9,7 @@
 import Foundation
 
 extension DTO {
-    public struct PaymentRoom: Decodable {
+    public struct Space: Decodable {
         public let id, adminID: Int
         public let title, status, shareID: String
         public let isTaker: Bool
