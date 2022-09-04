@@ -39,7 +39,6 @@ extension PostPaymentCardAPI {
             case bank, number, holder, name, totalAmount, position, bgColor, paymentDate
         }
         
-        
         public init(
             spaceID: Int,
             categoryID: Int,
