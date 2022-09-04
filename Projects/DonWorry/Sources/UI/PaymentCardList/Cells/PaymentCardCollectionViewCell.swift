@@ -15,7 +15,7 @@ struct PaymentCardCellViewModel: Equatable {
     var name: String
     var totalAmount: String
     var number: Int
-    var cardIconImageName: String
+    var categoryImageName: String
     var payer: User
     var participatedUserList: [User]
     var dateString: String
@@ -40,7 +40,7 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                 return PaymentCardInRoomViewModel(
                     id: model.id,
                     name: model.name,
-                    cardIconImageName: model.cardIconImageName,
+                    categoryImageName: model.categoryImageName,
                     totalAmount: model.totalAmount,
                     backgroundColor: model.backgroundColor,
                     date: model.dateString,

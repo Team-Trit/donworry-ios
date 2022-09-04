@@ -9,7 +9,7 @@
 import Foundation
 
 public enum Asset: String {
-    case icon_alarm
+    case ic_alarm
     case test_avo
     case ic_calculation_3d
     case ic_check_white
@@ -18,15 +18,17 @@ public enum Asset: String {
     case inquiry_button_icon
     case question_button_icon
     case btn_copy
+    case ic_debit_card
+    case ic_gas_station
     case ic_cake
     case ic_chicken
     case ic_cup
-    case ic_debit_card
-    case ic_gas_station
+    case ic_car
+    case ic_coffee
     case ic_icecream
-    case ic_shopping_cart
-    case ic_spoon_knife
-    case ic_video
+    case ic_shoppingcart
+    case ic_spoonknife
+    case ic_movie
     case ic_wine
     case smartphone_with_bills
     case apple_login_button
@@ -60,7 +62,6 @@ public enum Asset: String {
     case bankKBSEC      // KB증권
     case bankNONGTOO    // NH투자증권
     case bankSC         // SC제일은행
-    case back_button
     case delete_mark
     case check_gradient_image
 }

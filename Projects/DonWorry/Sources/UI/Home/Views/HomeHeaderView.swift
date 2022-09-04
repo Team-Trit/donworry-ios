@@ -49,7 +49,7 @@ final class HomeHeaderView: UIView {
         v.roundCorners(22)
         v.contentEdgeInsets = UIEdgeInsets(top: 10, left: 13, bottom: 13, right: 12)
         v.tintColor = .designSystem(.white)
-        v.setImage(UIImage(.icon_alarm), for: .normal)
+        v.setImage(UIImage(.ic_alarm), for: .normal)
         return v
     }()
 
