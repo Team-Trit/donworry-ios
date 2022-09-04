@@ -10,7 +10,8 @@ import DonWorryNetworking
 import RxSwift
 
 protocol SpaceRepository {
-    func fetchSpaceList() -> Observable<[Entity.Space]>
+    func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -20,13 +21,20 @@ final class SpaceRepositoryImpl: SpaceRepository {
         self.network = network
     }
 
-    func fetchSpaceList() -> Observable<[Entity.Space]> {
+    func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         network.request(GetSpaceListAPI())
             .compactMap { response in response.compactMap { self.convert(from: $0) }}
             .asObservable()
     }
 
-    private func convert(from dto: DTO.Space) -> Entity.Space {
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {
+        network.request(PostSpaceAPI(request: .init(title: title)))
+            .compactMap { response -> SpaceModels.CreateSpace.Response in
+                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+            }.asObservable()
+    }
+
+    private func convert(from dto: DTO.Space) -> SpaceModels.FetchSpaceList.Space {
         return .init(
             id: dto.id,
             adminID: dto.adminID,
@@ -37,10 +45,10 @@ final class SpaceRepositoryImpl: SpaceRepository {
             payments: dto.payments.map { convert(from: $0) }
         )
     }
-    private func convert(from dto: DTO.Space.Payment) -> Entity.SpacePayment {
+    private func convert(from dto: DTO.Space.Payment) -> SpaceModels.FetchSpaceList.SpacePayment {
         return .init(id: dto.id, amount: dto.amount, isCompleted: dto.isCompleted, user: convert(from: dto.user))
     }
-    private func convert(from dto: DTO.Space.User) -> Entity.SpaceUser {
+    private func convert(from dto: DTO.Space.User) -> SpaceModels.FetchSpaceList.SpaceUser {
         return .init(id: dto.id, nickname: dto.nickname, imgURL: dto.imgURL)
     }
 }

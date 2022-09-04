@@ -9,11 +9,10 @@
 import Foundation
 import ReactorKit
 import RxSwift
-import Models
 
 enum SpaceNameStep {
     case pop
-    case cardList
+    case cardList(SpaceModels.CreateSpace.Response)
 }
 
 final class SpaceNameReactor: Reactor {
@@ -26,16 +25,19 @@ final class SpaceNameReactor: Reactor {
         case viewDidLoad
         case didTapButton
         case didTapBackButton
+        case typeTextField(String)
     }
 
     enum Mutation {
         case setup
         case routeTo(SpaceNameStep)
+        case changeSpaceName(String)
     }
 
     struct State {
         var title: String?
         var placeHolderText: String?
+        var spaceName: String = ""
         var type: RoomNameEditViewType
 
         @Pulse var step: SpaceNameStep?
@@ -43,8 +45,12 @@ final class SpaceNameReactor: Reactor {
 
     let initialState: State
 
-    init(type: RoomNameEditViewType) {
+    init(
+        type: RoomNameEditViewType,
+        spaceService: SpaceService = SpaceServiceImpl()
+    ) {
         self.initialState = State(type: type)
+        self.spaceService = spaceService
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -56,10 +62,13 @@ final class SpaceNameReactor: Reactor {
             case .rename:
                 return .just(.routeTo(.pop))
             case .create:
-                return .just(.routeTo(.cardList))
+                return spaceService.createSpace(title: currentState.spaceName)
+                    .map { .routeTo(.cardList($0)) }
             }
         case .didTapBackButton:
             return .just(.routeTo(.pop))
+        case .typeTextField(let name):
+            return .just(.changeSpaceName(name))
         }
     }
 
@@ -77,7 +86,11 @@ final class SpaceNameReactor: Reactor {
              }
          case .routeTo(let step):
              newState.step = step
+         case .changeSpaceName(let name):
+             newState.spaceName = name
          }
         return newState
     }
+
+    private let spaceService: SpaceService
 }

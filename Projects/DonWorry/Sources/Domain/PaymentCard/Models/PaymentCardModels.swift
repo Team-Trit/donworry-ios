@@ -12,27 +12,32 @@ enum PaymentCardModels {
 
     enum FetchCardList {
         struct Response {
-            let id: Int
-            let categoryID: Int
-            let taker: Taker
-            let givers: [Taker]
-            let spaceJoinUserCount: Int
-            let cardJoinUserCount: Int
-            let bank: String
-            let number: String
-            let holder: String
+            let id, spaceJoinUserCount, cardJoinUserCount: Int
             let name: String
             let totalAmount: Int
-            let status, bgColor, paymentDate: String
+            let bgColor, paymentDate: String
+            let category: Category
+            let account: BankAccount
+            let taker: User
+            let givers: [User]
 
-            struct Taker {
+            struct User {
                 let id: Int
                 let nickname: String
                 let imgURL: String?
-
             }
-        }
 
+            struct BankAccount {
+                let bank, number, holder: String
+            }
+
+            struct Category: Codable {
+                let id: Int
+                let name, imgURL: String
+            }
+
+        }
         typealias ResponseList = [Response]
     }
+
 }

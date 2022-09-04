@@ -16,7 +16,7 @@ import Kingfisher
 struct PaymentCardInRoomViewModel {
     var id: Int
     var name: String
-    var cardIconImageName: String
+    var categoryImageName: String
     var totalAmount: String
     var backgroundColor: String
     var date: String
@@ -39,7 +39,7 @@ public class PaymentCardInRoomView: UIView {
             self.dateLabel.text = viewModel?.date
             let participatedUserCount = "\(viewModel?.participatedUserList.count ?? 0)"
             self.participatedUserCountLabel.text = "현재 \(participatedUserCount)명 참가 중 …"
-            self.iconImageView.image = UIImage(named: viewModel?.cardIconImageName ?? "")
+            self.iconImageView.image = UIImage(assetName: viewModel?.categoryImageName ?? "")
             let backgroundColor = UIColor(hex: (viewModel?.backgroundColor ?? ""))
             self.backgroundColor = backgroundColor?.withAlphaComponent(0.72)
             self.cardSideView.backgroundColor = backgroundColor
@@ -53,7 +53,6 @@ public class PaymentCardInRoomView: UIView {
             guard let viewModel = viewModel else {
                 return
             }
-
             self.drawParticipatedUser([viewModel.payer] + viewModel.participatedUserList)
         }
     }

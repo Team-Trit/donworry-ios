@@ -230,7 +230,7 @@ extension PaymentCardListViewController {
     private func move(to step: PaymentCardListStep) {
         switch step {
         case .pop:
-            self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popToRootViewController(animated: true)
         case .paymentCardDetail:
             let paymentCardDetailViewController = PaymentCardDetailViewController()
             paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()

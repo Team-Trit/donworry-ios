@@ -10,7 +10,8 @@ import Foundation
 import RxSwift
 
 protocol SpaceService {
-    func fetchSpaceList() -> Observable<[Entity.Space]>
+    func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
 }
 
 final class SpaceServiceImpl: SpaceService {
@@ -20,8 +21,11 @@ final class SpaceServiceImpl: SpaceService {
         self.spaceRepository = spaceRepository
     }
 
-    func fetchSpaceList() -> Observable<[Entity.Space]> {
+    func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         spaceRepository.fetchSpaceList()
     }
 
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {
+        spaceRepository.createSpace(title: title)
+    }
 }
