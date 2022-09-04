@@ -1,5 +1,5 @@
 //
-//  RoomNameEditViewController.swift
+//  SpaceNameViewController.swift
 //  DonWorry
 //
 //  Created by 임영후 on 2022/08/21.
@@ -16,25 +16,11 @@ import DonWorryExtensions
 import SnapKit
 
 
-final class EditRoomNameViewController: BaseViewController, View {
-
-    // MARK: - Init
-    enum RoomNameEditViewType {
-        case create //default
-        case rename
-    }
-
-    var type: RoomNameEditViewType = .create
-
-    convenience init(type: RoomNameEditViewType) {
-        self.init()
-        self.type = type
-    }
+final class SpaceNameViewController: BaseViewController, View {
 
     // MARK: - Views
     private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
-        $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
         $0.setLineSpacing(spacing: 10.0)
         $0.font = .designSystem(weight: .heavy, size: ._25)
@@ -53,18 +39,33 @@ final class EditRoomNameViewController: BaseViewController, View {
 
     // MARK: - Binding
 
-    func bind(reactor: EditRoomNameViewReactor) {
-        navigationBar.leftItem.rx.tap
-            .bind { self.navigationController?.popViewController(animated: true) }
+    func bind(reactor: SpaceNameReactor) {
+        reactor.state.map { $0.title }
+            .bind(to: titleLabel.rx.text)
             .disposed(by: disposeBag)
 
-        nextButton.rx.tap
+        reactor.state.map { $0.placeHolderText }
             .subscribe(onNext: { [weak self] in
-//                switch self.type {
-//                case .create:
-//                case .rename:
-//                    <#code#>
-//                }
+                self?.roomInfoLabel.textField.placeholder = $0
+            }).disposed(by: disposeBag)
+
+        self.rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        nextButton.rx.tap.map { .didTapButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.move(to: $0)
             }).disposed(by: disposeBag)
     }
 
@@ -72,10 +73,9 @@ final class EditRoomNameViewController: BaseViewController, View {
 
 // MARK: - setUI
 
-extension EditRoomNameViewController {
+extension SpaceNameViewController {
     private func setUI() {
         nextButton.title = "정산방 참가하기"
-        navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(navigationBar, titleLabel, roomInfoLabel, nextButton)
 
@@ -102,23 +102,20 @@ extension EditRoomNameViewController {
     }
 }
 
-// MARK: - Method
-extension EditRoomNameViewController {
-    private func setTitleLabelText(type: RoomNameEditViewType) -> String {
-        switch type {
-            case .create:
-                return "정산방을\n생성해볼까요?"
-            case .rename:
-                return "정산방\n이름을 설정해주세요"
-        }
-    }
+// MARK: Routing
 
-    private func setPlaceholderText(type: RoomNameEditViewType)  -> String {
-        switch type {
-            case .create:
-                return "정산방 이름을 입력하세요."
-            case .rename:
-                return "ex) MC2 번개모임"
+extension SpaceNameViewController {
+    func move(to step: SpaceNameStep) {
+        switch step {
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        case .cardList:
+            guard let first = self.navigationController?.viewControllers[0] else { return }
+            let paymentCardListViewController = PaymentCardListViewController()
+            self.navigationController?.setViewControllers([
+                first,
+                paymentCardListViewController
+            ], animated: true)
         }
     }
 }

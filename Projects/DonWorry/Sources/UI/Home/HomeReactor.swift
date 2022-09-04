@@ -12,7 +12,7 @@ import RxSwift
 import Models
 
 enum HomeStep {
-    case editRoom
+    case spaceName
     case enterRoom
     case recievedMoneyDetail
     case sentMoneyDetail
@@ -90,7 +90,7 @@ final class HomeReactor: Reactor {
         case .didTapSearchButton:
             return .just(.routeTo(.enterRoom))
         case .didTapCreatePaymentRoomButton:
-            return .just(.routeTo(.editRoom))
+            return .just(.routeTo(.spaceName))
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
         case .didTapGiveBillCard:

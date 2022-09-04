@@ -252,7 +252,8 @@ extension PaymentCardListViewController {
             actionSheet.addAction(item2)
             self.present(actionSheet, animated: true)
         case .nameEdit:
-            let editRoomNameViewController = EditRoomNameViewController(type: .rename)
+            let editRoomNameViewController = SpaceNameViewController()
+            editRoomNameViewController.reactor = SpaceNameReactor(type: .rename)
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
         case .none:
             break

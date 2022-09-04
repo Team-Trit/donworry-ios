@@ -201,9 +201,10 @@ extension HomeViewController {
 extension HomeViewController {
     private func move(to step: HomeStep) {
         switch step {
-        case .editRoom:
-            let editRoomViewController = EditRoomNameViewController(type: .create)
-            self.navigationController?.pushViewController(editRoomViewController, animated: true)
+        case .spaceName:
+            let spaceNameViewController = SpaceNameViewController()
+            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
+            self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .enterRoom:
             let enterRoomViewController = EnterRoomViewController()
             self.present(enterRoomViewController, animated: true)
