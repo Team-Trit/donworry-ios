@@ -127,7 +127,7 @@ extension LoginViewController {
         case .home:
             let homeViewController = HomeViewController()
             homeViewController.reactor = HomeReactor()
-            self.navigationController?.pushViewController(homeViewController, animated: true)
+            self.navigationController?.setViewControllers([homeViewController], animated: true)
         }
     }
 }

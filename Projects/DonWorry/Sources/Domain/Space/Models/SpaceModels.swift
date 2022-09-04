@@ -55,4 +55,16 @@ enum SpaceModels {
             }
         }
     }
+
+    enum CreateSpace {
+        struct Request {
+            var title: String
+        }
+
+        struct Response {
+            let id: Int
+            let adminID: Int
+            let title, shareID: String
+        }
+    }
 }

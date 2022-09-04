@@ -20,7 +20,7 @@ enum PaymentCardListStep {
 
 final class PaymentCardListReactor: Reactor {
     typealias Section = PaymentCardSection
-    typealias Space = SpaceModels.FetchSpaceList.Space
+    typealias Space = SpaceModels.CreateSpace.Response
 
     enum Action {
         case setup

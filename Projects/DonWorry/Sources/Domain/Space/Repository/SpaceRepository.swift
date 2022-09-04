@@ -11,7 +11,7 @@ import RxSwift
 
 protocol SpaceRepository {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
-//    func createSpace(title: String) -> Observable<[Entity.Space]>
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -25,6 +25,13 @@ final class SpaceRepositoryImpl: SpaceRepository {
         network.request(GetSpaceListAPI())
             .compactMap { response in response.compactMap { self.convert(from: $0) }}
             .asObservable()
+    }
+
+    func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {
+        network.request(PostSpaceAPI(request: .init(title: title)))
+            .compactMap { response -> SpaceModels.CreateSpace.Response in
+                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+            }.asObservable()
     }
 
     private func convert(from dto: DTO.Space) -> SpaceModels.FetchSpaceList.Space {

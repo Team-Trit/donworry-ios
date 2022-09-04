@@ -49,15 +49,24 @@ final class SpaceNameViewController: BaseViewController, View {
                 self?.roomInfoLabel.textField.placeholder = $0
             }).disposed(by: disposeBag)
 
+        reactor.state.map { $0.spaceName }
+            .map { !$0.isEmpty }
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
         self.rx.viewDidLoad.map { .viewDidLoad }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+        self.roomInfoLabel.textField.rx.text.compactMap { .typeTextField($0 ?? "") }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        nextButton.rx.tap.map { .didTapButton }
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.nextButton.rx.tap.map { .didTapButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -109,13 +118,10 @@ extension SpaceNameViewController {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
-        case .cardList:
-            guard let first = self.navigationController?.viewControllers[0] else { return }
+        case .cardList(let space):
             let paymentCardListViewController = PaymentCardListViewController()
-            self.navigationController?.setViewControllers([
-                first,
-                paymentCardListViewController
-            ], animated: true)
+            paymentCardListViewController.reactor = PaymentCardListReactor(space: space)
+            self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         }
     }
 }
