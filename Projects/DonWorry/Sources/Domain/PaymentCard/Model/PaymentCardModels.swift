@@ -8,6 +8,7 @@
 
 import Foundation
 
+// 유즈케이스 정리
 enum PaymentCardModels {
 
     enum FetchCardList {
@@ -48,5 +49,23 @@ enum PaymentCardModels {
             }
         }
     }
+    
+    enum PostCard {
+        struct Request {
+            let spaceID: Int
+            let categoryID: Int
+            let bank: String
+            let number: String
+            let holder: String
+            let name: String
+            let totalAmount: Int
+            let bgColor: String
+            let paymentDate: String
+        }
 
+        struct Response {
+            
+        }
+    }
+    
 }
