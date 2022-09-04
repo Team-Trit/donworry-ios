@@ -14,6 +14,8 @@ enum PaymentCardListStep {
     case pop
     case none
     case paymentCardDetail
+    case actionSheet
+    case nameEdit
 }
 
 final class PaymentCardListReactor: Reactor {
@@ -24,6 +26,8 @@ final class PaymentCardListReactor: Reactor {
         case setup
         case didTapBackButton
         case didTapPaymentCardDetail
+        case didTapOptionButton
+        case routeToNameEdit
     }
 
     enum Mutation {
@@ -64,6 +68,10 @@ final class PaymentCardListReactor: Reactor {
             return .just(.routeTo(.pop))
         case .didTapPaymentCardDetail:
             return .just(.routeTo(.paymentCardDetail))
+        case .didTapOptionButton:
+            return .just(.routeTo(.actionSheet))
+        case .routeToNameEdit:
+            return .just(.routeTo(.nameEdit))
         }
     }
 

@@ -126,6 +126,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.navigationBar.rightItem?.rx.tap.map { .didTapOptionButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
@@ -227,15 +231,37 @@ extension PaymentCardListViewController {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
-        case .none:
-            break
         case .paymentCardDetail:
             let paymentCardDetailViewController = PaymentCardDetailViewController()
             paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
             self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
+        case .actionSheet:
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
+                self.dismiss(animated: true) { [weak self] in
+                    self?.reactor?.action.onNext(.routeToNameEdit)
+                }
+            }
+            let item2 =  UIAlertAction(title: "정산방 나가기", style: .default) { _ in
+                self.dismiss(animated: true) { [weak self] in
+                    self?.reactor?.action.onNext(.routeToNameEdit)
+                }
+            }
+
+            actionSheet.addAction(item1)
+            actionSheet.addAction(item2)
+            self.present(actionSheet, animated: true)
+        case .nameEdit:
+            let editRoomNameViewController = EditRoomNameViewController(type: .rename)
+            self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
+        case .none:
+            break
+
         }
     }
 }
+
+// MARK: UICollectionViewDataSource
 
 extension PaymentCardListViewController: UICollectionViewDataSource {
     func collectionView(
@@ -260,6 +286,8 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         }
     }
 }
+
+// MARK: UICollectionViewDelegateFlowLayout
 
 extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(

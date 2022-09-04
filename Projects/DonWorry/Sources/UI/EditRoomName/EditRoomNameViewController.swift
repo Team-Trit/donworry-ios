@@ -49,38 +49,30 @@ final class EditRoomNameViewController: BaseViewController, View {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
-        bindBackButton()
     }
 
     // MARK: - Binding
+
     func bind(reactor: EditRoomNameViewReactor) {
-        //binding here
+        navigationBar.leftItem.rx.tap
+            .bind { self.navigationController?.popViewController(animated: true) }
+            .disposed(by: disposeBag)
+
+        nextButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+//                switch self.type {
+//                case .create:
+//                case .rename:
+//                    <#code#>
+//                }
+            }).disposed(by: disposeBag)
     }
 
-
-    // MARK: - 코드 테스트
-    @objc func codeSheet() {
-        let enterCodeVC = EnterRoomViewController()
-        if #available(iOS 15.0, *) {
-            if let sheet = enterCodeVC.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-            }
-        } else {
-            // Fallback on earlier versions
-        }
-        present(enterCodeVC, animated: true)
-    }
 }
 
 // MARK: - setUI
 
 extension EditRoomNameViewController {
-    private func bindBackButton() {
-        navigationBar.leftItem.rx.tap
-            .bind { self.navigationController?.popViewController(animated: true) }
-            .disposed(by: disposeBag)
-    }
-
     private func setUI() {
         nextButton.title = "정산방 참가하기"
         navigationItem.title = "네비게이션바 넣어요" //TODO: 네비게이션바 교체필요

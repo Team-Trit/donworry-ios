@@ -13,21 +13,18 @@ import RxSwift
 final class EditRoomNameViewReactor: Reactor {
 
     enum Action {
-        // actiom cases
     }
 
     enum Mutation {
-        // mutation cases
     }
 
     struct State {
-        //state
     }
 
     let initialState: State = State()
 
     init() {
-        // init state initialState = State(...)
+
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
