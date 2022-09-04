@@ -32,6 +32,7 @@ class AlertTableViewCell: BaseTableViewCell {
         let spaceName = UILabel()
         spaceName.translatesAutoresizingMaskIntoConstraints = false
         spaceName.font = .designSystem(weight: .heavy, size: ._15)
+        spaceName.textColor = .designSystem(.black)
         return spaceName
     }()
     
@@ -39,13 +40,14 @@ class AlertTableViewCell: BaseTableViewCell {
         let alertInfo = UILabel()
         alertInfo.translatesAutoresizingMaskIntoConstraints = false
         alertInfo.font = .designSystem(weight: .regular, size: ._13)
-        alertInfo.textColor = .designSystem(.grayF6F6F6)
+        alertInfo.textColor = .designSystem(.gray818181)
         return alertInfo
     }()
     
     private let goToPayment: UIImageView = {
         let goToPayment = UIImageView()
-        goToPayment.frame = CGRect(x: 300, y: 25, width: 72, height: 33)
+//        goToPayment.frame = CGRect(x: 300, y: 25, width: 72, height: 33)
+        goToPayment.translatesAutoresizingMaskIntoConstraints = false
         goToPayment.backgroundColor = .designSystem(.mainBlue)
         goToPayment.layer.cornerRadius = 16.5
         goToPayment.isHidden = true
@@ -89,6 +91,11 @@ class AlertTableViewCell: BaseTableViewCell {
         alertInfo.leadingAnchor.constraint(equalTo: smallRectangele.trailingAnchor, constant: 10).isActive = true
         
         contentView.addSubview(goToPayment)
+        goToPayment.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        goToPayment.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40).isActive = true
+        goToPayment.widthAnchor.constraint(equalToConstant: 72).isActive = true
+        goToPayment.heightAnchor.constraint(equalToConstant: 33).isActive = true
+        
         goToPayment.addSubview(buttonLabel)
         buttonLabel.centerYAnchor.constraint(equalTo: goToPayment.centerYAnchor).isActive = true
         buttonLabel.centerXAnchor.constraint(equalTo: goToPayment.centerXAnchor).isActive = true
@@ -111,7 +118,7 @@ class AlertTableViewCell: BaseTableViewCell {
             iconImage.heightAnchor.constraint(equalToConstant: 24).isActive = true
             goToPayment.isHidden = false
             if message.isCompleted {
-                goToPayment.backgroundColor = .designSystem(.grayF6F6F6)
+                goToPayment.backgroundColor = .designSystem(.grayC5C5C5)
                 buttonLabel.text = "완료"
                 buttonLabel.textColor = .designSystem(.white)
             }
