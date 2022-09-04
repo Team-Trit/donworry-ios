@@ -26,7 +26,7 @@ struct PaymentCardInRoomViewModel {
     struct User: Equatable {
         var id: Int
         var nickName: String
-        var imageURL: String
+        var imageURL: String?
     }
 }
 
@@ -40,7 +40,7 @@ public class PaymentCardInRoomView: UIView {
             let participatedUserCount = "\(viewModel?.participatedUserList.count ?? 0)"
             self.participatedUserCountLabel.text = "현재 \(participatedUserCount)명 참가 중 …"
             self.iconImageView.image = UIImage(named: viewModel?.cardIconImageName ?? "")
-            let backgroundColor = UIColor(hex: (viewModel?.backgroundColor ?? "") + "FF")
+            let backgroundColor = UIColor(hex: (viewModel?.backgroundColor ?? ""))
             self.backgroundColor = backgroundColor?.withAlphaComponent(0.72)
             self.cardSideView.backgroundColor = backgroundColor
             self.dateLabel.textColor = backgroundColor
@@ -49,7 +49,12 @@ public class PaymentCardInRoomView: UIView {
                 let url = URL(string: urlString)
                 payerImageView.kf.setImage(with: url)
             }
-            self.drawParticipatedUser(viewModel?.participatedUserList ?? [])
+
+            guard let viewModel = viewModel else {
+                return
+            }
+
+            self.drawParticipatedUser([viewModel.payer] + viewModel.participatedUserList)
         }
     }
 
@@ -57,7 +62,7 @@ public class PaymentCardInRoomView: UIView {
         participatedUserView.subviews.forEach { $0.removeFromSuperview() }
         let imageViews = users.prefix(4).map { (user: PaymentCardInRoomViewModel.User) -> UIImageView in
             let imageView = UIImageView()
-            imageView.kf.setImage(with: URL(string: user.imageURL))
+            imageView.kf.setImage(with: URL(string: user.imageURL ?? ""))
             imageView.contentMode = .scaleAspectFill
             return imageView
         }
@@ -115,7 +120,6 @@ public class PaymentCardInRoomView: UIView {
         return v
     }()
     private let iconImageView: UIImageView = {
-        $0.image = UIImage(named: "chicken")
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = .designSystem(.white)
         return $0
@@ -142,7 +146,6 @@ public class PaymentCardInRoomView: UIView {
         return $0
     }(UIStackView())
     private let payerImageView: UIImageView = {
-        $0.image = UIImage(named: "profile-sample")
         $0.contentMode = .scaleAspectFill
         $0.frame.size.width = 30
         $0.frame.size.height = 30

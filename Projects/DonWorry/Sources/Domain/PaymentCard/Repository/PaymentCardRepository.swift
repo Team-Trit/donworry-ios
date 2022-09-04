@@ -19,12 +19,9 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
     }
 
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList> {
-        print("fetchPaymentCardList")
         return network.request(GetPaymentCardListAPI(spaceID: spaceID))
             .compactMap { response in
-                print("request done")
                 return response.compactMap { [weak self] dto in
-                    print("dto 레포지토리 단 : ", dto)
                     return self?.convertToPaymentCard(dto)
                 }
             }.asObservable()

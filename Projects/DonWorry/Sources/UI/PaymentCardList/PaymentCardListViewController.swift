@@ -125,27 +125,6 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
-        self.collectionView.rx.itemHighlighted
-            .subscribe(onNext: { [weak self] indexPath in
-                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
-                    UIView.animate(withDuration: 0.22) {
-                        cell.transform = .init(scaleX: 0.95, y: 0.95)
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
-
-        self.collectionView.rx.itemUnhighlighted
-            .subscribe(onNext: { [weak self] indexPath in
-                if let cell = self?.collectionView.cellForItem(at: indexPath) as? PaymentCardCollectionViewCell {
-                    UIView.animate(withDuration: 0.2) {
-                        cell.transform = .identity
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
-
 
         self.collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
@@ -158,7 +137,8 @@ final class PaymentCardListViewController: BaseViewController, View {
             .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
-            .subscribe(onNext: { [weak self] indexPath in
+            .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell }
+            .subscribe(onNext: { [weak self] cell in
                 // TODO: 화면전환
                 let createCard = PaymentCardNameEditViewController(type: .create)
                 createCard.reactor = PaymentCardNameEditViewReactor()

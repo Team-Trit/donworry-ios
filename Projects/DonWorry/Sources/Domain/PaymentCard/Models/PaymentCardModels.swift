@@ -27,7 +27,8 @@ enum PaymentCardModels {
 
             struct Taker {
                 let id: Int
-                let nickname, imgURL: String
+                let nickname: String
+                let imgURL: String?
 
             }
         }

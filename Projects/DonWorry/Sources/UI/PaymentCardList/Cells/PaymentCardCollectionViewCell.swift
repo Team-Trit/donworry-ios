@@ -24,7 +24,7 @@ struct PaymentCardCellViewModel: Equatable {
     struct User: Equatable {
         var id: Int
         var nickName: String
-        var imageURL: String
+        var imageURL: String?
     }
 }
 
@@ -54,7 +54,6 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                     }
                 )
             }
-//            self.completeCoverView.isHidden = (viewModel?.yetCompleted ?? false)
         }
     }
     override init(frame: CGRect) {
@@ -74,25 +73,13 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
         self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
         self.layer.borderWidth = 0.5
         self.layer.cornerRadius = 20
-        self.addShadow(
-            shadowColor: UIColor.designSystem(.black)!.cgColor,
-            offset: .init(width: 0, height: 2),
-            opacity: 0.5,
-            radius: 2
-        )
         self.contentView.addSubview(self.paymentCardInRoomView)
-        self.contentView.addSubview(self.completeCoverView)
 
         self.paymentCardInRoomView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        self.completeCoverView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
 
         self.paymentCardInRoomView.layer.masksToBounds = true
-        self.completeCoverView.roundCorners(20)
-        self.addCompleteCoverViewBlurEffect()
     }
 
     private func addCompleteCoverViewBlurEffect() {

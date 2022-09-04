@@ -65,7 +65,6 @@ final class NavigationBar: UIView {
         }
         self.titleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-//            make.centerY.equalTo(leftItem.snp.centerY)
         }
         self.stackView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(8)
