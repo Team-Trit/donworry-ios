@@ -12,6 +12,7 @@ import RxSwift
 
 import BaseArchitecture
 import DesignSystem
+import ReactorKit
 
 
 final class RecievedMoneyDetailViewViewController: BaseViewController {
@@ -52,16 +53,10 @@ final class RecievedMoneyDetailViewViewController: BaseViewController {
         return tableView
     }()
     
-    private let buttomButton: UIButton = {
-       let buttonButton = UIButton()
-        buttonButton.frame = CGRect(x: 21, y: 700, width: 340, height: 50)
-        buttonButton.backgroundColor = .designSystem(.mainBlue)
-        buttonButton.layer.masksToBounds = true
-        buttonButton.layer.cornerRadius = 25
-        buttonButton.setTitle("재촉하기", for: .normal)
-        buttonButton.setTitleColor(.white, for: .normal)
-        buttonButton.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
-        
+    private let buttomButton: DWButton = {
+        let buttonButton = DWButton.create(.xlarge50)
+        buttonButton.translatesAutoresizingMaskIntoConstraints = false
+        buttonButton.title = "재촉하기"
         return buttonButton
     }()
 
@@ -107,6 +102,13 @@ extension RecievedMoneyDetailViewViewController {
         tableView.heightAnchor.constraint(equalToConstant: 440).isActive = true
         
         view.addSubview(buttomButton)
+        buttomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        giveSidePadding(someView: buttomButton, side: 27)
+    }
+    
+    func giveSidePadding(someView: UIView, side: Int) {
+        someView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: CGFloat(side)).isActive = true
+        someView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: CGFloat(-side)).isActive = true
     }
 }
 
