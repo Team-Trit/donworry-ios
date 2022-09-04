@@ -48,7 +48,7 @@ final class AccessAuthorityViewController: BaseViewController {
     let alertInfo: AccessAuthorityInfoView = {
         let alertInfo = AccessAuthorityInfoView()
         alertInfo.translatesAutoresizingMaskIntoConstraints = false
-        alertInfo.configure(image: "clock", title: "알림", subTitle: "정산시작, 정산완료, 재촉알림")
+        alertInfo.configure(image: "clock", title: "(선택) 알림", subTitle: "정산시작, 정산완료, 재촉알림")
         return alertInfo
     }()
     
