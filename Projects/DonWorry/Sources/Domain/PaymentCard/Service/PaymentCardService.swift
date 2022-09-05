@@ -27,8 +27,5 @@ final class PaymentCardServiceImpl: PaymentCardService {
 
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList> {
         paymentCardRepository.fetchPaymentCardList(spaceID: spaceID)
-            .do(onNext: {
-                print("Service : ", $0)
-            })
     }
 }

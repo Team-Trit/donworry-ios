@@ -13,12 +13,9 @@ import DonWorryExtensions
 
 struct SpaceCellViewModel {
     var title: String
-    var isSelected: Bool
 }
 
 final class SpaceCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "SpaceCollectionViewCell"
-
     lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.numberOfLines = 2
@@ -26,37 +23,30 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
-
-    var layersToRemoveLater: [CALayer] = []
+    var gradientLayers: [CAGradientLayer] = []
     var viewModel: SpaceCellViewModel? {
         didSet {
-            guard let viewModel = viewModel else {
-                return
-            }
+            guard let viewModel = viewModel else { return }
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = viewModel.title
-                self?.isSelected = viewModel.isSelected
             }
         }
     }
 
-    override var isSelected: Bool {
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let textColor: UIColor? = self.isSelected ? .designSystem(.white) : .designSystem(.black)
-                self.titleLabel.textColor = textColor
-                if self.isSelected {
-                    let layer = self.contentView.addGradientWithOutput(
-                        startColor: .designSystem(.blueTopGradient)!,
-                        endColor: .designSystem(.blueBottomGradient)!
-                    )
-                    self.layersToRemoveLater.append(layer)
-                } else {
-                    self.layersToRemoveLater.forEach { $0.removeFromSuperlayer() }
-                }
-            }
+    func selectedAttributes() {
+        self.titleLabel.textColor = .designSystem(.white)
+        if gradientLayers.isEmpty {
+            let layer = self.contentView.addGradientWithOutput(
+                startColor: .designSystem(.blueTopGradient)!,
+                endColor: .designSystem(.blueBottomGradient)!
+            )
+            self.gradientLayers.append(layer)
         }
+    }
+
+    func initialAttributes() {
+        self.titleLabel.textColor = .designSystem(.black)
+        self.contentView.backgroundColor = .designSystem(.grayF6F6F6)
     }
 
     override init(frame: CGRect) {
@@ -78,6 +68,14 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
             make.centerX.centerY.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(15)
             make.top.bottom.equalToSuperview().inset(20)
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        if gradientLayers.isNotEmpty {
+            gradientLayers.forEach { $0.removeFromSuperlayer() }
+            gradientLayers = []
         }
     }
 }

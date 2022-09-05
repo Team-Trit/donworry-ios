@@ -34,7 +34,8 @@ extension DTO {
         // MARK: - User
         public struct User: Decodable {
             public let id: Int
-            public let nickname, imgURL: String
+            public let nickname: String
+            public let imgURL: String?
 
             enum CodingKeys: String, CodingKey {
                 case id, nickname

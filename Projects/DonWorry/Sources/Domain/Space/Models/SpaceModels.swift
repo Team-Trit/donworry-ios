@@ -45,12 +45,12 @@ enum SpaceModels {
         struct SpaceUser {
             let id: Int
             let nickname: String
-            let imgURL: String
+            let imgURL: String?
 
             init(
                 id: Int,
                 nickname: String,
-                imgURL: String
+                imgURL: String?
             ) {
                 self.id = id
                 self.nickname = nickname
