@@ -216,12 +216,12 @@ extension PaymentCardDetailViewController {
         
         let totalBottomView = UIView()
         view.addSubview(totalBottomView)
-        totalBottomView.anchor2(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        totalBottomView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
         totalBottomView.backgroundColor = .designSystem(.white)
         totalBottomView.addSubview(navigationBar)
         
-        navigationBar.anchor2(top: view.safeAreaLayoutGuide.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
+        navigationBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
         
         let colorView = UIView()
         totalBottomView.addSubview(colorView)
@@ -233,39 +233,39 @@ extension PaymentCardDetailViewController {
         spacingView.anchor(top: navigationBar.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
         spacingView.backgroundColor = .designSystem(.white)
         totalBottomView.addSubview(priceBigContainerView)
-        priceBigContainerView.anchor2(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
+        priceBigContainerView.anchor(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
         
         priceBigContainerView.addSubview(staticPriceLabel)
-        staticPriceLabel.anchor2(top: priceBigContainerView.topAnchor, left: priceBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        staticPriceLabel.anchor(top: priceBigContainerView.topAnchor, left: priceBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
         priceBigContainerView.addSubview(priceSmallContainerView)
-        priceSmallContainerView.anchor2(top: staticPriceLabel.bottomAnchor, left: priceBigContainerView.leftAnchor, bottom: priceBigContainerView.bottomAnchor, right: priceBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
+        priceSmallContainerView.anchor(top: staticPriceLabel.bottomAnchor, left: priceBigContainerView.leftAnchor, bottom: priceBigContainerView.bottomAnchor, right: priceBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
         
         let PriceHstack = UIStackView(arrangedSubviews: [priceLabel, editButton])
         priceSmallContainerView.addSubview(PriceHstack)
-        PriceHstack.anchor2(top: priceSmallContainerView.topAnchor, left: priceSmallContainerView.leftAnchor, bottom: priceSmallContainerView.bottomAnchor,right: priceSmallContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
+        PriceHstack.anchor(top: priceSmallContainerView.topAnchor, left: priceSmallContainerView.leftAnchor, bottom: priceSmallContainerView.bottomAnchor,right: priceSmallContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
         PriceHstack.centerY(inView: priceSmallContainerView)
         
         totalBottomView.addSubview(attendacneBigContainerView)
-        attendacneBigContainerView.anchor2(top: priceBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        attendacneBigContainerView.anchor(top: priceBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
         attendacneBigContainerView.addSubview(attendanceLabel)
-        attendanceLabel.anchor2(top: attendacneBigContainerView.topAnchor, left: attendacneBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        attendanceLabel.anchor(top: attendacneBigContainerView.topAnchor, left: attendacneBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
         attendacneBigContainerView.addSubview(attendanceCollectionView)
-        attendanceCollectionView.anchor2(top: attendanceLabel.bottomAnchor, left: attendacneBigContainerView.leftAnchor, bottom: attendacneBigContainerView.bottomAnchor, right: attendacneBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
+        attendanceCollectionView.anchor(top: attendanceLabel.bottomAnchor, left: attendacneBigContainerView.leftAnchor, bottom: attendacneBigContainerView.bottomAnchor, right: attendacneBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
         
         totalBottomView.addSubview(fileBigContainerView)
-        fileBigContainerView.anchor2(top: attendacneBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        fileBigContainerView.anchor(top: attendacneBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
         fileBigContainerView.addSubview(staticPictureLabel)
-        staticPictureLabel.anchor2(top: fileBigContainerView.topAnchor, left: fileBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        staticPictureLabel.anchor(top: fileBigContainerView.topAnchor, left: fileBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
         fileBigContainerView.addSubview(fileCollectionView)
-        fileCollectionView.anchor2(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
+        fileCollectionView.anchor(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
         
         totalBottomView.addSubview(bottomButton)
-        bottomButton.anchor2(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
+        bottomButton.anchor(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
     }
 }
 
@@ -394,94 +394,6 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
                     self.fileCollectionView.reloadData()
                 }
                 
-            }
-        }
-    }
-}
-
-//MARK: 아래는 삭제될 부분입니다.
-extension UIView {
-    // layout 하는 함수
-    func anchor2(top: NSLayoutYAxisAnchor? = nil,
-                 left: NSLayoutXAxisAnchor? = nil,
-                 bottom: NSLayoutYAxisAnchor? = nil,
-                 right: NSLayoutXAxisAnchor? = nil,
-                 paddingTop: CGFloat = 0,
-                 paddingLeft: CGFloat = 0,
-                 paddingBottom: CGFloat = 0,
-                 paddingRight: CGFloat = 0,
-                 width: CGFloat? = nil,
-                 height: CGFloat? = nil) {
-        
-        translatesAutoresizingMaskIntoConstraints = false
-        
-        if let top = top {
-            topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true
-        }
-        
-        if let left = left {
-            leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
-        }
-        
-        if let bottom = bottom {
-            bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom).isActive = true
-        }
-        
-        if let right = right {
-            rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
-        }
-        
-        if let width = width {
-            widthAnchor.constraint(equalToConstant: width).isActive = true
-        }
-        
-        if let height = height {
-            heightAnchor.constraint(equalToConstant: height).isActive = true
-        }
-    }
-    
-    func centerX(inView view: UIView) {
-        translatesAutoresizingMaskIntoConstraints = false
-        centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-    }
-    
-    func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0, constant: CGFloat = 0) {
-        
-        translatesAutoresizingMaskIntoConstraints = false
-        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
-        
-        if let left = leftAnchor {
-            anchor2(left: left, paddingLeft: paddingLeft)
-        }
-    }
-    
-    func setDimensions(height: CGFloat, width: CGFloat) {
-        translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: height).isActive = true
-        widthAnchor.constraint(equalToConstant: width).isActive = true
-    }
-    
-    func setHeight(height: CGFloat) {
-        translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: height).isActive = true
-    }
-    
-    func setWidth(width: CGFloat) {
-        translatesAutoresizingMaskIntoConstraints = false
-        widthAnchor.constraint(equalToConstant: width).isActive = true
-    }
-    
-}
-
-extension UIImageView {
-    func load2(url: URL) {
-        DispatchQueue.global().async { [weak self] in
-            if let data = try? Data(contentsOf: url) {
-                if let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.image = image
-                    }
-                }
             }
         }
     }
