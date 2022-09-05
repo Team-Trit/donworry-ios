@@ -227,7 +227,7 @@ extension HomeViewController {
             let sentMoneyDetailViewController = SentMoneyDetailViewViewController()
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
-            let alertViewController = AlertViewViewController()
+            let alertViewController = PushSettingViewController()
             self.navigationController?.pushViewController(alertViewController, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()
