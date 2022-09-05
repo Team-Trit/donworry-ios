@@ -21,26 +21,17 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     }
     private var selectedIcon: String = ""
     private let icons: [Catogory] = [Catogory(iconName: "ic_chicken"),
-                                     Catogory(iconName: "ic_cup"),
+                                     Catogory(iconName: "ic_coffee"),
                                      Catogory(iconName: "ic_wine"),
-                                     Catogory(iconName: "ic_shopping_cart"),
-                                     Catogory(iconName: "ic_video"),
-                                     Catogory(iconName: "ic_spoon_knife"),
+                                     Catogory(iconName: "ic_shoppingcart"),
+                                     Catogory(iconName: "ic_movie"),
+                                     Catogory(iconName: "ic_spoonknife"),
                                      Catogory(iconName: "ic_cake"),
-                                     Catogory(iconName: "ic_gas_station"),
+                                     Catogory(iconName: "ic_car"),
                                      Catogory(iconName: "ic_icecream")]
 
     // MARK: - Views
-    private lazy var navigationBar: DWNavigationBar = {
-        // TODO: nav bar title 설정해주기
-        let v = DWNavigationBar()
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
 
     private lazy var titleLabel: UILabel = {
         $0.text = "정산내역 아이콘을\n선택해주세요"
@@ -97,29 +88,31 @@ extension PaymentCardIconEditViewController {
 // MARK: - setUI
 
 extension PaymentCardIconEditViewController {
-
+    
     private func setUI() {
         nextButton.title = "다음"
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(navigationBar, titleLabel, nextButton, iconCollectionView)
-
+        
         navigationBar.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
         }
-
+        
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(50)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-
+        
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(25)
+            $0.bottom.equalToSuperview().inset(50)
         }
-
+        
         iconCollectionView.delegate = self
         iconCollectionView.dataSource = self
         iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
-
+        
         iconCollectionView.snp.makeConstraints {
             $0.width.equalTo(300)
             $0.top.equalTo(titleLabel.snp.bottom).offset(57.5)
@@ -133,24 +126,24 @@ extension PaymentCardIconEditViewController {
 // MARK: - CollectionView
 
 extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-
+    
     private func createCollecionViewLayout() -> UICollectionViewCompositionalLayout{
-
+        
         let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(102), heightDimension: .absolute(102))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
+        
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(102))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 3)
         group.interItemSpacing = .fixed(16)
-
+        
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = CGFloat(16)
-
+        
         let layout = UICollectionViewCompositionalLayout(section: section)
-
+        
         return layout
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 9
     }
