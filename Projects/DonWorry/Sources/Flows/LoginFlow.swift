@@ -14,13 +14,11 @@ final class LoginFlow: Flow {
     var root: Presentable {
         return self.rootViewController
     }
-    
     private lazy var rootViewController: UINavigationController = {
         let v = UINavigationController()
         v.isNavigationBarHidden = true
         return v
     }()
-    
     
     func navigate(to step: Step) -> FlowContributors {
         guard let step = step as? DonworryStep else { return .none }
@@ -35,8 +33,8 @@ final class LoginFlow: Flow {
         case .userInfoIsRequired:
             return self.navigateToEnterUserInfoView()
             
-        case .bankSelectIsRequired:
-            return self.presentBankSelectView()
+        case .bankSelectIsRequired(let delegate):
+            return self.presentBankSelectView(delegate)
             
         case .bankSelectIsComplete:
             self.dismissBankSelectView()
@@ -77,9 +75,9 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func presentBankSelectView() -> FlowContributors {
+    private func presentBankSelectView(_ delegate: EnterUserInfoViewDelegate) -> FlowContributors {
         let vc = SelectBankViewController()
-        let reactor = SelectBankViewReactor()
+        let reactor = SelectBankViewReactor(delegate: delegate)
         vc.reactor = reactor
         self.rootViewController.present(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
@@ -91,10 +89,11 @@ extension LoginFlow {
     
     private func navigateToAgreeTermView() -> FlowContributors {
         let vc = AgreeTermViewController()
-        let reactor = AgreeTermViewReactor()
-        vc.reactor = reactor
+//        let reactor = AgreeTermViewReactor()
+//        vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+//        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+        return .one(flowContributor: .contribute(withNext: vc))
     }
     
     private func presentConfirmTermView() -> FlowContributors {

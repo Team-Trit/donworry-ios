@@ -10,8 +10,10 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import Models
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 
 final class EnterUserInfoViewController: BaseViewController, View {
@@ -23,14 +25,13 @@ final class EnterUserInfoViewController: BaseViewController, View {
         return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
-    lazy var accountStackView = AccountStackView()
+    private lazy var accountStackView = AccountStackView()
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
         v.isEnabled = false
         return v
     }()
-    private let authViewModel = AuthViewModel.shared
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,6 +85,7 @@ extension EnterUserInfoViewController {
     }
 }
 
+
 // MARK: - Bind
 extension EnterUserInfoViewController {
     private func dispatch(to reactor: EnterUserInfoViewReactor) {
@@ -91,46 +93,48 @@ extension EnterUserInfoViewController {
             .map { Reactor.Action.backButtonPressed }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
         nickNameStackView.nickNameTextField.textField.rx.text
+            .orEmpty
             .distinctUntilChanged()
-            .map { Reactor.Action.textFieldUpdated(type: .nickName, length: $0!.count) }
+            .map { Reactor.Action.nicknameFieldUpdated(nickname: $0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
-        accountStackView.accountInputField.accountTextField.textField.rx.text
-            .distinctUntilChanged()
-            .map { Reactor.Action.textFieldUpdated(type: .account, length: $0!.count) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
+
         accountStackView.accountInputField.holderTextField.textField.rx.text
+            .orEmpty
             .distinctUntilChanged()
-            .map { Reactor.Action.textFieldUpdated(type: .holder, length: $0!.count) }
+            .map { Reactor.Action.accountHolderFieldUpdated(holder: $0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
+        accountStackView.accountInputField.accountTextField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.accountNumberFieldUpdated(number: $0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         accountStackView.accountInputField.chooseBankButton.rx.tap
             .map { Reactor.Action.bankSelectButtonPressed }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
         nextButton.rx.tap
             .map { Reactor.Action.nextButtonPressed }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
-    
+
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        authViewModel.bank
-            .asDriver(onErrorJustReturn: .bankBUSAN)
-            .drive(onNext: { [weak self] in
-                self?.accountStackView.accountInputField.chooseBankButton.setTitle($0.koreanName, for: .normal)
-            })
+        reactor.state.map { $0.isNextButtonAvailable }
+            .asDriver(onErrorJustReturn: false)
+            .drive(self.nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.isNextButtonAvailable.allSatisfy { $0 } }
-            .bind(to: nextButton.rx.isEnabled)
+        reactor.state.map { $0.bank }
+            .asDriver(onErrorJustReturn: "은행검색")
+            .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
     }
 }

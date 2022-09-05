@@ -15,7 +15,7 @@ enum DonworryStep: Step {
     // Login Flow
     case loginIsRequired
     case userInfoIsRequired
-    case bankSelectIsRequired
+    case bankSelectIsRequired(delegate: EnterUserInfoViewReactor)
     case bankSelectIsComplete
     case agreeTermIsRequired
     case confirmTermIsRequired

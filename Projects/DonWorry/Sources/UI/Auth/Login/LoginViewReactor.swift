@@ -22,7 +22,8 @@ enum LoginStep {
 }
 
 final class LoginViewReactor: Reactor, Stepper {
-    private let authViewModel = AuthViewModel.shared
+//    private let authViewModel = AuthViewModel.shared
+//    private let authViewModel: AuthViewModel
     let steps = PublishRelay<Step>()
     private let testUserService: TestUserService
     private let userService: UserService
@@ -45,9 +46,11 @@ final class LoginViewReactor: Reactor, Stepper {
     let initialState: State
     
     init(
+//        authViewModel: AuthViewModel = AuthViewModel.shared,
         testUserService: TestUserService = TestUserServiceImpl(),
         userService: UserService = UserServiceImpl()
     ) {
+//        self.authViewModel = authViewModel
         self.testUserService = testUserService
         self.userService = userService
         self.initialState = State()
@@ -69,8 +72,8 @@ final class LoginViewReactor: Reactor, Stepper {
             userService.loginWithKakao()
                 .subscribe(onNext: { [unowned self] oauthToken in
                     // TODO: oauthToken driving하기
-                    authViewModel.accessToken.onNext(oauthToken.accessToken)
-                    authViewModel.accessToken.onCompleted()
+//                    authViewModel.setAccessToken(oauthToken.accessToken)
+                    
                     self.steps.accept(DonworryStep.userInfoIsRequired)
                 }) { error in
                     print(error)

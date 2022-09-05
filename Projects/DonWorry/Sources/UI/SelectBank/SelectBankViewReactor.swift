@@ -13,9 +13,13 @@ import ReactorKit
 import RxCocoa
 import RxFlow
 
+protocol EnterUserInfoViewDelegate: AnyObject {
+    func saveBank(_ selectedBank: String)
+}
+
 final class SelectBankViewReactor: Reactor, Stepper {
-    private let authViewModel = AuthViewModel.shared
     private let banks = Bank.allCases.map { $0.rawValue }
+    weak var delegate: EnterUserInfoViewDelegate?
     
     let steps = PublishRelay<Step>()
     
@@ -26,7 +30,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
     }
     
     enum Mutation {
-        case dismissSelectBankSheet
         case performQuery(filteredBankList: [String])
     }
     
@@ -36,29 +39,31 @@ final class SelectBankViewReactor: Reactor, Stepper {
     
     let initialState: State
     
-    init() {
+    init(delegate: EnterUserInfoViewDelegate) {
         var initialSnapshot = NSDiffableDataSourceSnapshot<Section, String>()
         initialSnapshot.appendSections([.main])
         initialSnapshot.appendItems(banks)
         self.initialState = State(
             snapshot: initialSnapshot
         )
+        self.delegate = delegate
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .dismissButtonPressed:
             self.steps.accept(DonworryStep.bankSelectIsComplete)
-            return .just(Mutation.dismissSelectBankSheet)
+            return .empty()
             
         case let .searchTextChanged(filter):
             let filteredBankList = performQuery(with: filter)
             return .just(Mutation.performQuery(filteredBankList: filteredBankList))
             
         case let .selectBank(selectedBank):
-            self.authViewModel.bank.onNext(selectedBank)
+            self.delegate?.saveBank(selectedBank.koreanName)
+            
             self.steps.accept(DonworryStep.bankSelectIsComplete)
-            return .just(Mutation.dismissSelectBankSheet)
+            return .empty()
         }
     }
     
@@ -66,8 +71,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
-        case .dismissSelectBankSheet:
-            break
             
         case let .performQuery(filteredBankList):
             state.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
