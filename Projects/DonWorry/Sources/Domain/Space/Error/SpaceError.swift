@@ -8,4 +8,7 @@
 
 import Foundation
 
-enum SpaceError: Error {}
+enum SpaceError: Error {
+    case alreadyJoined
+    case undefined
+}

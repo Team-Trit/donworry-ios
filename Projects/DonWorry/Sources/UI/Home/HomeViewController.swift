@@ -216,9 +216,10 @@ extension HomeViewController {
             let spaceNameViewController = SpaceNameViewController()
             spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
-        case .enterRoom:
-            let enterRoomViewController = EnterRoomViewController()
-            self.present(enterRoomViewController, animated: true)
+        case .joinSpace:
+            let joinSpaceViewController = JoinSpaceViewController()
+            joinSpaceViewController.reactor = JoinSpaceReactor()
+            self.present(joinSpaceViewController, animated: true)
         case .recievedMoneyDetail:
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewViewController()
             self.present(recieveMoneyDetailViewController, animated: true)

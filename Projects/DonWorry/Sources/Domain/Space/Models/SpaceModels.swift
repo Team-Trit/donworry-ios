@@ -9,6 +9,9 @@
 import Foundation
 
 enum SpaceModels {
+
+    // MARK: 정산방 리스트 조회
+
     enum FetchSpaceList {
         typealias Response = [Space]
 
@@ -56,9 +59,25 @@ enum SpaceModels {
         }
     }
 
+    // MARK: 정산방 생성하기
+
     enum CreateSpace {
         struct Request {
             var title: String
+        }
+
+        struct Response {
+            let id: Int
+            let adminID: Int
+            let title, shareID: String
+        }
+    }
+
+    // MARK: 정산방 코드로 입장하기
+
+    enum JoinSpace {
+        struct Request {
+            var shareID: String
         }
 
         struct Response {
