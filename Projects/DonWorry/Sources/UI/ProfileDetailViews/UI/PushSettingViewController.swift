@@ -94,6 +94,9 @@ extension PushSettingViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PushSettingTableViewCell.identifier, for: indexPath)
                 as? PushSettingTableViewCell else { return UITableViewCell() }
         cell.configure(data: toggleTitles[indexPath.row])
+        cell.selectionStyle = .none
+        cell.index = indexPath.row
+        cell.toggleDelegate = self
         return cell
     }
     
@@ -110,5 +113,11 @@ extension PushSettingViewController: UITableViewDelegate {
         sectionHeader.translatesAutoresizingMaskIntoConstraints = false
         sectionHeader.heightAnchor.constraint(equalToConstant: 1).isActive = true
         return sectionHeader
+    }
+}
+
+extension PushSettingViewController: toggleAlertDelegate {
+    func toggleAlert(index: Int) {
+        print(toggleTitles[index].main)
     }
 }
