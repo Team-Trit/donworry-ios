@@ -18,7 +18,7 @@ import SnapKit
 final class JoinSpaceViewController: BaseViewController, View {
 
     lazy var dismissButton = UIButton(type: .system)
-    private lazy var textField = LimitTextField(frame: .zero, type: .roomCode)
+    private lazy var shareIDView = LimitTextField(frame: .zero, type: .roomCode)
     private lazy var nextButton = DWButton.create(.xlarge50)
     private lazy var titleLabel: UILabel = {
         $0.text = "정산방 코드로 정산에 참가하기"
@@ -37,8 +37,8 @@ final class JoinSpaceViewController: BaseViewController, View {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         setUI()
+        setNotifiaction()
     }
 
     func bind(reactor: JoinSpaceReactor) {
@@ -50,7 +50,7 @@ final class JoinSpaceViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        textField.textField.rx.text.compactMap { $0 }
+        shareIDView.textField.rx.text.compactMap { $0 }
             .map { .typeTextField($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -76,7 +76,55 @@ final class JoinSpaceViewController: BaseViewController, View {
     }
 
     private func showToast(message: String) {
+
     }
+
+    private func setNotifiaction() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    /// 배경 터치시  포커싱 해제
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.shareIDView.textField.resignFirstResponder()
+    }
+
+    /// 키보드 Show 시에 위치 조정
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.nextButton.snp.updateConstraints { make in
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight - 15)
+                }
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    /// 키보드 Hide 시에 위치 조정
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 1) {
+            self.nextButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+
 }
 
 // MARK: setUI
@@ -91,7 +139,7 @@ extension JoinSpaceViewController {
         view.addSubviews(dismissButton)
         view.addSubview(imageView)
         view.addSubview(titleLabel)
-        view.addSubview(textField)
+        view.addSubview(shareIDView)
         view.addSubview(nextButton)
 
         imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 95).isActive = true
@@ -109,7 +157,7 @@ extension JoinSpaceViewController {
             $0.top.equalTo(imageView.snp.bottom).offset(11)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-        textField.snp.makeConstraints {
+        shareIDView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(38)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
