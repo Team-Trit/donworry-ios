@@ -13,6 +13,7 @@ protocol SpaceService {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
+    func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
 }
 
 final class SpaceServiceImpl: SpaceService {
@@ -35,4 +36,9 @@ final class SpaceServiceImpl: SpaceService {
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response> {
         spaceRepository.joinSpace(shareID: shareID)
     }
+    
+    func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response> {
+        spaceRepository.editSpaceName(id: id, name: name)
+    }
+
 }

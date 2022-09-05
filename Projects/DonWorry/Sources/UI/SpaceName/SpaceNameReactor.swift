@@ -16,9 +16,10 @@ enum SpaceNameStep {
 }
 
 final class SpaceNameReactor: Reactor {
+    typealias SpaceID = Int
     enum RoomNameEditViewType {
         case create //default
-        case rename
+        case rename(SpaceID)
     }
 
     enum Action {
@@ -59,8 +60,9 @@ final class SpaceNameReactor: Reactor {
             return .just(.setup)
         case .didTapButton:
             switch currentState.type {
-            case .rename:
-                return .just(.routeTo(.pop))
+            case .rename(let spaceID):
+                return spaceService.editSpaceName(id: spaceID, name: currentState.spaceName)
+                    .map { _ in .routeTo(.pop) }
             case .create:
                 return spaceService.createSpace(title: currentState.spaceName)
                     .map { .routeTo(.cardList($0)) }

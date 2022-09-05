@@ -86,4 +86,18 @@ enum SpaceModels {
             let title, shareID: String
         }
     }
+
+    // MARK: 정산방 이름 수정하기
+
+    enum EditSpaceTitle {
+        struct Request {
+            let title: String
+        }
+
+        struct Response {
+            let id: Int
+            let adminID: Int
+            let title, shareID: String
+        }
+    }
 }
