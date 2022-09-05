@@ -58,7 +58,7 @@ final public class DWNavigationBar: UIView {
         rightItem = UIButton(type: .system)
         let image = UIImage(
             systemName: rightButtonImageName,
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .heavy)
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .heavy)
         )
         rightItem?.setImage(image, for: .normal)
         rightItem?.tintColor = .designSystem(.black)
