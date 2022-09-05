@@ -115,8 +115,9 @@ final class HomeReactor: Reactor {
         switch mutation {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
-        case .updateSpaceList(let spaceList):
-            if let selectedSpace = spaceList.first {
+        case .updateSpaceList(let spaceList): // 초기 리로드
+            if currentState.selectedSpaceIndex < spaceList.count {
+                let selectedSpace = spaceList[currentState.selectedSpaceIndex]
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
                     selectedIndex: currentState.selectedSpaceIndex
@@ -128,7 +129,7 @@ final class HomeReactor: Reactor {
                 newState.spaceList = spaceList
                 newState.reload = ()
             }
-        case .updateSpace(let index):
+        case .updateSpace(let index): // 셀이 눌렸을 때 리로드
             let selectedSpace = currentState.spaceList[index]
             newState.selectedSpaceIndex = index
             newState.spaceViewModelList = homePresenter.formatSection(

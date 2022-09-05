@@ -13,7 +13,7 @@ import Kingfisher
 
 struct GiveBillCardCellViewModel: Equatable {
     var takerID: Int
-    var imageURL: String
+    var imageURL: String?
     var nickName: String
     var amount: String
     var isCompleted: Bool
@@ -85,11 +85,11 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
             self.nickNameLabel.text = viewModel?.nickName
             self.amountLabel.text = viewModel?.amount
             if let viewModel = viewModel {
-                let urlString = URL(string: viewModel.imageURL)
+                let urlString = URL(string: viewModel.imageURL ?? "")
                 profileImageView.kf.setImage(with: urlString)
             }
             if let viewModel = viewModel {
-                completeCoverView.isHidden = !viewModel.isCompleted
+//                completeCoverView.isHidden = !viewModel.isCompleted
             }
         }
     }
@@ -108,7 +108,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
     private func setUI() {
         self.contentView.backgroundColor = .designSystem(.brown)
         self.contentView.addSubview(self.wholeStackView)
-        self.contentView.addSubview(self.completeCoverView)
+//        self.contentView.addSubview(self.completeCoverView)
         self.wholeStackView.addArrangedSubview(self.profileStackView)
         self.wholeStackView.addArrangedSubview(self.descriptionStackView)
         self.profileStackView.addArrangedSubview(self.profileImageView)
@@ -124,14 +124,14 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         self.profileImageView.snp.makeConstraints { make in
             make.width.height.equalTo(60)
         }
-        self.completeCoverView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+//        self.completeCoverView.snp.makeConstraints { make in
+//            make.edges.equalToSuperview()
+//        }
 
         self.profileImageView.roundCorners(30)
         self.contentView.roundCorners(8)
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)
-        self.addCompleteCoverViewBlurEffect()
+//        self.addCompleteCoverViewBlurEffect()
     }
 
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
