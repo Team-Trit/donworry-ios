@@ -13,7 +13,7 @@ import Models
 
 enum HomeStep {
     case spaceName
-    case enterRoom
+    case joinSpace
     case recievedMoneyDetail
     case sentMoneyDetail
     case alert
@@ -90,7 +90,7 @@ final class HomeReactor: Reactor {
         case .didTapAlarm:
             return .just(.routeTo(.alert))
         case .didTapSearchButton:
-            return .just(.routeTo(.enterRoom))
+            return .just(.routeTo(.joinSpace))
         case .didTapCreateSpaceButton:
             return .just(.routeTo(.spaceName))
         case .didTapProfileImage:

@@ -12,7 +12,7 @@ import RxSwift
 protocol SpaceRepository {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
-    func joinSpace(shareID: String) -> Observable<SpaceModels.JoinSpace.Response>
+    func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -35,11 +35,26 @@ final class SpaceRepositoryImpl: SpaceRepository {
             }.asObservable()
     }
 
-    func joinSpace(shareID: String) -> Observable<SpaceModels.JoinSpace.Response> {
+    func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response> {
         network.request(PostSpaceJoinAPI(request: .init(shareId: shareID)))
             .compactMap { response -> SpaceModels.JoinSpace.Response in
                     .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
-            }.asObservable()
+            }.catch { [weak self] error in
+                return .error(self?.errorParsing(error: error) ?? .undefined)
+            }.asObservable().asSingle()
+    }
+
+    private func errorParsing(error: Error) -> SpaceError {
+        guard let error = error as? NetworkError else { return .undefined }
+        switch error {
+        case .httpStatus(let status):
+            if status == 400 {
+                return .alreadyJoined
+            }
+        default:
+            return .undefined
+        }
+        return .undefined
     }
 
     private func convert(from dto: DTO.Space) -> SpaceModels.FetchSpaceList.Space {
