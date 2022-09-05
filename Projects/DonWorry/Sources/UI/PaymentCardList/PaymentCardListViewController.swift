@@ -242,18 +242,20 @@ extension PaymentCardListViewController {
                     self?.reactor?.action.onNext(.routeToNameEdit)
                 }
             }
-            let item2 =  UIAlertAction(title: "정산방 나가기", style: .default) { _ in
+            let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
                 self.dismiss(animated: true) { [weak self] in
                     self?.reactor?.action.onNext(.routeToNameEdit)
                 }
             }
+            let cancel = UIAlertAction(title: "취소", style: .cancel)
 
             actionSheet.addAction(item1)
             actionSheet.addAction(item2)
+            actionSheet.addAction(cancel)
             self.present(actionSheet, animated: true)
         case .nameEdit:
             let editRoomNameViewController = SpaceNameViewController()
-            editRoomNameViewController.reactor = SpaceNameReactor(type: .rename)
+            editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
         case .none:
             break

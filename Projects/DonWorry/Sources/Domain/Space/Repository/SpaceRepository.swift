@@ -13,6 +13,7 @@ protocol SpaceRepository {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
+    func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -44,6 +45,13 @@ final class SpaceRepositoryImpl: SpaceRepository {
             }.asObservable().asSingle()
     }
 
+    func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response> {
+        network.request(PatchSpaceTitleAPI(request: .init(id: id, title: name)))
+            .compactMap { response -> SpaceModels.EditSpaceTitle.Response in
+                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+            }.asObservable()
+
+    }
     private func errorParsing(error: Error) -> SpaceError {
         guard let error = error as? NetworkError else { return .undefined }
         switch error {
