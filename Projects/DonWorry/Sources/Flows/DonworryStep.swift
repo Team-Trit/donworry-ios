@@ -14,10 +14,10 @@ enum DonworryStep: Step {
     
     // Login Flow
     case loginIsRequired
-    case userInfoIsRequired
+    case userInfoIsRequired(accessToken: String)
     case bankSelectIsRequired(delegate: EnterUserInfoViewReactor)
     case bankSelectIsComplete
-    case agreeTermIsRequired
-    case confirmTermIsRequired
+    case agreeTermIsRequired(accessToken: String, nickname: String, bank: String, holder: String, number: String)
+    case confirmTermIsRequired(checkedTerms: [String], accessToken: String, nickname: String, bank: String, holder: String, number: String, isAgreeMarketing: Bool)
     case homeIsRequired
 }

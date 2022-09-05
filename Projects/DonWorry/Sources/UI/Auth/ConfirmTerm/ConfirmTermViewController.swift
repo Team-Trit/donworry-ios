@@ -16,6 +16,7 @@ import RxSwift
 import SnapKit
 
 final class ConfirmTermViewController: BaseViewController, View {
+//    let checkedTerms: [String]?
     private lazy var confirmTableView: ConfirmTermTableView = {
         let v = ConfirmTermTableView()
         v.dataSource = self
@@ -25,7 +26,7 @@ final class ConfirmTermViewController: BaseViewController, View {
     private lazy var confirmButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "완료"
-        v.isEnabled = false
+        v.isEnabled = true
         return v
     }()
     private lazy var containerView: UIView = {
@@ -48,10 +49,16 @@ final class ConfirmTermViewController: BaseViewController, View {
     private var containerViewHeightConstraint: NSLayoutConstraint?
     private var containerViewBottomConstraint: NSLayoutConstraint?
     private var confirmButtonBottomConstraint: NSLayoutConstraint?
-    let viewModel = ConfirmTermViewModel()
-    private var checkedTerms: [Term] {
-        return viewModel.checkedTerms
-    }
+//    let viewModel = ConfirmTermViewModel()
+    
+//    init(checkedTerms: [String]) {
+//        self.checkedTerms = checkedTerms
+//        super.init()
+//    }
+//
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -174,12 +181,12 @@ extension ConfirmTermViewController {
 // MARK: - TableViewDataSource
 extension ConfirmTermViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return checkedTerms.count
+        return (reactor?.checkedTerms.count)!
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TermConfirmCell", for: indexPath)
-        cell.textLabel?.text = "* \(checkedTerms[indexPath.row].label)"
+        cell.textLabel?.text = "* \((reactor?.checkedTerms[indexPath.row])!)"
         cell.textLabel?.font = .designSystem(weight: .regular, size: ._15)
         cell.textLabel?.textColor = .designSystem(.gray818181)
         return cell

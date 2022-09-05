@@ -6,15 +6,9 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-//import KakaoSDKAuth
-//import KakaoSDKCommon
-//import KakaoSDKUser
 import ReactorKit
 import RxCocoa
 import RxFlow
-//import RxKakaoSDKAuth
-//import RxKakaoSDKCommon
-//import RxKakaoSDKUser
 import Models
 
 enum LoginStep {
@@ -22,8 +16,6 @@ enum LoginStep {
 }
 
 final class LoginViewReactor: Reactor, Stepper {
-//    private let authViewModel = AuthViewModel.shared
-//    private let authViewModel: AuthViewModel
     let steps = PublishRelay<Step>()
     private let testUserService: TestUserService
     private let userService: UserService
@@ -46,11 +38,9 @@ final class LoginViewReactor: Reactor, Stepper {
     let initialState: State
     
     init(
-//        authViewModel: AuthViewModel = AuthViewModel.shared,
         testUserService: TestUserService = TestUserServiceImpl(),
         userService: UserService = UserServiceImpl()
     ) {
-//        self.authViewModel = authViewModel
         self.testUserService = testUserService
         self.userService = userService
         self.initialState = State()
@@ -65,16 +55,13 @@ final class LoginViewReactor: Reactor, Stepper {
             return .empty()
             
         case .googleLoginButtonPressed:
-            self.steps.accept(DonworryStep.userInfoIsRequired)
+//            self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: AccessToken))
             return .empty()
             
         case .kakaoLoginButtonPressed:
             userService.loginWithKakao()
                 .subscribe(onNext: { [unowned self] oauthToken in
-                    // TODO: oauthToken driving하기
-//                    authViewModel.setAccessToken(oauthToken.accessToken)
-                    
-                    self.steps.accept(DonworryStep.userInfoIsRequired)
+                    self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: oauthToken.accessToken))
                 }) { error in
                     print(error)
                 }

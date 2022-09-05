@@ -21,6 +21,12 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
     private let disposeBag = DisposeBag()
     
+    private let accessToken: String
+    private var nickname = ""
+    private var bank = ""
+    private var holder = ""
+    private var number = ""
+    
     enum Action {
         case backButtonPressed
         case nicknameFieldUpdated(nickname: String)
@@ -47,7 +53,7 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     
     let initialState: State
     
-    init() {
+    init(accessToken: String) {
         self.initialState = State(
             nickname: "",
             accountHolder: "",
@@ -55,6 +61,7 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
             bank: "은행선택",
             isNextButtonAvailable: false
         )
+        self.accessToken = accessToken
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -80,7 +87,7 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
             return .just(Mutation.updateBank(selectedBank: bank))
             
         case .nextButtonPressed:
-            self.steps.accept(DonworryStep.agreeTermIsRequired)
+            self.steps.accept(DonworryStep.agreeTermIsRequired(accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number))
             return .just(Mutation.navigateToNextVC)
         }
     }
@@ -92,24 +99,29 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         case let .updateSubject(type, value):
             switch type {
             case .nickname:
+                nickname = value
                 newState.nickname = value
                 
             case .accountHolder:
+                holder = value
                 newState.accountHolder = value
                 
             case .accountNumber:
+                number = value
                 newState.accountNumber = value
             }
-            newState.isNextButtonAvailable = checkNextButtonValidation(newState)
+//            newState.isNextButtonAvailable = checkNextButtonValidation(newState)
             
         case .updateBank(let bank):
             print("⭐️이까지 왔을 때 은행 : \(bank)")
+            self.bank = bank
             newState.bank = bank
             
         case .navigateToNextVC:
             // TODO: ViewModel 연결
             break
         }
+        newState.isNextButtonAvailable = checkNextButtonValidation(newState)
         
         return newState
     }
@@ -118,7 +130,7 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
 // MARK: - Helper
 extension EnterUserInfoViewReactor: EnterUserInfoViewDelegate {
     private func checkNextButtonValidation(_ state: State) -> Bool {
-        return !(state.nickname == "") && !(state.accountHolder == "") && !(state.accountNumber == "")
+        return state.nickname != "" && state.accountHolder != "" && state.accountNumber != "" && state.bank != "은행선택"
     }
     
     func saveBank(_ selectedBank: String) {

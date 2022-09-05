@@ -85,7 +85,6 @@ extension EnterUserInfoViewController {
     }
 }
 
-
 // MARK: - Bind
 extension EnterUserInfoViewController {
     private func dispatch(to reactor: EnterUserInfoViewReactor) {
