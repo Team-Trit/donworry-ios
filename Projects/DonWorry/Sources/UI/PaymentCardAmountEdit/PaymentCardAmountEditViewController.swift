@@ -18,8 +18,8 @@ import SnapKit
 final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
-    private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "<"]
-    private lazy var navigationBar = DWNavigationBar()
+    private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
+    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -46,6 +46,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         let v = UILabel()
         v.font = .designSystem(weight: .heavy, size: ._50)
         v.textAlignment = .right
+        v.baselineAdjustment = .alignBaselines
         v.adjustsFontSizeToFitWidth = true
         return v
     }()
@@ -148,6 +149,17 @@ extension PaymentCardAmountEditViewController {
                 self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
+        
+        navigationBar.rightItem!.rx.tap
+            .bind {
+                guard let controllers = self.navigationController?.viewControllers else { return }
+                for vc in controllers {
+                    if vc is PaymentCardListViewController {
+                        self.navigationController?.popToViewController(vc as! PaymentCardListViewController, animated: true)
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     private func setUI() {
@@ -185,7 +197,7 @@ extension PaymentCardAmountEditViewController {
         }
         
         wonLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(nextButton.snp.top).offset(-110)
+            make.bottom.equalTo(amountLabel.snp.bottom).offset(-35)
             make.trailing.equalToSuperview().offset(-70)
         }
         
@@ -210,7 +222,18 @@ extension PaymentCardAmountEditViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NumberPadCollectionViewCell.identifier, for: indexPath) as? NumberPadCollectionViewCell else { return UICollectionViewCell() }
-        cell.numberLabel.text = padItems[indexPath.row]
+        
+        if indexPath.row == 11 {
+            let attributedString = NSMutableAttributedString(string: "")
+            let imageAttachment = NSTextAttachment()
+            imageAttachment.bounds = CGRect(x: 0, y: 0, width: 35, height: 27)
+            let image = UIImage(systemName: padItems[indexPath.row])?.withTintColor(.designSystem(.mainBlue)!)
+            imageAttachment.image = image
+            attributedString.append(NSAttributedString(attachment: imageAttachment))
+            cell.numberLabel.attributedText = attributedString
+        } else {
+            cell.numberLabel.text = padItems[indexPath.row]
+        }
         return cell
     }
 }

@@ -71,7 +71,7 @@ extension PaymentCardAmountEditReactor {
             return amount
         }
         
-        if with == "<" {
+        if with == "delete.left.fill" {
             if amount.count == 1 {
                 amount = "0"
             } else {
