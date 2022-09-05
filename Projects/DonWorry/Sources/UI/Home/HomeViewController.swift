@@ -222,10 +222,12 @@ extension HomeViewController {
             joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
         case .recievedMoneyDetail:
-            let recieveMoneyDetailViewController = RecievedMoneyDetailViewViewController()
+            let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
+            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor()
             self.present(recieveMoneyDetailViewController, animated: true)
         case .sentMoneyDetail:
-            let sentMoneyDetailViewController = SentMoneyDetailViewViewController()
+            let sentMoneyDetailViewController = SentMoneyDetailViewController()
+            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor()
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()
@@ -290,7 +292,6 @@ extension HomeViewController: UICollectionViewDataSource {
             SpaceCollectionViewCell.self,
             for: indexPath
         )
-
         let isSelected = indexPath.item == reactor.currentState.selectedSpaceIndex
         if isSelected { cell.selectedAttributes() }
         else { cell.initialAttributes() }
@@ -320,7 +321,7 @@ extension HomeViewController: UICollectionViewDataSource {
             GiveBillCardCollectionViewCell.self,
             for: indexPath
         )
-        cell.tag = 1
+        cell.tag = 2
         cell.viewModel = viewModel
         return cell
     }
@@ -332,7 +333,7 @@ extension HomeViewController: UICollectionViewDataSource {
             TakeBillCardCollectionViewCell.self,
             for: indexPath
         )
-        cell.tag = 2
+        cell.tag = 1
         cell.viewModel = viewModel
         return cell
     }

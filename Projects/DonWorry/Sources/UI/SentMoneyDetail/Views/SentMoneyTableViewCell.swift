@@ -9,7 +9,7 @@
 import UIKit
 import DesignSystem
 
-public struct SendingMoneyInfo {
+public struct SendingMoneyInfoViewModel {
     let name: String
     let date: String
     let totalAmount: Int
@@ -17,7 +17,7 @@ public struct SendingMoneyInfo {
     let myAmount: Int
 }
 
-class SentMoneyTableViewCell: BaseTableViewCell {
+class SentMoneyTableViewCell: UITableViewCell {
 
 
     public let numberformatter = NumberFormatter()
@@ -69,16 +69,17 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         dividedAmount.font = .designSystem(weight: .heavy, size: ._15)
         return dividedAmount
     }()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        render()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func render() {
+    func render() {
         contentView.addSubview(smallRoundRectangle)
         smallRoundRectangle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
@@ -110,7 +111,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         
     }
 
-    func configure(icon: String, myPayment: SendingMoneyInfo) {
+    func configure(icon: String, myPayment: SendingMoneyInfoViewModel) {
         numberformatter.numberStyle = .decimal
         spaceIcon.image = UIImage(named: "baconImage")
         spaceNameLabel.text = myPayment.name
@@ -119,7 +120,7 @@ class SentMoneyTableViewCell: BaseTableViewCell {
         dividedAmount.text = numberformatter.string(for: myPayment.myAmount)! + "원"
     }
     
-    func makeAtrributedString(myPayment: SendingMoneyInfo) -> NSMutableAttributedString {
+    func makeAtrributedString(myPayment: SendingMoneyInfoViewModel) -> NSMutableAttributedString {
         numberformatter.numberStyle = .decimal
         let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
         let attributedQuote = NSMutableAttributedString(string: paymentString)

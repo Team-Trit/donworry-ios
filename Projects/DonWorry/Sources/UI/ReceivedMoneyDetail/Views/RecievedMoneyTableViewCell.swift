@@ -8,8 +8,15 @@
 
 import UIKit
 import DesignSystem
+import BaseArchitecture
 
-class RecievedMoneyTableViewCell: BaseTableViewCell {
+struct RecievingCellViewModel {
+    let name: String
+    let money: Int
+    var isCompleted: Bool = false
+}
+
+final class RecievedMoneyTableViewCell: UITableViewCell {
     
     static let identifier: String = "RecievedMoneyTableViewCell"
     
@@ -33,16 +40,17 @@ class RecievedMoneyTableViewCell: BaseTableViewCell {
         recievedMoney.font = UIFont.systemFont(ofSize: 15, weight: .heavy)
         return recievedMoney
     }()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        render()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func render() {
+    func render() {
         contentView.addSubview(profileImage)
         profileImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         profileImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
@@ -61,7 +69,7 @@ class RecievedMoneyTableViewCell: BaseTableViewCell {
         
     }
     
-    func configure(_ content: RecievingCellContent) {
+    func configure(_ content: RecievingCellViewModel) {
         let numberformatter = NumberFormatter()
         numberformatter.numberStyle = .decimal
         userName.text = content.name
