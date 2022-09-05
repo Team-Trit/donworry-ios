@@ -27,14 +27,14 @@ final class SpaceNameViewController: BaseViewController, View {
         return $0
     }(UILabel())
 
-    private lazy var roomInfoLabel = LimitTextField(frame: .zero, type: .roomName)
+    private lazy var spaceNameView = LimitTextField(frame: .zero, type: .roomName)
     private lazy var nextButton = DWButton.create(.xlarge58)
 
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         setUI()
+        setNotifiaction()
     }
 
     // MARK: - Binding
@@ -46,7 +46,7 @@ final class SpaceNameViewController: BaseViewController, View {
 
         reactor.state.map { $0.placeHolderText }
             .subscribe(onNext: { [weak self] in
-                self?.roomInfoLabel.textField.placeholder = $0
+                self?.spaceNameView.textField.placeholder = $0
             }).disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceName }
@@ -58,7 +58,7 @@ final class SpaceNameViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.roomInfoLabel.textField.rx.text.compactMap { .typeTextField($0 ?? "") }
+        self.spaceNameView.textField.rx.text.compactMap { .typeTextField($0 ?? "") }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -78,6 +78,51 @@ final class SpaceNameViewController: BaseViewController, View {
             }).disposed(by: disposeBag)
     }
 
+    private func setNotifiaction() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    /// 배경 터치시  포커싱 해제
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.spaceNameView.textField.resignFirstResponder()
+    }
+
+    /// 키보드 Show 시에 위치 조정
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.nextButton.snp.updateConstraints { make in
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight - 15)
+                }
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    /// 키보드 Hide 시에 위치 조정
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 1) {
+            self.nextButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
 }
 
 // MARK: - setUI
@@ -86,27 +131,23 @@ extension SpaceNameViewController {
     private func setUI() {
         nextButton.title = "정산방 참가하기"
         view.backgroundColor = .designSystem(.white)
-        view.addSubviews(navigationBar, titleLabel, roomInfoLabel, nextButton)
+        view.addSubviews(navigationBar, titleLabel, spaceNameView, nextButton)
 
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
-        
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-
-        roomInfoLabel.snp.makeConstraints {
+        spaceNameView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(45)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-
         nextButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(25)
-            $0.bottom.equalToSuperview().inset(50)
-            $0.height.equalTo(50)
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide)
         }
     }
 }
