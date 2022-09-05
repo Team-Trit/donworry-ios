@@ -23,7 +23,7 @@ public struct PostUserAPI: ServiceAPI {
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    public var headers: [String : String]? { return ["Authorization": "Bearer \(accessToken)"] }
+    public var headers: [String : String]? { return ["Authorization-KAKAO": "Bearer \(accessToken)"] }
     private let accessToken: String
     
 }

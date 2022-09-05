@@ -16,7 +16,6 @@ import RxKakaoSDKCommon
 import RxKakaoSDKUser
 
 protocol UserService {
-    func saveToLocalStorage(id: Int, nickname: String, bank: String, bankHolder: String, bankNumber: String, image: String, accessToken: String)
     func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<Models.User>
     func loginWithKakao() -> Observable<OAuthToken>
     
@@ -40,12 +39,20 @@ final class UserServiceImpl: UserService {
         self.accessTokenRepository = accessTokenRepository
     }
     
-    func saveToLocalStorage(id: Int, nickname: String, bank: String, bankHolder: String, bankNumber: String, image: String, accessToken: String) {
-        let user = Models.User(id: id, nickName: nickname, bankAccount: BankAccount(bank: bank, accountHolderName: bankHolder, accountNumber: bankNumber), image: image)
-        _ = userAccountRepository.saveLocalUserAccount(user)
-        _ = accessTokenRepository.saveAccessToken(accessToken)
-        print("🔥🔥🔥🔥🔥실행되나??")
+    func signInWithoutUserID() -> Observable<Models.User> {
+        guard let user = self.userAccountRepository.fetchLocalUserAccount() else { return .empty() }
+        return .just(user)
     }
+    
+    // TODO: GET user API 연결하기
+//    func signIn(_ userID: Int) -> Observable<Models.User> {
+//        userRepository.fetchUser(userID)
+//            .map { [weak self] (user, authentication) -> Models.User in
+//                _ = self?.userAccountRepository.saveLocalUserAccount(user)
+//                _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
+//                return user
+//            }
+//    }
     
     func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<Models.User> {
         userRepository.postUser(provider: provider, nickname: nickname, email: email, bank: bank, bankNumber: bankNumber, bankHolder: bankHolder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)

@@ -27,7 +27,7 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
     }
     
     enum Mutation {
-//        case signUpComplete
+        case signUpComplete
     }
     
     struct State {
@@ -51,26 +51,16 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-            // TODO: API call
-            print("🌈")
+
+            return userService.signUp(provider: "KAKAO", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
+                .map { _ in Mutation.signUpComplete }
             
-            userService.signUp(provider: "뭘로할까", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
-                .subscribe(onNext: { user in
-                    self.userService.saveToLocalStorage(id: user.id, nickname: user.nickName, bank: user.bankAccount.bank, bankHolder: user.bankAccount.accountHolderName, bankNumber: user.bankAccount.accountNumber, image: user.image, accessToken: self.accessToken)
-                }, onError: { error in
-                    print("에러다에러")
-                    print(error)
-                }, onCompleted: {
-                    self.steps.accept(DonworryStep.homeIsRequired)
-                })
-                .disposed(by: DisposeBag())
-            
-            return .empty()
-//            saveToLocalStorage
-            
-//            return userService.signUp(provider: "뭘로할까", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
-//                .map { _ in Mutation.signUpComplete }
-            //            return .empty()
+//            userService.signUp(provider: "KAKAO", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
+//                .subscribe(onNext: { _ in
+//                    self.steps.accept(DonworryStep.homeIsRequired)
+//                })
+//                .disposed(by: DisposeBag())
+//            return .empty()
         }
     }
     
@@ -78,8 +68,8 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
-//        case .signUpComplete:
-//            self.steps.accept(DonworryStep.homeIsRequired)
+        case .signUpComplete:
+            self.steps.accept(DonworryStep.homeIsRequired)
         }
         
         return state

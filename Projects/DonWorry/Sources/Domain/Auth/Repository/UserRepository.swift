@@ -11,6 +11,7 @@ import Models
 import RxSwift
 
 protocol UserRepository {
+//    func fetchUser(_ userID: Int) -> Observable<(User, AuthenticationToken)>
     func postUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<(User, AuthenticationToken)>
 }
 
@@ -20,6 +21,11 @@ final class UserRepositoryImpl: UserRepository {
     init(_ network: NetworkServable = NetworkService()) {
         self.network = network
     }
+    
+    // TODO: GET user API 연결하기
+//    func fetchUser(_ userID: Int) -> Observable<(User, AuthenticationToken)> {
+////        network.request(<#T##api: ServiceAPI##ServiceAPI#>)
+//    }
     
     func postUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<(User, AuthenticationToken)> {
         let api = PostUserAPI(request: createUserRequest(
@@ -31,10 +37,7 @@ final class UserRepositoryImpl: UserRepository {
             bankHolder: bankHolder,
             isAgreeMarketing: isAgreeMarketing
         ),accessToken: accessToken)
-        
-//        print("🔥🔥🔥🔥🔥🔥🔥")
-//        print("provider: \(provider) \n nickname: \(nickname) \n email : \(email) \n bank : \(bank) \n bankNumber : \(bankNumber) \n bankHolder: \(bankHolder) \n isAgreeMarketing: \(isAgreeMarketing) \n accessToken : \(accessToken)")
-        
+
         return network.request(api)
             .compactMap { [ weak self] in
                 (self?.convertToUser($0), self?.convertToToken($0)) as? (User, AuthenticationToken)
