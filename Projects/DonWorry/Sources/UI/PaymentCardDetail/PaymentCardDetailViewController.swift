@@ -23,7 +23,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     let viewModel = PaymentCardDetailViewModel()
     
-    private lazy var navigationBar = DWNavigationBar()
+    private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
     fileprivate let priceBigContainerView: UIView = {
         let view = UIView()
@@ -204,6 +204,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
 //MARK: Layout
 extension PaymentCardDetailViewController {
     private func bind() {
+
         navigationBar.leftItem.rx.tap
             .bind {
                 self.navigationController?.popViewController(animated: true)
@@ -216,13 +217,21 @@ extension PaymentCardDetailViewController {
         let totalBottomView = UIView()
         view.addSubview(totalBottomView)
         totalBottomView.anchor2(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
-        totalBottomView.backgroundColor = .designSystem(.grayF6F6F6)
         
-        let spacingView =  DWNavigationBar.init(title: viewModel.paymentCardName)
+        totalBottomView.backgroundColor = .designSystem(.white)
+        totalBottomView.addSubview(navigationBar)
+        
+        navigationBar.anchor2(top: view.safeAreaLayoutGuide.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
+        
+        let colorView = UIView()
+        totalBottomView.addSubview(colorView)
+        colorView.anchor(top: navigationBar.bottomAnchor, left: view.leftAnchor.self, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        colorView.backgroundColor = .designSystem(.grayF6F6F6)
+        
+        let spacingView = UIView()
         totalBottomView.addSubview(spacingView)
-        spacingView.anchor2(top: totalBottomView.topAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0)
-        //        spacingView.backgroundColor = .red
-        
+        spacingView.anchor(top: navigationBar.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
+        spacingView.backgroundColor = .designSystem(.white)
         totalBottomView.addSubview(priceBigContainerView)
         priceBigContainerView.anchor2(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
         

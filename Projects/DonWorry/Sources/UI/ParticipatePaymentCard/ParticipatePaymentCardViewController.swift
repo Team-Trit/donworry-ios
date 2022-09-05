@@ -17,6 +17,7 @@ import ReactorKit
 import RxCocoa
 import RxSwift
 
+// UINavigationController로 감싼 후 들어와야 합니다..!
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     let viewModel = ParticipatePaymentCardViewModel()
@@ -92,7 +93,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         layout()
         configNavigationBar()
     }
-
+    
     private func combineBind() {
         viewModel.$checkedIDs
             .receive(on: DispatchQueue.main)
@@ -116,7 +117,6 @@ extension ParticipatePaymentCardViewController {
     private func configNavigationBar() {
         
         navigationItem.title = "참석확인"
-        //TODO: chckedCards viewmodel에서 받아야함
         numberOfselectedCardsLabel.text = "\(viewModel.numOfCheckedCards)"
         
         let cancelEmptyView = UIView()
@@ -162,7 +162,7 @@ extension ParticipatePaymentCardViewController {
 
 extension ParticipatePaymentCardViewController {
     @objc fileprivate func dismissView() {
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
     
     @objc fileprivate func cancelSelection() {
