@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 public struct PatchSpaceTitleAPI: ServiceAPI {
-    public typealias Response = DTO.PostSpace
+    public typealias Response = DTO.PatchSpaceTitle
     public var request: Request
     public init(request: Request) {
         self.request = request

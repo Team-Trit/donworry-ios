@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 public struct PostSpaceJoinAPI: ServiceAPI {
-    public typealias Response = DTO.PostSpace
+    public typealias Response = DTO.PostSpaceJoin
     public var request: Request
     public init(request: Request) {
         self.request = request
