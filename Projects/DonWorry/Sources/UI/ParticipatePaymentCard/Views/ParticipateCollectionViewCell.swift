@@ -31,6 +31,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             
             cardNameLabel.text = paymentCard.name
             
+            //다음 풀리때 paymentCardIcon을 넣겠습니다.
 //            switch paymentCard.cardIcon {
 //            case .chicken:
 //                iconImageView.image = UIImage(named: "chicken")
@@ -43,10 +44,10 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             let totalString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
             
             totalPriceLabel.text = "총 \(totalString)원"
-            if let url = URL(string: paymentCard.payer.image) {
-                userImageView.load(url: url)
-                
+            if let urlString = URL(string: paymentCard.payer.image) {
+                userImageView.kf.setImage(with: urlString)
             }
+
             userNickNameLabel.text = paymentCard.payer.nickName
             
             let dateformatter = DateFormatter()
