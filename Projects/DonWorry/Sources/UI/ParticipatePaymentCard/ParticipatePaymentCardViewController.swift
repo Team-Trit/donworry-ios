@@ -19,7 +19,6 @@ import RxSwift
 
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
-//    let viewModel = ParticipatePaymentCardViewModel()
     let viewModel: ParticipatePaymentCardViewModel
     
     init(viewModel: ParticipatePaymentCardViewModel) {
@@ -93,7 +92,8 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     }
     
     @objc private func checkAttendance() {
-        //TODO: 참석확인
+        viewModel.checkAttendance()
+        dismiss(animated: true)
     }
     
     override func viewDidLoad() {
@@ -109,6 +109,13 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.numberOfselectedCardsLabel.text = "\($0.count)"
+                self?.participateCollectionView.reloadData()
+            }
+            .store(in: &cancelBag)
+        
+        viewModel.$paymentCards
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
                 self?.participateCollectionView.reloadData()
             }
             .store(in: &cancelBag)

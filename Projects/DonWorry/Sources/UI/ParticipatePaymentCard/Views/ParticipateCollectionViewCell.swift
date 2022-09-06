@@ -13,7 +13,7 @@ import Models
 
 class ParticipateCollectionViewCell: UICollectionViewCell {
     
-    typealias PaymentCardModel = PaymentCardModels.FetchCardList.Response
+    typealias Space = PaymentCardModels.FetchCardList.Response
     static let cellID = "ParticipateCollectionViewCellID"
     fileprivate lazy var boundsWidth = contentView.bounds.width
     weak var delegate: CellCheckPress?
@@ -24,21 +24,14 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var paymentCard: PaymentCardModel? {
+    var paymentCard: Space.PaymentCard? {
         didSet {
             guard let paymentCard = paymentCard else {
                 return
             }
             
             cardNameLabel.text = paymentCard.name
-            
-//            switch paymentCard.cardIcon {
-//            case .chicken:
-//                iconImageView.image = UIImage(named: "chicken")
-//            default:
-//                iconImageView.image = UIImage(named: "chicken")
-//            }
-            
+
             let numberFormatter = NumberFormatter()
             numberFormatter.numberStyle = .decimal
             let totalString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
@@ -50,21 +43,24 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
                 
             }
             userNickNameLabel.text = paymentCard.taker.nickname
+            iconImageView.image =  UIImage(assetName: paymentCard.category.name)
+            let bgColor = paymentCard.bgColor
+            dateLabel.text = dateFormatting(paymentCard.paymentDate)
+            dateLabel.textColor = UIColor(hex: bgColor)
             
-//            let dateformatter = DateFormatter()
-//            dateformatter.dateFormat = "MM/dd"
-//            dateformatter.locale = Locale(identifier: "ko_KR")
-//            dateLabel.text = dateformatter.string(from: paymentCard.paymentDate)
-            //TODO: 형식
-            dateLabel.text = paymentCard.paymentDate
-            
-            cardLeftView.backgroundColor = UIColor(hex: paymentCard.bgColor + "FF")?.withAlphaComponent(0.72)
-            cardRightView.backgroundColor = UIColor(hex: paymentCard.bgColor + "FF")
-            dateLabel.textColor = UIColor(hex: paymentCard.bgColor + "FF")
+            cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
+            cardRightView.backgroundColor = UIColor(hex: bgColor)
             dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         }
     }
 
+    private func dateFormatting(_ dateString: String) -> String {
+        if let date = Formatter.fullDateFormatter.date(from: dateString) {
+            return Formatter.paymentCardDateFormatter.string(from: date)
+        }
+        return "00/00"
+    }
+    
     fileprivate var checkButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 42)
