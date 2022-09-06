@@ -171,7 +171,6 @@ final class PaymentCardListViewController: BaseViewController, View {
             .asDriver(onErrorJustReturn: PaymentCardListStep.none)
             .compactMap { $0 }
             .drive(onNext: { [weak self] step in
-                print("HI, step", step)
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
@@ -242,10 +241,19 @@ extension PaymentCardListViewController {
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
+        case .cantLeaveAlert:
+            self.present(cantLeaveAlertController(), animated: true)
         case .none:
             break
 
         }
+    }
+
+    private func cantLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "정산하러갈게요.", style: .cancel)
+        alert.addAction(cancel)
+        return alert
     }
 
     private func optionAlertController() -> UIAlertController {

@@ -16,6 +16,7 @@ enum PaymentCardListStep {
     case paymentCardDetail
     case actionSheet
     case nameEdit
+    case cantLeaveAlert
 }
 
 final class PaymentCardListReactor: Reactor {
@@ -95,7 +96,6 @@ final class PaymentCardListReactor: Reactor {
                 from: information.cards
             )
         case .routeTo(let step):
-            print("HI step in reactor", step)
             newState.step = step
         }
         return newState
@@ -107,8 +107,9 @@ final class PaymentCardListReactor: Reactor {
     }
 
     private func requestLeaveSpace() -> Observable<Mutation> {
-        spaceService.leaveSpace(request: .init(isStatusOpen: currentState.canLeaveSpace, isAdmin: currentState.space.adminID, spaceID: currentState.space.id))
-            .map { _ in .routeTo(.pop) }
+        if !currentState.canLeaveSpace { return .just(.routeTo(.cantLeaveAlert)) }
+        return spaceService.leaveSpace(request: .init(isStatusOpen: currentState.canLeaveSpace, isAdmin: currentState.space.adminID, spaceID: currentState.space.id))
+            .map { _ in  .routeTo(.pop) }
     }
 
     private let spaceService: SpaceService
