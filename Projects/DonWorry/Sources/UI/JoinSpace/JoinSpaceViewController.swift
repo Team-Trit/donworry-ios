@@ -132,6 +132,7 @@ final class JoinSpaceViewController: BaseViewController, View {
 extension JoinSpaceViewController {
 
     private func setUI() {
+        self.dismissButton.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         self.dismissButton.setTitle("취소", for: .normal)
         self.dismissButton.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
         self.nextButton.title = "다음"
@@ -147,6 +148,10 @@ extension JoinSpaceViewController {
         imageView.widthAnchor.constraint(equalToConstant: 181).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 118).isActive = true
 
+        dismissButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(25)
+            make.top.equalToSuperview().offset(16)
+        }
         imageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(95)
             make.centerX.equalToSuperview()
