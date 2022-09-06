@@ -51,8 +51,7 @@ final class LoginViewReactor: Reactor, Stepper {
         case .appleLoginButtonPressed:
             // MARK: 카카오 로그인 연결을 끊기위한 임시 코드
 //            self.steps.accept(DonworryStep.userInfoIsRequired)
-            userService.unlink()
-            userService.logout()
+            userService.unlinkKakao()
             return .empty()
             
         case .googleLoginButtonPressed:

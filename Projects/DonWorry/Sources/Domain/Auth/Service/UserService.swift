@@ -30,12 +30,11 @@ protocol UserService {
     func fetchLocalUser() -> Models.User?
     func deleteLocalUser()
     
-    func logout()
-    func unlink()
+    func unlinkKakao()
 }
 
 final class UserServiceImpl: UserService {
-    private let disposeBag = DisposeBag()
+//    private let disposeBag = DisposeBag()
     private let userRepository: UserRepository
     private let userAccountRepository: UserAccountRepository
     private let accessTokenRepository: AccessTokenRepository
@@ -63,7 +62,14 @@ final class UserServiceImpl: UserService {
                 bankHolder: String,
                 isAgreeMarketing: Bool,
                 accessToken: String) -> Observable<Models.User> {
-        userRepository.postUser(provider: provider, nickname: nickname, email: email, bank: bank, bankNumber: bankNumber, bankHolder: bankHolder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
+        userRepository.postUser(provider: provider,
+                                nickname: nickname,
+                                email: email,
+                                bank: bank,
+                                bankNumber: bankNumber,
+                                bankHolder: bankHolder,
+                                isAgreeMarketing: isAgreeMarketing,
+                                accessToken: accessToken)
             .map { [weak self] (user, authentication) -> Models.User in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
@@ -73,26 +79,12 @@ final class UserServiceImpl: UserService {
     }
     
     func loginWithKakao() -> Observable<OAuthToken> {
-        return Observable.create { result in
-            if (UserApi.isKakaoTalkLoginAvailable()) {
-                UserApi.shared.rx.loginWithKakaoTalk()
-                    .subscribe(onNext: { oauthToken in
-                        result.onNext(oauthToken)
-                    }, onError: { error in
-                        print(error)
-                    })
-                    .disposed(by: self.disposeBag)
-            } else {
-                UserApi.shared.rx.loginWithKakaoAccount()
-                    .subscribe(onNext: { oauthToken in
-                        result.onNext(oauthToken)
-                    }, onError: { error in
-                        print(error)
-                    })
-                    .disposed(by: self.disposeBag)
-            }
-            return Disposables.create()
-        }
+        return userRepository.kakaoLogin()
+    }
+    
+    func unlinkKakao() {
+        userRepository.kakaoLogout()
+        userRepository.kakaoUnlink()
     }
     
     func fetchLocalToken() -> AccessToken? {
@@ -115,25 +107,5 @@ final class UserServiceImpl: UserService {
                                image: String) -> Models.User {
         return Models.User(id: id, nickName: nickname, bankAccount: bankAccount, image: image)
         
-    }
-}
-
-// MARK: - 카카오 로그인 테스트를 위한 임시 메소드 (연결 끊기)
-extension UserServiceImpl {
-    func logout() {
-        UserApi.shared.rx.logout()
-            .subscribe(onCompleted:{
-            }, onError: {error in
-                print(error)
-            })
-            .disposed(by: disposeBag)
-    }
-    func unlink() {
-        UserApi.shared.rx.unlink()
-            .subscribe(onCompleted:{
-            }, onError: {error in
-                print(error)
-            })
-            .disposed(by: disposeBag)
     }
 }
