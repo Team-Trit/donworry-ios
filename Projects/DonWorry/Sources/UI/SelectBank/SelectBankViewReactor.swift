@@ -21,6 +21,7 @@ enum SelectBankStep {
 
 final class SelectBankViewReactor: Reactor, Stepper {
     private let banks = Bank.allCases.map { $0.rawValue }
+    var selectedBank = ""
     let parentView: ParentView
     let steps = PublishRelay<Step>()
     
@@ -38,14 +39,12 @@ final class SelectBankViewReactor: Reactor, Stepper {
     
     enum Mutation {
         case performQuery(filteredBankList: [String])
-        case selectBank(selectedBank: String)
         case routeTo(step: SelectBankStep)
     }
     
     struct State {
         var isLoading: Bool
         var snapshot: NSDiffableDataSourceSnapshot<Section, String>
-        var selectedBank: String
         @Pulse var step: SelectBankStep
     }
     
@@ -58,7 +57,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
         self.initialState = State(
             isLoading: false,
             snapshot: initialSnapshot,
-            selectedBank: "",
             step: .none
         )
         self.parentView = parentView
@@ -87,22 +85,16 @@ final class SelectBankViewReactor: Reactor, Stepper {
             switch parentView {
             case .enterUserInfo:
                 self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
+                return .empty()
                 
             case .paymentCardDeco:
-                return .concat([
-                    .just(Mutation.selectBank(selectedBank: selectedBank)),
-                    .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
-                ])
-                
+                self.selectedBank = selectedBank
+                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
                 
             case .profileAccountEdit:
-                return .concat([
-                    .just(Mutation.selectBank(selectedBank: selectedBank)),
-                    .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
-                ])
-                
+                self.selectedBank = selectedBank
+                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
             }
-            return .empty()
         }
     }
     
@@ -114,9 +106,6 @@ final class SelectBankViewReactor: Reactor, Stepper {
             newState.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
             newState.snapshot.appendSections([.main])
             newState.snapshot.appendItems(filteredBankList)
-            
-        case.selectBank(let selectedBank):
-            newState.selectedBank = selectedBank
             
         case .routeTo(let step):
             newState.step = step

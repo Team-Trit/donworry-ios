@@ -34,11 +34,6 @@ final class EnterUserInfoViewController: BaseViewController, View {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        
-        print("유저 정보 입력 뷰")
-        print("🌈🌈🌈🌈🌈")
-        print(navigationController?.viewControllers)
-        print("🌈🌈🌈🌈🌈")
     }
     
     func bind(reactor: EnterUserInfoViewReactor) {

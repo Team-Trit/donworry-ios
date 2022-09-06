@@ -36,11 +36,6 @@ final class AccountEditViewController: BaseViewController, View {
         super.viewDidLoad()
         setUI()
         setNotification()
-        
-        print("계좌 수정 뷰")
-        print("🌈🌈🌈🌈🌈")
-        print(navigationController?.viewControllers)
-        print("🌈🌈🌈🌈🌈")
     }
     
     func bind(reactor: Reactor) {
@@ -119,6 +114,7 @@ extension AccountEditViewController {
             
         case .presentSelectBankView:
             let vc = SelectBankViewController()
+            vc.delegate = self
             let reactor = SelectBankViewReactor(parentView: .profileAccountEdit)
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
@@ -160,5 +156,12 @@ extension AccountEditViewController {
             }
             self.view.layoutIfNeeded()
         }
+    }
+}
+
+// MARK: - SelectBankViewDelegate
+extension AccountEditViewController: SelectBankViewDelegate {
+    func selectBank(_ selectedBank: String) {
+        accountEditField.chooseBankButton.setTitle(selectedBank, for: .normal)
     }
 }

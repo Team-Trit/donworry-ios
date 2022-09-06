@@ -35,19 +35,14 @@ final class SelectBankViewController: BaseViewController, View {
     }()
     private lazy var bankSearchTextField = BankSearchTextField()
     private lazy var bankCollectionView = SelectBankCollectionView()
-    private var selectedBankSubject = BehaviorSubject<String>(value: "")
+    private var selectedBankSubject = BehaviorRelay<String>(value: "")
     weak var delegate: SelectBankViewDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        
-        print("은행 선택 모달")
-        print("🌈🌈🌈🌈🌈")
-        print(navigationController?.viewControllers)
-        print("🌈🌈🌈🌈🌈")
     }
-    
+        
     func bind(reactor: SelectBankViewReactor) {
         dispatch(to: reactor)
         render(reactor)
@@ -117,10 +112,6 @@ extension SelectBankViewController {
             .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.selectedBank }
-            .bind(to: selectedBankSubject)
-            .disposed(by: disposeBag)
-        
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: .none)
             .compactMap { $0 }
@@ -137,14 +128,12 @@ extension SelectBankViewController {
     private func route(to step: SelectBankStep) {
         switch step {
         case .dismissToPaymentCardDeco:
-            // TODO: Account Input Cell 안에 있는 account Input Field의 choose Bank Button set Title 해주기...
-//            delegate.
-            self.navigationController?.dismiss(animated: true)
+            self.delegate?.selectBank(self.reactor!.selectedBank)
+            self.dismiss(animated: true)
             
         case .dismissToProfileAccountEdit:
-//            delegate.
-            self.navigationController?.dismiss(animated: true)
-            
+            self.delegate?.selectBank(self.reactor!.selectedBank)
+            self.dismiss(animated: true)
             
         case .none:
             break
