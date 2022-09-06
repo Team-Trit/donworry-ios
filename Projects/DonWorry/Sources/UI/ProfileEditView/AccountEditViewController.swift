@@ -25,7 +25,7 @@ final class AccountEditViewController: BaseViewController, View {
         v.font = .designSystem(weight: .heavy, size: ._25)
         return v
     }()
-    private lazy var accountEditField = AccountInputField(frame: .zero, type: .EnterUserInfo)
+    lazy var accountEditField = AccountInputField(frame: .zero, type: .EnterUserInfo)
     private lazy var doneButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.setTitle("완료", for: .normal)
@@ -36,6 +36,11 @@ final class AccountEditViewController: BaseViewController, View {
         super.viewDidLoad()
         setUI()
         setNotification()
+        
+        print("계좌 수정 뷰")
+        print("🌈🌈🌈🌈🌈")
+        print(navigationController?.viewControllers)
+        print("🌈🌈🌈🌈🌈")
     }
     
     func bind(reactor: Reactor) {
@@ -80,6 +85,11 @@ extension AccountEditViewController {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        accountEditField.chooseBankButton.rx.tap
+            .map { Reactor.Action.selectBankButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         doneButton.rx.tap
             .map { Reactor.Action.pressDoneButton }
             .bind(to: reactor.action)
@@ -109,7 +119,7 @@ extension AccountEditViewController {
             
         case .presentSelectBankView:
             let vc = SelectBankViewController()
-            let reactor = SelectBankViewReactor()
+            let reactor = SelectBankViewReactor(parentView: .profileAccountEdit)
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
         }

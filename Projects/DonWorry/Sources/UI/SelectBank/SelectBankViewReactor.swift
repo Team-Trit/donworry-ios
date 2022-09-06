@@ -13,10 +13,22 @@ import ReactorKit
 import RxCocoa
 import RxFlow
 
+enum SelectBankStep {
+    case none
+    case dismissToPaymentCardDeco
+    case dismissToProfileAccountEdit
+}
+
 final class SelectBankViewReactor: Reactor, Stepper {
     private let banks = Bank.allCases.map { $0.rawValue }
-    
+    let parentView: ParentView
     let steps = PublishRelay<Step>()
+    
+    enum ParentView {
+        case enterUserInfo
+        case paymentCardDeco
+        case profileAccountEdit
+    }
     
     enum Action {
         case dismissButtonPressed
@@ -25,65 +37,92 @@ final class SelectBankViewReactor: Reactor, Stepper {
     }
     
     enum Mutation {
-        case updateLoading(Bool)
-        case dismissSelectBankSheet
         case performQuery(filteredBankList: [String])
+        case selectBank(selectedBank: String)
+        case routeTo(step: SelectBankStep)
     }
     
     struct State {
         var isLoading: Bool
         var snapshot: NSDiffableDataSourceSnapshot<Section, String>
+        var selectedBank: String
+        @Pulse var step: SelectBankStep
     }
     
     let initialState: State
     
-    init() {
+    init(parentView: ParentView) {
         var initialSnapshot = NSDiffableDataSourceSnapshot<Section, String>()
         initialSnapshot.appendSections([.main])
         initialSnapshot.appendItems(banks)
         self.initialState = State(
             isLoading: false,
-            snapshot: initialSnapshot
+            snapshot: initialSnapshot,
+            selectedBank: "",
+            step: .none
         )
+        self.parentView = parentView
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .dismissButtonPressed:
-            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: nil))
-            return .just(Mutation.dismissSelectBankSheet)
+            switch parentView {
+            case .enterUserInfo:
+                self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: nil))
+                return .empty()
+                
+            case .paymentCardDeco:
+                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                
+            case .profileAccountEdit:
+                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+            }
             
         case let .searchTextChanged(filter):
             let filteredBankList = performQuery(with: filter)
-            return Observable.concat([
-                .just(Mutation.updateLoading(true)),
-                .just(Mutation.performQuery(filteredBankList: filteredBankList)),
-                .just(Mutation.updateLoading(false))
-            ])
+            return .just(Mutation.performQuery(filteredBankList: filteredBankList))
             
         case let .selectBank(selectedBank):
-            self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
-            return .just(Mutation.dismissSelectBankSheet)
+            switch parentView {
+            case .enterUserInfo:
+                self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
+                
+            case .paymentCardDeco:
+                return .concat([
+                    .just(Mutation.selectBank(selectedBank: selectedBank)),
+                    .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                ])
+                
+                
+            case .profileAccountEdit:
+                return .concat([
+                    .just(Mutation.selectBank(selectedBank: selectedBank)),
+                    .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+                ])
+                
+            }
+            return .empty()
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
-        case .updateLoading(let isLoading):
-            state.isLoading = isLoading
-            
-        case .dismissSelectBankSheet:
-            break
-            
         case let .performQuery(filteredBankList):
-            state.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
-            state.snapshot.appendSections([.main])
-            state.snapshot.appendItems(filteredBankList)
+            newState.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
+            newState.snapshot.appendSections([.main])
+            newState.snapshot.appendItems(filteredBankList)
+            
+        case.selectBank(let selectedBank):
+            newState.selectedBank = selectedBank
+            
+        case .routeTo(let step):
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }
 

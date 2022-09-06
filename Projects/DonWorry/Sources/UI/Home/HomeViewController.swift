@@ -21,6 +21,11 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        
+        print("홈")
+        print("🌈🌈🌈🌈🌈")
+        print(navigationController?.viewControllers)
+        print("🌈🌈🌈🌈🌈")
     }
 
     func bind(reactor: Reactor) {

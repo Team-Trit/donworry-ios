@@ -79,7 +79,7 @@ extension LoginFlow {
     
     private func presentBankSelectView() -> FlowContributors {
         let vc = SelectBankViewController()
-        let reactor = SelectBankViewReactor()
+        let reactor = SelectBankViewReactor(parentView: .enterUserInfo)
         vc.reactor = reactor
         self.rootViewController.present(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
@@ -87,6 +87,9 @@ extension LoginFlow {
     
     private func dismissBankSelectView(with selectedBank: String?) {
         // MARK: Business logic here is awkward...maybe?
+        print("🚑🚑🚑🚑")
+        print(rootViewController.viewControllers)
+        print("🚑🚑🚑🚑")
         if let selectedBank = selectedBank, let vc = self.rootViewController.topViewController as? EnterUserInfoViewController {
             vc.accountStackView.accountInputField.chooseBankButton.setTitle(selectedBank, for: .normal)
         }

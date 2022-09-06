@@ -40,6 +40,11 @@ final class ProfileViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        
+        print("프로필")
+        print("🌈🌈🌈🌈🌈")
+        print(navigationController?.viewControllers)
+        print("🌈🌈🌈🌈🌈")
     }
 
     func bind(reactor: Reactor) {

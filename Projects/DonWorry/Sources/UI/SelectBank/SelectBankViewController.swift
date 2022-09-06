@@ -15,6 +15,10 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+protocol SelectBankViewDelegate: AnyObject {
+    func selectBank(_ selectedBank: String)
+}
+
 final class SelectBankViewController: BaseViewController, View {
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
@@ -31,10 +35,17 @@ final class SelectBankViewController: BaseViewController, View {
     }()
     private lazy var bankSearchTextField = BankSearchTextField()
     private lazy var bankCollectionView = SelectBankCollectionView()
+    private var selectedBankSubject = BehaviorSubject<String>(value: "")
+    weak var delegate: SelectBankViewDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        
+        print("은행 선택 모달")
+        print("🌈🌈🌈🌈🌈")
+        print(navigationController?.viewControllers)
+        print("🌈🌈🌈🌈🌈")
     }
     
     func bind(reactor: SelectBankViewReactor) {
@@ -105,5 +116,38 @@ extension SelectBankViewController {
         reactor.state.map { $0.snapshot }
             .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
             .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedBank }
+            .bind(to: selectedBankSubject)
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: .none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                print($0)
+                self?.route(to: $0)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension SelectBankViewController {
+    private func route(to step: SelectBankStep) {
+        switch step {
+        case .dismissToPaymentCardDeco:
+            // TODO: Account Input Cell 안에 있는 account Input Field의 choose Bank Button set Title 해주기...
+//            delegate.
+            self.navigationController?.dismiss(animated: true)
+            
+        case .dismissToProfileAccountEdit:
+//            delegate.
+            self.navigationController?.dismiss(animated: true)
+            
+            
+        case .none:
+            break
+        }
     }
 }
