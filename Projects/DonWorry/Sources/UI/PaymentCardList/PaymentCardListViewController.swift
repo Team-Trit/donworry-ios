@@ -141,6 +141,13 @@ final class PaymentCardListViewController: BaseViewController, View {
             .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
+                    .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
+                    .subscribe(onNext: { [weak self] _ in
+                        let cardDetail = PaymentCardDetailViewController()
+                        cardDetail.reactor = PaymentCardDetailViewReactor()
+                        self?.navigationController?.pushViewController(cardDetail, animated: true)
+                    }).disposed(by: disposeBag)
+        self.collectionView.rx.itemSelected
             .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell }
             .subscribe(onNext: { [weak self] cell in
                 // TODO: 화면전환
