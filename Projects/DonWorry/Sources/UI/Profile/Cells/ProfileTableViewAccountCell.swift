@@ -36,7 +36,7 @@ final class ProfileTableViewAccountCell: UITableViewCell {
         v.textColor = .designSystem(.gray818181)
         return v
     }()
-    private lazy var editButton: UIButton = {
+    lazy var editButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(systemName: "pencil"), for: .normal)
         v.tintColor = .designSystem(.gray4B4A4A)

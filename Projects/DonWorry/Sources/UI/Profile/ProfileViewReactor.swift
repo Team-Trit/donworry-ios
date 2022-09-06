@@ -54,6 +54,8 @@ final class ProfileViewReactor: Reactor {
     }
     
     struct State {
+        
+        
         @Pulse var step: ProfileStep?
     }
     

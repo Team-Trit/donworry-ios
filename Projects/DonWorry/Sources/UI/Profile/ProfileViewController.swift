@@ -16,9 +16,23 @@ import RxSwift
 import SnapKit
 
 final class ProfileViewController: BaseViewController, View {
+    private var items: [ProfileViewModelItem] = [
+        ProfileViewModelUserItem(nickName: "Charlie", name: "Kim", imageURL: "profile-sample"),
+        ProfileViewModelAccountItem(bank: "우리은행", account: "123123123", holder: "김승창"),
+        ProfileViewModelServiceItem(label: "공지사항"),
+        ProfileViewModelServiceItem(label: "이용약관"),
+        ProfileViewModelServiceItem(label: "1대1 문의")
+    ]
+    
     typealias Reactor = ProfileViewReactor
     private lazy var navigationBar = DWNavigationBar()
-    private lazy var profileTableView = ProfileTableView()
+//    private lazy var profileTableView = ProfileTableView()
+    private lazy var profileTableView: ProfileTableView = {
+        let v = ProfileTableView()
+        v.dataSource = self
+        v.delegate = self
+        return v
+    }()
     private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
     private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
     private lazy var blogButtonView = ServiceButtonView(frame: .zero, type: .blog)
@@ -107,5 +121,78 @@ extension ProfileViewController {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         }
+    }
+}
+
+// MARK: - UITableViewDataSource
+extension ProfileViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let item = items[indexPath.row]
+        
+        switch item.type {
+        case .user:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
+                cell.user = item
+                
+                cell.imagePlusButton.rx.tap
+                    .map { Reactor.Action.updateProfileImageButtonPressed }
+                    .bind(to: reactor!.action)
+                    .disposed(by: disposeBag)
+                    
+                cell.editButton.rx.tap
+                    .map { Reactor.Action.updateNickNameButtonPressed }
+                    .bind(to: reactor!.action)
+                    .disposed(by: disposeBag)
+                
+                return cell
+            }
+        case .account:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewAccountCell.identifier, for: indexPath) as? ProfileTableViewAccountCell {
+                cell.account = item
+                
+                cell.editButton.rx.tap
+                    .map { Reactor.Action.updateAccountButtonPressed }
+                    .bind(to: reactor!.action)
+                    .disposed(by: disposeBag)
+                
+                return cell
+            }
+        case.service:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewServiceCell.identifier, for: indexPath) as? ProfileTableViewServiceCell {
+                cell.service = item
+                return cell
+            }
+        }
+        return UITableViewCell()
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension ProfileViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch items[indexPath.row].type {
+        case .user:
+            return 130
+        case .account:
+            return 170
+        case .service:
+            return 80
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let v = UIView()
+        v.snp.makeConstraints { make in
+            make.height.equalTo(1)
+        }
+        return v
     }
 }

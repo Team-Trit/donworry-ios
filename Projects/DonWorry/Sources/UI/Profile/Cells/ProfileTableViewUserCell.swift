@@ -27,7 +27,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
         v.contentMode = .scaleAspectFill
         return v
     }()
-    private lazy var imagePlusButton: UIButton = {
+    lazy var imagePlusButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(.custom_plus_circle), for: .normal)
         return v
@@ -37,7 +37,7 @@ final class ProfileTableViewUserCell: UITableViewCell {
         v.font = .designSystem(weight: .bold, size: ._20)
         return v
     }()
-    private lazy var editButton: UIButton = {
+    lazy var editButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(systemName: "pencil"), for: .normal)
         v.tintColor = .designSystem(.gray4B4A4A)
