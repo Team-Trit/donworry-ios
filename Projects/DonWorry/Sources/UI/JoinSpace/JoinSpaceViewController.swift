@@ -70,13 +70,13 @@ final class JoinSpaceViewController: BaseViewController, View {
         reactor.pulse(\.$error)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                self?.showToast(message: $0.localizedDescription)
+            .subscribe(onNext: { [weak self] _ in
+                self?.showToast(message: reactor.currentState.errorMessage)
             }).disposed(by: disposeBag)
     }
 
     private func showToast(message: String) {
-
+        print(message)
     }
 
     private func setNotifiaction() {
@@ -180,11 +180,14 @@ extension JoinSpaceViewController {
             self.dismiss(animated: true)
         case .paymentCardList(let space):
             self.dismiss(animated: true) {
-                let paymentCardListViewController = PaymentCardListViewController()
-                paymentCardListViewController.reactor = PaymentCardListReactor(
-                    space: .init(id: space.id, adminID: space.adminID, title: space.title, status: "", shareID: space.shareID)
+                NotificationCenter.default.post(
+                    name: .init("com.TriT.DonWorry.joinSpace"),
+                    object: nil,
+                    userInfo: [
+                        "joinSpace.spaceID": space.id,
+                        "joinSpace.adminID": space.adminID
+                    ]
                 )
-                self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
             }
         }
     }
