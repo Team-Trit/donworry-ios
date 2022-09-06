@@ -25,7 +25,7 @@ final class SpaceRepositoryImpl: SpaceRepository {
 
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         network.request(GetSpaceListAPI())
-            .compactMap { response in response.compactMap { self.convert(from: $0) }}
+            .compactMap { response in response.compactMap { [weak self] in self?.convert(from: $0) }}
             .asObservable()
     }
 

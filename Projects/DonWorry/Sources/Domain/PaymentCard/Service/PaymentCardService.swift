@@ -11,11 +11,11 @@ import RxSwift
 import Models
 
 protocol PaymentCardRepository {
-    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList>
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
 }
 
 protocol PaymentCardService {
-    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList>
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
 }
 
 final class PaymentCardServiceImpl: PaymentCardService {
@@ -25,7 +25,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
         self.paymentCardRepository = paymentCardRepository
     }
 
-    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList> {
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response> {
         paymentCardRepository.fetchPaymentCardList(spaceID: spaceID)
     }
 }

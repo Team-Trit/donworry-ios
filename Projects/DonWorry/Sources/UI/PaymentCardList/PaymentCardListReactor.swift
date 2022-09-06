@@ -32,7 +32,7 @@ final class PaymentCardListReactor: Reactor {
 
     enum Mutation {
         case updateSpace(Space)
-        case updatePaymentCardList(PaymentCardModels.FetchCardList.ResponseList)
+        case updatePaymentCardList(PaymentCardModels.FetchCardList.Response)
         case routeTo(PaymentCardListStep)
     }
 
