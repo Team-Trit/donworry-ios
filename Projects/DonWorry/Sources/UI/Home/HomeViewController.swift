@@ -228,8 +228,8 @@ extension HomeViewController {
     private func move(to step: HomeStep) {
         switch step {
         case .spaceName:
-            let spaceNameViewController = SpaceNameViewController()
-            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
+            let spaceNameViewController = SentMoneyDetailViewController()
+//            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .joinSpace:
             let joinSpaceViewController = JoinSpaceViewController()
