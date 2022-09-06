@@ -13,6 +13,7 @@ import RxSwift
 enum PaymentCardIconEditStep {
     case pop
     case paymentCardAmountEdit
+    case paymentCardList
 }
 
 final class PaymentCardIconEditViewReactor: Reactor {
@@ -20,10 +21,13 @@ final class PaymentCardIconEditViewReactor: Reactor {
     enum Action {
         case didTapBackButton
         case didTapNextButton
+        case didTapCloseButton
+        case fetchIcon(Int?)
     }
 
     enum Mutation {
         case routeTo(PaymentCardIconEditStep)
+        case updateCategory(Int)
     }
 
     struct State {
@@ -45,18 +49,25 @@ final class PaymentCardIconEditViewReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .didTapBackButton:
-            return .just(.routeTo(.pop))
-        case .didTapNextButton:
-            return .just(.routeTo(.paymentCardAmountEdit))
+            case .didTapBackButton:
+                return .just(.routeTo(.pop))
+            case .didTapNextButton:
+                return .just(.routeTo(.paymentCardAmountEdit))
+            case .didTapCloseButton:
+                return .just(.routeTo(.paymentCardList))
+            case .fetchIcon(let category):
+                guard let category = category else { return .empty() }
+                return .just(Mutation.updateCategory(category))
         }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
          switch mutation {
-         case .routeTo(let step):
-             newState.step = step
+             case .routeTo(let step):
+                 newState.step = step
+             case .updateCategory(let category):
+                 newState.paymentCard.categoryID = category
          }
         return newState
     }

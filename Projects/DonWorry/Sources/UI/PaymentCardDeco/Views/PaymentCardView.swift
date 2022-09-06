@@ -85,7 +85,7 @@ public class PaymentCardView: UIView {
     
     lazy var totalAmountLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.text = "130,000원"
+        $0.text = "0원"
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .heavy, size: ._20)
         $0.textAlignment = .left
@@ -94,15 +94,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var bankLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "은행명", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "은행명"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .bold, size: ._13)
@@ -112,15 +104,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var accountNumberLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "000-000-000000", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "000-000-000000"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .regular, size: ._13)
@@ -130,15 +114,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var accountHodlerNameLabel: UILabel = { // 예금주
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "(예금주)", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "(예금주)"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .regular, size: ._13)
@@ -148,15 +124,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var dateLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "00/00", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "00/00"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .bold, size: ._9)
@@ -165,6 +133,7 @@ public class PaymentCardView: UIView {
         $0.textAlignment = .center
         $0.layer.cornerRadius = 11
         $0.layer.masksToBounds = true
+        
         return $0
     }(UILabel())
     

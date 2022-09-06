@@ -52,15 +52,15 @@ enum PaymentCardModels {
     
     enum PostCard {
         struct Request {
-            let spaceID: Int
-            let categoryID: Int
-            let bank: String
-            let number: String
-            let holder: String
-            let name: String
-            let totalAmount: Int
-            let bgColor: String
-            let paymentDate: String
+            var spaceID: Int
+            var categoryID: Int
+            var bank: String
+            var number: String
+            var holder: String
+            var name: String
+            var totalAmount: Int
+            var bgColor: String
+            var paymentDate: String
         }
 
         struct Response {

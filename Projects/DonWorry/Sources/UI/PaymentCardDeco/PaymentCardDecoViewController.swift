@@ -24,8 +24,12 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     typealias Reactor = PaymentCardDecoReactor
     
-    // MARK: - Model 활용하여 교체 예정
-    var cardColor: CardColor = .pink
+    var cardVM = CardViewModel(cardColor: .pink,
+                               payDate: Date(),
+                               bank: "신한" ,
+                               holder: "정찬희",
+                               number: "12345",
+                               images: [])
     
     lazy var paymentCard = PaymentCardView()
     
@@ -84,7 +88,6 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         $0.backgroundColor = .designSystem(.mainBlue)
         $0.layer.cornerRadius = 25
         $0.setTitle("완료", for: .normal)
-//        $0.addTarget(self, action: #selector(didTapCompleteButton), for: .touchUpInside)
         return $0
     }(UIButton())
     
@@ -93,8 +96,6 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configNavigationBar()
         attributes()
         layout()
     }
@@ -106,7 +107,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         render(reactor: reactor)
     }
 
-    func dispatch(to reactor: PaymentCardDecoReactor) {       completeButton.rx.tap.map { .didTapCompleteButton }
+    func dispatch(to reactor: PaymentCardDecoReactor) {       self.completeButton.rx.tap.map { .didTapCompleteButton(self.cardVM) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -122,11 +123,16 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     func render(reactor: PaymentCardDecoReactor) {
         
+        reactor.state.map { "스페이스ID: \($0.spaceId)" }
+            .bind(to: (navigationBar.titleLabel?.rx.text)!)
+            .disposed(by: disposeBag)
+        
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: paymentCard.nameLabel.rx.text)
             .disposed(by: disposeBag)
         
-        reactor.state.map{ "\($0.paymentCard.totalAmount)" }
+        reactor.state
+            .map{ "\($0.paymentCard.totalAmount.formatted())"}
             .bind(to: paymentCard.totalAmountLabel.rx.text)
             .disposed(by: disposeBag)
         
@@ -146,6 +152,8 @@ final class PaymentCardDecoViewController: BaseViewController, View {
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
+
+    
     
 }
 
@@ -168,11 +176,6 @@ extension PaymentCardDecoViewController {
 // MARK: - Methods
 
 extension PaymentCardDecoViewController {
-    
-    // TODO: 임시 -> 나중에 앞쪽 페이지들에 맞춰서 해야함
-    private func configNavigationBar() {
-        self.navigationItem.title = "MC2 첫 회식"
-    }
 
     private func attributes() {
         view.backgroundColor = .designSystem(.white2)
@@ -227,11 +230,6 @@ extension PaymentCardDecoViewController {
             make.height.equalTo(50)
         }
     }
-    
-//    @objc private func didTapCompleteButton() {
-//        // TODO: 수정해야합니다.
-//        NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
-//    }
 
 }
 
@@ -249,6 +247,7 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
                 self.tableView.updatePhotoCell(img: imageArray)
             }
         }
+        cardVM.images = imageArray
     }
     
 }
@@ -259,7 +258,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         paymentCard.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
         paymentCard.cardSideView.backgroundColor = UIColor(hex:color.rawValue)
         paymentCard.dateLabel.textColor = UIColor(hex:color.rawValue)
-        cardColor = color
+        cardVM.cardColor = color
     }
     
     func updateTableViewHeight(to height: CGFloat) {
@@ -274,6 +273,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         formmater.dateFormat = "MM/dd"
         formmater.locale = Locale(identifier: "ko_KR")
         paymentCard.dateLabel.text = formmater.string(from: date)
+        cardVM.payDate = date
     }
     
     func showPhotoPicker() {

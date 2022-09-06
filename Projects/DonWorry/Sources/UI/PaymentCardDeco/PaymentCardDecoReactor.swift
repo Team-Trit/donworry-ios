@@ -10,7 +10,7 @@ import Foundation
 import ReactorKit
 import RxSwift
 import Models
-
+import UIKit
 
 enum PaymentCardDecoStep {
     case pop
@@ -18,16 +18,27 @@ enum PaymentCardDecoStep {
     case completePaymentCardDeco
 }
 
+struct CardViewModel {
+    var cardColor: CardColor = .pink
+    var payDate: Date = Date()
+    var bank: String = ""
+    var holder: String = ""
+    var number: String = ""
+    var images: [UIImage] = []
+}
+
 final class PaymentCardDecoReactor: Reactor {
 
     enum Action {
         case didTapBackButton
         case didTapCloseButton
-        case didTapCompleteButton
+        case didTapCompleteButton(CardViewModel)
+        case didTapDate(Date)
     }
 
     enum Mutation {
         case routeTo(PaymentCardDecoStep)
+        case updatePayDate(Date)
     }
 
     struct State {
@@ -57,10 +68,28 @@ final class PaymentCardDecoReactor: Reactor {
         case .didTapCloseButton:
             return .just(.routeTo(.paymentCardListView))
              
-        case .didTapCompleteButton:
-            return paymentCardService.createPaymentCard(spaceID: 42, paymentCard: currentState.paymentCard)
-                .map { _ in Mutation.routeTo(.completePaymentCardDeco)}
+        case .didTapCompleteButton(let cardVM):
             
+            let card = currentState.paymentCard
+            return paymentCardService.createPaymentCard(spaceID: currentState.spaceId,
+                                                        paymentCard: PaymentCardModels.PostCard.Request(
+                                                            spaceID: currentState.spaceId,
+                                                            categoryID: card.categoryID,
+                                                            bank: cardVM.bank,
+                                                            number: cardVM.number,
+                                                            holder: cardVM.holder,
+                                                            name: card.name,
+                                                            totalAmount: card.totalAmount,
+                                                            bgColor: cardVM.cardColor.rawValue,
+                                                            paymentDate: 
+                                                            cardVM.payDate.modifyDateForNetworking()
+                                                            
+                                                        )
+            )
+                .map { _ in Mutation.routeTo(.completePaymentCardDeco)}
+         
+        case .didTapDate(let date):
+            return .just(Mutation.updatePayDate(date))
         }
     }
 
@@ -69,6 +98,9 @@ final class PaymentCardDecoReactor: Reactor {
          switch mutation {
          case .routeTo(let step):
              newState.step = step
+         case .updatePayDate(let date):
+             // 2022-09-06T17:25:20.715Z"
+             newState.paymentCard.paymentDate = date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
          }
         return newState
     }

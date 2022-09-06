@@ -11,6 +11,7 @@ import ReactorKit
 enum PaymentCardAmountEditStep {
     case pop
     case paymentCardDeco
+    case paymentCardList
 }
 
 final class PaymentCardAmountEditReactor: Reactor {
@@ -18,6 +19,8 @@ final class PaymentCardAmountEditReactor: Reactor {
     enum Action {
         case numberPadPressed(pressedItem: String)
         case nextButtonPressed
+        case didTapBackButton
+        case didTapCloseButton
     }
     
     enum Mutation {
@@ -47,10 +50,14 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .numberPadPressed(pressedItem):
-            return .just(.updateAmount(with: pressedItem))
-        case .nextButtonPressed:
-            return .just(.routeTo(.paymentCardDeco))
+            case let .numberPadPressed(pressedItem):
+                return .just(.updateAmount(with: pressedItem))
+            case .nextButtonPressed:
+                return .just(.routeTo(.paymentCardDeco))
+            case .didTapBackButton:
+                return .just(.routeTo(.pop))
+            case .didTapCloseButton:
+                return .just(.routeTo(.paymentCardList))
         }
     }
     
@@ -60,6 +67,7 @@ final class PaymentCardAmountEditReactor: Reactor {
         switch mutation {
         case let .updateAmount(with):
             newState.amount = setNewAmount(state.amount, with: with)
+//            newState.paymentCard.totalAmount = convertAmount(amount: state.amount)
         case .routeTo(let step):
             newState.step = step
         }
@@ -70,10 +78,12 @@ final class PaymentCardAmountEditReactor: Reactor {
 
 // MARK: - Helper
 extension PaymentCardAmountEditReactor {
-    
-    private func convertAmount(amount: String) -> Int {
-        return Int(amount) ?? 0
-    }
+  
+    // TODO: 해당 뷰 담당자와 논의 후 나중에 교체예정
+//    private func convertAmount(amount: String) -> Int {
+//        let amount = amount.components(separatedBy: [","]).joined()
+//        return Int(amount) ?? 0
+//    }
     
     private func setNewAmount(_ amount: String, with: String) -> String {
         var amount = amount.components(separatedBy: [","]).joined()

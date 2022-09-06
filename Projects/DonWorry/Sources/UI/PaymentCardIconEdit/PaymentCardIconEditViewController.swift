@@ -31,7 +31,8 @@ let icons: [Category] = [Category(iconName: "ic_chicken"),
 final class PaymentCardIconEditViewController: BaseViewController, View {
 
 
-    private var selectedIcon: String = ""
+    typealias Reactor = PaymentCardIconEditViewReactor
+    private var categoryID: Int = 3
 
 
     // MARK: - Views
@@ -61,23 +62,39 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     }
 
     // MARK: - Binding
-    
-    // MARK: - Binding
-    func bind(reactor: PaymentCardIconEditViewReactor) {
+    func bind(reactor: Reactor) {
         self.render(reactor: reactor)
         self.dispatch(to: reactor)
     }
     
-    func dispatch(to reactor: PaymentCardIconEditViewReactor) {                self.nextButton.rx.tap.map { .didTapNextButton }
+    func dispatch(to reactor: Reactor) {                self.nextButton.rx.tap.map { .didTapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.navigationBar.rightItem?.rx.tap.map { .didTapCloseButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.iconCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+
+        self.iconCollectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
+        
+        self.iconCollectionView.rx.itemSelected
+            .map { _ in
+                    .fetchIcon(self.categoryID)
+            }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
-    func render(reactor: PaymentCardIconEditViewReactor) {
+    func render(reactor: Reactor) {
         
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: titleLabel.rx.text)
@@ -87,24 +104,27 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] step in
-                self?.move(to: step)
+                self?.move(to: step, reactor: reactor)
             }).disposed(by: disposeBag)
     }
+    
     
 }
 
 extension PaymentCardIconEditViewController {
-    func move(to step: PaymentCardIconEditStep) {
+    func move(to step: PaymentCardIconEditStep, reactor: Reactor) {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardAmountEdit:
             let amount = PaymentCardAmountEditViewController()
-//            amount.reactor = PaymentCardAmountEditReactor()
             amount.reactor =
-            PaymentCardAmountEditReactor(spaceId: 43, amount: "0", paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 0, bgColor: "", paymentDate: ""))
-            
+            PaymentCardAmountEditReactor(spaceId: reactor.currentState.spaceId,
+                                         amount: "",
+                                         paymentCard: reactor.currentState.paymentCard)
             self.navigationController?.pushViewController(amount, animated: true)
+        case .paymentCardList:
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
     }
 }
@@ -132,9 +152,6 @@ extension PaymentCardIconEditViewController {
             $0.leading.trailing.equalToSuperview().inset(25)
             $0.bottom.equalToSuperview().inset(50)
         }
-        
-        iconCollectionView.delegate = self
-        iconCollectionView.dataSource = self
         iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
         
         iconCollectionView.snp.makeConstraints {
@@ -174,16 +191,16 @@ extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollect
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell else { return UICollectionViewCell() }
+        if (indexPath.row == 0) {
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+         }
         cell.configure(with: icons[indexPath.row].iconName)
         return cell
     }
 
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-        // TODO: 선택된 셀 다루기
-        selectedIcon = icons[indexPath.row].iconName
-        print("선택된 셀 : \(selectedIcon)")
+        categoryID = indexPath.row
     }
 
 }
