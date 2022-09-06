@@ -13,7 +13,13 @@ import SnapKit
 
 final class AgreeTermTableViewCell: UITableViewCell {
     static let identifier = "AgreeTermTableViewCell"
-    lazy var termLabel: UILabel = {
+    lazy var checkButton: UIButton = {
+        let v = UIButton()
+        v.setImage(UIImage(systemName: "circle"), for: .normal)
+        v.tintColor = .designSystem(.grayC5C5C5)
+        return v
+    }()
+    lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.textColor = .designSystem(.gray818181)
         v.font = .designSystem(weight: .regular, size: ._15)
@@ -33,12 +39,16 @@ final class AgreeTermTableViewCell: UITableViewCell {
 // MARK: - Layout
 extension AgreeTermTableViewCell {
     private func setUI() {
-        addSubview(termLabel)
+        contentView.addSubviews(checkButton, titleLabel)
         
-        termLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(50)
+        checkButton.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
+            make.width.height.equalTo(30)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalTo(checkButton.snp.trailing).offset(20)
             make.centerY.equalToSuperview()
         }
     }
 }
-

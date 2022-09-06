@@ -18,6 +18,8 @@ enum LoginStep {
 final class LoginViewReactor: Reactor, Stepper {
     let steps = PublishRelay<Step>()
     private let testUserService: TestUserService
+    private let userService: UserService
+    private let disposeBag = DisposeBag()
     enum Action {
         case appleLoginButtonPressed
         case googleLoginButtonPressed
@@ -26,56 +28,50 @@ final class LoginViewReactor: Reactor, Stepper {
     }
     
     enum Mutation {
-        case updateLoading(Bool)
-        case appleLogin
-        case googleLogin
-        case kakaoLogin
         case routeTo(LoginStep)
     }
     
     struct State {
-        var isLoading: Bool
-
         @Pulse var step: LoginStep?
     }
     
     let initialState: State
     
-    init(testUserService: TestUserService = TestUserServiceImpl()) {
+    init(
+        testUserService: TestUserService = TestUserServiceImpl(),
+        userService: UserService = UserServiceImpl()
+    ) {
         self.testUserService = testUserService
-        self.initialState = State(
-            isLoading: false
-        )
+        self.userService = userService
+        self.initialState = State()
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .appleLoginButtonPressed:
-            // TODO: Social login
-            return Observable.concat(
-                [.just(Mutation.updateLoading(true)),
-                 .just(Mutation.appleLogin),
-                 .just(Mutation.updateLoading(false))
-                ])
+            // MARK: 카카오 로그인 연결을 끊기위한 임시 코드
+//            self.steps.accept(DonworryStep.userInfoIsRequired)
+            userService.unlinkKakao()
+            return .empty()
             
         case .googleLoginButtonPressed:
-            // TODO: Social login
-            return Observable.concat(
-                [.just(Mutation.updateLoading(true)),
-                 .just(Mutation.googleLogin),
-                 .just(Mutation.updateLoading(false))
-                ])
+            // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
+//            self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: AccessToken))
+            return .empty()
             
         case .kakaoLoginButtonPressed:
-            // TODO: Social login
-            return Observable.concat(
-                [.just(Mutation.updateLoading(true)),
-                 .just(Mutation.kakaoLogin),
-                 .just(Mutation.updateLoading(false))
-                ])
+            userService.loginWithKakao()
+                .subscribe(onNext: { [unowned self] oauthToken in
+                    self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: oauthToken.accessToken))
+                }) { error in
+                    print(error)
+                }
+                .disposed(by: disposeBag)
+            return .empty()
+            
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
-            return testUserService.signIn(1)
+            return testUserService.signInWithoutUserID()
                 .map { _ in .routeTo(.home) }
 
         }
@@ -85,14 +81,6 @@ final class LoginViewReactor: Reactor, Stepper {
         var state = state
         
         switch mutation {
-        case .updateLoading(let isLoading):
-            state.isLoading = isLoading
-        case .appleLogin:
-            state.step = .home
-        case .googleLogin:
-            self.steps.accept(DonworryStep.userInfoIsRequired)
-        case .kakaoLogin:
-            self.steps.accept(DonworryStep.userInfoIsRequired)
         case .routeTo(let step):
             state.step = step
         }

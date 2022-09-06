@@ -17,6 +17,9 @@ import SnapKit
 
 final class HomeViewController: BaseViewController, ReactorKit.View {
     typealias Reactor = HomeReactor
+    
+    // MARK: 테스트용 local storage service
+    let service = UserServiceImpl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
