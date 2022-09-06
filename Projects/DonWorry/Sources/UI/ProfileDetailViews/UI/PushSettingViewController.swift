@@ -50,14 +50,26 @@ final class PushSettingViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+
         tableView.delegate = self
         tableView.dataSource = self
-
         attributes()
         layout()
+        requestNotificationPermission()
+    }
+    
+    //MARK : - 알람설정 노티가뜨는뷰에 가져가면됨
+    func requestNotificationPermission(){
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.sound,.badge], completionHandler: {didAllow,Error in
+            if didAllow {
+                print("Push: 권한 허용")
+            } else {
+                print("Push: 권한 거부")
+            }
+        })
     }
 
-
+    
 }
 
 extension PushSettingViewController {
@@ -95,7 +107,6 @@ extension PushSettingViewController: UITableViewDataSource {
                 as? PushSettingTableViewCell else { return UITableViewCell() }
         cell.configure(data: toggleTitles[indexPath.row])
         cell.selectionStyle = .none
-        cell.index = indexPath.row
         cell.toggleDelegate = self
         return cell
     }
@@ -117,7 +128,37 @@ extension PushSettingViewController: UITableViewDelegate {
 }
 
 extension PushSettingViewController: toggleAlertDelegate {
-    func toggleAlert(index: Int) {
-        print(toggleTitles[index].main)
+    func goToSettingPage() {
+        let alertController = UIAlertController(title: "돈워리 알림을 설정하시겠어요?",
+                                                message: "설정에서 알림을 허용해주세요",
+                                                preferredStyle: .alert)
+        
+        let goToSettings = UIAlertAction(title: "설정으로가기", style: .default) {_ in
+            guard let settingURL = URL(string: UIApplication.openSettingsURLString) else { return }
+            if UIApplication.shared.canOpenURL(settingURL) {
+                UIApplication.shared.open(settingURL)
+            }
+        }
+        alertController.addAction(goToSettings)
+        alertController.addAction(UIAlertAction(title: "취소", style: .default))
+        self.present(alertController, animated: true)
+    }
+    
+    func toggleAlertTrue() {
+        let notificationAlert = UIAlertController(title: "알람 비활성화",
+                                                  message: "알람을 비활성화했습니다",
+                                                  preferredStyle: .alert)
+        
+        notificationAlert.addAction(UIAlertAction(title: "알겠습니다", style: .default))
+        self.present(notificationAlert, animated: true)
+    }
+    
+    func toggleAlertFalse() {
+        let notificationAlert = UIAlertController(title: "알람 활성화",
+                                                  message: "알림을 활성화했습니다",
+                                                  preferredStyle: .alert)
+        
+        notificationAlert.addAction(UIAlertAction(title: "알겠습니다", style: .default))
+        self.present(notificationAlert, animated: true)
     }
 }

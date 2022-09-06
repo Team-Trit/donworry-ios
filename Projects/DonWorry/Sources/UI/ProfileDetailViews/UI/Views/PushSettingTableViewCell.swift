@@ -10,7 +10,9 @@ import UIKit
 import DesignSystem
 
 protocol toggleAlertDelegate {
-    func toggleAlert(index: Int)
+    func toggleAlertTrue()
+    func toggleAlertFalse()
+    func goToSettingPage()
 }
 
 class PushSettingTableViewCell: BaseTableViewCell {
@@ -19,8 +21,6 @@ class PushSettingTableViewCell: BaseTableViewCell {
     static let identifier: String = "PushSettingTableViewCell"
     
     var toggleDelegate: toggleAlertDelegate?
-    
-    var index: Int = 0
     
     let mainTitle: UILabel = {
         let mainTitle = UILabel()
@@ -43,7 +43,7 @@ class PushSettingTableViewCell: BaseTableViewCell {
         toggleSwitch.translatesAutoresizingMaskIntoConstraints = false
         toggleSwitch.onTintColor = .designSystem(.mainBlue)
         toggleSwitch.setOn(false, animated: true)
-        toggleSwitch.addTarget(self, action: #selector(onClickSwitch), for: UIControl.Event.valueChanged)
+        toggleSwitch.addTarget(self, action: #selector(onClickSwitch), for: .valueChanged)
         return toggleSwitch
     }()
     
@@ -86,15 +86,21 @@ class PushSettingTableViewCell: BaseTableViewCell {
         lineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
     }
-    
     func configure(data: Toggle) {
         mainTitle.text = data.main
         subTitle.text = data.sub
     }
     
     @objc func onClickSwitch() {
-        if !self.toggleSwitch.isOn { return }
-        toggleDelegate?.toggleAlert(index: index)
+        if !self.toggleSwitch.isOn {
+            toggleDelegate?.toggleAlertTrue()
+        } else {
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.getNotificationSettings {settings in
+                DispatchQueue.main.async {
+                    settings.authorizationStatus == .authorized ? self.toggleDelegate?.toggleAlertFalse() : self.toggleDelegate?.goToSettingPage()
+                }
+            }
+        }
     }
-    
 }

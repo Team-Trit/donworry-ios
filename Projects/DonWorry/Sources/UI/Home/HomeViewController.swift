@@ -22,6 +22,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         super.viewDidLoad()
         setUI()
     }
+    
 
     func bind(reactor: Reactor) {
         self.render(reactor)
