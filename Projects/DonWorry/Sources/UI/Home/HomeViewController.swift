@@ -249,7 +249,7 @@ extension HomeViewController {
         let selectedIndex = reactor.currentState.selectedSpaceIndex
         let selectedSpace = reactor.currentState.spaceList[selectedIndex]
         paymentCardListViewController.reactor = PaymentCardListReactor(
-            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, shareID: selectedSpace.shareID)
+            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, status: selectedSpace.status, shareID: selectedSpace.shareID)
         )
         return paymentCardListViewController
     }

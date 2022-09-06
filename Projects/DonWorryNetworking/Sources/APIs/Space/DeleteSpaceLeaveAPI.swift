@@ -14,7 +14,9 @@ public struct DeleteSpaceLeaveAPI: ServiceAPI {
     public var path: String { return "/spaces/users/\(spaceId)" }
     public var method: Method { .delete }
     public var task: Task { .requestPlain }
-
+    public var headers: [String : String]? {
+        ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
     public init(spaceId: Int) {
         self.spaceId = spaceId
     }

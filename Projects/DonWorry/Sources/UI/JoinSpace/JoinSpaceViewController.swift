@@ -177,7 +177,7 @@ extension JoinSpaceViewController {
             self.dismiss(animated: true) {
                 let paymentCardListViewController = PaymentCardListViewController()
                 paymentCardListViewController.reactor = PaymentCardListReactor(
-                    space: .init(id: space.id, adminID: space.adminID, title: space.title, shareID: space.shareID)
+                    space: .init(id: space.id, adminID: space.adminID, title: space.title, status: "", shareID: space.shareID)
                 )
                 self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
             }

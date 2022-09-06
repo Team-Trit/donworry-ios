@@ -171,6 +171,7 @@ final class PaymentCardListViewController: BaseViewController, View {
             .asDriver(onErrorJustReturn: PaymentCardListStep.none)
             .compactMap { $0 }
             .drive(onNext: { [weak self] step in
+                print("HI, step", step)
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
@@ -236,23 +237,7 @@ extension PaymentCardListViewController {
             paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
             self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
         case .actionSheet:
-            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-            let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
-                self.dismiss(animated: true) { [weak self] in
-                    self?.reactor?.action.onNext(.routeToNameEdit)
-                }
-            }
-            let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
-                self.dismiss(animated: true) { [weak self] in
-                    self?.reactor?.action.onNext(.routeToNameEdit)
-                }
-            }
-            let cancel = UIAlertAction(title: "취소", style: .cancel)
-
-            actionSheet.addAction(item1)
-            actionSheet.addAction(item2)
-            actionSheet.addAction(cancel)
-            self.present(actionSheet, animated: true)
+            self.present(optionAlertController(), animated: true)
         case .nameEdit:
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
@@ -261,6 +246,26 @@ extension PaymentCardListViewController {
             break
 
         }
+    }
+
+    private func optionAlertController() -> UIAlertController {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
+            self.dismiss(animated: true) { [weak self] in
+                self?.reactor?.action.onNext(.routeToNameEdit)
+            }
+        }
+        let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
+            self.dismiss(animated: true) { [weak self] in
+                self?.reactor?.action.onNext(.didTapLeaveButton)
+            }
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+
+        actionSheet.addAction(item1)
+        actionSheet.addAction(item2)
+        actionSheet.addAction(cancel)
+        return actionSheet
     }
 }
 

@@ -75,12 +75,14 @@ final class JoinSpaceReactor: Reactor {
     }
 
     private func errorMessage(error: Error) -> String {
-        guard let error = error as? SpaceError else { return "알 수 없는 오류로 정산방 참가를 못해요." }
+        guard let error = error as? SpaceError else { return "알 수 없는 오류가 발생했어요." }
         switch error {
         case .alreadyJoined:
             return "이미 정산방에 참가혀섰어요!"
         case .undefined:
-            return "알 수 없는 오류로 정산방 참가를 못해요."
+            return "알 수 없는 오류가 발생했어요."
+        case .deletedSpace:
+            return "이미 삭제된 정산방이에요! 나가주세요!"
         }
     }
 
