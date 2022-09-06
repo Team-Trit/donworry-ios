@@ -93,18 +93,22 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     
     private func render(_ reactor: Reactor) {
         reactor.state.map { $0.homeHeader }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.headerView.rx.viewModel)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList.isNotEmpty }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.emptyView.rx.isHidden)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList.isEmpty }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
             }).disposed(by: disposeBag)

@@ -48,9 +48,9 @@ final class HomePresenterImpl: HomePresenter {
         isTaker: Bool
     ) -> [HomeBillCardItem] {
         if isTaker {
-            return formatGiveBillCardList(from: payments, isTaker: isTaker)
-        } else {
             return formatTakeBillCard(from: payments, isTaker: isTaker)
+        } else {
+            return formatGiveBillCardList(from: payments, isTaker: isTaker)
         }
     }
 
