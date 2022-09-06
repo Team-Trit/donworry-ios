@@ -49,6 +49,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
+            dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         }
     }
 
