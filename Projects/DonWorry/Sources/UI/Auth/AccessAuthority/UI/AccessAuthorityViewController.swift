@@ -78,8 +78,6 @@ final class AccessAuthorityViewController: BaseViewController {
         attributes()
         layout()
     }
-
-
 }
 
 extension AccessAuthorityViewController {
