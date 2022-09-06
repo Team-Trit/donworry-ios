@@ -67,7 +67,13 @@ final class AgreeTermViewReactor: Reactor, Stepper {
             
         case .doneButtonPressed:
             let checked = checkedTerms.filter { $0 != "" }
-            self.steps.accept(DonworryStep.confirmTermIsRequired(checkedTerms: checked, accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number, isAgreeMarketing: isAgreeMarketing))
+            self.steps.accept(DonworryStep.confirmTermIsRequired(checkedTerms: checked,
+                                                                 accessToken: accessToken,
+                                                                 nickname: nickname,
+                                                                 bank: bank,
+                                                                 holder: holder,
+                                                                 number: number,
+                                                                 isAgreeMarketing: isAgreeMarketing))
             return .empty()
         }
     }

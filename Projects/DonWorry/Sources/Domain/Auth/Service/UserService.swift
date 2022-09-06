@@ -16,7 +16,14 @@ import RxKakaoSDKCommon
 import RxKakaoSDKUser
 
 protocol UserService {
-    func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<Models.User>
+    func signUp(provider: String,
+                nickname: String,
+                email: String,
+                bank: String,
+                bankNumber: String,
+                bankHolder: String,
+                isAgreeMarketing: Bool,
+                accessToken: String) -> Observable<Models.User>
     func loginWithKakao() -> Observable<OAuthToken>
     
     func fetchLocalToken() -> AccessToken?
@@ -48,7 +55,14 @@ final class UserServiceImpl: UserService {
         return .just(user)
     }
     
-    func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<Models.User> {
+    func signUp(provider: String,
+                nickname: String,
+                email: String,
+                bank: String,
+                bankNumber: String,
+                bankHolder: String,
+                isAgreeMarketing: Bool,
+                accessToken: String) -> Observable<Models.User> {
         userRepository.postUser(provider: provider, nickname: nickname, email: email, bank: bank, bankNumber: bankNumber, bankHolder: bankHolder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
             .map { [weak self] (user, authentication) -> Models.User in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user)
@@ -95,7 +109,10 @@ final class UserServiceImpl: UserService {
         _ = accessTokenRepository.deleteAccessToken()
     }
     
-    private func convertToUser(id: Int, nickname: String, bankAccount: BankAccount, image: String) -> Models.User {
+    private func convertToUser(id: Int,
+                               nickname: String,
+                               bankAccount: BankAccount,
+                               image: String) -> Models.User {
         return Models.User(id: id, nickName: nickname, bankAccount: bankAccount, image: image)
         
     }

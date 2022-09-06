@@ -52,7 +52,14 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
         switch action {
         case .confirmButtonPressed:
 
-            return userService.signUp(provider: "KAKAO", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
+            return userService.signUp(provider: "KAKAO",
+                                      nickname: nickname,
+                                      email: "qweqwe@qwe.com",
+                                      bank: bank,
+                                      bankNumber: number,
+                                      bankHolder: holder,
+                                      isAgreeMarketing: isAgreeMarketing,
+                                      accessToken: accessToken)
                 .map { _ in Mutation.signUpComplete }
         }
     }

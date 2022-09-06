@@ -41,10 +41,20 @@ final class LoginFlow: Flow {
             return .none
             
         case let .agreeTermIsRequired(accessToken, nickname, bank, holder, number):
-            return self.navigateToAgreeTermView(accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number)
+            return self.navigateToAgreeTermView(accessToken: accessToken,
+                                                nickname: nickname,
+                                                bank: bank,
+                                                holder: holder,
+                                                number: number)
             
         case let .confirmTermIsRequired(checkedTerms, accessToken, nickname, bank, holder, number, isAgreeMarketing):
-            return self.presentConfirmTermView(checkedTerms: checkedTerms, accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number, isAgreeMarketing: isAgreeMarketing)
+            return self.presentConfirmTermView(checkedTerms: checkedTerms,
+                                               accessToken: accessToken,
+                                               nickname: nickname,
+                                               bank: bank,
+                                               holder: holder,
+                                               number: number,
+                                               isAgreeMarketing: isAgreeMarketing)
             
         case .homeIsRequired:
             return .end(forwardToParentFlowWithStep: DonworryStep.homeIsRequired)
