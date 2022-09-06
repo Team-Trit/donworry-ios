@@ -19,8 +19,8 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
             guard let user = user else {
                 return
             }
-            if let url = URL(string: user.image) {
-                userImageView.load(url: url)
+            if let urlString = URL(string: user.image) {
+                userImageView.kf.setImage(with: urlString)
             }
             userNicknameLabel.text = user.nickName
         }
