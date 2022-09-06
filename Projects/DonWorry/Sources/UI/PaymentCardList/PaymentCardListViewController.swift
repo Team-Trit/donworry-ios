@@ -234,22 +234,11 @@ extension PaymentCardListViewController {
         case .paymentCardDetail:
             
             guard let id = reactor?.currentState.space.id else { return }
-            
             let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
-            
-            PaymentCardServiceImpl().fetchPaymentCardList(spaceID: id)
-                .do(onNext: {
-                    print("Service : ", $0)
-                })
-//                .subscribe(onNext: { [weak self] cards in
-//                    print(cards)
-//                }).disposed(by: disposeBag)
-            
             participatePaymentCardViewController.reactor = ParticipatePaymentCardViewReactor()
             let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
             nav.modalPresentationStyle = .overFullScreen
             present(nav, animated: true)
-            
             
         case .actionSheet:
             self.present(optionAlertController(), animated: true)
