@@ -15,7 +15,7 @@ struct Formatter {
         return formatter
     }()
 
-    static let paymentCardDateFormatter: DateFormatter = {
+    static let mmddDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd"
         return formatter

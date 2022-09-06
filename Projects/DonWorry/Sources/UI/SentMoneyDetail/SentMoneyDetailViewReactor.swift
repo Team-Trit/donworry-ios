@@ -25,6 +25,7 @@ final class SentMoneyDetailViewReactor : Reactor {
     struct State {
         var spaceID: Int
         var paymentID: Int
+        var currentStatus: Response?
         var cards: [SendingMoneyInfoViewModel] = []
     }
 
@@ -50,8 +51,8 @@ final class SentMoneyDetailViewReactor : Reactor {
         var newState = state
          switch mutation {
          case .setup(let response):
-             break
-
+             newState.currentStatus = response
+             newState.cards = response.cards.map { formatGiveMoneyInfoViewModel(from: $0) }
          }
         return newState
     }
@@ -61,6 +62,24 @@ final class SentMoneyDetailViewReactor : Reactor {
             request: .init(spaceID: currentState.spaceID, paymentID: currentState.paymentID)
         )
     }
+
+    private func formatGiveMoneyInfoViewModel(from entity: Card) -> SendingMoneyInfoViewModel {
+        return .init(
+            name: entity.name,
+            date: formatDate(from: entity.paymentDate),
+            totalAmount: entity.totalAmount,
+            totalUers: entity.cardJoinUserCount,
+            myAmount: entity.amountPerUser
+        )
+    }
+
+    private func formatDate(from date: String) -> String {
+        if let date = Formatter.fullDateFormatter.date(from: date) {
+            return Formatter.mmddDateFormatter.string(from: date)
+        }
+        return "00/00"
+    }
+
 
     private let getGiverPaymentUseCase: GetGiverPaymentUseCase
 }
