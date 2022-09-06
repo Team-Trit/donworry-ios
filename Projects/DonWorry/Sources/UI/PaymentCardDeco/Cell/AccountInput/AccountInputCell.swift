@@ -29,6 +29,16 @@ class AccountInputCell: UITableViewCell {
         self.containerStackView.layer.masksToBounds = true
         layout()
         
+        /* 뷰띄우기
+        accountInputField.chooseBankButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
+        
+        
+        let vc = SelectBankViewController()
+        let reactor = SelectBankViewReactor()
+        vc.reactor = reactor
+        self.navigationController.present(vc)
+        
+        */
     }
 
 }

@@ -20,6 +20,8 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 
     // MARK: - Init
 
+    typealias Reactor = PaymentCardNameEditViewReactor
+    
     var type: PaymentCardNameEditViewType = .create
 
     convenience init(type: PaymentCardNameEditViewType) {
@@ -38,6 +40,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }(UILabel())
 
     private lazy var paymentNameLabel = LimitTextField(frame: .zero, type: .paymentTitle)
+
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
@@ -57,16 +60,25 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
         self.dispatch(to: reactor)
     }
     
-    func dispatch(to reactor: PaymentCardNameEditViewReactor) {        self.nextButton.rx.tap.map { .didTapNextButton(self.type) }
+    func dispatch(to reactor: Reactor) {
+        self.nextButton.rx.tap.map { .didTapNextButton(self.type) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.paymentNameLabel.textField.rx.text
+            .map {
+                .fetchCardName($0)
+            }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
-    func render(reactor: PaymentCardNameEditViewReactor) {
+    func render(reactor: Reactor) {
         
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: paymentNameLabel.textField.rx.text)
@@ -76,7 +88,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] step in
-                self?.move(to: step)
+                self?.move(to: step, reactor: reactor)
             }).disposed(by: disposeBag)
     }
     
@@ -84,15 +96,15 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 }
 
 extension PaymentCardNameEditViewController {
-    func move(to step: PaymentCardNameEditStep) {
+    func move(to step: PaymentCardNameEditStep, reactor: Reactor) {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardIconEdit:
             let paymentCardIconEditViewController = PaymentCardIconEditViewController()
             paymentCardIconEditViewController.reactor =
-                PaymentCardIconEditViewReactor(spaceId: 43,
-                                               paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 0, bgColor: "", paymentDate: ""))
+            PaymentCardIconEditViewReactor(spaceId: reactor.currentState.spaceId,
+                                           paymentCard: reactor.currentState.paymentCard)
             self.navigationController?.pushViewController(paymentCardIconEditViewController, animated: true)
         }
     }

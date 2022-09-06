@@ -70,9 +70,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-//        self.reactor = PaymentCardAmountEditReactor()
         setUI()
-        bindBackButton()
     }
     
     func bind(reactor: Reactor) {
@@ -93,6 +91,15 @@ extension PaymentCardAmountEditViewController {
             .map { Reactor.Action.numberPadPressed(pressedItem: self.padItems[$0.row]) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.navigationBar.rightItem?.rx.tap.map { .didTapCloseButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
     private func render(_ reactor: Reactor) {
@@ -115,58 +122,45 @@ extension PaymentCardAmountEditViewController {
             .bind(to: amountLabel.rx.text)
             .disposed(by: disposeBag)
 
-        // TODO: 화면연결을위해 주석처리했어요
-        /*
-        reactor.state.map { $0.amount != "0" }
-            .distinctUntilChanged()
-            .bind(to: nextButton.rx.isEnabled)
-            .disposed(by: disposeBag)
-        */
-
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext:{ [weak self] step in
-                self?.move(to: step)
+                self?.move(to: step, reactor: reactor)
             }).disposed(by: disposeBag)
     }
 }
 
 extension PaymentCardAmountEditViewController {
-    func move(to step: PaymentCardAmountEditStep) {
+    
+    func move(to step: PaymentCardAmountEditStep, reactor: Reactor) {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardDeco:
             let deco = PaymentCardDecoViewController()
-            deco.reactor =
-            PaymentCardDecoReactor(spaceId: 43, paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 99999, bgColor: "", paymentDate: ""))
+            let card = reactor.currentState.paymentCard
+            let amount  = convertAmount(reactor.currentState.amount)
+            deco.reactor = PaymentCardDecoReactor(spaceId: reactor.currentState.spaceId,
+                                                  paymentCard: PaymentCardModels.PostCard.Request(spaceID: reactor.currentState.spaceId, categoryID: card.categoryID, bank: card.bank, number: card.number, holder: card.holder, name: card.name, totalAmount: Int(amount) , bgColor: card.bgColor, paymentDate: card.paymentDate))
+            
             self.navigationController?.pushViewController(deco, animated: true)
+        case .paymentCardList:
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
     }
+    
+    
+    func convertAmount(_ amount: String) -> Int {
+        let amount = amount.components(separatedBy: [","]).joined()
+        return Int(amount) ?? 0
+    }
+    
 }
 
 // MARK: - Layout
 extension PaymentCardAmountEditViewController {
-    private func bindBackButton() {
-        navigationBar.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        navigationBar.rightItem!.rx.tap
-            .bind {
-                guard let controllers = self.navigationController?.viewControllers else { return }
-                for vc in controllers {
-                    if vc is PaymentCardListViewController {
-                        self.navigationController?.popToViewController(vc as! PaymentCardListViewController, animated: true)
-                    }
-                }
-            }
-            .disposed(by: disposeBag)
-    }
-    
+
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
