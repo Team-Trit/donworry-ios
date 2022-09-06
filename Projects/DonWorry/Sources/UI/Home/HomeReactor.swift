@@ -18,7 +18,7 @@ enum HomeStep {
     case sentMoneyDetail
     case alert
     case profile
-    case spaceList
+    case spaceList(Int, Int)
     case none
 }
 
@@ -100,7 +100,8 @@ final class HomeReactor: Reactor {
         case .didTapTakeBillCard:
             return .just(.routeTo(.recievedMoneyDetail))
         case .didTapStateBillCard:
-            return .just(.routeTo(.spaceList))
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
         case .didTapLeaveBillCard(let index):
             return .concat([
                 .just(.leaveSpace(index))

@@ -84,7 +84,8 @@ final class SpaceRepositoryImpl: SpaceRepository {
         guard let error = error as? NetworkError else { return .undefined }
         switch error {
         case .httpStatus(let status):
-            if status == 400 { return .alreadyJoined }
+            if status == 400 { return .shareIDIsNotInvalid }
+            else if status == 403 { return .alreadyJoined }
         default: break
         }
         return .undefined

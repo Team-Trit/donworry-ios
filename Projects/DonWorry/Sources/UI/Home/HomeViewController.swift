@@ -21,6 +21,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        setNotification()
     }
     
 
@@ -207,6 +208,18 @@ extension HomeViewController {
             endColor: .designSystem(.blueBottomGradient)!
         )
     }
+
+    private func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(routeToPaymentListScene), name: .init("com.TriT.DonWorry.joinSpace"), object: nil)
+    }
+
+    @objc
+    private func routeToPaymentListScene(_ notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String: Int] else { return }
+        guard let spaceID = userInfo["joinSpace.spaceID"],
+              let adminID = userInfo["joinSpace.adminID"] else { return }
+        move(to: .spaceList(spaceID, adminID))
+    }
 }
 
 // MARK: Routing
@@ -237,22 +250,15 @@ extension HomeViewController {
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
-        case .spaceList:
-            self.navigationController?.pushViewController(paymentCardListViewController(), animated: true)
+        case .spaceList(let spaceID, let adminID):
+            let paymentCardListViewController = PaymentCardListViewController()
+            paymentCardListViewController.reactor = PaymentCardListReactor(
+                spaceID: spaceID, adminID: adminID
+            )
+            self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         case .none:
             break
         }
-    }
-
-    private func paymentCardListViewController() -> PaymentCardListViewController {
-        guard let reactor = reactor else { return .init() }
-        let paymentCardListViewController = PaymentCardListViewController()
-        let selectedIndex = reactor.currentState.selectedSpaceIndex
-        let selectedSpace = reactor.currentState.spaceList[selectedIndex]
-        paymentCardListViewController.reactor = PaymentCardListReactor(
-            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, status: selectedSpace.status, shareID: selectedSpace.shareID)
-        )
-        return paymentCardListViewController
     }
 }
 
