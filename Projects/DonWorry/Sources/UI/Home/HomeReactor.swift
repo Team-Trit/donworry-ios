@@ -18,6 +18,8 @@ enum HomeStep {
     case sentMoneyDetail
     case alert
     case profile
+    case leaveAlertMessage // 확인메시지 알람창 -> 토스트
+    case cantLeaveSpace // 오류메시지 알림창 -> 토스트
     case spaceList(Int, Int)
     case none
 }
@@ -40,7 +42,7 @@ final class HomeReactor: Reactor {
         case didTapGiveBillCard
         case didTapTakeBillCard
         case didTapStateBillCard
-        case didTapLeaveBillCard(Int)
+        case didTapLeaveBillCard
         case none
     }
 
@@ -48,7 +50,6 @@ final class HomeReactor: Reactor {
         case updateHomeHeader(User)
         case updateSpaceList(SpaceList)
         case updateSpace(Index)
-        case leaveSpace(Index)
         case routeTo(HomeStep)
     }
 
@@ -102,10 +103,8 @@ final class HomeReactor: Reactor {
         case .didTapStateBillCard:
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
             return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
-        case .didTapLeaveBillCard(let index):
-            return .concat([
-                .just(.leaveSpace(index))
-            ])
+        case .didTapLeaveBillCard:
+            return requestLeave()
         case .none:
             return .just(.routeTo(.none))
         }
@@ -169,11 +168,19 @@ final class HomeReactor: Reactor {
             )
         case .routeTo(let step):
             newState.step = step
-        case .leaveSpace(_):
-            break
         }
         return newState
     }
+
+    private func requestLeave() -> Observable<Mutation> {
+        let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+        if selectedSpace.isAllPaymentCompleted {
+            return spaceService.leaveSpaceInProgress(requeset: .init(spaceID: selectedSpace.id))
+                .map { .updateSpaceList($0) }
+        }
+        return .just(.routeTo(.cantLeaveSpace))
+    }
+
     private let getUserAccountUseCase: GetUserAccountUseCase
     private let spaceService: SpaceService
     private let homePresenter: HomePresenter

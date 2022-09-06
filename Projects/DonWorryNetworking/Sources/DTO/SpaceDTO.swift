@@ -13,6 +13,7 @@ extension DTO {
         public let id, adminID: Int
         public let title, status, shareID: String
         public let isTaker: Bool
+        public let isAllPaymentCompleted: Bool
         public let payments: [Payment]
 
         enum CodingKeys: String, CodingKey {
@@ -21,6 +22,7 @@ extension DTO {
             case title, status
             case shareID = "shareId"
             case isTaker
+            case isAllPaymentCompleted
             case payments
         }
 

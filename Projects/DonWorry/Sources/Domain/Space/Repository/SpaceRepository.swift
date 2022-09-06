@@ -99,6 +99,7 @@ final class SpaceRepositoryImpl: SpaceRepository {
             status: dto.status,
             shareID: dto.shareID,
             isTaker: dto.isTaker,
+            isAllPaymentCompleted: dto.isAllPaymentCompleted,
             payments: dto.payments.map { convert(from: $0) }
         )
     }
