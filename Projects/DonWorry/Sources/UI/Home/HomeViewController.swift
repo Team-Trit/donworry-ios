@@ -17,6 +17,9 @@ import SnapKit
 
 final class HomeViewController: BaseViewController, ReactorKit.View {
     typealias Reactor = HomeReactor
+    
+    // MARK: 테스트용 local storage service
+    let service = UserServiceImpl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -342,5 +345,18 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
             IndexPath(item: reactor.currentState.selectedSpaceIndex, section: 0),
             IndexPath(item: reactor.currentState.beforeSelectedSpaceIndex, section: 0)
         ])
+    }
+}
+
+// MARK: - 테스트용 Local Storage 삭제 코드
+extension HomeViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        switch motion {
+        case .motionShake:
+            print("🌈흔들흔들")
+            service.deleteLocalUser()
+        default:
+            break
+        }
     }
 }

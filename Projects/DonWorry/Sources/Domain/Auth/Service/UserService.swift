@@ -19,6 +19,9 @@ protocol UserService {
     func signUp(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<Models.User>
     func loginWithKakao() -> Observable<OAuthToken>
     
+    func fetchLocalToken() -> AccessToken?
+    func deleteLocalUser()
+    
     func logout()
     func unlink()
 }
@@ -75,6 +78,16 @@ final class UserServiceImpl: UserService {
             }
             return Disposables.create()
         }
+    }
+    
+    func fetchLocalToken() -> AccessToken? {
+        return accessTokenRepository.fetchAccessToken()
+    }
+    
+    func deleteLocalUser() {
+        userAccountRepository.deleteLocalUserAccount()
+        accessTokenRepository.deleteAccessToken()
+        print("🔥지워")
     }
     
     private func convertToUser(id: Int, nickname: String, bankAccount: BankAccount, image: String) -> Models.User {

@@ -11,7 +11,6 @@ import Models
 import RxSwift
 
 protocol UserRepository {
-//    func fetchUser(_ userID: Int) -> Observable<(User, AuthenticationToken)>
     func postUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<(User, AuthenticationToken)>
 }
 
@@ -21,11 +20,6 @@ final class UserRepositoryImpl: UserRepository {
     init(_ network: NetworkServable = NetworkService()) {
         self.network = network
     }
-    
-    // TODO: GET user API 연결하기
-//    func fetchUser(_ userID: Int) -> Observable<(User, AuthenticationToken)> {
-////        network.request(<#T##api: ServiceAPI##ServiceAPI#>)
-//    }
     
     func postUser(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool, accessToken: String) -> Observable<(User, AuthenticationToken)> {
         let api = PostUserAPI(request: createUserRequest(
