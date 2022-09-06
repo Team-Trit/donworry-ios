@@ -54,13 +54,6 @@ final class ConfirmTermViewReactor: Reactor, Stepper {
 
             return userService.signUp(provider: "KAKAO", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
                 .map { _ in Mutation.signUpComplete }
-            
-//            userService.signUp(provider: "KAKAO", nickname: nickname, email: "qweqwe@qwe.com", bank: bank, bankNumber: number, bankHolder: holder, isAgreeMarketing: isAgreeMarketing, accessToken: accessToken)
-//                .subscribe(onNext: { _ in
-//                    self.steps.accept(DonworryStep.homeIsRequired)
-//                })
-//                .disposed(by: DisposeBag())
-//            return .empty()
         }
     }
     

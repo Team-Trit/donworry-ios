@@ -20,6 +20,7 @@ protocol UserService {
     func loginWithKakao() -> Observable<OAuthToken>
     
     func fetchLocalToken() -> AccessToken?
+    func fetchLocalUser() -> Models.User?
     func deleteLocalUser()
     
     func logout()
@@ -84,10 +85,14 @@ final class UserServiceImpl: UserService {
         return accessTokenRepository.fetchAccessToken()
     }
     
+    func fetchLocalUser() -> Models.User? {
+        return userAccountRepository.fetchLocalUserAccount()
+    }
+    
+    // MARK: Local Storage에 있는 정보들을 지우기 위한 코드
     func deleteLocalUser() {
-        userAccountRepository.deleteLocalUserAccount()
-        accessTokenRepository.deleteAccessToken()
-        print("🔥지워")
+        _ = userAccountRepository.deleteLocalUserAccount()
+        _ = accessTokenRepository.deleteAccessToken()
     }
     
     private func convertToUser(id: Int, nickname: String, bankAccount: BankAccount, image: String) -> Models.User {
@@ -96,7 +101,7 @@ final class UserServiceImpl: UserService {
     }
 }
 
-// MARK: - 테스트를 위한 임시 메소드
+// MARK: - 카카오 로그인 테스트를 위한 임시 메소드 (연결 끊기)
 extension UserServiceImpl {
     func logout() {
         UserApi.shared.rx.logout()

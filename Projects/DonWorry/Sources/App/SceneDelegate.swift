@@ -19,9 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         
-        if let _ = userService.fetchLocalToken() {
-            // MARK: Local Storage에 토큰이 저장되어 있으므로 HomeView로 이동
-            // TODO: Access Token의 만료 시간에 대해서 정해야함
+        if (userService.fetchLocalToken() != nil) && (userService.fetchLocalUser() != nil) {
+            // MARK: Local Storage에 토큰과 유저가 저장되어 있으므로 HomeView로 이동
             let rootViewController = HomeViewController()
             rootViewController.reactor = HomeReactor()
             let navigationController = UINavigationController(rootViewController: rootViewController)

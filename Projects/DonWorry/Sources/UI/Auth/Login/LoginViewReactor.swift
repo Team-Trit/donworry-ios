@@ -49,12 +49,14 @@ final class LoginViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .appleLoginButtonPressed:
+            // MARK: 카카오 로그인 연결을 끊기위한 임시 코드
 //            self.steps.accept(DonworryStep.userInfoIsRequired)
             userService.unlink()
             userService.logout()
             return .empty()
             
         case .googleLoginButtonPressed:
+            // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
 //            self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: AccessToken))
             return .empty()
             

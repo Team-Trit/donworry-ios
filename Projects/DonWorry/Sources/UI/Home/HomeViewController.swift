@@ -347,16 +347,3 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
         ])
     }
 }
-
-// MARK: - 테스트용 Local Storage 삭제 코드
-extension HomeViewController {
-    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        switch motion {
-        case .motionShake:
-            print("🌈흔들흔들")
-            service.deleteLocalUser()
-        default:
-            break
-        }
-    }
-}

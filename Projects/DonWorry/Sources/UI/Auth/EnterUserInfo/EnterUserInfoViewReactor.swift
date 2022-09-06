@@ -110,15 +110,13 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
                 number = value
                 newState.accountNumber = value
             }
-//            newState.isNextButtonAvailable = checkNextButtonValidation(newState)
             
         case .updateBank(let bank):
-            print("⭐️이까지 왔을 때 은행 : \(bank)")
+            
             self.bank = bank
             newState.bank = bank
             
         case .navigateToNextVC:
-            // TODO: ViewModel 연결
             break
         }
         newState.isNextButtonAvailable = checkNextButtonValidation(newState)

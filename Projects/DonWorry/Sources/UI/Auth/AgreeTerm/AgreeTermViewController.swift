@@ -16,26 +16,7 @@ import RxFlow
 import RxSwift
 import SnapKit
 
-//struct Term {
-//    var label: String
-//}
-
 final class AgreeTermViewController: BaseViewController, View {
-//    let dataSource: [String] = [
-//        "전체동의",
-//        "(필수) 돈워리 회원가입 및 이용약관 동의",
-//        "(필수) 돈워리의 개인정보수집 및 이용에 동의",
-//        "(필수) 돈워리의 개인정보 제 3자 제공 동의",
-//        "(선택) 이벤트 알림 수신 동의"
-//    ]
-//    private let dataSource: [Term] = [
-//        Term(label: "전체동의"),
-//        Term(label: "(필수) 돈워리 회원가입 및 이용약관 동의"),
-//        Term(label: "(필수) 돈워리의 개인정보수집 및 이용에 동의"),
-//        Term(label: "(필수) 돈워리의 개인정보 제 3자 제공 동의"),
-//        Term(label: "(선택) 이벤트 알림 수신 동의")
-//    ]
-    
     typealias Reactor = AgreeTermViewReactor
     let steps = PublishRelay<Step>()
     private lazy var navigationBar = DWNavigationBar(title: "돈워리 이용약관")
