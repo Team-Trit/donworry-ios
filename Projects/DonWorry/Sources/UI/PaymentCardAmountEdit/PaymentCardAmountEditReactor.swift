@@ -26,8 +26,9 @@ final class PaymentCardAmountEditReactor: Reactor {
     }
     
     struct State {
-        let iconName: String
-        let paymentTitle: String
+        
+        var spaceId: Int
+        var paymentCard: PaymentCardModels.PostCard.Request
         var amount: String
 
         @Pulse var step: PaymentCardAmountEditStep?
@@ -35,9 +36,14 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     let initialState: State
     
-    init() {
-        self.initialState = State(iconName: "ic_calculation_3d", paymentTitle: "승창승창", amount: "0")
+    init(
+        spaceId: Int,
+        amount: String,
+        paymentCard: PaymentCardModels.PostCard.Request
+    ){
+        self.initialState = State(spaceId: spaceId, paymentCard: paymentCard, amount: "0")
     }
+    
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
@@ -64,6 +70,11 @@ final class PaymentCardAmountEditReactor: Reactor {
 
 // MARK: - Helper
 extension PaymentCardAmountEditReactor {
+    
+    private func convertAmount(amount: String) -> Int {
+        return Int(amount) ?? 0
+    }
+    
     private func setNewAmount(_ amount: String, with: String) -> String {
         var amount = amount.components(separatedBy: [","]).joined()
         

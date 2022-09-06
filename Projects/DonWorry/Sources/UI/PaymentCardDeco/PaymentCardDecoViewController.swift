@@ -6,28 +6,31 @@
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
-import PhotosUI
+
 import UIKit
+import PhotosUI
+
+import BaseArchitecture
+import DesignSystem
+import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
-
-import BaseArchitecture
 import DesignSystem
 import DonWorryExtensions
 
 
-final class PaymentCardDecoViewController: BaseViewController {
+final class PaymentCardDecoViewController: BaseViewController, View {
     
-    //    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
-    let viewModel = PaymentCardDecoViewModel()
+    typealias Reactor = PaymentCardDecoReactor
     
     // MARK: - Model 활용하여 교체 예정
     var cardColor: CardColor = .pink
     
     lazy var paymentCard = PaymentCardView()
     
-    private lazy var navigationBar = DWNavigationBar()
+    private lazy var navigationBar = DWNavigationBar(title: "MC2첫회식", rightButtonImageName: "xmark")
+    
     private lazy var tableView = PaymentCardDecoTableView()
     
     private lazy var scrollView: UIScrollView = {
@@ -81,14 +84,14 @@ final class PaymentCardDecoViewController: BaseViewController {
         $0.backgroundColor = .designSystem(.mainBlue)
         $0.layer.cornerRadius = 25
         $0.setTitle("완료", for: .normal)
-        $0.addTarget(self, action: #selector(didTapCompleteButton), for: .touchUpInside)
+//        $0.addTarget(self, action: #selector(didTapCompleteButton), for: .touchUpInside)
         return $0
     }(UIButton())
     
     
     // MARK: - LifeCycle
     
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         configNavigationBar()
@@ -96,6 +99,63 @@ final class PaymentCardDecoViewController: BaseViewController {
         layout()
     }
     
+    // MARK: - Binding
+    
+    func bind(reactor: PaymentCardDecoReactor) {
+        dispatch(to: reactor)
+        render(reactor: reactor)
+    }
+
+    func dispatch(to reactor: PaymentCardDecoReactor) {       completeButton.rx.tap.map { .didTapCompleteButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    func render(reactor: PaymentCardDecoReactor) {
+        
+        reactor.state.map{ $0.paymentCard.name }
+            .bind(to: paymentCard.nameLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map{ "\($0.paymentCard.totalAmount)" }
+            .bind(to: paymentCard.totalAmountLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.paymentCard.categoryID }
+            .distinctUntilChanged()
+            .map {
+                UIImage(.init(rawValue: icons[$0].iconName) ?? .ic_cake)
+            }
+            .bind(to: paymentCard.icon.rx.image)
+            .disposed(by: disposeBag)
+        
+        
+        reactor.pulse(\.$step)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext:{ [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
+    }
+    
+}
+
+
+extension PaymentCardDecoViewController {
+    func move(to step: PaymentCardDecoStep) {
+        switch step {
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        case .paymentCardListView:
+            self.navigationController?.popViewController(animated: true)
+        case .completePaymentCardDeco:
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
+        }
+    }
 }
 
 
@@ -162,10 +222,10 @@ extension PaymentCardDecoViewController {
         }
     }
     
-    @objc private func didTapCompleteButton() {
-        // TODO: 수정해야합니다.
-        NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
-    }
+//    @objc private func didTapCompleteButton() {
+//        // TODO: 수정해야합니다.
+//        NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
+//    }
 
 }
 
