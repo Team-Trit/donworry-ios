@@ -8,7 +8,7 @@
 //
 //import UIKit
 //
-//open class BaseTableViewCell: UITableViewCell {
+//public class BaseTableViewCell: UITableViewCell {
 //
 //    // MARK: - Init
 //    

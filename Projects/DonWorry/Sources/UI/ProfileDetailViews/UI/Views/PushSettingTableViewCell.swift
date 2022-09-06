@@ -15,8 +15,7 @@ protocol toggleAlertDelegate {
     func goToSettingPage()
 }
 
-class PushSettingTableViewCell: BaseTableViewCell {
-    
+class PushSettingTableViewCell: UITableViewCell {
     
     static let identifier: String = "PushSettingTableViewCell"
     
@@ -63,7 +62,7 @@ class PushSettingTableViewCell: BaseTableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func render() {
+    func render() {
         contentView.addSubviews(mainTitle, subTitle, toggleSwitch, lineView)
         mainTitle.bottomAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         mainTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 26).isActive = true
