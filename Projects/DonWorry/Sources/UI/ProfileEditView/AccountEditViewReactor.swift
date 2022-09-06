@@ -15,6 +15,10 @@ enum AccountEditViewStep {
 }
 
 final class AccountEditViewReactor: Reactor {
+//    var bank: String
+//    var accountHolder: String
+//    var accountNumber: String
+    
     enum Action {
         case pressBackButton
         case pressDoneButton

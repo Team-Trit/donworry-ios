@@ -85,6 +85,20 @@ extension AccountEditViewController {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        accountEditField.holderTextField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.updateHolder(holder: $0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        accountEditField.accountTextField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.updateAccountNumber(number: $0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         doneButton.rx.tap
             .map { Reactor.Action.pressDoneButton }
             .bind(to: reactor.action)
@@ -163,5 +177,6 @@ extension AccountEditViewController {
 extension AccountEditViewController: SelectBankViewDelegate {
     func selectBank(_ selectedBank: String) {
         accountEditField.chooseBankButton.setTitle(selectedBank, for: .normal)
+//        reactor?.bank = selectedBank
     }
 }
