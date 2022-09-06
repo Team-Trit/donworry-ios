@@ -80,7 +80,8 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 case 1:
                     return .didTapTakeBillCard
                 case 2:
-                    return .didTapGiveBillCard
+                    guard let cell = cell as? GiveBillCardCollectionViewCell else { fatalError() }
+                    return .didTapGiveBillCard(cell.viewModel?.id ?? 0)
                 case 3:
                     return .didTapLeaveBillCard
                 default:
@@ -246,9 +247,9 @@ extension HomeViewController {
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
             recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor()
             self.present(recieveMoneyDetailViewController, animated: true)
-        case .sentMoneyDetail:
+        case .sentMoneyDetail(let spaceID, let paymentID):
             let sentMoneyDetailViewController = SentMoneyDetailViewController()
-            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor()
+            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()

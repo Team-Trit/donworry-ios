@@ -122,6 +122,9 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     }
 
     func bind(reactor: Reactor) {
+        rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
     }
 

@@ -77,7 +77,7 @@ final class HomePresenterImpl: HomePresenter {
     private func convertToGiveCellModel(
         from payment: SpaceModels.FetchSpaceList.SpacePayment
     ) -> GiveBillCardCellViewModel {
-        return .init(takerID: payment.user.id, imageURL: payment.user.imgURL, nickName: payment.user.nickname, amount: formatter(payment.amount), isCompleted: payment.isCompleted)
+        return .init(id: payment.id, takerID: payment.user.id, imageURL: payment.user.imgURL, nickName: payment.user.nickname, amount: formatter(payment.amount), isCompleted: payment.isCompleted)
     }
     
     private func formatter(_ amount: Int) -> String {

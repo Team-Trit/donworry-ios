@@ -12,6 +12,7 @@ import DonWorryExtensions
 import Kingfisher
 
 struct GiveBillCardCellViewModel: Equatable {
+    var id: Int
     var takerID: Int
     var imageURL: String?
     var nickName: String

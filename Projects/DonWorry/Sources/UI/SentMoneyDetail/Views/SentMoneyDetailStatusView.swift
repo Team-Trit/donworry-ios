@@ -11,7 +11,7 @@ import DesignSystem
 
 class SentMoneyDetailStatusView: UIView {
     
-    private let title: UILabel = {
+    let title: UILabel = {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.font = .designSystem(weight: .heavy, size: ._25)
