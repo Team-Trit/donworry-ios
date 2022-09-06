@@ -6,10 +6,12 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import Foundation
 import DonWorryNetworking
-import Models
 import RxSwift
+
+enum PaymentCardError: Error {
+    case parsingError
+}
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
     private let network: NetworkServable
@@ -18,16 +20,23 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         self.network = network
     }
 
-    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.ResponseList> {
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response> {
         return network.request(GetPaymentCardListAPI(spaceID: spaceID))
-            .compactMap { response in
-                return response.compactMap { [weak self] dto in
-                    return self?.convertToPaymentCard(dto)
-                }
+            .compactMap { [weak self] response in
+                guard let self = self else { throw PaymentCardError.parsingError }
+                return .init(
+                    isAllPaymentCompleted: response.isAllPaymentCompleted,
+                    space: self.convertToSpace(response.space),
+                    cards: response.cards.compactMap { self.convertToPaymentCard($0) }
+                )
             }.asObservable()
     }
 
-    private func convertToPaymentCard(_ dto: DTO.PaymentCard) -> PaymentCardModels.FetchCardList.Response {
+    private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
+        return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
+    }
+
+    private func convertToPaymentCard(_ dto: DTO.GetPaymentCardList.PaymentCard) -> PaymentCardModels.FetchCardList.Response.PaymentCard {
         return .init(
             id: dto.id,
             spaceJoinUserCount: dto.spaceJoinUserCount,
@@ -43,7 +52,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         )
     }
 
-    private func convertToUser(_ dto: DTO.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.User {
+    private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(
             id: dto.id,
             nickname: dto.nickname,

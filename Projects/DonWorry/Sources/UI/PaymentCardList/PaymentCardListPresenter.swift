@@ -11,19 +11,25 @@ import DonWorryExtensions
 
 protocol PaymentCardListPresenter {
     func formatSection(
-        from paymentCardList: PaymentCardModels.FetchCardList.ResponseList
+        from paymentCardList: [PaymentCardModels.FetchCardList.Response.PaymentCard]
     ) -> [PaymentCardCellViewModel]
 }
 
 final class PaymentCardPresenterImpl: PaymentCardListPresenter {
 
+    func formatSpace(
+        from space: PaymentCardModels.FetchCardList.Response.Space
+    ) {
+
+    }
+
     func formatSection(
-        from paymentCardList: PaymentCardModels.FetchCardList.ResponseList
+        from paymentCardList: [PaymentCardModels.FetchCardList.Response.PaymentCard]
     ) -> [PaymentCardCellViewModel] {
         return paymentCardList.map { convert($0) }
     }
 
-    private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response) -> PaymentCardCellViewModel {
+    private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response.PaymentCard) -> PaymentCardCellViewModel {
         return .init(
             id: paymentCard.id,
                      name: paymentCard.name,

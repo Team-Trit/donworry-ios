@@ -236,31 +236,44 @@ extension PaymentCardListViewController {
             paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
             self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
         case .actionSheet:
-            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-            let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
-                self.dismiss(animated: true) { [weak self] in
-                    self?.reactor?.action.onNext(.routeToNameEdit)
-                }
-            }
-            let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
-                self.dismiss(animated: true) { [weak self] in
-                    self?.reactor?.action.onNext(.routeToNameEdit)
-                }
-            }
-            let cancel = UIAlertAction(title: "취소", style: .cancel)
-
-            actionSheet.addAction(item1)
-            actionSheet.addAction(item2)
-            actionSheet.addAction(cancel)
-            self.present(actionSheet, animated: true)
+            self.present(optionAlertController(), animated: true)
         case .nameEdit:
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
+        case .cantLeaveAlert:
+            self.present(cantLeaveAlertController(), animated: true)
         case .none:
             break
 
         }
+    }
+
+    private func cantLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "정산하러갈게요.", style: .cancel)
+        alert.addAction(cancel)
+        return alert
+    }
+
+    private func optionAlertController() -> UIAlertController {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
+            self.dismiss(animated: true) { [weak self] in
+                self?.reactor?.action.onNext(.routeToNameEdit)
+            }
+        }
+        let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
+            self.dismiss(animated: true) { [weak self] in
+                self?.reactor?.action.onNext(.didTapLeaveButton)
+            }
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+
+        actionSheet.addAction(item1)
+        actionSheet.addAction(item2)
+        actionSheet.addAction(cancel)
+        return actionSheet
     }
 }
 

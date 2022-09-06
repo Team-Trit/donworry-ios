@@ -30,6 +30,14 @@ public final class NetworkService: NetworkServable {
                     return .just(try response.map(API.Response.self))
                 } catch NetworkError.httpStatus(let statusCode) {
                     return .error(NetworkError.httpStatus(statusCode))
+                } catch MoyaError.objectMapping(_, let response) {
+                    // response에 값이 없이 올 때 매핑 실패가 일어납니다.
+                    // 따로 성공 케이스로 처리해주어햡니다.
+                    if response.statusCode == 200 {
+                        return .just(DTO.Empty() as! API.Response)
+                    }
+                    print("☠️☠️ \(response) 데이터를 파싱하는 곳에서 오류가 납니다.")
+                    return .error(NetworkError.objectMapping)
                 }
             }
     }
