@@ -19,7 +19,18 @@ import RxSwift
 
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
-    let viewModel = ParticipatePaymentCardViewModel()
+//    let viewModel = ParticipatePaymentCardViewModel()
+    let viewModel: ParticipatePaymentCardViewModel
+    
+    init(viewModel: ParticipatePaymentCardViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private var cancelBag = Set<AnyCancellable>()
     
     fileprivate var numberOfselectedCardsLabel: UILabel = {
@@ -162,7 +173,7 @@ extension ParticipatePaymentCardViewController {
 
 extension ParticipatePaymentCardViewController {
     @objc fileprivate func dismissView() {
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
     
     @objc fileprivate func cancelSelection() {

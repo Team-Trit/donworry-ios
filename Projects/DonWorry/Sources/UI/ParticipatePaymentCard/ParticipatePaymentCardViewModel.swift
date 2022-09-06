@@ -8,14 +8,27 @@
 
 import Combine
 import Foundation
-
+import RxSwift
 import BaseArchitecture
 import Models
 
 final class ParticipatePaymentCardViewModel: BaseViewModel {
     
+//    let spaceID: Int
+    typealias PaymentCardModel = PaymentCardModels.FetchCardList.Response
+    var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
+    
+    init(spaceID: Int) {
+        super.init()
+        paymentUseCase.fetchPaymentCardList(spaceID: spaceID)
+            .subscribe(onNext: { [weak self] cards in
+                print(cards)
+            }).disposed(by: disposeBag)
+    }
+    
     var cancellable = Set<AnyCancellable>()
-    var paymentCards: [PaymentCard] = [.dummyPaymentCard2]
+//    var paymentCards: [PaymentCard] = [.dummyPaymentCard2]
+    var paymentCards: [PaymentCardModel] = []
     
     @Published var checkedIDs: Set<Int> = []
     
@@ -31,7 +44,7 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
         checkedIDs.count
     }
     
-    func paymentCardAt(_ index: Int) -> PaymentCard {
+    func paymentCardAt(_ index: Int) -> PaymentCardModel {
         paymentCards[index]
     }
     

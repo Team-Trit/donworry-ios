@@ -13,6 +13,7 @@ import Models
 
 class ParticipateCollectionViewCell: UICollectionViewCell {
     
+    typealias PaymentCardModel = PaymentCardModels.FetchCardList.Response
     static let cellID = "ParticipateCollectionViewCellID"
     fileprivate lazy var boundsWidth = contentView.bounds.width
     weak var delegate: CellCheckPress?
@@ -23,7 +24,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var paymentCard: PaymentCard? {
+    var paymentCard: PaymentCardModel? {
         didSet {
             guard let paymentCard = paymentCard else {
                 return
@@ -43,20 +44,23 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             let totalString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
             
             totalPriceLabel.text = "총 \(totalString)원"
-            if let url = URL(string: paymentCard.payer.image) {
+            if let url = URL(string: paymentCard.taker.imgURL ?? "") {
+                
                 userImageView.load(url: url)
                 
             }
-            userNickNameLabel.text = paymentCard.payer.nickName
+            userNickNameLabel.text = paymentCard.taker.nickname
             
-            let dateformatter = DateFormatter()
-            dateformatter.dateFormat = "MM/dd"
-            dateformatter.locale = Locale(identifier: "ko_KR")
+//            let dateformatter = DateFormatter()
+//            dateformatter.dateFormat = "MM/dd"
+//            dateformatter.locale = Locale(identifier: "ko_KR")
+//            dateLabel.text = dateformatter.string(from: paymentCard.paymentDate)
+            //TODO: 형식
+            dateLabel.text = paymentCard.paymentDate
             
-            dateLabel.text = dateformatter.string(from: paymentCard.date)
-            cardLeftView.backgroundColor = UIColor(hex: paymentCard.backgroundColor + "FF")?.withAlphaComponent(0.72)
-            cardRightView.backgroundColor = UIColor(hex: paymentCard.backgroundColor + "FF")
-            dateLabel.textColor = UIColor(hex: paymentCard.backgroundColor + "FF")
+            cardLeftView.backgroundColor = UIColor(hex: paymentCard.bgColor + "FF")?.withAlphaComponent(0.72)
+            cardRightView.backgroundColor = UIColor(hex: paymentCard.bgColor + "FF")
+            dateLabel.textColor = UIColor(hex: paymentCard.bgColor + "FF")
             dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         }
     }
