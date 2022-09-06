@@ -161,7 +161,9 @@ extension SpaceNameViewController {
             self.navigationController?.popViewController(animated: true)
         case .cardList(let space):
             let paymentCardListViewController = PaymentCardListViewController()
-            paymentCardListViewController.reactor = PaymentCardListReactor(space: space)
+            paymentCardListViewController.reactor = PaymentCardListReactor(
+                space: .init(id: space.id, adminID: space.adminID, title: space.title, status: "", shareID: space.shareID)
+            )
             self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         }
     }

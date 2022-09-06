@@ -16,7 +16,7 @@ final class NumberPadCollectionViewCell: UICollectionViewCell {
     lazy var numberLabel: UILabel = {
         let v = UILabel()
         v.textColor = .designSystem(.mainBlue)
-        v.font = .designSystem(weight: .bold, size: ._20)
+        v.font = .designSystem(weight: .regular, size: ._30)
         v.textAlignment = .center
         return v
     }()
@@ -38,7 +38,7 @@ extension NumberPadCollectionViewCell {
         
         numberLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(45)
+            make.width.height.equalTo(72)
         }
     }
 }

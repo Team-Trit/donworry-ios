@@ -26,7 +26,7 @@ public extension DWButton {
         let button = DWButton(type: .system)
         switch type {
         case .xlarge58:
-            button.roundCorners(25)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
@@ -35,7 +35,7 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .xlarge50:
-            button.roundCorners(25)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
@@ -44,11 +44,11 @@ public extension DWButton {
                 make.height.equalTo(50)
             }
         case .largeBlue:
-            button.roundCorners(29)
+            button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
-            button.addGradient(
+            button.addGradientInDesignSystem(
                 startColor: .designSystem(.blueTopGradient)!,
                 endColor: .designSystem(.blueBottomGradient)!
             )
@@ -57,11 +57,11 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .mediumBlue:
-            button.roundCorners(29)
+            button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
-            button.addGradient(
+            button.addGradientInDesignSystem(
                 startColor: .designSystem(.blueTopGradient)!,
                 endColor: .designSystem(.blueBottomGradient)!
             )
@@ -70,11 +70,11 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .smallBlue:
-            button.roundCorners(29)
+            button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
-            button.addGradient(
+            button.addGradientInDesignSystem(
                 startColor: .designSystem(.blueTopGradient)!,
                 endColor: .designSystem(.blueBottomGradient)!
             )
@@ -83,7 +83,7 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .halfMainBlue:
-            button.roundCorners(25)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
@@ -94,7 +94,7 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .halfLightBlue:
-            button.roundCorners(25)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
@@ -105,7 +105,7 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .xsmallGray:
-            button.roundCorners(29)
+            button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
@@ -128,8 +128,8 @@ public final class DWButton: UIButton {
     }
 }
 
-extension UIButton {
-    fileprivate func addGradient(
+extension DWButton {
+    public func addGradientInDesignSystem(
         startColor: UIColor,
         endColor: UIColor
     ) {
@@ -143,7 +143,7 @@ extension UIButton {
         )
         self.layer.insertSublayer(gradient, at: 0)
     }
-    fileprivate func roundCorners(
+    public func roundCornersInDesignSystem(
       _ radius: CGFloat = 16
     ) {
       self.layer.cornerCurve = .continuous

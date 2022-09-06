@@ -9,7 +9,7 @@
 import UIKit
 import DesignSystem
 
-class AlertTableViewCell: BaseTableViewCell {
+class AlertTableViewCell: UITableViewCell {
     
     static let identifier: String = "AlertTableViewCell"
     
@@ -65,13 +65,14 @@ class AlertTableViewCell: BaseTableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        render()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func render() {
+    func render() {
         contentView.addSubview(smallRectangele)
         smallRectangele.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         smallRectangele.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true

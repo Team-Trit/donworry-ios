@@ -25,8 +25,8 @@ final class NumberPadCollectionView: UICollectionView {
         self.init(frame: .zero, collectionViewLayout: flowLayout)
         self.register(NumberPadCollectionViewCell.self, forCellWithReuseIdentifier: NumberPadCollectionViewCell.identifier)
         self.backgroundColor = .designSystem(.grayF9F9F9)
-        self.layer.borderWidth = 2
-        self.layer.borderColor = CGColor(red: 0.8568, green: 0.8568, blue: 0.8568, alpha: 1)
-        self.layer.cornerRadius = 38
+//        self.layer.borderWidth = 2
+//        self.layer.borderColor = CGColor(red: 0.8568, green: 0.8568, blue: 0.8568, alpha: 1)
+//        self.layer.cornerRadius = 38
     }
 }

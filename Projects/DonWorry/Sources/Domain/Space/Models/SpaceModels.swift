@@ -45,12 +45,12 @@ enum SpaceModels {
         struct SpaceUser {
             let id: Int
             let nickname: String
-            let imgURL: String
+            let imgURL: String?
 
             init(
                 id: Int,
                 nickname: String,
-                imgURL: String
+                imgURL: String?
             ) {
                 self.id = id
                 self.nickname = nickname
@@ -100,4 +100,21 @@ enum SpaceModels {
             let title, shareID: String
         }
     }
+
+    // MARK: 정산방 나가기 & 삭제하기
+
+    enum LeaveSpace {
+        struct Request {
+            let isStatusOpen: Bool
+            let isAdmin: Int
+            let spaceID: Int
+        }
+    }
+
+    // MARK: 성공했는데 응답이 아무것도 없을 때
+
+    enum Empty {
+        struct Response {}
+    }
+
 }

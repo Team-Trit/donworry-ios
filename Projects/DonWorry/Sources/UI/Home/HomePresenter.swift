@@ -28,8 +28,8 @@ final class HomePresenterImpl: HomePresenter {
         spaceList: [SpaceModels.FetchSpaceList.Space],
         selectedIndex: Int
     ) -> [SpaceCellViewModel] {
-        return spaceList.enumerated().map {
-            .init(title: $0.element.title, isSelected: $0.offset == selectedIndex)
+        return spaceList.map {
+            return .init(title: $0.title)
         }
     }
     func formatSection(
@@ -37,7 +37,8 @@ final class HomePresenterImpl: HomePresenter {
         isTaker: Bool
     ) -> [BillCardSection] {
         if payments.isEmpty { return [.BillCardSection([.StateBillCard])] }
-        var cards = formatBillCardList(from: payments, isTaker: isTaker)
+        var cards: [HomeBillCardItem] = [.StateBillCard]
+        cards.append(contentsOf: formatBillCardList(from: payments, isTaker: isTaker))
         cards.append(.LeaveBillCard)
         return [.BillCardSection(cards)]
     }

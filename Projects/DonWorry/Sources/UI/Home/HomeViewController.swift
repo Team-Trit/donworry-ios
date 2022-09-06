@@ -66,8 +66,9 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
-            .compactMap { [weak self] indexPath in self?.billCardCollectionView.cellForItem(at: indexPath) }
-            .map { cell in
+            .compactMap { [weak self] indexPath in
+                self?.billCardCollectionView.cellForItem(at: indexPath)
+            }.map { cell in
                 switch cell.tag {
                 case 0:
                     return .didTapStateBillCard
@@ -98,7 +99,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.selectedSpaceIndex }
+        reactor.state.map { $0.spaceViewModelList }
             .subscribe(onNext: { [weak self] _ in
                 self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
             }).disposed(by: disposeBag)
@@ -221,10 +222,12 @@ extension HomeViewController {
             joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
         case .recievedMoneyDetail:
-            let recieveMoneyDetailViewController = RecievedMoneyDetailViewViewController()
+            let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
+            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor()
             self.present(recieveMoneyDetailViewController, animated: true)
         case .sentMoneyDetail:
-            let sentMoneyDetailViewController = SentMoneyDetailViewViewController()
+            let sentMoneyDetailViewController = SentMoneyDetailViewController()
+            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor()
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()
@@ -246,7 +249,7 @@ extension HomeViewController {
         let selectedIndex = reactor.currentState.selectedSpaceIndex
         let selectedSpace = reactor.currentState.spaceList[selectedIndex]
         paymentCardListViewController.reactor = PaymentCardListReactor(
-            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, shareID: selectedSpace.shareID)
+            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, status: selectedSpace.status, shareID: selectedSpace.shareID)
         )
         return paymentCardListViewController
     }
@@ -289,6 +292,9 @@ extension HomeViewController: UICollectionViewDataSource {
             SpaceCollectionViewCell.self,
             for: indexPath
         )
+        let isSelected = indexPath.item == reactor.currentState.selectedSpaceIndex
+        if isSelected { cell.selectedAttributes() }
+        else { cell.initialAttributes() }
         cell.viewModel = reactor.currentState.spaceViewModelList[indexPath.item]
         return cell
     }
@@ -315,7 +321,7 @@ extension HomeViewController: UICollectionViewDataSource {
             GiveBillCardCollectionViewCell.self,
             for: indexPath
         )
-        cell.tag = 1
+        cell.tag = 2
         cell.viewModel = viewModel
         return cell
     }
@@ -327,7 +333,7 @@ extension HomeViewController: UICollectionViewDataSource {
             TakeBillCardCollectionViewCell.self,
             for: indexPath
         )
-        cell.tag = 2
+        cell.tag = 1
         cell.viewModel = viewModel
         return cell
     }

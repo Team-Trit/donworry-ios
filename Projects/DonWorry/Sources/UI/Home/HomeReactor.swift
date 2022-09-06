@@ -116,7 +116,16 @@ final class HomeReactor: Reactor {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
         case .updateSpaceList(let spaceList):
-            if let selectedSpace = spaceList.first {
+            if spaceList.isEmpty {
+                newState.spaceList = []
+                newState.spaceViewModelList = []
+                newState.sections = [.BillCardSection([])]
+                newState.selectedSpaceIndex = -1
+                break
+            }
+
+            if currentState.selectedSpaceIndex < spaceList.count {
+                let selectedSpace = spaceList[currentState.selectedSpaceIndex]
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
                     selectedIndex: currentState.selectedSpaceIndex
@@ -128,7 +137,25 @@ final class HomeReactor: Reactor {
                 newState.spaceList = spaceList
                 newState.reload = ()
             }
-        case .updateSpace(let index):
+
+            // 삭제하고 홈으로 돌아온 경우 선택된 정산방 index가 전체 정산방보다 큰 경우가 나옵니다.
+            // 마지막 index인 정산방을 눌렀을 경우입니다. 이럴경우 마지막 정산방으로 이동합니다.
+            if currentState.selectedSpaceIndex >= spaceList.count {
+                let initialIndex = spaceList.count - 1 // 마지막 정산방
+                newState.selectedSpaceIndex = initialIndex
+                let selectedSpace = spaceList[initialIndex]
+                newState.spaceViewModelList = homePresenter.formatSection(
+                    spaceList: spaceList,
+                    selectedIndex: initialIndex
+                )
+                newState.sections = homePresenter.formatSection(
+                    payments: selectedSpace.payments,
+                    isTaker: selectedSpace.isTaker
+                )
+                newState.spaceList = spaceList
+                newState.reload = ()
+            }
+        case .updateSpace(let index): // 셀이 눌렸을 때 리로드
             let selectedSpace = currentState.spaceList[index]
             newState.selectedSpaceIndex = index
             newState.spaceViewModelList = homePresenter.formatSection(
@@ -146,7 +173,6 @@ final class HomeReactor: Reactor {
         }
         return newState
     }
-
     private let getUserAccountUseCase: GetUserAccountUseCase
     private let spaceService: SpaceService
     private let homePresenter: HomePresenter

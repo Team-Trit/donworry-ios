@@ -14,6 +14,8 @@ protocol SpaceRepository {
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
+    func leaveSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response>
+    func deleteSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -25,7 +27,7 @@ final class SpaceRepositoryImpl: SpaceRepository {
 
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         network.request(GetSpaceListAPI())
-            .compactMap { response in response.compactMap { self.convert(from: $0) }}
+            .compactMap { response in response.compactMap { [weak self] in self?.convert(from: $0) }}
             .asObservable()
     }
 
@@ -40,8 +42,8 @@ final class SpaceRepositoryImpl: SpaceRepository {
         network.request(PostSpaceJoinAPI(request: .init(shareId: shareID)))
             .compactMap { response -> SpaceModels.JoinSpace.Response in
                     .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
-            }.catch { [weak self] error in
-                return .error(self?.errorParsing(error: error) ?? .undefined)
+            }.catch { [weak self] in
+                return .error(self?.judgeJoinSpaceError($0) ?? .undefined)
             }.asObservable().asSingle()
     }
 
@@ -50,17 +52,40 @@ final class SpaceRepositoryImpl: SpaceRepository {
             .compactMap { response -> SpaceModels.EditSpaceTitle.Response in
                     .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
             }.asObservable()
-
     }
-    private func errorParsing(error: Error) -> SpaceError {
+
+    func leaveSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response> {
+        network.request(DeleteSpaceLeaveAPI(spaceId: spaceID))
+            .compactMap { _ in .init() }
+            .catch { [weak self] in
+                .error(self?.judgeLeaveAndDeleteSpaceError($0) ?? .undefined)
+            }.asObservable()
+    }
+
+    func deleteSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response> {
+        network.request(DeleteSpaceAPI(spaceId: spaceID))
+            .compactMap { _ in .init() }
+            .catch { [weak self] in
+                .error(self?.judgeLeaveAndDeleteSpaceError($0) ?? .undefined)
+            }.asObservable()
+    }
+    
+    private func judgeLeaveAndDeleteSpaceError(_ error: Error) -> SpaceError {
         guard let error = error as? NetworkError else { return .undefined }
         switch error {
         case .httpStatus(let status):
-            if status == 400 {
-                return .alreadyJoined
-            }
-        default:
-            return .undefined
+            if status == 400 { return .deletedSpace }
+        default: break
+        }
+        return .undefined
+    }
+
+    private func judgeJoinSpaceError(_ error: Error) -> SpaceError {
+        guard let error = error as? NetworkError else { return .undefined }
+        switch error {
+        case .httpStatus(let status):
+            if status == 400 { return .alreadyJoined }
+        default: break
         }
         return .undefined
     }
