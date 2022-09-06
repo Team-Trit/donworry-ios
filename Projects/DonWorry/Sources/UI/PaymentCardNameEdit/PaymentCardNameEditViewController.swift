@@ -53,10 +53,25 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
 
     // MARK: - Binding
     func bind(reactor: PaymentCardNameEditViewReactor) {
-        nextButton.rx.tap.map { .didTapNextButton(self.type) }
+        self.render(reactor: reactor)
+        self.dispatch(to: reactor)
+    }
+    
+    func dispatch(to reactor: PaymentCardNameEditViewReactor) {        self.nextButton.rx.tap.map { .didTapNextButton(self.type) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
+        
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    func render(reactor: PaymentCardNameEditViewReactor) {
+        
+        reactor.state.map{ $0.paymentCard.name }
+            .bind(to: paymentNameLabel.textField.rx.text)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -64,6 +79,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
+    
 
 }
 
@@ -74,7 +90,9 @@ extension PaymentCardNameEditViewController {
             self.navigationController?.popViewController(animated: true)
         case .paymentCardIconEdit:
             let paymentCardIconEditViewController = PaymentCardIconEditViewController()
-            paymentCardIconEditViewController.reactor = PaymentCardIconEditViewReactor()
+            paymentCardIconEditViewController.reactor =
+                PaymentCardIconEditViewReactor(spaceId: 43,
+                                               paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 0, bgColor: "", paymentDate: ""))
             self.navigationController?.pushViewController(paymentCardIconEditViewController, animated: true)
         }
     }

@@ -18,6 +18,7 @@ enum PaymentCardIconEditStep {
 final class PaymentCardIconEditViewReactor: Reactor {
 
     enum Action {
+        case didTapBackButton
         case didTapNextButton
     }
 
@@ -26,17 +27,26 @@ final class PaymentCardIconEditViewReactor: Reactor {
     }
 
     struct State {
+        var spaceId: Int
+        var paymentCard: PaymentCardModels.PostCard.Request
+        
         @Pulse var step: PaymentCardIconEditStep?
     }
 
     let initialState: State
 
-    init() {
-        self.initialState = .init()
+    init(
+        spaceId: Int,
+        paymentCard: PaymentCardModels.PostCard.Request
+    ){
+        self.initialState = .init(spaceId: spaceId, paymentCard: paymentCard)
     }
+    
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .didTapBackButton:
+            return .just(.routeTo(.pop))
         case .didTapNextButton:
             return .just(.routeTo(.paymentCardAmountEdit))
         }

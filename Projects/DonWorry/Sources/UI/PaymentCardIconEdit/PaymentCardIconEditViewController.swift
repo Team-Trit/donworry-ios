@@ -14,21 +14,25 @@ import RxSwift
 import DesignSystem
 
 
+struct Category {
+    let iconName: String
+}
+
+let icons: [Category] = [Category(iconName: "ic_chicken"),
+                                 Category(iconName: "ic_coffee"),
+                                 Category(iconName: "ic_wine"),
+                                 Category(iconName: "ic_shoppingcart"),
+                                 Category(iconName: "ic_movie"),
+                                 Category(iconName: "ic_spoonknife"),
+                                 Category(iconName: "ic_cake"),
+                                 Category(iconName: "ic_car"),
+                                 Category(iconName: "ic_icecream")]
+
 final class PaymentCardIconEditViewController: BaseViewController, View {
 
-    private struct Catogory {
-        let iconName: String
-    }
+
     private var selectedIcon: String = ""
-    private let icons: [Catogory] = [Catogory(iconName: "ic_chicken"),
-                                     Catogory(iconName: "ic_coffee"),
-                                     Catogory(iconName: "ic_wine"),
-                                     Catogory(iconName: "ic_shoppingcart"),
-                                     Catogory(iconName: "ic_movie"),
-                                     Catogory(iconName: "ic_spoonknife"),
-                                     Catogory(iconName: "ic_cake"),
-                                     Catogory(iconName: "ic_car"),
-                                     Catogory(iconName: "ic_icecream")]
+
 
     // MARK: - Views
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
@@ -57,19 +61,36 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     }
 
     // MARK: - Binding
+    
+    // MARK: - Binding
     func bind(reactor: PaymentCardIconEditViewReactor) {
-        nextButton.rx.tap.map { .didTapNextButton }
+        self.render(reactor: reactor)
+        self.dispatch(to: reactor)
+    }
+    
+    func dispatch(to reactor: PaymentCardIconEditViewReactor) {                self.nextButton.rx.tap.map { .didTapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
+        
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    func render(reactor: PaymentCardIconEditViewReactor) {
+        
+        reactor.state.map{ $0.paymentCard.name }
+            .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
-            .subscribe(onNext:{ [weak self] step in
+            .subscribe(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
-
+    
 }
 
 extension PaymentCardIconEditViewController {
@@ -79,7 +100,10 @@ extension PaymentCardIconEditViewController {
             self.navigationController?.popViewController(animated: true)
         case .paymentCardAmountEdit:
             let amount = PaymentCardAmountEditViewController()
-            amount.reactor = PaymentCardAmountEditReactor()
+//            amount.reactor = PaymentCardAmountEditReactor()
+            amount.reactor =
+            PaymentCardAmountEditReactor(spaceId: 43, amount: "0", paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 0, bgColor: "", paymentDate: ""))
+            
             self.navigationController?.pushViewController(amount, animated: true)
         }
     }

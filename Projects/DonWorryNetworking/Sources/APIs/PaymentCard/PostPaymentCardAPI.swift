@@ -30,13 +30,13 @@ extension PostPaymentCardAPI {
     public struct Request: Encodable {
         public let spaceID, categoryID: Int
         public let bank, number, holder, name: String
-        public let totalAmount, position: Int
+        public let totalAmount: Int
         public let bgColor, paymentDate: String
 
         enum CodingKeys: String, CodingKey {
             case spaceID = "spaceId"
             case categoryID = "categoryId"
-            case bank, number, holder, name, totalAmount, position, bgColor, paymentDate
+            case bank, number, holder, name, totalAmount, bgColor, paymentDate
         }
         
         public init(
@@ -47,7 +47,6 @@ extension PostPaymentCardAPI {
             holder: String,
             name: String,
             totalAmount: Int,
-            position: Int,
             bgColor: String,
             paymentDate: String
         ) {
@@ -58,7 +57,6 @@ extension PostPaymentCardAPI {
             self.holder = holder
             self.name = name
             self.totalAmount = totalAmount
-            self.position = position
             self.bgColor = bgColor
             self.paymentDate = paymentDate
         }

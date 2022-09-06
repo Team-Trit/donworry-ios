@@ -70,7 +70,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.reactor = PaymentCardAmountEditReactor()
+//        self.reactor = PaymentCardAmountEditReactor()
         setUI()
         bindBackButton()
     }
@@ -96,13 +96,16 @@ extension PaymentCardAmountEditViewController {
     }
     
     private func render(_ reactor: Reactor) {
-        reactor.state.map { $0.iconName }
+
+        reactor.state.map { $0.paymentCard.categoryID }
             .distinctUntilChanged()
-            .map { UIImage(.init(rawValue: $0)!) }
+            .map {
+                UIImage(.init(rawValue: icons[$0].iconName) ?? .ic_cake)
+            }
             .bind(to: iconImageView.rx.image)
             .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.paymentTitle }
+
+        reactor.state.map { $0.paymentCard.name }
             .distinctUntilChanged()
             .bind(to: paymentTitleLabel.rx.text)
             .disposed(by: disposeBag)
@@ -136,6 +139,8 @@ extension PaymentCardAmountEditViewController {
             self.navigationController?.popViewController(animated: true)
         case .paymentCardDeco:
             let deco = PaymentCardDecoViewController()
+            deco.reactor =
+            PaymentCardDecoReactor(spaceId: 43, paymentCard: PaymentCardModels.PostCard.Request(spaceID: 42, categoryID: 5, bank: "신한은행", number: "", holder: "", name: "맛찬들", totalAmount: 99999, bgColor: "", paymentDate: ""))
             self.navigationController?.pushViewController(deco, animated: true)
         }
     }
