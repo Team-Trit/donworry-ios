@@ -35,6 +35,7 @@ final class AccountEditViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        setNotification()
     }
     
     func bind(reactor: Reactor) {
@@ -111,6 +112,43 @@ extension AccountEditViewController {
             let reactor = SelectBankViewReactor()
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
+        }
+    }
+}
+
+// MARK: - Keyboard Helper
+extension AccountEditViewController {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.accountEditField.accountTextField.resignFirstResponder()
+        self.accountEditField.holderTextField.resignFirstResponder()
+    }
+    
+    private func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.doneButton.snp.updateConstraints { make in
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight - 15)
+                }
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 1) {
+            self.doneButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            }
+            self.view.layoutIfNeeded()
         }
     }
 }
