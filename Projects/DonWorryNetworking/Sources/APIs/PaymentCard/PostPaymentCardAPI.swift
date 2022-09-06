@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+
 import Foundation
 import Models
 
@@ -18,7 +19,9 @@ public struct PostPaymentCardAPI: ServiceAPI {
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    
+    public var headers: [String : String]? {
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
     public init(request: Request) {
         self.request = request
     }
@@ -33,7 +36,7 @@ extension PostPaymentCardAPI {
         public let totalAmount: Int
         public let bgColor, paymentDate: String
 
-        enum CodingKeys: String, CodingKey {
+        public enum CodingKeys: String, CodingKey {
             case spaceID = "spaceId"
             case categoryID = "categoryId"
             case bank, number, holder, name, totalAmount, bgColor, paymentDate
