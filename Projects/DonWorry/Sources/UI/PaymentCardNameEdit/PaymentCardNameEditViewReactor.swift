@@ -21,6 +21,8 @@ enum PaymentCardNameEditViewType {
 }
 
 final class PaymentCardNameEditViewReactor: Reactor {
+    
+    typealias Space = PaymentCardModels.FetchCardList.Response.Space
 
     enum Action {
         case didTapBackButton
@@ -34,7 +36,7 @@ final class PaymentCardNameEditViewReactor: Reactor {
     }
 
     struct State {
-        var spaceId: Int
+        var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
         
         @Pulse var step: PaymentCardNameEditStep?
@@ -43,10 +45,10 @@ final class PaymentCardNameEditViewReactor: Reactor {
     let initialState: State
 
     init(
-        spaceId: Int,
+        space: Space,
         paymentCard: PaymentCardModels.PostCard.Request
     ){
-        self.initialState = .init(spaceId: spaceId, paymentCard: paymentCard)
+        self.initialState = .init(space: space, paymentCard: paymentCard)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {

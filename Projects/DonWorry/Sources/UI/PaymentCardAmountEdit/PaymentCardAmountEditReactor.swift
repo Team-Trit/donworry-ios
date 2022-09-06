@@ -15,6 +15,8 @@ enum PaymentCardAmountEditStep {
 }
 
 final class PaymentCardAmountEditReactor: Reactor {
+    typealias Space = PaymentCardModels.FetchCardList.Response.Space
+    
     // TODO: RxFlow, Service 추가
     enum Action {
         case numberPadPressed(pressedItem: String)
@@ -30,7 +32,7 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     struct State {
         
-        var spaceId: Int
+        var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
         var amount: String
 
@@ -40,11 +42,11 @@ final class PaymentCardAmountEditReactor: Reactor {
     let initialState: State
     
     init(
-        spaceId: Int,
+        space: Space,
         amount: String,
         paymentCard: PaymentCardModels.PostCard.Request
     ){
-        self.initialState = State(spaceId: spaceId, paymentCard: paymentCard, amount: "0")
+        self.initialState = State(space: space, paymentCard: paymentCard, amount: "0")
     }
     
     

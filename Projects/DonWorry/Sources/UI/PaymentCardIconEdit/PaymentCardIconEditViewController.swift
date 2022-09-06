@@ -119,7 +119,7 @@ extension PaymentCardIconEditViewController {
         case .paymentCardAmountEdit:
             let amount = PaymentCardAmountEditViewController()
             amount.reactor =
-            PaymentCardAmountEditReactor(spaceId: reactor.currentState.spaceId,
+            PaymentCardAmountEditReactor(space: reactor.currentState.space,
                                          amount: "",
                                          paymentCard: reactor.currentState.paymentCard)
             self.navigationController?.pushViewController(amount, animated: true)
