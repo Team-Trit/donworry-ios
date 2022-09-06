@@ -8,16 +8,28 @@
 
 import Combine
 import Foundation
-
+import RxSwift
 import BaseArchitecture
 import Models
+import DonWorryNetworking
 
 final class ParticipatePaymentCardViewModel: BaseViewModel {
     
+    typealias Space = PaymentCardModels.FetchCardList.Response
+    var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
+    
+    init(spaceID: Int) {
+        super.init()
+        paymentUseCase.fetchPaymentCardList(spaceID: spaceID)
+            .subscribe(onNext: { [weak self] cards in
+                self?.paymentCards = cards.cards
+            }).disposed(by: disposeBag)
+    }
+    
     var cancellable = Set<AnyCancellable>()
-    var paymentCards: [PaymentCard] = [.dummyPaymentCard2]
     
     @Published var checkedIDs: Set<Int> = []
+    @Published var paymentCards: [Space.PaymentCard] = []
     
     var numOfPaymentCards: Int {
         paymentCards.count
@@ -31,7 +43,7 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
         checkedIDs.count
     }
     
-    func paymentCardAt(_ index: Int) -> PaymentCard {
+    func paymentCardAt(_ index: Int) -> Space.PaymentCard {
         paymentCards[index]
     }
     
@@ -53,6 +65,13 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
     
     func checkAll() {
         checkedIDs = idsOfPaymentCards
+    }
+    
+    func checkAttendance() {
+        paymentUseCase.joinPaymentCardList(ids: Array(checkedIDs))
+            .subscribe(onNext: { str in
+                print(str)
+            }).disposed(by: disposeBag)
     }
     
 }

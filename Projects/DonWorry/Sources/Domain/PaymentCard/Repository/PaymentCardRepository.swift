@@ -14,6 +14,7 @@ enum PaymentCardError: Error {
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
+    
     private let network: NetworkServable
 
     init(_ network: NetworkServable = NetworkService()) {
@@ -31,7 +32,14 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                 )
             }.asObservable()
     }
-
+    
+    func joinPaymentCardList(ids: [Int]) -> Observable<String> {
+        network.request(PostJoinPaymentCardAPI(request: .init(cardIds: ids)))
+            .compactMap { str in
+                    return str
+            }.asObservable()
+    }
+    
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
