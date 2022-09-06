@@ -141,8 +141,8 @@ extension PaymentCardAmountEditViewController {
             let deco = PaymentCardDecoViewController()
             let card = reactor.currentState.paymentCard
             let amount  = convertAmount(reactor.currentState.amount)
-            deco.reactor = PaymentCardDecoReactor(spaceId: reactor.currentState.spaceId,
-                                                  paymentCard: PaymentCardModels.PostCard.Request(spaceID: reactor.currentState.spaceId, categoryID: card.categoryID, bank: card.bank, number: card.number, holder: card.holder, name: card.name, totalAmount: Int(amount) , bgColor: card.bgColor, paymentDate: card.paymentDate))
+            deco.reactor = PaymentCardDecoReactor(space: reactor.currentState.space,
+                                                  paymentCard: PaymentCardModels.PostCard.Request(spaceID: reactor.currentState.space.id, categoryID: card.categoryID, bank: card.bank, number: card.number, holder: card.holder, name: card.name, totalAmount: Int(amount) , bgColor: card.bgColor, paymentDate: card.paymentDate))
             
             self.navigationController?.pushViewController(deco, animated: true)
         case .paymentCardList:

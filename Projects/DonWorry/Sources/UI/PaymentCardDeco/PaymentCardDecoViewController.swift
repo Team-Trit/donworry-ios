@@ -33,7 +33,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     lazy var paymentCard = PaymentCardView()
     
-    private lazy var navigationBar = DWNavigationBar(title: "MC2첫회식", rightButtonImageName: "xmark")
+    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     
     private lazy var tableView = PaymentCardDecoTableView()
     
@@ -123,7 +123,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     func render(reactor: PaymentCardDecoReactor) {
         
-        reactor.state.map { "스페이스ID: \($0.spaceId)" }
+        reactor.state.map { "\($0.space.title)" }
             .bind(to: (navigationBar.titleLabel?.rx.text)!)
             .disposed(by: disposeBag)
         

@@ -29,6 +29,8 @@ struct CardViewModel {
 
 final class PaymentCardDecoReactor: Reactor {
 
+    typealias Space = PaymentCardModels.FetchCardList.Response.Space
+    
     enum Action {
         case didTapBackButton
         case didTapCloseButton
@@ -42,7 +44,7 @@ final class PaymentCardDecoReactor: Reactor {
     }
 
     struct State {
-        var spaceId: Int
+        var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
         @Pulse var step: PaymentCardDecoStep?
     }
@@ -50,11 +52,11 @@ final class PaymentCardDecoReactor: Reactor {
     let initialState: State
 
     init(
-        spaceId: Int,
+        space: Space,
         paymentCard: PaymentCardModels.PostCard.Request,
         paymentCardService: PaymentCardService = PaymentCardServiceImpl()
     ){
-        self.initialState = .init(spaceId: spaceId, paymentCard: paymentCard)
+        self.initialState = .init(space: space, paymentCard: paymentCard)
         self.paymentCardService = paymentCardService
     }
     
@@ -71,9 +73,9 @@ final class PaymentCardDecoReactor: Reactor {
         case .didTapCompleteButton(let cardVM):
             
             let card = currentState.paymentCard
-            return paymentCardService.createPaymentCard(spaceID: currentState.spaceId,
+            return paymentCardService.createPaymentCard(spaceID: currentState.space.id,
                                                         paymentCard: PaymentCardModels.PostCard.Request(
-                                                            spaceID: currentState.spaceId,
+                                                            spaceID: currentState.space.id,
                                                             categoryID: card.categoryID,
                                                             bank: cardVM.bank,
                                                             number: cardVM.number,
