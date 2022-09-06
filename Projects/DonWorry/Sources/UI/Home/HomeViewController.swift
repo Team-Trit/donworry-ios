@@ -79,7 +79,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 case 2:
                     return .didTapGiveBillCard
                 case 3:
-                    return .didTapLeaveBillCard(reactor.currentState.selectedSpaceIndex)
+                    return .didTapLeaveBillCard
                 default:
                     return .none
                 }
@@ -250,6 +250,10 @@ extension HomeViewController {
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
+        case .leaveAlertMessage:
+            self.present(confirmLeaveAlertController(), animated: true)
+        case .cantLeaveSpace:
+            self.present(cantLeaveAlertController(), animated: true)
         case .spaceList(let spaceID, let adminID):
             let paymentCardListViewController = PaymentCardListViewController()
             paymentCardListViewController.reactor = PaymentCardListReactor(
@@ -260,6 +264,25 @@ extension HomeViewController {
             break
         }
     }
+
+    private func confirmLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산방을 나가실건가요?", message: nil, preferredStyle: .alert)
+        let leave = UIAlertAction(title: "나갈래요", style: .default) { _ in
+            self.reactor?.action.onNext(.didTapLeaveBillCard)
+        }
+        let cancel = UIAlertAction(title: "잘못 눌렀어요", style: .cancel)
+
+        alert.addAction(leave)
+        alert.addAction(cancel)
+        return alert
+    }
+    private func cantLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "정산할게요...", style: .cancel)
+        alert.addAction(cancel)
+        return alert
+    }
+
 }
 
 // MARK: UICollectionViewDataSource

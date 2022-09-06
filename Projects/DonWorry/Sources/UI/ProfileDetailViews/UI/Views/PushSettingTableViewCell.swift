@@ -16,7 +16,6 @@ protocol toggleAlertDelegate {
 }
 
 class PushSettingTableViewCell: UITableViewCell {
-    
     static let identifier: String = "PushSettingTableViewCell"
     
     var toggleDelegate: toggleAlertDelegate?
