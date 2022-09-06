@@ -21,7 +21,9 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        setNotification()
     }
+    
 
     func bind(reactor: Reactor) {
         self.render(reactor)
@@ -77,7 +79,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 case 2:
                     return .didTapGiveBillCard
                 case 3:
-                    return .didTapLeaveBillCard(reactor.currentState.selectedSpaceIndex)
+                    return .didTapLeaveBillCard
                 default:
                     return .none
                 }
@@ -206,6 +208,18 @@ extension HomeViewController {
             endColor: .designSystem(.blueBottomGradient)!
         )
     }
+
+    private func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(routeToPaymentListScene), name: .init("com.TriT.DonWorry.joinSpace"), object: nil)
+    }
+
+    @objc
+    private func routeToPaymentListScene(_ notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String: Int] else { return }
+        guard let spaceID = userInfo["joinSpace.spaceID"],
+              let adminID = userInfo["joinSpace.adminID"] else { return }
+        move(to: .spaceList(spaceID, adminID))
+    }
 }
 
 // MARK: Routing
@@ -236,23 +250,39 @@ extension HomeViewController {
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
             self.navigationController?.pushViewController(profileViewController, animated: true)
-        case .spaceList:
-            self.navigationController?.pushViewController(paymentCardListViewController(), animated: true)
+        case .leaveAlertMessage:
+            self.present(confirmLeaveAlertController(), animated: true)
+        case .cantLeaveSpace:
+            self.present(cantLeaveAlertController(), animated: true)
+        case .spaceList(let spaceID, let adminID):
+            let paymentCardListViewController = PaymentCardListViewController()
+            paymentCardListViewController.reactor = PaymentCardListReactor(
+                spaceID: spaceID, adminID: adminID
+            )
+            self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         case .none:
             break
         }
     }
 
-    private func paymentCardListViewController() -> PaymentCardListViewController {
-        guard let reactor = reactor else { return .init() }
-        let paymentCardListViewController = PaymentCardListViewController()
-        let selectedIndex = reactor.currentState.selectedSpaceIndex
-        let selectedSpace = reactor.currentState.spaceList[selectedIndex]
-        paymentCardListViewController.reactor = PaymentCardListReactor(
-            space: .init(id: selectedSpace.id, adminID: selectedSpace.adminID, title: selectedSpace.title, status: selectedSpace.status, shareID: selectedSpace.shareID)
-        )
-        return paymentCardListViewController
+    private func confirmLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산방을 나가실건가요?", message: nil, preferredStyle: .alert)
+        let leave = UIAlertAction(title: "나갈래요", style: .default) { _ in
+            self.reactor?.action.onNext(.didTapLeaveBillCard)
+        }
+        let cancel = UIAlertAction(title: "잘못 눌렀어요", style: .cancel)
+
+        alert.addAction(leave)
+        alert.addAction(cancel)
+        return alert
     }
+    private func cantLeaveAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "정산할게요...", style: .cancel)
+        alert.addAction(cancel)
+        return alert
+    }
+
 }
 
 // MARK: UICollectionViewDataSource

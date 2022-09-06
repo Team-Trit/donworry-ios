@@ -19,8 +19,8 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
             guard let user = user else {
                 return
             }
-            if let url = URL(string: user.image) {
-                userImageView.load2(url: url)
+            if let urlString = URL(string: user.image) {
+                userImageView.kf.setImage(with: urlString)
             }
             userNicknameLabel.text = user.nickName
         }
@@ -64,7 +64,7 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(userImageView)
         contentView.addSubview(stackView)
         stackView.alignment = .center
-        stackView.anchor2(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        stackView.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
     }
 }
 

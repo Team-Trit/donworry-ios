@@ -20,6 +20,7 @@ enum SpaceModels {
             let adminID: Int
             let title, status, shareID: String
             let isTaker: Bool
+            let isAllPaymentCompleted: Bool
             let payments: [SpacePayment]
         }
         
@@ -41,7 +42,7 @@ enum SpaceModels {
                 self.user = user
             }
         }
-        
+
         struct SpaceUser {
             let id: Int
             let nickname: String
@@ -107,6 +108,12 @@ enum SpaceModels {
         struct Request {
             let isStatusOpen: Bool
             let isAdmin: Int
+            let spaceID: Int
+        }
+    }
+
+    enum LeaveSpaceInProgress {
+        struct Request {
             let spaceID: Int
         }
     }

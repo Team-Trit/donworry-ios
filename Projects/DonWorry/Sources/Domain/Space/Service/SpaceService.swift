@@ -15,6 +15,7 @@ protocol SpaceService {
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
     func leaveSpace(request: SpaceModels.LeaveSpace.Request) -> Observable<SpaceModels.Empty.Response>
+    func leaveSpaceInProgress(requeset: SpaceModels.LeaveSpaceInProgress.Request) -> Observable<SpaceModels.FetchSpaceList.Response>
 }
 
 final class SpaceServiceImpl: SpaceService {
@@ -51,6 +52,11 @@ final class SpaceServiceImpl: SpaceService {
         } else {
             return spaceRepository.leaveSpace(spaceID: request.spaceID)
         }
+    }
+
+    func leaveSpaceInProgress(requeset: SpaceModels.LeaveSpaceInProgress.Request) -> Observable<SpaceModels.FetchSpaceList.Response> {
+        spaceRepository.leaveSpace(spaceID: requeset.spaceID)
+            .flatMap { _ in self.spaceRepository.fetchSpaceList() }
     }
 
     // 방장이고 방의 상태가 OPEN 일 경우를 판단해준다. 

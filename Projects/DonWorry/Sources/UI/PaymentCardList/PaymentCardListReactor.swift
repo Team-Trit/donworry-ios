@@ -35,7 +35,6 @@ final class PaymentCardListReactor: Reactor {
     }
 
     enum Mutation {
-        case updateSpace(Space)
         case initializeState(PaymentCardListInformation)
         case routeTo(PaymentCardListStep)
     }
@@ -51,12 +50,12 @@ final class PaymentCardListReactor: Reactor {
     let initialState: State
     
     init(
-        space: Space,
+        spaceID: Int, adminID: Int,
         spaceService: SpaceService = SpaceServiceImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
         paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
     ) {
-        self.initialState = .init(space: space)
+        self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: "", shareID: ""))
         self.spaceService = spaceService
         self.paymentCardService = paymentCardService
         self.paymentCardListPresenter =  paymentCardListPresenter
@@ -66,10 +65,8 @@ final class PaymentCardListReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .setup:
-            // 통신이 느릴것을 대비하여 이전 화면에서 넘겨온 정보를 먼저 띄어주는 역할입니다. 빠르다면 제거하여도 됩니다.
-            let space = Observable.just(Mutation.updateSpace(currentState.space))
             let paymentCardListInformation = requestPaymentCardListInformation()
-            return Observable.concat([space, paymentCardListInformation])
+            return paymentCardListInformation
         case .didTapBackButton:
             return .just(.routeTo(.pop))
         case .didTapPaymentCardDetail:
@@ -87,8 +84,6 @@ final class PaymentCardListReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-        case .updateSpace(let space):
-            newState.space = space
         case .initializeState(let information):
             newState.space = information.space
             newState.canLeaveSpace = information.isAllPaymentCompleted

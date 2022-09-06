@@ -38,10 +38,9 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             
             totalPriceLabel.text = "총 \(totalString)원"
             if let url = URL(string: paymentCard.taker.imgURL ?? "") {
-                
-                userImageView.load(url: url)
-                
+                userImageView.kf.setImage(with: url)
             }
+            iconImageView.image =  UIImage(assetName: paymentCard.category.name)
             userNickNameLabel.text = paymentCard.taker.nickname
             iconImageView.image =  UIImage(assetName: paymentCard.category.name)
             let bgColor = paymentCard.bgColor
@@ -50,7 +49,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
-            dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         }
     }
 
