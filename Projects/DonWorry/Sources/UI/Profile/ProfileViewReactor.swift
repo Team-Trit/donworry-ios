@@ -9,6 +9,11 @@
 import ReactorKit
 
 enum ProfileStep {
+    case nicknameEdit
+    case accountEdit
+    
+    // TODO: 공지사항, 이용약관, 1대1 문의 등등 추가
+    
     case pop
     case none
 }
@@ -34,15 +39,9 @@ final class ProfileViewReactor: Reactor {
     }
     
     enum Mutation {
-        case routeTo(ProfileStep)
+        case routeTo(step: ProfileStep)
         
         case showUpdateImageSheet
-        case navigateToUpdateNickNameVC
-        case navigateToUpdateAccountVC
-        
-        case presentNotice
-        case navigateToTermsVC
-        case navigateToPushSettingVC
         
         // TODO: 1대1 문의, 블로그 수정하기
         case inquiry
@@ -54,8 +53,6 @@ final class ProfileViewReactor: Reactor {
     }
     
     struct State {
-        
-        
         @Pulse var step: ProfileStep?
     }
     
@@ -68,26 +65,26 @@ final class ProfileViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-            return .just(.routeTo(.pop))
+            return .just(.routeTo(step: .pop))
             
         case .updateProfileImageButtonPressed:
             return .just(Mutation.showUpdateImageSheet)
             
         case .updateNickNameButtonPressed:
-            return .just(Mutation.navigateToUpdateNickNameVC)
+            return .just(Mutation.routeTo(step: .nicknameEdit))
             
         case .updateAccountButtonPressed:
-            return .just(Mutation.navigateToUpdateAccountVC)
+            return .just(Mutation.routeTo(step: .accountEdit))
             
         case .noticeButtonPressed:
-            return .just(Mutation.presentNotice)
+            return .empty()
             
         case .termButtonPressed:
-            return .just(Mutation.navigateToTermsVC)
+            return .empty()
             
         case .pushSettingButtonPressed:
-            return .just(Mutation.navigateToPushSettingVC)
-        
+            return .empty()
+            
         case .inquiryButtonPressed:
             return .just(Mutation.inquiry)
             
@@ -113,17 +110,6 @@ final class ProfileViewReactor: Reactor {
             state.step = step
             
         case .showUpdateImageSheet:
-            break
-        case .navigateToUpdateNickNameVC:
-            break
-        case .navigateToUpdateAccountVC:
-            break
-                
-        case .presentNotice:
-            break
-        case .navigateToTermsVC:
-            break
-        case .navigateToPushSettingVC:
             break
                 
         case .inquiry:

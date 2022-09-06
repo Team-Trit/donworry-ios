@@ -11,19 +11,26 @@ import UIKit
 import BaseArchitecture
 import DesignSystem
 import ReactorKit
+import RxCocoa
+import RxSwift
 
 final class NicknameEditViewController: BaseViewController, View {
     typealias Reactor = NicknameEditViewReactor
     private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
+        v.text = "닉네임을\n수정해볼까요?"
         v.numberOfLines = 0
         v.setLineSpacing(spacing: 10.0)
         v.font = .designSystem(weight: .heavy, size: ._25)
         return v
     }()
     private lazy var nicknameEditField = LimitTextField(frame: .zero, type: .nickName)
-    private lazy var doneButton = DWButton.create(.xlarge58)
+    private lazy var doneButton: DWButton = {
+        let v = DWButton.create(.xlarge50)
+        v.setTitle("완료", for: .normal)
+        return v
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +48,7 @@ final class NicknameEditViewController: BaseViewController, View {
 extension NicknameEditViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
-        view.addSubviews(navigationBar, titleLabel, doneButton)
+        view.addSubviews(navigationBar, titleLabel, nicknameEditField, doneButton)
         
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -71,10 +78,54 @@ extension NicknameEditViewController {
         navigationBar.leftItem.rx.tap
             .bind { self.navigationController?.popViewController(animated: true) }
             .disposed(by: disposeBag)
+        
+        nicknameEditField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.updateNickname(nickname: $0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        doneButton.rx.tap
+            .map { Reactor.Action.doneButtonPressed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
         
     private func render(_ reactor: Reactor) {
+        reactor.pulse(\.$isDoneButtonAvailable)
+            .asDriver(onErrorJustReturn: false)
+            .drive(doneButton.rx.isEnabled)
+            .disposed(by: disposeBag)
         
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: NicknameEditViewStep.none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                self?.route(to: $0)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension NicknameEditViewController {
+    private func route(to: NicknameEditViewStep) {
+        switch to {
+        case .none:
+            break
+            
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+}
+
+// MARK: - Keyboard Helper
+extension NicknameEditViewController {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.nicknameEditField.textField.resignFirstResponder()
     }
     
     private func setNotification() {

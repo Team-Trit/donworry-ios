@@ -26,7 +26,6 @@ final class ProfileViewController: BaseViewController, View {
     
     typealias Reactor = ProfileViewReactor
     private lazy var navigationBar = DWNavigationBar()
-//    private lazy var profileTableView = ProfileTableView()
     private lazy var profileTableView: ProfileTableView = {
         let v = ProfileTableView()
         v.dataSource = self
@@ -62,8 +61,8 @@ extension ProfileViewController {
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: ProfileStep.none)
             .compactMap { $0 }
-            .drive(onNext: { [weak self] step in
-                self?.move(to: step)
+            .drive(onNext: { [weak self] in
+                self?.move(to: $0)
             })
             .disposed(by: disposeBag)
     }
@@ -120,6 +119,18 @@ extension ProfileViewController {
             break
         case .pop:
             self.navigationController?.popViewController(animated: true)
+            
+        case .nicknameEdit:
+            let vc = NicknameEditViewController()
+            let reactor = NicknameEditViewReactor()
+            vc.reactor = reactor
+            self.navigationController?.pushViewController(vc, animated: true)
+            
+        case .accountEdit:
+            let vc = AccountEditViewController()
+            let reactor = AccountEditViewReactor()
+            vc.reactor = reactor
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
