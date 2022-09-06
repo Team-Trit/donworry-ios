@@ -113,6 +113,11 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.navigationBar.rightItem?.rx.tap.map { .didTapCloseButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
     func render(reactor: PaymentCardDecoReactor) {
@@ -154,6 +159,7 @@ extension PaymentCardDecoViewController {
             self.navigationController?.popViewController(animated: true)
         case .completePaymentCardDeco:
             NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
+            
         }
     }
 }
