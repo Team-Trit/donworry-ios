@@ -48,7 +48,11 @@ class PaymentCardDetailViewModel:BaseViewModel {
     }
     
     var isAdmin: Bool {
-        payer.id == paymentCard.users.filter{$0.isTaker}.first?.id
+        //TODO: 
+        return false
+        guard paymentCard.users.count > 0 else { return false }
+        print(payer.id == paymentCard.users.filter{$0.isTaker}.first?.id)
+        return payer.id == paymentCard.users.filter{$0.isTaker}.first?.id
     }
     
     var numOfFilesWhenNoImages: Int {
@@ -67,6 +71,11 @@ class PaymentCardDetailViewModel:BaseViewModel {
    
     func toggleAttendance() {
         self.isAttended.toggle()
+        paymentUseCase.joinPaymentCardList(ids: [paymentCard.id])
+            .subscribe(onNext: { str in
+                print(str)
+            }).disposed(by: disposeBag)
+        
     }
     
 }

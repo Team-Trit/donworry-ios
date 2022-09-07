@@ -11,7 +11,7 @@ import Models
 
 public struct PostJoinPaymentCardAPI: ServiceAPI {
     
-    public typealias Response = String
+    public typealias Response = DTO.Empty
     public var request: Request
     public var path: String = "/cards/join"
     public var method: Method { .post }
