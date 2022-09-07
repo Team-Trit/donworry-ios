@@ -20,5 +20,8 @@ public struct DeletePaymentCardAPI: ServiceAPI {
     public init(cardId: Int) {
         self.cardId = cardId
     }
+    public var headers: [String : String]? {
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
     
 }

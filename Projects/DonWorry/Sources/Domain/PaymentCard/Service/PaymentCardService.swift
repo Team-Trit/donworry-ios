@@ -14,12 +14,14 @@ protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
+    func deletePaymentCardList(cardId: Int) -> Observable<String>
 }
 
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
+    func DeletePaymentCardList(cardId: Int) -> Observable<String>
 }
 
 final class PaymentCardServiceImpl: PaymentCardService {
@@ -38,5 +40,8 @@ final class PaymentCardServiceImpl: PaymentCardService {
     }
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
         paymentCardRepository.fetchPaymentCard(cardId: cardId)
+    }
+    func DeletePaymentCardList(cardId: Int) -> Observable<String> {
+        paymentCardRepository.deletePaymentCardList(cardId: cardId)
     }
 }

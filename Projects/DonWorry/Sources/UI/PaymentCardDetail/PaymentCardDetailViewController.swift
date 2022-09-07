@@ -159,8 +159,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
             
             let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
-                //TODO: 삭제구현
-                print("삭제")
+                self.viewModel.deletePaymentCard()
             })
             let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
             

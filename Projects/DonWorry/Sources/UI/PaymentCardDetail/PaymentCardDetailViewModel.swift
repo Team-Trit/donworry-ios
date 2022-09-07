@@ -48,8 +48,8 @@ class PaymentCardDetailViewModel:BaseViewModel {
     }
     
     var isAdmin: Bool {
-        //TODO: 
-        return false
+        //TODO:
+        return true
         guard paymentCard.users.count > 0 else { return false }
         print(payer.id == paymentCard.users.filter{$0.isTaker}.first?.id)
         return payer.id == paymentCard.users.filter{$0.isTaker}.first?.id
@@ -76,6 +76,13 @@ class PaymentCardDetailViewModel:BaseViewModel {
                 print(str)
             }).disposed(by: disposeBag)
         
+    }
+    
+    func deletePaymentCard() {
+        paymentUseCase.DeletePaymentCardList(cardId: paymentCard.id)
+            .subscribe(onNext: { str in
+                print(str)
+            }).disposed(by: disposeBag)
     }
     
 }

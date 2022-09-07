@@ -49,6 +49,13 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
+    func deletePaymentCardList(cardId: Int) -> Observable<String> {
+        network.request(DeletePaymentCardAPI(cardId: cardId))
+            .compactMap { _ in
+                    return "suc"
+            }.asObservable()
+    }
+    
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
