@@ -62,7 +62,7 @@ final class LoginViewReactor: Reactor, Stepper {
         case .kakaoLoginButtonPressed:
             userService.loginWithKakao()
                 .subscribe(onNext: { [unowned self] oauthToken in
-                    self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: oauthToken.accessToken))
+                    self.steps.accept(DonworryStep.userInfoIsRequired(provider: .APPLE, accessToken: oauthToken.accessToken))
                 }) { error in
                     print(error)
                 }

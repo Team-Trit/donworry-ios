@@ -12,10 +12,12 @@ import BaseArchitecture
 import DesignSystem
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 import SnapKit
 
-final class ConfirmTermViewController: BaseViewController, View {
+final class ConfirmTermViewController: BaseViewController, View, Stepper {
+    let steps = PublishRelay<Step>()
     private lazy var confirmTableView: ConfirmTermTableView = {
         let v = ConfirmTermTableView()
         v.dataSource = self
@@ -118,7 +120,26 @@ extension ConfirmTermViewController {
     }
     
     private func render(_ reactor: ConfirmTermViewReactor) {
-        
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: DonworryStep.none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                self?.route(to: $0)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension ConfirmTermViewController {
+    private func route(to step: DonworryStep) {
+        switch step {
+        case .homeIsRequired:
+            self.steps.accept(DonworryStep.homeIsRequired)
+            
+        default:
+            break
+        }
     }
 }
 

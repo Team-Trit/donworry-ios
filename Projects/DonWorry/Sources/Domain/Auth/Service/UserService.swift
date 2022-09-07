@@ -26,6 +26,7 @@ protocol UserService {
                 accessToken: String) -> Observable<Models.User>
     func loginWithKakao() -> Observable<OAuthToken>
     
+    func saveLocalUser(user: Models.User) -> Bool
     func fetchLocalToken() -> AccessToken?
     func fetchLocalUser() -> Models.User?
     func deleteLocalUser()
@@ -85,6 +86,10 @@ final class UserServiceImpl: UserService {
     func unlinkKakao() {
         userRepository.kakaoLogout()
         userRepository.kakaoUnlink()
+    }
+    
+    func saveLocalUser(user: Models.User) -> Bool {
+        return userAccountRepository.saveLocalUserAccount(user)
     }
     
     func fetchLocalToken() -> AccessToken? {
