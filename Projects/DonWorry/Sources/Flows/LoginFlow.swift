@@ -43,10 +43,6 @@ final class LoginFlow: Flow {
             self.dismissBankSelectView()
             return .none
             
-//        case .bankSelectIsComplete(let seletedBank):
-//            self.dismissBankSelectView(with: seletedBank)
-//            return .none
-            
         case .agreeTermIsRequired(let newUser):
             return self.navigateToAgreeTermView(newUser: newUser)
             
@@ -84,28 +80,16 @@ extension LoginFlow {
     
     private func presentBankSelectView(_ delegate: EnterUserInfoViewDelegate) -> FlowContributors {
         let vc = SelectBankViewController()
-        let reactor = SelectBankViewReactor(userInfoDelegate: delegate, parentView: .enterUserInfo)
+        let reactor = SelectBankViewReactor(userInfoViewDelegate: delegate, parentView: .enterUserInfo)
         vc.reactor = reactor
         self.rootViewController.present(vc, animated: true)
         return .one(flowContributor: .contribute(withNext: vc))
-//        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
     
     private func dismissBankSelectView() {
         self.rootViewController.dismiss(animated: true)
     }
-    
-//    private func dismissBankSelectView(with selectedBank: String?) {
-//        // MARK: Business logic here is awkward...maybe?
-//        print("🚑🚑🚑🚑")
-//        print(rootViewController.viewControllers)
-//        print("🚑🚑🚑🚑")
-//        if let selectedBank = selectedBank, let vc = self.rootViewController.topViewController as? EnterUserInfoViewController {
-//            vc.accountStackView.accountInputField.chooseBankButton.setTitle(selectedBank, for: .normal)
-//        }
-//        self.rootViewController.dismiss(animated: true)
-//    }
     
     private func navigateToAgreeTermView(newUser: SignUpUserModel) ->FlowContributors {
         let vc = AgreeTermViewController()

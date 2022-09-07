@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Models
 import ReactorKit
 
 enum NicknameEditViewStep {
@@ -14,7 +15,10 @@ enum NicknameEditViewStep {
 }
 
 final class NicknameEditViewReactor: Reactor {
+    private let userService: UserService
+    var user: User
     enum Action {
+        case pressBackButton
         case updateNickname(nickname: String)
         case doneButtonPressed
     }
@@ -31,7 +35,9 @@ final class NicknameEditViewReactor: Reactor {
     
     let initialState: State
     
-    init() {
+    init(userService: UserService) {
+        self.userService = userService
+        self.user = userService.fetchLocalUser()!
         self.initialState = State(
             isDoneButtonAvailable: false
         )
@@ -39,11 +45,16 @@ final class NicknameEditViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .pressBackButton:
+            return .just(Mutation.routeTo(step: .pop))
+            
         case .updateNickname(let nickname):
+            user.nickName = nickname
             return .just(Mutation.nicknameChanged(count: nickname.count))
             
         case .doneButtonPressed:
             // TODO: User 정보 수정 API Call
+            _ = userService.saveLocalUser(user: user)
             return .just(Mutation.routeTo(step: .pop))
         }
     }

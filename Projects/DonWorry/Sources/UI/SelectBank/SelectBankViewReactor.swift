@@ -11,24 +11,24 @@ import UIKit
 import Models
 import ReactorKit
 import RxCocoa
-import RxFlow
 
 enum SelectBankStep {
     case none
+    
+    case bankSelectIsComplete
+    
     case dismissToPaymentCardDeco
     case dismissToProfileAccountEdit
 }
 
-protocol EnterUserInfoViewDelegate: AnyObject {
-    func saveBank(_ selectedBank: String)
-}
-
-final class SelectBankViewReactor: Reactor, Stepper {
-    weak var delegate: EnterUserInfoViewDelegate?
-    private let banks = Bank.allCases.map { $0.rawValue }
-    var selectedBank = ""
+final class SelectBankViewReactor: Reactor {
+    weak var userInfoViewDelegate: EnterUserInfoViewDelegate?
+    /* For Avery
+     weak var cardDecoViewDelegate: CardDecoViewDelegate?
+     */
+    weak var accountEditViewDelegate: AccountEditViewDelegate?
     let parentView: ParentView
-    let steps = PublishRelay<Step>()
+    private let banks = Bank.allCases.map { $0.rawValue }
     
     enum ParentView {
         case enterUserInfo
@@ -54,16 +54,33 @@ final class SelectBankViewReactor: Reactor, Stepper {
     
     let initialState: State
     
-    init(delegate: EnterUserInfoViewDelegate, parentView: ParentView) {
+    init(parentView: ParentView) {
         var initialSnapshot = NSDiffableDataSourceSnapshot<Section, String>()
         initialSnapshot.appendSections([.main])
         initialSnapshot.appendItems(banks)
+        
         self.initialState = State(
             snapshot: initialSnapshot,
             step: .none
         )
-        self.delegate = delegate
         self.parentView = parentView
+    }
+    
+    convenience init(userInfoViewDelegate: EnterUserInfoViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.userInfoViewDelegate = userInfoViewDelegate
+    }
+    
+    /* For Avery
+    convenience init(cardDecoViewDelegate: CardDecoViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.cardDecoViewDelegate: cardDecoViewDelegate
+    }
+     */
+    
+    convenience init(accountEditViewDelegate: AccountEditViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.accountEditViewDelegate = accountEditViewDelegate
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -71,8 +88,7 @@ final class SelectBankViewReactor: Reactor, Stepper {
         case .dismissButtonPressed:
             switch parentView {
             case .enterUserInfo:
-                self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: nil))
-                return .empty()
+                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
                 
             case .paymentCardDeco:
                 return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
@@ -88,23 +104,15 @@ final class SelectBankViewReactor: Reactor, Stepper {
         case let .selectBank(selectedBank):
             switch parentView {
             case .enterUserInfo:
-                self.steps.accept(DonworryStep.bankSelectIsComplete(selectedBank: selectedBank))
-                return .empty()
-                
-                /*
-                self.delegate?.saveBank(selectedBank.koreanName)
-                
-                self.steps.accept(DonworryStep.bankSelectIsComplete)
-                return .empty()
-                 */
-                
+                userInfoViewDelegate?.saveBank(selectedBank.koreanName)
+                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
                 
             case .paymentCardDeco:
-                self.selectedBank = selectedBank
+                // TODO: Delegate Method Call
                 return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
                 
             case .profileAccountEdit:
-                self.selectedBank = selectedBank
+                self.accountEditViewDelegate?.saveBank(selectedBank: selectedBank.koreanName)
                 return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
             }
         }

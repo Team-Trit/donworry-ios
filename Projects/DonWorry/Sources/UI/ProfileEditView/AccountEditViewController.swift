@@ -25,7 +25,12 @@ final class AccountEditViewController: BaseViewController, View {
         v.font = .designSystem(weight: .heavy, size: ._25)
         return v
     }()
-    lazy var accountEditField = AccountInputField(frame: .zero, type: .EnterUserInfo)
+    lazy var accountEditField: AccountInputField = {
+        let v = AccountInputField(frame: .zero, type: .EnterUserInfo)
+        v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.bankAccount.accountHolderName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.bankAccount.accountNumber)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        return v
+    }()
     private lazy var doneButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.setTitle("완료", for: .normal)
@@ -106,8 +111,20 @@ extension AccountEditViewController {
     }
     
     private func render(_ reactor: Reactor) {
+        reactor.state.map { $0.bank }
+            .asDriver(onErrorJustReturn: "은행선택")
+            .drive { [weak self] in
+                self?.accountEditField.chooseBankButton.setTitle($0, for: .normal)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isDoneButtonAvailable)
+            .asDriver(onErrorJustReturn: false)
+            .drive(self.doneButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: .none)
+            .asDriver(onErrorJustReturn: AccountEditViewStep.none)
             .compactMap { $0 }
             .drive { [weak self] in
                 self?.route(to: $0)
@@ -128,8 +145,7 @@ extension AccountEditViewController {
             
         case .presentSelectBankView:
             let vc = SelectBankViewController()
-            vc.delegate = self
-            let reactor = SelectBankViewReactor(parentView: .profileAccountEdit)
+            let reactor = SelectBankViewReactor(accountEditViewDelegate: self.reactor!, parentView: .profileAccountEdit)
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
         }
@@ -170,13 +186,5 @@ extension AccountEditViewController {
             }
             self.view.layoutIfNeeded()
         }
-    }
-}
-
-// MARK: - SelectBankViewDelegate
-extension AccountEditViewController: SelectBankViewDelegate {
-    func selectBank(_ selectedBank: String) {
-        accountEditField.chooseBankButton.setTitle(selectedBank, for: .normal)
-//        reactor?.bank = selectedBank
     }
 }

@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             rootViewController.reactor = HomeReactor()
             let navigationController = UINavigationController(rootViewController: rootViewController)
             navigationController.setNavigationBarHidden(true, animated: false)
-            window.rootViewController = rootViewController
+            window.rootViewController = navigationController
         } else {
             // MARK: Login Flow
             let appFlow = AppFlow(with: window)

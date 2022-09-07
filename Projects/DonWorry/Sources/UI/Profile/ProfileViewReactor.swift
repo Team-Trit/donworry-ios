@@ -6,21 +6,25 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Models
 import ReactorKit
 
 enum ProfileStep {
+    case none
+    case pop
+    case profileImageSheet
     case nicknameEdit
     case accountEdit
-    
-    // TODO: 공지사항, 이용약관, 1대1 문의 등등 추가
-    
-    case pop
-    case none
+    case deleteAccountSheet
 }
 
 final class ProfileViewReactor: Reactor {
+    private let userService: UserService
+    private var user: User
     enum Action {
-        case backButtonPressed
+        case viewWillAppear
+        
+        case pressBackButton
         
         case updateProfileImageButtonPressed
         case updateNickNameButtonPressed
@@ -39,36 +43,44 @@ final class ProfileViewReactor: Reactor {
     }
     
     enum Mutation {
+        case updateUser(User)
         case routeTo(step: ProfileStep)
-        
-        case showUpdateImageSheet
-        
-        // TODO: 1대1 문의, 블로그 수정하기
-        case inquiry
-        case navigateToQuestionVC
-        case blog
-        
-        case logout
-        case presentDeleteAccountAlert
     }
     
     struct State {
+        var nickname: String
+        var imageURL: String
+        var bank: String
+        var accountNumber: String
+        var accountHolder: String
+        @Pulse var reload: Void?
         @Pulse var step: ProfileStep?
     }
     
     let initialState: State
     
-    init() {
-        self.initialState = State()
+    init(userService: UserService = UserServiceImpl()) {
+        self.userService = userService
+        self.user = userService.fetchLocalUser()!
+        self.initialState = State(
+            nickname: user.nickName,
+            imageURL: user.image,
+            bank: user.bankAccount.bank,
+            accountNumber: user.bankAccount.accountNumber,
+            accountHolder: user.bankAccount.accountHolderName
+        )
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .backButtonPressed:
+        case .viewWillAppear:
+            return .just(Mutation.updateUser(userService.fetchLocalUser()!))
+            
+        case .pressBackButton:
             return .just(.routeTo(step: .pop))
             
         case .updateProfileImageButtonPressed:
-            return .just(Mutation.showUpdateImageSheet)
+            return .just(.routeTo(step: .profileImageSheet))
             
         case .updateNickNameButtonPressed:
             return .just(Mutation.routeTo(step: .nicknameEdit))
@@ -77,54 +89,54 @@ final class ProfileViewReactor: Reactor {
             return .just(Mutation.routeTo(step: .accountEdit))
             
         case .noticeButtonPressed:
+            // TODO: 공지사항
             return .empty()
             
         case .termButtonPressed:
+            // TODO: 이용약관
             return .empty()
             
         case .pushSettingButtonPressed:
+            // TODO: 알림설정
             return .empty()
             
         case .inquiryButtonPressed:
-            return .just(Mutation.inquiry)
+            // TODO: 1대1 문의
+            return .empty()
             
         case .questionsButtonPressed:
-            return .just(Mutation.navigateToQuestionVC)
+            // TODO: 자주 찾는 질문
+            return .empty()
             
         case .blogButtonPressed:
-            return .just(Mutation.blog)
-        
+            // TODO: 블로그
+            return .empty()
+            
         case .logoutButtonPressed:
-            return .just(Mutation.logout)
+            // TODO: 로그아웃
+            return .empty()
             
         case .accountDeleteButtonPressed:
-            return .just(Mutation.presentDeleteAccountAlert)
+            return .just(.routeTo(step: .deleteAccountSheet))
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
-        case .routeTo(let step):
-            state.step = step
+        case .updateUser(let user):
+            newState.imageURL = user.image
+            newState.nickname = user.nickName
+            newState.bank = user.bankAccount.bank
+            newState.accountHolder = user.bankAccount.accountHolderName
+            newState.accountNumber = user.bankAccount.accountNumber
+            newState.reload = ()
             
-        case .showUpdateImageSheet:
-            break
-                
-        case .inquiry:
-            break
-        case .navigateToQuestionVC:
-            break
-        case .blog:
-            break
-                
-        case .logout:
-            break
-        case .presentDeleteAccountAlert:
-            break
+        case .routeTo(let step):
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }

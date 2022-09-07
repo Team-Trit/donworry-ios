@@ -25,7 +25,11 @@ final class NicknameEditViewController: BaseViewController, View {
         v.font = .designSystem(weight: .heavy, size: ._25)
         return v
     }()
-    private lazy var nicknameEditField = LimitTextField(frame: .zero, type: .nickName)
+    private lazy var nicknameEditField: LimitTextField = {
+        let v = LimitTextField(frame: .zero, type: .nickName)
+        v.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.nickName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        return v
+    }()
     private lazy var doneButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.setTitle("완료", for: .normal)
@@ -76,7 +80,8 @@ extension NicknameEditViewController {
 extension NicknameEditViewController {
     private func dispatch(to reactor: Reactor) {
         navigationBar.leftItem.rx.tap
-            .bind { self.navigationController?.popViewController(animated: true) }
+            .map { Reactor.Action.pressBackButton }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         nicknameEditField.textField.rx.text

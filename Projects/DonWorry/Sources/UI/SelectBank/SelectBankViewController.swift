@@ -13,14 +13,12 @@ import DesignSystem
 import Models
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 import SnapKit
 
-protocol SelectBankViewDelegate: AnyObject {
-    func selectBank(_ selectedBank: String)
-}
-
-final class SelectBankViewController: BaseViewController, View {
+final class SelectBankViewController: BaseViewController, View, Stepper {
+    let steps = PublishRelay<Step>()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "은행선택"
@@ -36,8 +34,6 @@ final class SelectBankViewController: BaseViewController, View {
     }()
     private lazy var bankSearchTextField = BankSearchTextField()
     private lazy var bankCollectionView = SelectBankCollectionView()
-    private var selectedBankSubject = BehaviorRelay<String>(value: "")
-    weak var delegate: SelectBankViewDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,7 +114,6 @@ extension SelectBankViewController {
             .asDriver(onErrorJustReturn: .none)
             .compactMap { $0 }
             .drive { [weak self] in
-                print($0)
                 self?.route(to: $0)
             }
             .disposed(by: disposeBag)
@@ -129,15 +124,17 @@ extension SelectBankViewController {
 extension SelectBankViewController {
     private func route(to step: SelectBankStep) {
         switch step {
+            
+        case .bankSelectIsComplete:
+            self.steps.accept(DonworryStep.bankSelectIsComplete)
+            
         case .dismissToPaymentCardDeco:
-            self.delegate?.selectBank(self.reactor!.selectedBank)
             self.dismiss(animated: true)
-            
+
         case .dismissToProfileAccountEdit:
-            self.delegate?.selectBank(self.reactor!.selectedBank)
             self.dismiss(animated: true)
             
-        case .none:
+        default:
             break
         }
     }

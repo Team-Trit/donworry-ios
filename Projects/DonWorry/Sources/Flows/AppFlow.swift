@@ -52,7 +52,9 @@ extension AppFlow {
         let homeViewController = HomeViewController()
         let homeReactor = HomeReactor()
         homeViewController.reactor = homeReactor
-        self.rootWindow.rootViewController = homeViewController
+        let navigationController = UINavigationController(rootViewController: homeViewController)
+        navigationController.setNavigationBarHidden(true, animated: false)
+        self.rootWindow.rootViewController = navigationController
         return .none
     }
 }

@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Models
 import ReactorKit
 
 enum AccountEditViewStep {
@@ -14,33 +15,43 @@ enum AccountEditViewStep {
     case presentSelectBankView
 }
 
+protocol AccountEditViewDelegate: AnyObject {
+    func saveBank(selectedBank: String)
+}
+
 final class AccountEditViewReactor: Reactor {
-//    var bank: String
-//    var accountHolder: String
-//    var accountNumber: String
+    private let userService: UserService
+    var user: User
     
     enum Action {
         case pressBackButton
-        case pressDoneButton
-        
         case selectBankButtonPressed
+        case selectBank(selectedBank: String)
         case updateHolder(holder: String)
         case updateAccountNumber(number: String)
+        case pressDoneButton
     }
     
     enum Mutation {
+        case updateBank(selectedBank: String)
+        case updateValidation
         case routeTo(step: AccountEditViewStep)
     }
     
     struct State {
-        @Pulse var step: AccountEditViewStep
+        var bank: String
+        @Pulse var isDoneButtonAvailable: Bool
+        @Pulse var step: AccountEditViewStep?
     }
     
     let initialState: State
     
-    init() {
+    init(userService: UserService) {
+        self.userService = userService
+        self.user = userService.fetchLocalUser()!
         self.initialState = State(
-            step: .none
+            bank: user.bankAccount.bank,
+            isDoneButtonAvailable: false
         )
     }
     
@@ -49,18 +60,28 @@ final class AccountEditViewReactor: Reactor {
         case .pressBackButton:
             return .just(Mutation.routeTo(step: .pop))
             
-        case .pressDoneButton:
-            // TODO: User 수정 API Call
-            return .just(Mutation.routeTo(step: .pop))
-            
         case .selectBankButtonPressed:
             return .just(Mutation.routeTo(step: .presentSelectBankView))
             
+        case .selectBank(let selectedBank):
+            self.user.bankAccount.bank = selectedBank
+            return .concat([
+                .just(Mutation.updateBank(selectedBank: selectedBank)),
+                .just(Mutation.updateValidation)
+            ])
+            
         case .updateHolder(let holder):
-            return .empty()
+            self.user.bankAccount.accountHolderName = holder
+            return .just(Mutation.updateValidation)
             
         case .updateAccountNumber(let number):
-            return .empty()
+            self.user.bankAccount.accountNumber = number
+            return .just(Mutation.updateValidation)
+            
+        case .pressDoneButton:
+            // TODO: User 수정 API Call
+            _ = userService.saveLocalUser(user: user)
+            return .just(Mutation.routeTo(step: .pop))
         }
     }
     
@@ -68,10 +89,27 @@ final class AccountEditViewReactor: Reactor {
         var newState = state
         
         switch mutation {
+        case .updateBank(let selectedBank):
+            newState.bank = selectedBank
+            
+        case .updateValidation:
+            newState.isDoneButtonAvailable = checkNextButtonValidation(self.user)
+            
         case .routeTo(let step):
             newState.step = step
         }
         
         return newState
+    }
+}
+
+// MARK: - Helper
+extension AccountEditViewReactor: AccountEditViewDelegate {
+    private func checkNextButtonValidation(_ user: User) -> Bool {
+        return user.bankAccount.bank != "" && user.bankAccount.accountHolderName != "" && user.bankAccount.accountNumber != ""
+    }
+    
+    func saveBank(selectedBank: String) {
+        self.action.onNext(.selectBank(selectedBank: selectedBank))
     }
 }

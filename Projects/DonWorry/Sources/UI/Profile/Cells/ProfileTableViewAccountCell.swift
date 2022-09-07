@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignSystem
+import RxSwift
 import SnapKit
 
 final class ProfileTableViewAccountCell: UITableViewCell {
@@ -25,12 +26,18 @@ final class ProfileTableViewAccountCell: UITableViewCell {
         v.layer.cornerRadius = 8
         return v
     }()
-    private lazy var bankLabel: UILabel = {
+    lazy var bankLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .heavy, size: ._13)
         return v
     }()
-    private lazy var accountLabel: UILabel = {
+    lazy var accountLabel: UILabel = {
+        let v = UILabel()
+        v.font = .designSystem(weight: .regular, size: ._13)
+        v.textColor = .designSystem(.gray818181)
+        return v
+    }()
+    lazy var holderLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .regular, size: ._13)
         v.textColor = .designSystem(.gray818181)
@@ -43,13 +50,7 @@ final class ProfileTableViewAccountCell: UITableViewCell {
         return v
     }()
     private lazy var separatorLine = SeparatorLine()
-    var account: ProfileViewModelItem? {
-        didSet {
-            guard let account = account as? ProfileViewModelAccountItem else { return }
-            bankLabel.text = account.bank
-            accountLabel.text = "\(account.account) (\(account.holder))"
-        }
-    }
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,7 +66,7 @@ final class ProfileTableViewAccountCell: UITableViewCell {
 // MARK: - Layout
 extension ProfileTableViewAccountCell {
     private func setUI() {
-        accountInfoView.addSubviews(bankLabel, accountLabel, editButton)
+        accountInfoView.addSubviews(bankLabel, accountLabel, holderLabel, editButton)
         contentView.addSubviews(descriptionLabel, accountInfoView, separatorLine)
 
         descriptionLabel.snp.makeConstraints { make in
@@ -87,6 +88,11 @@ extension ProfileTableViewAccountCell {
         accountLabel.snp.makeConstraints { make in
             make.top.equalTo(bankLabel.snp.bottom).offset(10)
             make.leading.equalToSuperview().offset(20)
+        }
+        
+        holderLabel.snp.makeConstraints { make in
+            make.leading.equalTo(accountLabel.snp.trailing).offset(5)
+            make.centerY.equalTo(accountLabel.snp.centerY)
         }
         
         editButton.snp.makeConstraints { make in

@@ -18,10 +18,7 @@ enum DonworryStep: Step {
     case userInfoIsRequired(provider: LoginProvider, accessToken: String)
     case bankSelectIsRequired(delegate: EnterUserInfoViewDelegate)
     case bankSelectIsComplete
-//    case bankSelectIsComplete(selectedBank: String?)
-//    case agreeTermIsRequired(accessToken: String, nickname: String, bank: String, holder: String, number: String)
     case agreeTermIsRequired(newUser: SignUpUserModel)
-//    case confirmTermIsRequired(checkedTerms: [String], accessToken: String, nickname: String, bank: String, holder: String, number: String, isAgreeMarketing: Bool)
     case confirmTermIsRequired(checkedTerms: [String], newUser: SignUpUserModel)
     case homeIsRequired
 }
