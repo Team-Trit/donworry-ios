@@ -14,14 +14,19 @@ protocol SpaceService {
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
+    func leaveSpace(request: SpaceModels.LeaveSpace.Request) -> Observable<SpaceModels.Empty.Response>
+    func leaveSpaceInProgress(requeset: SpaceModels.LeaveSpaceInProgress.Request) -> Observable<SpaceModels.FetchSpaceList.Response>
 }
 
 final class SpaceServiceImpl: SpaceService {
+    private let userAccountRepository: UserAccountRepository
     private let spaceRepository: SpaceRepository
 
     init(
+        _ userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
         _ spaceRepository: SpaceRepository = SpaceRepositoryImpl())
     {
+        self.userAccountRepository = userAccountRepository
         self.spaceRepository = spaceRepository
     }
 
@@ -41,4 +46,22 @@ final class SpaceServiceImpl: SpaceService {
         spaceRepository.editSpaceName(id: id, name: name)
     }
 
+    func leaveSpace(request: SpaceModels.LeaveSpace.Request) -> Observable<SpaceModels.Empty.Response> {
+        if isAdminAndIsSpaceStatusOpen(request) {
+            return spaceRepository.deleteSpace(spaceID: request.spaceID)
+        } else {
+            return spaceRepository.leaveSpace(spaceID: request.spaceID)
+        }
+    }
+
+    func leaveSpaceInProgress(requeset: SpaceModels.LeaveSpaceInProgress.Request) -> Observable<SpaceModels.FetchSpaceList.Response> {
+        spaceRepository.leaveSpace(spaceID: requeset.spaceID)
+            .flatMap { _ in self.spaceRepository.fetchSpaceList() }
+    }
+
+    // 방장이고 방의 상태가 OPEN 일 경우를 판단해준다. 
+    private func isAdminAndIsSpaceStatusOpen(_ request: SpaceModels.LeaveSpace.Request) -> Bool {
+        guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else { return false }
+        return (request.isAdmin == userID) && (request.isStatusOpen)
+    }
 }

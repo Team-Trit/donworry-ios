@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 public struct GetPaymentCardListAPI: ServiceAPI {
-    public typealias Response = [DTO.PaymentCard]
+    public typealias Response = DTO.GetPaymentCardList
     public var spaceID: Int
     public init(spaceID: Int) {
         self.spaceID = spaceID

@@ -43,7 +43,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     private let separatorView: UIView = {
         let separatorView = UIView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
-        separatorView.backgroundColor = .designSystem(.white)
+        separatorView.backgroundColor = .designSystem(.grayF6F6F6)
         return separatorView
     }()
 
@@ -60,7 +60,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     private let subTitle: UILabel = {
         let subTitle = UILabel()
         subTitle.translatesAutoresizingMaskIntoConstraints = false
-        subTitle.text = "나의 정산 총액"
+        subTitle.text = "총 정산 내역"
         subTitle.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         subTitle.textColor = .black
         return subTitle
@@ -75,23 +75,25 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         return tableView
     }()
 
-    private let totalAmountLabel: UILabel = {
-        let totalAmountLabel = UILabel()
-        totalAmountLabel.translatesAutoresizingMaskIntoConstraints = false
-        totalAmountLabel.text = "나의 정산 총액"
-        totalAmountLabel.font = UIFont.systemFont(ofSize: 15, weight: .bold)
-        totalAmountLabel.textColor = .black
-        return totalAmountLabel
-    }()
-
-    private lazy var totalAmount: UILabel = {
-        let totalAmount = UILabel()
-        totalAmount.translatesAutoresizingMaskIntoConstraints = false
-        totalAmount.textColor = .designSystem(.mainBlue)
-        totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
-        totalAmount.attributedText = makeAtrributedString(money: 120000)
-        return totalAmount
-    }()
+//    private let totalAmountLabel: UILabel = {
+//        let totalAmountLabel = UILabel()
+//        totalAmountLabel.translatesAutoresizingMaskIntoConstraints = false
+//        totalAmountLabel.text = "총 정산 내역"
+//        totalAmountLabel.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+//        totalAmountLabel.textColor = .black
+//        totalAmountLabel.layer.opacity = 0.2
+//        return totalAmountLabel
+//    }()
+//
+//    private lazy var totalAmount: UILabel = {
+//        let totalAmount = UILabel()
+//        totalAmount.translatesAutoresizingMaskIntoConstraints = false
+//        totalAmount.textColor = .designSystem(.mainBlue)
+//        totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
+//        totalAmount.layer.opacity = 0.2
+//        totalAmount.attributedText = makeAtrributedString(money: 120000)
+//        return totalAmount
+//    }()
 
     lazy var buttonStackView: UIStackView = {
         let v = UIStackView()
@@ -132,15 +134,15 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         print("복사되었습니다")
     }
 
-    private func makeAtrributedString(money: Int) -> NSMutableAttributedString {
-        let numberformatter = NumberFormatter()
-        numberformatter.numberStyle = .decimal
-        let paymentString = numberformatter.string(for: money)! + "원"
-        let attributedQuote = NSMutableAttributedString(string: paymentString)
-        attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .bold), range: (paymentString as NSString).range(of: "원"))
-
-        return attributedQuote
-    }
+//    private func makeAtrributedString(money: Int) -> NSMutableAttributedString {
+//        let numberformatter = NumberFormatter()
+//        numberformatter.numberStyle = .decimal
+//        let paymentString = numberformatter.string(for: money)! + "원"
+//        let attributedQuote = NSMutableAttributedString(string: paymentString)
+//        attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: 18, weight: .bold), range: (paymentString as NSString).range(of: "원"))
+//
+//        return attributedQuote
+//    }
 }
 
 extension SentMoneyDetailViewController {
@@ -197,15 +199,15 @@ extension SentMoneyDetailViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 200).isActive = true
 
-        view.addSubview(totalAmountLabel)
-        totalAmountLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 10).isActive = true
-        totalAmountLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
-        totalAmountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-        view.addSubview(totalAmount)
-        totalAmount.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor).isActive = true
-        totalAmount.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
-        totalAmount.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        view.addSubview(totalAmountLabel)
+//        totalAmountLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 10).isActive = true
+//        totalAmountLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
+//        totalAmountLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//
+//        view.addSubview(totalAmount)
+//        totalAmount.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor).isActive = true
+//        totalAmount.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
+//        totalAmount.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
         view.addSubview(self.buttonStackView)
         buttonStackView.addArrangedSubview(self.leftButtomButton)

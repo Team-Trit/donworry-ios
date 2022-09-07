@@ -23,7 +23,8 @@ let project = Project.make(
             .external(name: "RxCocoa"),
             .external(name: "ReactorKit"),
             .external(name: "FlexLayout"),
-            .external(name: "RxFlow")
+            .external(name: "RxFlow"),
+            .external(name: "RxKakaoSDK")
         ]
     ),
     Target.unitTests(name: "DonWorry"),

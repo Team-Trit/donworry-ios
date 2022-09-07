@@ -14,13 +14,11 @@ final class LoginFlow: Flow {
     var root: Presentable {
         return self.rootViewController
     }
-    
     private lazy var rootViewController: UINavigationController = {
         let v = UINavigationController()
         v.isNavigationBarHidden = true
         return v
     }()
-    
     
     func navigate(to step: Step) -> FlowContributors {
         guard let step = step as? DonworryStep else { return .none }
@@ -32,21 +30,31 @@ final class LoginFlow: Flow {
         case .loginIsRequired:
             return self.navigateToLoginView()
             
-        case .userInfoIsRequired:
-            return self.navigateToEnterUserInfoView()
+        case .userInfoIsRequired(let accessToken):
+            return self.navigateToEnterUserInfoView(accessToken: accessToken)
             
-        case .bankSelectIsRequired:
-            return self.presentBankSelectView()
+        case .bankSelectIsRequired(let delegate):
+            return self.presentBankSelectView(delegate)
             
-        case let .bankSelectIsComplete(selectedBank):
-            self.dismissBankSelectView(with: selectedBank)
+        case .bankSelectIsComplete:
+            self.dismissBankSelectView()
             return .none
             
-        case .agreeTermIsRequired:
-            return self.navigateToAgreeTermView()
+        case let .agreeTermIsRequired(accessToken, nickname, bank, holder, number):
+            return self.navigateToAgreeTermView(accessToken: accessToken,
+                                                nickname: nickname,
+                                                bank: bank,
+                                                holder: holder,
+                                                number: number)
             
-        case .confirmTermIsRequired:
-            return self.presentConfirmTermView()
+        case let .confirmTermIsRequired(checkedTerms, accessToken, nickname, bank, holder, number, isAgreeMarketing):
+            return self.presentConfirmTermView(checkedTerms: checkedTerms,
+                                               accessToken: accessToken,
+                                               nickname: nickname,
+                                               bank: bank,
+                                               holder: holder,
+                                               number: number,
+                                               isAgreeMarketing: isAgreeMarketing)
             
         case .homeIsRequired:
             return .end(forwardToParentFlowWithStep: DonworryStep.homeIsRequired)
@@ -69,17 +77,17 @@ extension LoginFlow {
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func navigateToEnterUserInfoView() -> FlowContributors {
+    private func navigateToEnterUserInfoView(accessToken: String) -> FlowContributors {
         let vc = EnterUserInfoViewController()
-        let reactor = EnterUserInfoViewReactor()
+        let reactor = EnterUserInfoViewReactor(accessToken: accessToken)
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func presentBankSelectView() -> FlowContributors {
+    private func presentBankSelectView(_ delegate: EnterUserInfoViewDelegate) -> FlowContributors {
         let vc = SelectBankViewController()
-        let reactor = SelectBankViewReactor(parentView: .enterUserInfo)
+        let reactor = SelectBankViewReactor(delegate: delegate, parentView: .enterUserInfo)
         vc.reactor = reactor
         self.rootViewController.present(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
@@ -96,17 +104,17 @@ extension LoginFlow {
         self.rootViewController.dismiss(animated: true)
     }
     
-    private func navigateToAgreeTermView() -> FlowContributors {
+    private func navigateToAgreeTermView(accessToken: String, nickname: String, bank: String, holder: String, number: String) -> FlowContributors {
         let vc = AgreeTermViewController()
-        let reactor = AgreeTermViewReactor()
+        let reactor = AgreeTermViewReactor(accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number)
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
     }
     
-    private func presentConfirmTermView() -> FlowContributors {
+    private func presentConfirmTermView(checkedTerms: [String], accessToken: String, nickname: String, bank: String, holder: String, number: String, isAgreeMarketing: Bool) -> FlowContributors {
         let vc = ConfirmTermViewController()
-        let reactor = ConfirmTermViewReactor()
+        let reactor = ConfirmTermViewReactor(checkedTerms: checkedTerms, accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number, isAgreeMarketing: isAgreeMarketing)
         vc.reactor = reactor
         vc.modalPresentationStyle = .overCurrentContext
         self.rootViewController.present(vc, animated: false)

@@ -45,6 +45,26 @@ class SentMoneyDetailStatusView: UIView {
         return paymentAmount
     }()
     
+    private let totalAmountLabel: UILabel = {
+        let totalAmountLabel = UILabel()
+        totalAmountLabel.translatesAutoresizingMaskIntoConstraints = false
+        totalAmountLabel.text = "총 정산 내역"
+        totalAmountLabel.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        totalAmountLabel.textColor = .black
+        totalAmountLabel.layer.opacity = 0.2
+        return totalAmountLabel
+    }()
+
+    private lazy var totalAmount: UILabel = {
+        let totalAmount = UILabel()
+        totalAmount.translatesAutoresizingMaskIntoConstraints = false
+        totalAmount.textColor = .designSystem(.mainBlue)
+        totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
+        totalAmount.layer.opacity = 0.2
+        totalAmount.attributedText = makeAtrributedString(money: 120000)
+        return totalAmount
+    }()
+    
     private let progressView: UIProgressView = {
         let progressView = UIProgressView(progressViewStyle: .bar)
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -85,6 +105,14 @@ class SentMoneyDetailStatusView: UIView {
         addSubview(paymentAmount)
         paymentAmount.topAnchor.constraint(equalTo: leftSmallTitle.bottomAnchor, constant: 0).isActive = true
         paymentAmount.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        
+        addSubview(totalAmountLabel)
+        totalAmountLabel.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 20).isActive = true
+        totalAmountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
+        
+        addSubview(totalAmount)
+        totalAmount.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor).isActive = true
+        totalAmount.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
 
         
         addSubview(progressView)

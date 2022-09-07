@@ -68,5 +68,4 @@ public enum Bank: String, CaseIterable, Codable {
         case .bankSC: return "SC제일은행"
         }
     }
-
 }

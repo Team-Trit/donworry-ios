@@ -11,33 +11,41 @@ import Foundation
 enum PaymentCardModels {
 
     enum FetchCardList {
+
         struct Response {
-            let id, spaceJoinUserCount, cardJoinUserCount: Int
-            let name: String
-            let totalAmount: Int
-            let bgColor, paymentDate: String
-            let category: Category
-            let account: BankAccount
-            let taker: User
-            let givers: [User]
+            public let isAllPaymentCompleted: Bool
+            public let space: Space
+            public let cards: [PaymentCard]
 
-            struct User {
-                let id: Int
-                let nickname: String
-                let imgURL: String?
+            struct Space {
+                let id, adminID: Int
+                let title, status, shareID: String
             }
 
-            struct BankAccount {
-                let bank, number, holder: String
-            }
+            struct PaymentCard {
+                let id, spaceJoinUserCount, cardJoinUserCount: Int
+                let name: String
+                let totalAmount: Int
+                let bgColor, paymentDate: String
+                let category: Category
+                let account: BankAccount
+                let taker: User
+                let givers: [User]
 
-            struct Category: Codable {
-                let id: Int
-                let name, imgURL: String
+                struct User {
+                    let id: Int
+                    let nickname: String
+                    let imgURL: String?
+                }
+                struct BankAccount {
+                    let bank, number, holder: String
+                }
+                struct Category: Codable {
+                    let id: Int
+                    let name, imgURL: String
+                }
             }
-
         }
-        typealias ResponseList = [Response]
     }
 
 }

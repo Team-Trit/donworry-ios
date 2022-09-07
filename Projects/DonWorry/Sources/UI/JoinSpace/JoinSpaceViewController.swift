@@ -70,13 +70,13 @@ final class JoinSpaceViewController: BaseViewController, View {
         reactor.pulse(\.$error)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                self?.showToast(message: $0.localizedDescription)
+            .subscribe(onNext: { [weak self] _ in
+                self?.showToast(message: reactor.currentState.errorMessage)
             }).disposed(by: disposeBag)
     }
 
     private func showToast(message: String) {
-
+        print(message)
     }
 
     private func setNotifiaction() {
@@ -132,6 +132,7 @@ final class JoinSpaceViewController: BaseViewController, View {
 extension JoinSpaceViewController {
 
     private func setUI() {
+        self.dismissButton.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         self.dismissButton.setTitle("취소", for: .normal)
         self.dismissButton.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
         self.nextButton.title = "다음"
@@ -147,6 +148,10 @@ extension JoinSpaceViewController {
         imageView.widthAnchor.constraint(equalToConstant: 181).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 118).isActive = true
 
+        dismissButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(25)
+            make.top.equalToSuperview().offset(16)
+        }
         imageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(95)
             make.centerX.equalToSuperview()
@@ -175,11 +180,14 @@ extension JoinSpaceViewController {
             self.dismiss(animated: true)
         case .paymentCardList(let space):
             self.dismiss(animated: true) {
-                let paymentCardListViewController = PaymentCardListViewController()
-                paymentCardListViewController.reactor = PaymentCardListReactor(
-                    space: .init(id: space.id, adminID: space.adminID, title: space.title, shareID: space.shareID)
+                NotificationCenter.default.post(
+                    name: .init("com.TriT.DonWorry.joinSpace"),
+                    object: nil,
+                    userInfo: [
+                        "joinSpace.spaceID": space.id,
+                        "joinSpace.adminID": space.adminID
+                    ]
                 )
-                self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
             }
         }
     }

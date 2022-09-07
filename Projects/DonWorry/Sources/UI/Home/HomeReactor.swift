@@ -18,7 +18,9 @@ enum HomeStep {
     case sentMoneyDetail
     case alert
     case profile
-    case spaceList
+    case leaveAlertMessage // 확인메시지 알람창 -> 토스트
+    case cantLeaveSpace // 오류메시지 알림창 -> 토스트
+    case spaceList(Int, Int)
     case none
 }
 
@@ -40,7 +42,7 @@ final class HomeReactor: Reactor {
         case didTapGiveBillCard
         case didTapTakeBillCard
         case didTapStateBillCard
-        case didTapLeaveBillCard(Int)
+        case didTapLeaveBillCard
         case none
     }
 
@@ -48,7 +50,6 @@ final class HomeReactor: Reactor {
         case updateHomeHeader(User)
         case updateSpaceList(SpaceList)
         case updateSpace(Index)
-        case leaveSpace(Index)
         case routeTo(HomeStep)
     }
 
@@ -100,11 +101,10 @@ final class HomeReactor: Reactor {
         case .didTapTakeBillCard:
             return .just(.routeTo(.recievedMoneyDetail))
         case .didTapStateBillCard:
-            return .just(.routeTo(.spaceList))
-        case .didTapLeaveBillCard(let index):
-            return .concat([
-                .just(.leaveSpace(index))
-            ])
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
+        case .didTapLeaveBillCard:
+            return requestLeave()
         case .none:
             return .just(.routeTo(.none))
         }
@@ -115,12 +115,38 @@ final class HomeReactor: Reactor {
         switch mutation {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
-        case .updateSpaceList(let spaceList): // 초기 리로드
+        case .updateSpaceList(let spaceList):
+            if spaceList.isEmpty {
+                newState.spaceList = []
+                newState.spaceViewModelList = []
+                newState.sections = [.BillCardSection([])]
+                newState.selectedSpaceIndex = -1
+                break
+            }
+
             if currentState.selectedSpaceIndex < spaceList.count {
                 let selectedSpace = spaceList[currentState.selectedSpaceIndex]
                 newState.spaceViewModelList = homePresenter.formatSection(
                     spaceList: spaceList,
                     selectedIndex: currentState.selectedSpaceIndex
+                )
+                newState.sections = homePresenter.formatSection(
+                    payments: selectedSpace.payments,
+                    isTaker: selectedSpace.isTaker
+                )
+                newState.spaceList = spaceList
+                newState.reload = ()
+            }
+
+            // 삭제하고 홈으로 돌아온 경우 선택된 정산방 index가 전체 정산방보다 큰 경우가 나옵니다.
+            // 마지막 index인 정산방을 눌렀을 경우입니다. 이럴경우 마지막 정산방으로 이동합니다.
+            if currentState.selectedSpaceIndex >= spaceList.count {
+                let initialIndex = spaceList.count - 1 // 마지막 정산방
+                newState.selectedSpaceIndex = initialIndex
+                let selectedSpace = spaceList[initialIndex]
+                newState.spaceViewModelList = homePresenter.formatSection(
+                    spaceList: spaceList,
+                    selectedIndex: initialIndex
                 )
                 newState.sections = homePresenter.formatSection(
                     payments: selectedSpace.payments,
@@ -142,10 +168,17 @@ final class HomeReactor: Reactor {
             )
         case .routeTo(let step):
             newState.step = step
-        case .leaveSpace(_):
-            break
         }
         return newState
+    }
+
+    private func requestLeave() -> Observable<Mutation> {
+        let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+        if selectedSpace.isAllPaymentCompleted {
+            return spaceService.leaveSpaceInProgress(requeset: .init(spaceID: selectedSpace.id))
+                .map { .updateSpaceList($0) }
+        }
+        return .just(.routeTo(.cantLeaveSpace))
     }
 
     private let getUserAccountUseCase: GetUserAccountUseCase
