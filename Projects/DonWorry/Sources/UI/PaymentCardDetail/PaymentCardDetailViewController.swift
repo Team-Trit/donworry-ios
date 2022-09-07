@@ -228,7 +228,6 @@ extension PaymentCardDetailViewController {
                 self?.attributes()
             }
             .store(in: &cancelBag)
-        
     }
     
     private func layout() {

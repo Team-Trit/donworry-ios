@@ -23,12 +23,14 @@ class PaymentCardDetailViewModel:BaseViewModel {
     
     var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
     
-    init(cardID: Int) {
+    init(cardID: Int, cardName: String) {
+        self.paymentCardName = cardName
         super.init()
         paymentUseCase.fetchPaymentCard(cardId: cardID)
             .subscribe(onNext: { [weak self] response in
                 self?.paymentCard = response.card
             }).disposed(by: disposeBag)
+        
     }
     
     var isAttended: Bool = false
@@ -48,7 +50,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
     }
     
     var isAdmin: Bool {
-        //TODO:
+        //TODO: admin인지 확인
         return true
         guard paymentCard.users.count > 0 else { return false }
         print(payer.id == paymentCard.users.filter{$0.isTaker}.first?.id)
@@ -59,10 +61,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
         isAdmin ? 1 : 0
     }
   
-    var paymentCardName: String {
-        //TODO:
-        "아직 없음"
-    }
+    var paymentCardName: String
     
     func userCollectionViewAt(_ index: Int) -> User {
         let user = paymentCard.users[index]
@@ -75,7 +74,6 @@ class PaymentCardDetailViewModel:BaseViewModel {
             .subscribe(onNext: { str in
                 print(str)
             }).disposed(by: disposeBag)
-        
     }
     
     func deletePaymentCard() {
