@@ -236,16 +236,16 @@ extension HomeViewController {
     private func move(to step: HomeStep) {
         switch step {
         case .spaceName:
-            let spaceNameViewController = SentMoneyDetailViewController()
-//            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
+            let spaceNameViewController = SpaceNameViewController()
+            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .joinSpace:
             let joinSpaceViewController = JoinSpaceViewController()
             joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
-        case .recievedMoneyDetail:
+        case .recievedMoneyDetail(let spaceID):
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
-            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor()
+            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor(spaceID: spaceID)
             self.present(recieveMoneyDetailViewController, animated: true)
         case .sentMoneyDetail(let spaceID, let paymentID):
             let sentMoneyDetailViewController = SentMoneyDetailViewController()

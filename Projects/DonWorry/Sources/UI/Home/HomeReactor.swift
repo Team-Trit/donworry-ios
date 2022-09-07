@@ -14,7 +14,7 @@ import Models
 enum HomeStep {
     case spaceName
     case joinSpace
-    case recievedMoneyDetail
+    case recievedMoneyDetail(Int)
     case sentMoneyDetail(Int, Int)
     case alert
     case profile
@@ -100,7 +100,8 @@ final class HomeReactor: Reactor {
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
             return .just(.routeTo(.sentMoneyDetail(selectedSpace.id, paymentID)))
         case .didTapTakeBillCard:
-            return .just(.routeTo(.recievedMoneyDetail))
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.recievedMoneyDetail(selectedSpace.id)))
         case .didTapStateBillCard:
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
             return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
