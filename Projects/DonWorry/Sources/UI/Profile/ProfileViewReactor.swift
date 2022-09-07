@@ -114,6 +114,7 @@ final class ProfileViewReactor: Reactor {
             
         case .pressLogoutButton:
             userService.deleteLocalUser()
+            return .empty()
             
         case .pressAccountDeleteButton:
             return .just(.routeTo(step: .deleteAccountSheet))

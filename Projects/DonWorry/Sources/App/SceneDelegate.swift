@@ -9,11 +9,11 @@ import RxSwift
 import Models
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
     var window: UIWindow?
     var coordinator = FlowCoordinator()
-    private let disposeBag = DisposeBag()
+    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private let userService: UserService = UserServiceImpl()
+    private let disposeBag = DisposeBag()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         Font.registerFonts()
@@ -21,17 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         
-        let tokenObservable = UserDefaults.standard.rx.observe(String.self, UserDefaultsKey.accessToken.rawValue)
-            .map { $0 != nil }
-            .asObservable()
-        let userObservable = UserDefaults.standard.rx.observe(Data.self, UserDefaultsKey.userAccount.rawValue)
-            .map { $0 != nil }
-            .asObservable()
-        
-        Observable.zip(tokenObservable, userObservable)
-            .map { $0 && $1 }
-            .asDriver(onErrorJustReturn: false)
-            .drive { isLoggedIn in
+        appDelegate?.isLoggedIn
+            .asDriver()
+            .drive(onNext: { isLoggedIn in
                 if isLoggedIn {
                     let rootViewController = HomeViewController()
                     rootViewController.reactor = HomeReactor()
@@ -42,7 +34,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let appFlow = AppFlow(with: window)
                     self.coordinator.coordinate(flow: appFlow, with: AppStepper())
                 }
-            }
+            })
             .disposed(by: disposeBag)
         
         window.makeKeyAndVisible()
