@@ -147,7 +147,7 @@ extension AgreeTermViewController: UITableViewDataSource {
         cell.checkButton.rx.tap
             .map { Reactor.Action.checkButtonPressed(index) }
             .bind(to: reactor!.action)
-            .disposed(by: disposeBag)
+            .disposed(by: cell.disposeBag)
         
         reactor?.state.map { $0.isChecked[index] }
             .asDriver(onErrorJustReturn: false)
@@ -155,7 +155,7 @@ extension AgreeTermViewController: UITableViewDataSource {
                     cell.checkButton.setImage(UIImage(systemName: $0 ? "checkmark.circle.fill" : "circle"), for: .normal)
                     cell.checkButton.tintColor = .designSystem($0 ? .mainBlue : .grayC5C5C5)
             }
-            .disposed(by: disposeBag)
+            .disposed(by: cell.disposeBag)
         return cell
     }
 }
@@ -164,5 +164,10 @@ extension AgreeTermViewController: UITableViewDataSource {
 extension AgreeTermViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 50
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? AgreeTermTableViewCell else { return }
+        cell.disposeBag = DisposeBag()
     }
 }

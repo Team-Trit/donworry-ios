@@ -80,8 +80,6 @@ final class EnterUserInfoViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-//            self.steps.accept(DonworryStep.popViewController)
-//            return .empty()
             return .just(Mutation.routeTo(step: .popViewController))
             
         case .nicknameFieldUpdated(let nickname):
@@ -97,16 +95,12 @@ final class EnterUserInfoViewReactor: Reactor {
             return .just(Mutation.updateSubject(type: .accountNumber, number))
             
         case .bankSelectButtonPressed:
-//            self.steps.accept(DonworryStep.bankSelectIsRequired(delegate: self))
-//            return .empty()
             return .just(Mutation.routeTo(step: .bankSelectIsRequired(delegate: self)))
             
         case .bankSelected(let bank):
             return .just(Mutation.updateBank(selectedBank: bank))
             
         case .nextButtonPressed:
-//            self.steps.accept(DonworryStep.agreeTermIsRequired(accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number))
-//            return .empty()
             return .just(Mutation.routeTo(step: .agreeTermIsRequired(newUser: user)))
         }
     }

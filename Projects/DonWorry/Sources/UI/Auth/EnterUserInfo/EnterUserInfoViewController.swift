@@ -133,7 +133,7 @@ extension EnterUserInfoViewController {
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.bank }
-            .asDriver(onErrorJustReturn: "은행검색")
+            .asDriver(onErrorJustReturn: "은행선택")
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
         
