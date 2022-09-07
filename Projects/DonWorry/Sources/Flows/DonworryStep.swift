@@ -20,5 +20,4 @@ enum DonworryStep: Step {
     case bankSelectIsComplete
     case agreeTermIsRequired(newUser: SignUpUserModel)
     case confirmTermIsRequired(checkedTerms: [String], newUser: SignUpUserModel)
-    case homeIsRequired
 }

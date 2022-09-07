@@ -7,7 +7,6 @@
 //
 
 import ReactorKit
-import RxCocoa
 
 final class ConfirmTermViewReactor: Reactor {
     let checkedTerms: [String]
@@ -19,6 +18,7 @@ final class ConfirmTermViewReactor: Reactor {
     }
     
     enum Mutation {
+        case completeLogin
         case routeTo(step: DonworryStep)
     }
     
@@ -38,7 +38,6 @@ final class ConfirmTermViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-            
             return userService.signUp(provider: user.provider,
                                       nickname: user.nickname,
                                       email: user.email,
@@ -47,8 +46,7 @@ final class ConfirmTermViewReactor: Reactor {
                                       bankHolder: user.bankHolder,
                                       isAgreeMarketing: user.isAgreeMarketing,
                                       accessToken: user.accessToken)
-//            .map { _ in Mutation.signUpComplete}
-            .map { _ in Mutation.routeTo(step: .homeIsRequired)}
+            .map { _ in .completeLogin }
         }
     }
     
@@ -56,10 +54,11 @@ final class ConfirmTermViewReactor: Reactor {
         var newState = state
         
         switch mutation {
+        case .completeLogin:
+            break
+            
         case .routeTo(let step):
             newState.step = step
-//        case .signUpComplete:
-//            self.steps.accept(DonworryStep.homeIsRequired)
         }
         
         return newState

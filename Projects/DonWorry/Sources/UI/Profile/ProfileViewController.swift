@@ -13,6 +13,7 @@ import DesignSystem
 import Kingfisher
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 import SnapKit
 
@@ -106,6 +107,11 @@ extension ProfileViewController {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        accountButtonStackView.logoutButton.rx.tap
+            .map { Reactor.Action.pressLogoutButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         navigationBar.leftItem.rx.tap
             .map { Reactor.Action.pressBackButton }
             .bind(to: reactor.action)
@@ -131,7 +137,7 @@ extension ProfileViewController {
     }
 }
 
-// MARK: - Routing
+// MARK: - Route
 extension ProfileViewController {
     private func route(to step: ProfileStep) {
         switch step {
@@ -180,13 +186,13 @@ extension ProfileViewController: UITableViewDataSource {
         case .user:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
                 cell.imagePlusButton.rx.tap
-                    .map { Reactor.Action.updateProfileImageButtonPressed }
+                    .map { Reactor.Action.pressUpdateProfileImageButton }
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
                 cell.editButton.rx.tap
                     .map {
-                        return Reactor.Action.updateNickNameButtonPressed }
+                        return Reactor.Action.pressUpdateNickNameButton }
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
@@ -214,7 +220,7 @@ extension ProfileViewController: UITableViewDataSource {
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewAccountCell.identifier, for: indexPath) as? ProfileTableViewAccountCell {
                 cell.editButton.rx.tap
-                    .map { Reactor.Action.updateAccountButtonPressed }
+                    .map { Reactor.Action.pressUpdateAccountButton }
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 

@@ -35,7 +35,6 @@ protocol UserService {
 }
 
 final class UserServiceImpl: UserService {
-//    private let disposeBag = DisposeBag()
     private let userRepository: UserRepository
     private let userAccountRepository: UserAccountRepository
     private let accessTokenRepository: AccessTokenRepository
@@ -100,7 +99,6 @@ final class UserServiceImpl: UserService {
         return userAccountRepository.fetchLocalUserAccount()
     }
     
-    // MARK: Local Storage에 있는 정보들을 지우기 위한 코드
     func deleteLocalUser() {
         _ = userAccountRepository.deleteLocalUserAccount()
         _ = accessTokenRepository.deleteAccessToken()

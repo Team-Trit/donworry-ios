@@ -26,20 +26,20 @@ final class ProfileViewReactor: Reactor {
         
         case pressBackButton
         
-        case updateProfileImageButtonPressed
-        case updateNickNameButtonPressed
-        case updateAccountButtonPressed
+        case pressUpdateProfileImageButton
+        case pressUpdateNickNameButton
+        case pressUpdateAccountButton
         
-        case noticeButtonPressed
-        case termButtonPressed
-        case pushSettingButtonPressed
+        case pressNoticeButton
+        case pressTermButton
+        case pressPushSettingButton
         
         case inquiryButtonPressed
         case questionsButtonPressed
         case blogButtonPressed
         
-        case logoutButtonPressed
-        case accountDeleteButtonPressed
+        case pressLogoutButton
+        case pressAccountDeleteButton
     }
     
     enum Mutation {
@@ -79,24 +79,24 @@ final class ProfileViewReactor: Reactor {
         case .pressBackButton:
             return .just(.routeTo(step: .pop))
             
-        case .updateProfileImageButtonPressed:
+        case .pressUpdateProfileImageButton:
             return .just(.routeTo(step: .profileImageSheet))
             
-        case .updateNickNameButtonPressed:
+        case .pressUpdateNickNameButton:
             return .just(Mutation.routeTo(step: .nicknameEdit))
             
-        case .updateAccountButtonPressed:
+        case .pressUpdateAccountButton:
             return .just(Mutation.routeTo(step: .accountEdit))
             
-        case .noticeButtonPressed:
+        case .pressNoticeButton:
             // TODO: 공지사항
             return .empty()
             
-        case .termButtonPressed:
+        case .pressTermButton:
             // TODO: 이용약관
             return .empty()
             
-        case .pushSettingButtonPressed:
+        case .pressPushSettingButton:
             // TODO: 알림설정
             return .empty()
             
@@ -112,11 +112,10 @@ final class ProfileViewReactor: Reactor {
             // TODO: 블로그
             return .empty()
             
-        case .logoutButtonPressed:
-            // TODO: 로그아웃
-            return .empty()
+        case .pressLogoutButton:
+            userService.deleteLocalUser()
             
-        case .accountDeleteButtonPressed:
+        case .pressAccountDeleteButton:
             return .just(.routeTo(step: .deleteAccountSheet))
         }
     }

@@ -134,9 +134,6 @@ extension ConfirmTermViewController {
 extension ConfirmTermViewController {
     private func route(to step: DonworryStep) {
         switch step {
-        case .homeIsRequired:
-            self.steps.accept(DonworryStep.homeIsRequired)
-            
         default:
             break
         }

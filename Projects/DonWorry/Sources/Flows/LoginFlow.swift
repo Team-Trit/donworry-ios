@@ -48,9 +48,6 @@ final class LoginFlow: Flow {
             
         case let .confirmTermIsRequired(checkedTerms, newUser):
             return self.presentConfirmTermView(checkedTerms: checkedTerms, newUser: newUser)
-            
-        case .homeIsRequired:
-            return .end(forwardToParentFlowWithStep: DonworryStep.homeIsRequired)
         }
     }
 }
