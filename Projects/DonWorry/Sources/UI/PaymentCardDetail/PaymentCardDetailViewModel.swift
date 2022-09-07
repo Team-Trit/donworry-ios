@@ -11,21 +11,36 @@ import Combine
 
 import BaseArchitecture
 import Models
+import UIKit
 
-class PaymentCardDetailViewModel {
+class PaymentCardDetailViewModel:BaseViewModel {
     
+    typealias cardResponse = PaymentCardModels.FetchCard.Response
     var cancellable = Set<AnyCancellable>()
+    //TODO: payer 가져오기
     let payer: User = User.dummyUser1
-    let paymentCard = PaymentCard.dummyPaymentCard1
+    @Published var paymentCard: cardResponse.PaymentCard = .init(id: -1, totalAmount: 0, users: [], imgUrls: [])
+    
+    var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
+    
+    init(cardID: Int) {
+        super.init()
+        paymentUseCase.fetchPaymentCard(cardId: cardID)
+            .subscribe(onNext: { [weak self] response in
+                self?.paymentCard = response.card
+            }).disposed(by: disposeBag)
+    }
     
     var isAttended: Bool = false
     
     var participatedUserList: [User] {
-        paymentCard.participatedUserList
+        paymentCard.users.map {
+            .init(id: $0.id, nickName: $0.nickname, bankAccount: .empty, image: $0.imgURL ?? "")
+        }
     }
     
     var numOfUsers: Int {
-        paymentCard.participatedUserList.count
+        paymentCard.users.count
     }
     
     var totalAmountString: String {
@@ -33,7 +48,7 @@ class PaymentCardDetailViewModel {
     }
     
     var isAdmin: Bool {
-        payer.id == paymentCard.payer.id
+        payer.id == paymentCard.users.filter{$0.isTaker}.first?.id
     }
     
     var numOfFilesWhenNoImages: Int {
@@ -41,10 +56,13 @@ class PaymentCardDetailViewModel {
     }
   
     var paymentCardName: String {
-        paymentCard.name
+        //TODO:
+        "아직 없음"
     }
+    
     func userCollectionViewAt(_ index: Int) -> User {
-        paymentCard.participatedUserList[index]
+        let user = paymentCard.users[index]
+        return User(id: user.id, nickName: user.nickname, bankAccount: .empty, image: user.imgURL ?? "")
     }
    
     func toggleAttendance() {

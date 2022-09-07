@@ -8,6 +8,7 @@
 
 import DonWorryNetworking
 import RxSwift
+import Models
 
 enum PaymentCardError: Error {
     case parsingError
@@ -40,6 +41,14 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
+    func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
+        network.request(GetPaymentCardAPI(cardId: cardId))
+            .compactMap { [weak self] response in
+                guard let self = self else { throw PaymentCardError.parsingError }
+                return .init(card: self.convertToPaymentCard(response))
+            }.asObservable()
+    }
+    
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
@@ -59,7 +68,11 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) }
         )
     }
-
+    
+    private func convertToPaymentCard(_ dto: DTO.GetPaymentCard.PaymentCard) -> PaymentCardModels.FetchCard.Response.PaymentCard {
+        return .init(id: dto.id, totalAmount: dto.totalAmount, users: dto.users.map{.init(id: $0.id, isTaker: $0.isTaker, nickname: $0.nickname, imgURL: $0.imgURL)}, imgUrls: dto.imgUrls)
+    }
+    
     private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(
             id: dto.id,

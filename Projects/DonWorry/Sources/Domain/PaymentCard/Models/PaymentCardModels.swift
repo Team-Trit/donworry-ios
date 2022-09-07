@@ -11,7 +11,7 @@ import Foundation
 enum PaymentCardModels {
 
     enum FetchCardList {
-
+        
         struct Response {
             public let isAllPaymentCompleted: Bool
             public let space: Space
@@ -47,5 +47,27 @@ enum PaymentCardModels {
             }
         }
     }
+    
+    enum FetchCard {
+        struct Response {
+            public let card: PaymentCard
+            struct PaymentCard: Codable {
+                public let id, totalAmount: Int
+                public let users: [User]
+                public let imgUrls: [String]
+            }
+            
+            struct User: Codable {
+                public let id: Int
+                public let isTaker: Bool
+                public let nickname: String
+               public let imgURL: String?
 
+                enum CodingKeys: String, CodingKey {
+                    case id, isTaker, nickname
+                    case imgURL = "imgUrl"
+                }
+            }
+        }
+    }
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 public struct GetPaymentCardAPI: ServiceAPI {
-    public typealias Response = DTO.GetPaymentCard
+    public typealias Response = DTO.GetPaymentCard.PaymentCard
     public var cardId: Int
     public init(cardId: Int) {
         self.cardId = cardId

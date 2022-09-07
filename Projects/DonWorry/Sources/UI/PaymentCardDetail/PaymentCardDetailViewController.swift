@@ -14,6 +14,7 @@ import RxSwift
 import DesignSystem
 import Models
 import PhotosUI
+import Combine
 
 // MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
 
@@ -21,7 +22,17 @@ var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 
 final class PaymentCardDetailViewController: BaseViewController, View {
     
-    let viewModel = PaymentCardDetailViewModel()
+    let viewModel: PaymentCardDetailViewModel
+    private var cancelBag = Set<AnyCancellable>()
+    
+    init(viewModel: PaymentCardDetailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
@@ -196,7 +207,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     }
     
     func bind(reactor: PaymentCardDetailViewReactor) {
-        //binding here
+        
     }
     
 }
@@ -210,6 +221,15 @@ extension PaymentCardDetailViewController {
                 self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
+        
+        viewModel.$paymentCard
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.fileCollectionView.reloadData()
+                self?.attributes()
+            }
+            .store(in: &cancelBag)
+        
     }
     
     private func layout() {

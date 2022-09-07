@@ -142,8 +142,9 @@ final class PaymentCardListViewController: BaseViewController, View {
         
         self.collectionView.rx.itemSelected
                     .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
-                    .subscribe(onNext: { [weak self] _ in
-                        let cardDetail = PaymentCardDetailViewController()
+                    .subscribe(onNext: { [weak self] cell in
+                        guard let id = cell.viewModel?.id else { return }
+                        let cardDetail = PaymentCardDetailViewController(viewModel: PaymentCardDetailViewModel(cardID: id))
                         cardDetail.reactor = PaymentCardDetailViewReactor()
                         self?.navigationController?.pushViewController(cardDetail, animated: true)
                     }).disposed(by: disposeBag)

@@ -9,7 +9,7 @@ import Foundation
 
 extension DTO {
     public struct GetPaymentCard: Codable {
-
+        public let card: PaymentCard
         public struct PaymentCard: Codable {
             public let id, totalAmount: Int
             public let users: [User]
@@ -19,7 +19,8 @@ extension DTO {
         public struct User: Codable {
             public let id: Int
             public let isTaker: Bool
-            public let nickname, imgURL: String
+            public let nickname: String
+            public let imgURL: String?
 
             enum CodingKeys: String, CodingKey {
                 case id, isTaker, nickname
