@@ -10,6 +10,7 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import Kingfisher
 import ReactorKit
 import RxCocoa
 import RxSwift
@@ -190,13 +191,17 @@ extension ProfileViewController: UITableViewDataSource {
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.imageURL }
-                    .asDriver(onErrorJustReturn: "profile_sample")
-                    .map { imageURL in
-                        // TODO: 서버에서 받아온 이미지로 변경
-                        UIImage(Asset.profile_sample)
-                    }
+                    .asDriver(onErrorJustReturn: "default_profile_image")
+                    .map { UIImage(Asset(rawValue: $0)!) }
                     .drive(cell.profileImageView.rx.image)
                     .disposed(by: cell.disposeBag)
+                    /*
+                     프로필 이미지 추가 후 Kingfisher 사용
+                    .drive(onNext: { imageURL in
+                        guard let url = URL(string: imageURL) else { return }
+                        cell.profileImageView.kf.setImage(with: url)
+                    })
+                     */
                 
                 reactor?.state.map { $0.nickname }
                     .asDriver(onErrorJustReturn: "")

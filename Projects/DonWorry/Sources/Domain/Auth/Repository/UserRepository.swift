@@ -128,6 +128,6 @@ extension UserRepository {
     }
     
     fileprivate func convertToUser(_ dto: DTO.User) -> Models.User {
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "default_profile_image")
     }
 }
