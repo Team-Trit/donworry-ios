@@ -9,9 +9,17 @@
 import UIKit
 
 import DesignSystem
+import Models
 
 final class SelectBankCollectionViewCell: UICollectionViewCell {
     static let identifier = "SelectBankCollectionViewCell"
+    var bank: Bank? {
+        didSet {
+            guard let bank = bank else { return }
+            bankIconView.image = UIImage(Asset(rawValue: bank.rawValue)!)
+            bankLabel.text = bank.koreanName
+        }
+    }
     lazy var bankIconView = UIImageView()
     lazy var bankLabel: UILabel = {
         let v = UILabel()
