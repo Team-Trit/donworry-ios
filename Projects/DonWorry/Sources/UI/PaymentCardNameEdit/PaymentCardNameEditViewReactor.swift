@@ -38,7 +38,6 @@ final class PaymentCardNameEditViewReactor: Reactor {
     struct State {
         var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
-        
         @Pulse var step: PaymentCardNameEditStep?
     }
 
@@ -58,6 +57,7 @@ final class PaymentCardNameEditViewReactor: Reactor {
                  
              case .didTapNextButton(let type):
                  let step: PaymentCardNameEditStep = type == .create ? .paymentCardIconEdit : .pop
+                 
                  return .just(.routeTo(step))
                  
              case .fetchCardName(let newName):

@@ -33,6 +33,7 @@ class PayDatePickerCell: UITableViewCell {
         self.containerStackView.layer.masksToBounds = true
         self.payDatePicker.widthAnchor.constraint(equalToConstant: 280).isActive = true
         self.payDatePicker.addTarget(self, action: #selector(datePickerValueDidChange(_:)), for: .valueChanged)
+        self.payDatePicker.date = Date() //default : TODAY
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

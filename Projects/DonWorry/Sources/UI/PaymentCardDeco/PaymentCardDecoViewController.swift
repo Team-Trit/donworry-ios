@@ -19,16 +19,15 @@ import SnapKit
 import DesignSystem
 import DonWorryExtensions
 
-
 final class PaymentCardDecoViewController: BaseViewController, View {
     
     typealias Reactor = PaymentCardDecoReactor
     
     var cardVM = CardViewModel(cardColor: .pink,
                                payDate: Date(),
-                               bank: UserServiceImpl().fetchLocalUser()?.bankAccount.bank ?? "은행" ,
-                               holder: UserServiceImpl().fetchLocalUser()?.bankAccount.accountHolderName ?? "계좌주인",
-                               number: UserServiceImpl().fetchLocalUser()?.bankAccount.accountNumber ?? "00000000",
+                               bank: UserServiceImpl().fetchLocalUser()?.bankAccount.bank ?? "은행명" ,
+                               holder: UserServiceImpl().fetchLocalUser()?.bankAccount.accountHolderName ?? "(예금주명)",
+                               number: UserServiceImpl().fetchLocalUser()?.bankAccount.accountNumber ?? "000000-00000",
                                images: [])
     
     lazy var paymentCard = PaymentCardView()
@@ -184,6 +183,8 @@ extension PaymentCardDecoViewController {
         tableView.isScrollEnabled = false
         tableView.paymentCardDecoTableViewDelegate = self
 //        tableView.vcDelegate = self
+        paymentCard.dateLabel.text = cardVM.payDate.getDateToString(format: "MM/dd")
+        
     }
     
     private func layout() {
@@ -258,10 +259,6 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
 }
 
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
-    func updateAccountCell(bank: String, holder: String, number: String) {
-        
-    }
-    
     
     func updateCardColor(with color: CardColor) {
         paymentCard.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
@@ -299,6 +296,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
             cardVM.holder = holder
         } else {
             paymentCard.accountHodlerNameLabel.text = "(예금주명)"
+            cardVM.holder = ""
         }
     }
     
@@ -309,6 +307,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
             cardVM.number = number
         } else {
             paymentCard.accountNumberLabel.text = "000000-00000"
+            cardVM.number = ""
         }
     }
 

@@ -35,7 +35,7 @@ final class PaymentCardIconEditViewReactor: Reactor {
     struct State {
         var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
-        
+        var isNextButtonEnabled: Bool  = false
         @Pulse var step: PaymentCardIconEditStep?
     }
 
@@ -70,6 +70,11 @@ final class PaymentCardIconEditViewReactor: Reactor {
                  newState.step = step
              case .updateCategory(let category):
                  newState.paymentCard.categoryID = category
+                 if category > -1 {
+                     newState.isNextButtonEnabled = true
+                 } else {
+                     newState.isNextButtonEnabled = false
+                 }
          }
         return newState
     }

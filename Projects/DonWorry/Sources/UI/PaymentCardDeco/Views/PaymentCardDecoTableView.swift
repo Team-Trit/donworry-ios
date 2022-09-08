@@ -216,7 +216,7 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 2: // 계좌번호
                 let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
                 cell.configure(isHidden: expandableItem.isHidden)
-            
+
                 cell.accountInputField.holderTextField.textField.rx.text
                                 .orEmpty
                                 .distinctUntilChanged()
@@ -225,14 +225,14 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
                                 })
                                 .disposed(by: cell.disposeBag)
             
-            cell.accountInputField.accountTextField.textField.rx.text
-                              .orEmpty
-                              .distinctUntilChanged()
-                              .subscribe(onNext: { text in
-                                  self.paymentCardDecoTableViewDelegate?
-                                      .updateAccountNumber(number: text)
-                               })
-                              .disposed(by: cell.disposeBag)
+                cell.accountInputField.accountTextField.textField.rx.text
+                                  .orEmpty
+                                  .distinctUntilChanged()
+                                  .subscribe(onNext: { text in
+                                      self.paymentCardDecoTableViewDelegate?
+                                          .updateAccountNumber(number: text)
+                                   })
+                                  .disposed(by: cell.disposeBag)
                                     
             
                 return cell

@@ -35,7 +35,7 @@ final class PaymentCardAmountEditReactor: Reactor {
         var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
         var amount: String
-
+        var isButtonEnabled: Bool = false
         @Pulse var step: PaymentCardAmountEditStep?
     }
     
@@ -69,7 +69,12 @@ final class PaymentCardAmountEditReactor: Reactor {
         switch mutation {
         case let .updateAmount(with):
             newState.amount = setNewAmount(state.amount, with: with)
-//            newState.paymentCard.totalAmount = convertAmount(amount: state.amount)
+            if newState.amount != "0" {
+                newState.isButtonEnabled = true
+            } else {
+                newState.isButtonEnabled = false
+            }
+
         case .routeTo(let step):
             newState.step = step
         }
