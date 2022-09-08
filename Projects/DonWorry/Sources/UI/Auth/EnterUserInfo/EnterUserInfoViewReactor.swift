@@ -17,19 +17,13 @@ enum TextFieldType {
     case accountNumber
 }
 
-enum LoginProvider: String {
-    case APPLE
-    case GOOGLE
-    case KAKAO
-}
-
 protocol EnterUserInfoViewDelegate: AnyObject {
     func saveBank(_ selectedBank: String)
 }
 
 final class EnterUserInfoViewReactor: Reactor {
     private let disposeBag = DisposeBag()
-    private var user = SignUpUserModel(provider: "",
+    private var user = SignUpUserModel(provider: .none,
                                      nickname: "",
                                      email: "",
                                      bank: "",
@@ -73,7 +67,7 @@ final class EnterUserInfoViewReactor: Reactor {
             bank: "은행선택",
             isNextButtonAvailable: false
         )
-        self.user.provider = provider.rawValue
+        self.user.provider = provider
         self.user.accessToken = accessToken
     }
     

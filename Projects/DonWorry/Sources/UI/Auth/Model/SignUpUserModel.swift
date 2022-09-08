@@ -8,8 +8,15 @@
 
 import Foundation
 
+enum LoginProvider: String {
+    case none
+    case APPLE
+    case GOOGLE
+    case KAKAO
+}
+
 struct SignUpUserModel {
-    var provider: String
+    var provider: LoginProvider
     var nickname: String
     var email: String
     var bank: String
