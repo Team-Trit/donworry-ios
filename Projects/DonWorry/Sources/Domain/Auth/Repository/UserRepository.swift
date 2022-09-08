@@ -140,10 +140,11 @@ extension UserRepository {
     }
     
     fileprivate func convertToUser(patchUserDTO dto: DTO.PatchUser) -> Models.User {
-        let bankAccount = BankAccount(bank: dto.userUpdateCommand.account.bank,
-                                      accountHolderName: dto.userUpdateCommand.account.holder,
-                                      accountNumber: dto.userUpdateCommand.account.number)
-        return .init(id: dto.user.user.id, nickName: dto.userUpdateCommand.nickname, bankAccount: bankAccount, image: dto.userUpdateCommand.imgURL)
+        let bankAccount = BankAccount(bank: dto.account.bank,
+                                      accountHolderName: dto.account.holder,
+                                      accountNumber: dto.account.number)
+        // TODO: Patch User API 반환 타입 수정되면 image url 설정해주기
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_user")
     }
     
     fileprivate func createUserRequest(provider: String,
