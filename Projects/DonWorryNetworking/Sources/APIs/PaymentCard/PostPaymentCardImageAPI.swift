@@ -13,8 +13,8 @@ public struct PostPaymentCardImageAPI: ServiceAPI {
     
     public typealias Response = DTO.PostPaymentCardImage
     public var cardId: Int
-    public var request: String
-    public var path: String { return "/cards/images\(cardId)" }
+    public var request: Data?
+    public var path: String { return "/cards/images/\(cardId)" }
     public var method: Method { .post }
     public var task: Task {
         .requestJSONEncodable(request)
@@ -23,7 +23,7 @@ public struct PostPaymentCardImageAPI: ServiceAPI {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
     }
     
-    public init(cardId: Int, request: String) {
+    public init(cardId: Int, request: Data?) {
         self.cardId = cardId
         self.request = request
     }
