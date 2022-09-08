@@ -88,13 +88,8 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         didSet {
             self.nickNameLabel.text = viewModel?.nickName
             self.amountLabel.text = viewModel?.amount
-            if let viewModel = viewModel {
-                let urlString = URL(string: viewModel.imageURL ?? "")
-                profileImageView.kf.setImage(with: urlString)
-            }
-            if let viewModel = viewModel {
-                completeCoverView.isHidden = !viewModel.isCompleted
-            }
+            profileImageView.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
+            completeCoverView.isHidden = !(viewModel?.isCompleted ?? false)
         }
     }
 

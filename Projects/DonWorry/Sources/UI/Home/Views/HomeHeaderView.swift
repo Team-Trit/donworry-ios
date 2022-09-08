@@ -15,7 +15,7 @@ import RxSwift
 import RxCocoa
 
 struct HomeHeaderViewModel {
-    var imageURL: String
+    var imageURL: String?
     var nickName: String
 }
 
@@ -56,10 +56,7 @@ final class HomeHeaderView: UIView {
     var viewModel: HomeHeaderViewModel? {
         didSet {
             self.titleLabel.text = "\(viewModel?.nickName ?? "")님 안녕하세요"
-            if let viewModel = viewModel {
-                let url = URL(string: viewModel.imageURL)
-                profileButton.kf.setImage(with: url, for: .normal)
-            }
+            profileButton.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
         }
     }
 

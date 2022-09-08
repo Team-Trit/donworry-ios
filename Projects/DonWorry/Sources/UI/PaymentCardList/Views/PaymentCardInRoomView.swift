@@ -45,10 +45,7 @@ public class PaymentCardInRoomView: UIView {
             self.cardSideView.backgroundColor = backgroundColor
             self.dateLabel.textColor = backgroundColor
             self.payerNameLabel.text = viewModel?.payer.nickName
-            if let urlString = viewModel?.payer.imageURL {
-                let url = URL(string: urlString)
-                payerImageView.kf.setImage(with: url)
-            }
+            payerImageView.setWhenNilImageBasicProfileImage(with: viewModel?.payer.imageURL)
 
             guard let viewModel = viewModel else {
                 return
@@ -61,7 +58,7 @@ public class PaymentCardInRoomView: UIView {
         participatedUserView.subviews.forEach { $0.removeFromSuperview() }
         let imageViews = users.prefix(4).map { (user: PaymentCardInRoomViewModel.User) -> UIImageView in
             let imageView = UIImageView()
-            imageView.kf.setImage(with: URL(string: user.imageURL ?? ""))
+            imageView.setWhenNilImageBasicProfileImage(with: user.imageURL)
             imageView.contentMode = .scaleAspectFill
             return imageView
         }
