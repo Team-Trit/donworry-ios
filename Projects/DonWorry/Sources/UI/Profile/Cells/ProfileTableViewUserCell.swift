@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignSystem
+import RxSwift
 import SnapKit
 
 final class ProfileTableViewUserCell: UITableViewCell {
@@ -20,38 +21,31 @@ final class ProfileTableViewUserCell: UITableViewCell {
         v.font = .designSystem(weight: .heavy, size: ._25)
         return v
     }()
-    private lazy var profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let v = UIImageView()
         v.layer.cornerRadius = 25
         v.clipsToBounds = true
         v.contentMode = .scaleAspectFill
         return v
     }()
-    private lazy var imagePlusButton: UIButton = {
+    lazy var imagePlusButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(.custom_plus_circle), for: .normal)
         return v
     }()
-    private lazy var nickNameLabel: UILabel = {
+    lazy var nickNameLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .bold, size: ._20)
         return v
     }()
-    private lazy var editButton: UIButton = {
+    lazy var editButton: UIButton = {
         let v = UIButton()
         v.setImage(UIImage(systemName: "pencil"), for: .normal)
         v.tintColor = .designSystem(.gray4B4A4A)
         return v
     }()
     private lazy var separatorLine = SeparatorLine()
-    var user: ProfileViewModelItem? {
-        didSet {
-            guard let user = user as? ProfileViewModelUserItem else { return }
-            // TODO: 프로필 이미지 가져오기
-            profileImageView.image = UIImage(named: user.imageURL)
-            nickNameLabel.text = user.nickName
-        }
-    }
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

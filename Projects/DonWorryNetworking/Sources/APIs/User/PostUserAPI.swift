@@ -11,8 +11,7 @@ import Foundation
 import Moya
 
 public struct PostUserAPI: ServiceAPI {
-    
-    public typealias Response = DTO.User
+    public typealias Response = DTO.PostUser
     public var request: Request
     public init(request: Request, accessToken: String) {
         self.request = request
@@ -25,7 +24,6 @@ public struct PostUserAPI: ServiceAPI {
     }
     public var headers: [String : String]? { return ["Authorization-KAKAO": "Bearer \(accessToken)"] }
     private let accessToken: String
-    
 }
 
 extension PostUserAPI {

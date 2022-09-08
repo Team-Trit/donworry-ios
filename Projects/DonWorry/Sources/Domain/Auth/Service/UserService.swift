@@ -24,17 +24,17 @@ protocol UserService {
                 bankHolder: String,
                 isAgreeMarketing: Bool,
                 accessToken: String) -> Observable<Models.User>
+    func updateUser(nickname: String?, imgURL: String?, bank: String?, holder: String?, accountNumber: String?, isAgreeMarketing: Bool?) -> Observable<Models.User>
     func loginWithKakao() -> Observable<OAuthToken>
     
+    func saveLocalUser(user: Models.User) -> Bool
     func fetchLocalToken() -> AccessToken?
     func fetchLocalUser() -> Models.User?
     func deleteLocalUser()
-    
     func unlinkKakao()
 }
 
 final class UserServiceImpl: UserService {
-//    private let disposeBag = DisposeBag()
     private let userRepository: UserRepository
     private let userAccountRepository: UserAccountRepository
     private let accessTokenRepository: AccessTokenRepository
@@ -70,12 +70,29 @@ final class UserServiceImpl: UserService {
                                 bankHolder: bankHolder,
                                 isAgreeMarketing: isAgreeMarketing,
                                 accessToken: accessToken)
-            .map { [weak self] (user, authentication) -> Models.User in
-                _ = self?.userAccountRepository.saveLocalUserAccount(user)
-                _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
-                
-                return user
-            }
+        .map { [weak self] (user, authentication) -> Models.User in
+            _ = self?.userAccountRepository.saveLocalUserAccount(user)
+            _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
+            return user
+        }
+    }
+    
+    func updateUser(nickname: String?,
+                    imgURL: String?,
+                    bank: String?,
+                    holder: String?,
+                    accountNumber: String?,
+                    isAgreeMarketing: Bool?) -> Observable<Models.User> {
+        userRepository.patchUser(nickname: nickname,
+                                        imgURL: imgURL,
+                                        bank: bank,
+                                        holder: holder,
+                                        accountNumber: accountNumber,
+                                        isAgreeMarketing: isAgreeMarketing)
+        .map { [weak self] user -> Models.User in
+            _ = self?.userAccountRepository.saveLocalUserAccount(user)
+            return user
+        }
     }
     
     func loginWithKakao() -> Observable<OAuthToken> {
@@ -87,6 +104,10 @@ final class UserServiceImpl: UserService {
         userRepository.kakaoUnlink()
     }
     
+    func saveLocalUser(user: Models.User) -> Bool {
+        return userAccountRepository.saveLocalUserAccount(user)
+    }
+    
     func fetchLocalToken() -> AccessToken? {
         return accessTokenRepository.fetchAccessToken()
     }
@@ -95,17 +116,18 @@ final class UserServiceImpl: UserService {
         return userAccountRepository.fetchLocalUserAccount()
     }
     
-    // MARK: Local Storage에 있는 정보들을 지우기 위한 코드
     func deleteLocalUser() {
         _ = userAccountRepository.deleteLocalUserAccount()
         _ = accessTokenRepository.deleteAccessToken()
     }
-    
+}
+
+// MARK: - Convert Methods
+extension UserService {
     private func convertToUser(id: Int,
                                nickname: String,
                                bankAccount: BankAccount,
                                image: String) -> Models.User {
         return Models.User(id: id, nickName: nickname, bankAccount: bankAccount, image: image)
-        
     }
 }
