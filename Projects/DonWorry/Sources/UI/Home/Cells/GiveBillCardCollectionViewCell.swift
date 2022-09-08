@@ -135,14 +135,6 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
 //        self.addCompleteCoverViewBlurEffect()
     }
 
-    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
-
-        let circularlayoutAttributes = layoutAttributes as! CircularCollectionViewLayoutAttributes
-        self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
-        self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
-    }
-
     private func addCompleteCoverViewBlurEffect() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemThinMaterial)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)

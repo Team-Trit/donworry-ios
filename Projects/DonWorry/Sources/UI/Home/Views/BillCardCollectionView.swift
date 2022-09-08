@@ -12,31 +12,80 @@ import DonWorryExtensions
 final class BillCardCollectionView: UICollectionView {
 
     convenience init() {
-        let flowLayout = CircularCollectionViewLayout()
-        self.init(frame: .zero, collectionViewLayout: flowLayout)
+        let layout = HorizontalCarouselLayout()
+        self.init(frame: .zero, collectionViewLayout: layout)
+        layout.delegate = self
+        self.delegate = self
+        self.layer.masksToBounds = false
+        self.register(StateBillCardCollectionViewCell.self)
         self.register(TakeBillCardCollectionViewCell.self)
         self.register(GiveBillCardCollectionViewCell.self)
-        self.register(StateBillCardCollectionViewCell.self)
         self.register(LeaveSpaceBillCardCollectionViewCell.self)
+        self.contentInset = .init(top: 0, left: collectionViewInset, bottom: 0, right: collectionViewInset)
         self.showsHorizontalScrollIndicator = false
-        self.showsVerticalScrollIndicator = false
-        self.backgroundColor = .clear
-        self.allowsSelection = true
-        self.allowsMultipleSelection = false
         self.decelerationRate = .fast
     }
 }
 
-extension BillCardCollectionView: CircularCollectionViewLayoutDelegate {
-    private var screenWidth: CGFloat {
-        UIApplication.shared.delegate?.window??.windowScene?.screen.bounds.width ?? 0
+// MARK: UICollectionViewDelegateFlowLayout
+
+extension BillCardCollectionView: UICollectionViewDelegateFlowLayout {
+    fileprivate var collectionViewInset: CGFloat {
+        return 94
     }
 
-    var itemSize: CGSize {
-        let width: CGFloat = screenWidth - 115 * 2
-        let height: CGFloat = width * 215 / 160
+    fileprivate var itemSpacing: CGFloat {
+        return -15
+    }
+
+    public func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        let itemWidth: CGFloat = UIScreen.main.bounds.width - collectionViewInset * 2
+        let cellWidthIncludingSpacing = itemWidth + itemSpacing
+
+        var offset = targetContentOffset.pointee
+        let index = (offset.x + scrollView.contentInset.left) / cellWidthIncludingSpacing
+        var roundedIndex = round(index)
+
+        if scrollView.contentOffset.x > targetContentOffset.pointee.x {
+            roundedIndex = floor(index)
+        } else {
+            roundedIndex = ceil(index)
+        }
+
+        offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
+        targetContentOffset.pointee = offset
+    }
+//
+//    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//
+//        let width: CGFloat = scrollView.contentOffset.x + collectionViewInset * 2
+//        let cellWidth: CGFloat = UIScreen.main.bounds.width - collectionViewInset * 2 + itemSpacing
+//        let newPage = Int(width / cellWidth)
+//        if pageControl.currentPage != newPage {
+//            pageControl.currentPage = newPage
+//        }
+//    }
+}
+
+// MARK: HorizontalCarouselLayoutDelegate
+
+extension BillCardCollectionView: HorizontalCarouselLayoutDelegate {
+    public func itemSize(
+        _ collectionView: UICollectionView
+    ) -> CGSize {
+        let width: CGFloat = collectionView.bounds.width - collectionViewInset * 2
+        let height: CGFloat = width * 1.33
         return .init(width: width, height: height)
     }
-    func scrollToIndentity() {}
 
+    public func minimumLineSpacing(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout
+    ) -> CGFloat {
+        return itemSpacing
+    }
 }
