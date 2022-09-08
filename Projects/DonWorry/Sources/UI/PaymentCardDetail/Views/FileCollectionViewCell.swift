@@ -8,6 +8,7 @@
 
 import UIKit
 import DesignSystem
+import Kingfisher
 
 protocol FileCollectionViewCellDelegate: AnyObject {
     func deletePhoto()
@@ -16,8 +17,16 @@ protocol FileCollectionViewCellDelegate: AnyObject {
 class FileCollectionViewCell: UICollectionViewCell {
     
     weak var FileCollectionViewCellDelegate: FileCollectionViewCellDelegate?
+    
+    var imageUrl: String? {
+        didSet {
+            let url = URL(string: imageUrl ?? "")
+            container.kf.setImage(with: url)
+        }
+    }
+    
     static let cellID = "FileCollectionViewCellID"
-    lazy var container : UIImageView = {
+    let container : UIImageView = {
         $0.contentMode = .scaleToFill
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0

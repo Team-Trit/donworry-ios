@@ -61,6 +61,10 @@ class PaymentCardDetailViewModel:BaseViewModel {
   
     var paymentCardName: String
     
+    var imageUrlStrings: [String] {
+        paymentCard.imgUrls
+    }
+    
     func userCollectionViewAt(_ index: Int) -> User {
         let user = paymentCard.users[index]
         return User(id: user.id, nickName: user.nickname, bankAccount: .empty, image: user.imgURL ?? "")

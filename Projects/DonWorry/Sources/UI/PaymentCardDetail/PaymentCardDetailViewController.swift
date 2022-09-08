@@ -204,11 +204,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             }
         }
     }
-    
     func bind(reactor: PaymentCardDetailViewReactor) {
-        
     }
-    
 }
 
 //MARK: Layout
@@ -295,13 +292,16 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             return viewModel.numOfUsers
         case fileCollectionView:
-            if cameraImageArray.count == 0 {
-                return viewModel.numOfFilesWhenNoImages
-            } else if cameraImageArray.count == 3 {
-                return 3
-            } else {
-                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
-            }
+            return viewModel.imageUrlStrings.count
+            //MARK: 추후 사진 수정시 이용됩니다
+//            return cameraImageArray.count
+//            if cameraImageArray.count == 0 {
+//                return viewModel.numOfFilesWhenNoImages
+//            } else if cameraImageArray.count == 3 {
+//                return 3
+//            } else {
+//                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
+//            }
         default:
             return 0
         }
@@ -314,32 +314,33 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             cell.user = viewModel.userCollectionViewAt(indexPath.row)
             return cell
         case fileCollectionView:
-            if viewModel.isAdmin {
-                if cameraImageArray.count == 3 {
-                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                    cell.FileCollectionViewCellDelegate = self
-                    cell.container.image = cameraImageArray[indexPath.row]
-                    cell.deleteCircle.tag = indexPath.row
-                    return cell
-                } else {
-                    if indexPath.row == 0 {
-                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
-                        return cell
-                    } else {
-                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                        cell.FileCollectionViewCellDelegate = self
-                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
-                        cell.deleteCircle.tag = (indexPath.row - 1)
-                        return cell
-                    }
-                }
-            } else {
-                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                cell.FileCollectionViewCellDelegate = self
-                cell.container.image = cameraImageArray[(indexPath.row)]
-                cell.deleteCircle.isHidden = true
-                return cell
-            }
+            //MARK: 추후 사진 수정시 이용됩니다
+//            if viewModel.isAdmin {
+//                if cameraImageArray.count == 3 {
+//                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+//                    cell.FileCollectionViewCellDelegate = self
+//                    cell.container.image = cameraImageArray[indexPath.row]
+//                    cell.deleteCircle.tag = indexPath.row
+//                    return cell
+//                } else {
+//                    if indexPath.row == 0 {
+//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
+//                        return cell
+//                    } else {
+//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+//                        cell.FileCollectionViewCellDelegate = self
+//                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
+//                        cell.deleteCircle.tag = (indexPath.row - 1)
+//                        return cell
+//                    }
+//                }
+//            } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+            cell.FileCollectionViewCellDelegate = self
+            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            cell.deleteCircle.isHidden = true
+            return cell
+//            }
         default: return UICollectionViewCell()
         }
     }
@@ -348,12 +349,13 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         switch collectionView {
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
-        case fileCollectionView:
-            guard viewModel.isAdmin else { return }
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
-            if cameraImageArray.count < 3 && indexPath.row == 0 {
-                showPhotoPicker()
-            }
+            //MARK: 추후 사진 수정시 이용됩니다
+//        case fileCollectionView:
+//            guard viewModel.isAdmin else { return }
+//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+//            if cameraImageArray.count < 3 && indexPath.row == 0 {
+//                showPhotoPicker()
+//            }
         default:
             break
         }
@@ -380,40 +382,40 @@ extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
         }
     }
 }
-
-extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
-    
-    func showPhotoPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 3
-        let phPickerVC = PHPickerViewController(configuration: config)
-        phPickerVC.delegate = self
-        self.present(phPickerVC, animated: true)
-    }
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        dismiss(animated: true)
-        var images = [UIImage]()
-        for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
-                error in
-                if let image = object as? UIImage {
-                    images.append(image)
-                }
-                for image in images {
-                    if cameraImageArray.count == 3 {
-                        cameraImageArray[0] = image
-                    }
-                    else {
-                        cameraImageArray += [image]
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.fileCollectionView.reloadData()
-                }
-                
-            }
-        }
-    }
-}
+//MARK: 추후 사진 수정시 이용됩니다
+//extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
+//
+//    func showPhotoPicker() {
+//        var config = PHPickerConfiguration()
+//        config.selectionLimit = 3
+//        let phPickerVC = PHPickerViewController(configuration: config)
+//        phPickerVC.delegate = self
+//        self.present(phPickerVC, animated: true)
+//    }
+//
+//    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+//        dismiss(animated: true)
+//        var images = [UIImage]()
+//        for result in results {
+//            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
+//                error in
+//                if let image = object as? UIImage {
+//                    images.append(image)
+//                }
+//                for image in images {
+//                    if cameraImageArray.count == 3 {
+//                        cameraImageArray[0] = image
+//                    }
+//                    else {
+//                        cameraImageArray += [image]
+//                    }
+//                }
+//                DispatchQueue.main.async {
+//                    self.fileCollectionView.reloadData()
+//                }
+//
+//            }
+//        }
+//    }
+//}
 
