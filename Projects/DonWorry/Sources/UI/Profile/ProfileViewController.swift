@@ -11,6 +11,7 @@ import UIKit
 
 import BaseArchitecture
 import DesignSystem
+import DonWorryExtensions
 import Kingfisher
 import ReactorKit
 import RxCocoa
@@ -162,6 +163,7 @@ extension ProfileViewController {
             }
             let takePhotoAction = UIAlertAction(title: "사진 촬영", style: .default) { _ in
                 let imgPickerController = UIImagePickerController()
+                imgPickerController.fixCannotMoveEditingBox()
                 imgPickerController.sourceType = .camera
                 imgPickerController.allowsEditing = true
                 imgPickerController.delegate = self
