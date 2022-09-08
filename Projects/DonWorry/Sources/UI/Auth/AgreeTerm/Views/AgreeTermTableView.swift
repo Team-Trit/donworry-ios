@@ -25,7 +25,6 @@ final class AgreeTermTableView: UITableView {
 extension AgreeTermTableView {
     private func configure() {
         self.backgroundColor = .designSystem(.white)
-        self.register(AgreeTermTableViewHeader.self, forHeaderFooterViewReuseIdentifier: AgreeTermTableViewHeader.identifier)
         self.register(AgreeTermTableViewCell.self, forCellReuseIdentifier: AgreeTermTableViewCell.identifier)
         self.separatorStyle = .none
         self.showsVerticalScrollIndicator = false

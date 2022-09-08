@@ -48,7 +48,11 @@ extension AppFlow {
     }
     
     private func navigateToHomeScreen() -> FlowContributors {
-        // TODO: Switch window to present HomeView
+        // MARK: HomeFlow부터는 RxFlow 사용 안함
+        let homeViewController = HomeViewController()
+        let homeReactor = HomeReactor()
+        homeViewController.reactor = homeReactor
+        self.rootWindow.rootViewController = homeViewController
         return .none
     }
 }
@@ -63,7 +67,4 @@ final class AppStepper: Stepper {
     init() {
         
     }
-//    func readyToEmitSteps() {
-//
-//    }
 }
