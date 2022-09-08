@@ -232,9 +232,14 @@ extension PaymentCardListViewController {
         case .pop:
             self.navigationController?.popToRootViewController(animated: true)
         case .paymentCardDetail:
-            let paymentCardDetailViewController = PaymentCardDetailViewController()
-            paymentCardDetailViewController.reactor = PaymentCardDetailViewReactor()
-            self.navigationController?.pushViewController(paymentCardDetailViewController, animated: true)
+            
+            guard let id = reactor?.currentState.space.id else { return }
+            let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
+            participatePaymentCardViewController.reactor = ParticipatePaymentCardViewReactor()
+            let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            present(nav, animated: true)
+            
         case .actionSheet:
             self.present(optionAlertController(), animated: true)
         case .nameEdit:

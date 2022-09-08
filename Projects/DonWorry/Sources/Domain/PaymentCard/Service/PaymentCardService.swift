@@ -12,13 +12,16 @@ import Models
 
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
+    func joinPaymentCardList(ids:[Int]) -> Observable<String>
 }
 
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
+    func joinPaymentCardList(ids:[Int]) -> Observable<String>
 }
 
 final class PaymentCardServiceImpl: PaymentCardService {
+    
     private let paymentCardRepository: PaymentCardRepository
 
     init(paymentCardRepository: PaymentCardRepository = PaymentCardRepositoryImpl()) {
@@ -27,5 +30,8 @@ final class PaymentCardServiceImpl: PaymentCardService {
 
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response> {
         paymentCardRepository.fetchPaymentCardList(spaceID: spaceID)
+    }
+    func joinPaymentCardList(ids: [Int]) -> Observable<String> {
+        paymentCardRepository.joinPaymentCardList(ids: ids)
     }
 }
