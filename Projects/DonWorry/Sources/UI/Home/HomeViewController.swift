@@ -80,7 +80,8 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 case 1:
                     return .didTapTakeBillCard
                 case 2:
-                    return .didTapGiveBillCard
+                    guard let cell = cell as? GiveBillCardCollectionViewCell else { fatalError() }
+                    return .didTapGiveBillCard(cell.viewModel?.id ?? 0)
                 case 3:
                     return .didTapLeaveBillCard
                 default:
@@ -93,18 +94,22 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     
     private func render(_ reactor: Reactor) {
         reactor.state.map { $0.homeHeader }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.headerView.rx.viewModel)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList.isNotEmpty }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.emptyView.rx.isHidden)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList.isEmpty }
+            .observe(on: MainScheduler.instance)
             .bind(to: self.billCardCollectionView.rx.isHidden)
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
             }).disposed(by: disposeBag)
@@ -231,20 +236,20 @@ extension HomeViewController {
     private func move(to step: HomeStep) {
         switch step {
         case .spaceName:
-            let spaceNameViewController = SentMoneyDetailViewController()
-//            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
+            let spaceNameViewController = SpaceNameViewController()
+            spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .joinSpace:
             let joinSpaceViewController = JoinSpaceViewController()
             joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
-        case .recievedMoneyDetail:
+        case .recievedMoneyDetail(let spaceID):
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
-            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor()
+            recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor(spaceID: spaceID)
             self.present(recieveMoneyDetailViewController, animated: true)
-        case .sentMoneyDetail:
+        case .sentMoneyDetail(let spaceID, let paymentID):
             let sentMoneyDetailViewController = SentMoneyDetailViewController()
-            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor()
+            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
             self.present(sentMoneyDetailViewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()

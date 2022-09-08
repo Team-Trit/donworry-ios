@@ -81,6 +81,10 @@ class SentMoneyTableViewCell: UITableViewCell {
     
     func render() {
         contentView.addSubview(smallRoundRectangle)
+        NSLayoutConstraint.activate([
+            smallRoundRectangle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            smallRoundRectangle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+        ])
         smallRoundRectangle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
         smallRoundRectangle.widthAnchor.constraint(equalToConstant: 43).isActive = true

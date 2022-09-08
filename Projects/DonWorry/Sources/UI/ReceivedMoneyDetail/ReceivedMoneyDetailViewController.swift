@@ -21,7 +21,6 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
     private var statusView: RecieveMoneyDetailStatusView = {
         let status = RecieveMoneyDetailStatusView()
         status.translatesAutoresizingMaskIntoConstraints = false
-        status.configure(payment: 12000, outstanding: 24000)
         return status
     }()
     private let separatorView: UIView = {
@@ -63,7 +62,17 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
     }
 
     func bind(reactor: Reactor) {
+        rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
+        reactor.state.map { $0.currentStatus }
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] in
+                self?.statusView.configure(payment: $0.currentAmount, outstanding: $0.totalAmount)
+                self?.tableView.reloadData()
+            }).disposed(by: disposeBag)
     }
 
 }

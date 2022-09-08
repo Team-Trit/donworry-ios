@@ -14,8 +14,8 @@ import Models
 enum HomeStep {
     case spaceName
     case joinSpace
-    case recievedMoneyDetail
-    case sentMoneyDetail
+    case recievedMoneyDetail(Int)
+    case sentMoneyDetail(Int, Int)
     case alert
     case profile
     case leaveAlertMessage // 확인메시지 알람창 -> 토스트
@@ -39,7 +39,7 @@ final class HomeReactor: Reactor {
         case didTapSearchButton
         case didTapCreateSpaceButton
         case didTapProfileImage
-        case didTapGiveBillCard
+        case didTapGiveBillCard(Int)
         case didTapTakeBillCard
         case didTapStateBillCard
         case didTapLeaveBillCard
@@ -96,10 +96,12 @@ final class HomeReactor: Reactor {
             return .just(.routeTo(.spaceName))
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
-        case .didTapGiveBillCard:
-            return .just(.routeTo(.sentMoneyDetail))
+        case .didTapGiveBillCard(let paymentID):
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.sentMoneyDetail(selectedSpace.id, paymentID)))
         case .didTapTakeBillCard:
-            return .just(.routeTo(.recievedMoneyDetail))
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.recievedMoneyDetail(selectedSpace.id)))
         case .didTapStateBillCard:
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
             return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
