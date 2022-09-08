@@ -45,8 +45,13 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
         $0.font = .designSystem(weight: .heavy, size: ._25)
         return $0
     }(UILabel())
-
-    private lazy var nextButton = DWButton.create(.xlarge50)
+    
+    private lazy var nextButton: DWButton = {
+        let v = DWButton.create(.xlarge50)
+        v.title = "다음"
+        v.isEnabled = false
+        return v
+    }()
 
     private lazy var iconCollectionView: UICollectionView = {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
@@ -100,6 +105,11 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
             .bind(to: titleLabel.rx.text)
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.isNextButtonEnabled }
+            .distinctUntilChanged()
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -134,7 +144,6 @@ extension PaymentCardIconEditViewController {
 extension PaymentCardIconEditViewController {
     
     private func setUI() {
-        nextButton.title = "다음"
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(navigationBar, titleLabel, nextButton, iconCollectionView)
         
@@ -191,9 +200,9 @@ extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollect
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell else { return UICollectionViewCell() }
-        if (indexPath.row == 0) {
-            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-         }
+//        if (indexPath.row == 0) {
+//            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+//         }
         cell.configure(with: icons[indexPath.row].iconName)
         return cell
     }

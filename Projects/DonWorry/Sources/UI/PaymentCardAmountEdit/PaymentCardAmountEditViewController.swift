@@ -60,8 +60,10 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
+        v.isEnabled = false
         return v
     }()
+    
     private lazy var numberPadCollectionView: NumberPadCollectionView = {
         let v = NumberPadCollectionView()
         v.dataSource = self
@@ -120,6 +122,11 @@ extension PaymentCardAmountEditViewController {
         reactor.state.map { $0.amount }
             .distinctUntilChanged()
             .bind(to: amountLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isButtonEnabled }
+            .distinctUntilChanged()
+            .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
@@ -210,6 +217,7 @@ extension PaymentCardAmountEditViewController {
             make.top.equalTo(nextButton.snp.bottom).offset(20)
             make.leading.trailing.bottom.equalToSuperview()
         }
+        
     }
 }
 
