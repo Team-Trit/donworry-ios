@@ -24,7 +24,7 @@ struct CardViewModel {
     var bank: String = ""
     var holder: String = ""
     var number: String = ""
-    var images: [UIImage] = []
+    var images: [UIImage?] = []
 }
 
 final class PaymentCardDecoReactor: Reactor {
@@ -35,15 +35,15 @@ final class PaymentCardDecoReactor: Reactor {
         case didTapBackButton
         case didTapCloseButton
         case didTapCompleteButton(CardViewModel)
-        case didTapDate(Date)
     }
 
     enum Mutation {
         case routeTo(PaymentCardDecoStep)
-        case updatePayDate(Date)
+        case setLoading(Bool)
     }
 
     struct State {
+        var isLoading: Bool = false
         var space: Space
         var paymentCard: PaymentCardModels.PostCard.Request
         @Pulse var step: PaymentCardDecoStep?
@@ -73,7 +73,9 @@ final class PaymentCardDecoReactor: Reactor {
         case .didTapCompleteButton(let cardVM):
             
             let card = currentState.paymentCard
-            return paymentCardService.createPaymentCard(spaceID: currentState.space.id,
+            let startLoading: Observable<Mutation> = .just(Mutation.setLoading(true))
+            let endLoading: Observable<Mutation> = .just(Mutation.setLoading(false))
+            let createCard =  paymentCardService.createPaymentCard(spaceID: currentState.space.id,
                                                         paymentCard: PaymentCardModels.PostCard.Request(
                                                             spaceID: currentState.space.id,
                                                             categoryID: card.categoryID,
@@ -84,25 +86,26 @@ final class PaymentCardDecoReactor: Reactor {
                                                             totalAmount: card.totalAmount,
                                                             bgColor: cardVM.cardColor.rawValue,
                                                             paymentDate: 
-                                                            cardVM.payDate.modifyDateForNetworking()
-                                                            
-                                                        )
-            )
-                .map { _ in Mutation.routeTo(.completePaymentCardDeco)}
-         
-        case .didTapDate(let date):
-            return .just(Mutation.updatePayDate(date))
+                                                            cardVM.payDate.modifyDateForNetworking(),
+                                                            images: [] ))
+                                .map { response -> Mutation in
+                                    return Mutation.routeTo(.completePaymentCardDeco)
+                                }
+                                
+            return .concat([startLoading, createCard, endLoading])
+            
+
         }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
          switch mutation {
-         case .routeTo(let step):
-             newState.step = step
-         case .updatePayDate(let date):
-             // 2022-09-06T17:25:20.715Z"
-             newState.paymentCard.paymentDate = date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+             case .routeTo(let step):
+                 newState.step = step
+             case .setLoading(let isLoading):
+                 newState.isLoading = isLoading
+         
          }
         return newState
     }

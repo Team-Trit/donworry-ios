@@ -7,8 +7,8 @@
 //
 
 import Foundation
+import UIKit
 
-// 유즈케이스 정리
 enum PaymentCardModels {
 
     enum FetchCardList {
@@ -61,11 +61,53 @@ enum PaymentCardModels {
             var totalAmount: Int
             var bgColor: String
             var paymentDate: String
+            var images: [UIImage]
         }
 
         struct Response {
+            let id, spaceID, takerID: Int
+            let name: String
+            let totalAmount: Int
+            let bgColor, paymentDate: String
+            let category: Category
+            let account: Account
             
+            struct Account: Codable {
+                let bank, number, holder: String
+                let userID: Int
+            }
+
+            struct Category: Codable {
+                let id: Int?
+                let name, imgURL: String
+            }
         }
+    }
+    
+    
+    enum PostCardImage {
+        
+        struct Request {
+            let images: [UIImage]
+        }
+        
+        struct Response {
+            let id, spaceID, categoryID, takerID: Int
+            let name: String
+            let totalAmount: Int
+            let bgColor, paymentDate: String
+            let account: Account
+            let imgUrls: [String]
+            
+            struct Account: Codable {
+                let bank, number, holder: String
+                let userID: Int
+            }
+        }
+    }
+    
+    enum Empty {
+        struct Response {}
     }
     
 }

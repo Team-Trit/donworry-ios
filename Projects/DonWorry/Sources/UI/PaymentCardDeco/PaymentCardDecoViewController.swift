@@ -26,9 +26,9 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     var cardVM = CardViewModel(cardColor: .pink,
                                payDate: Date(),
-                               bank: "신한" ,
-                               holder: "정찬희",
-                               number: "12345",
+                               bank: "카뱅" ,
+                               holder: "버리",
+                               number: "123445",
                                images: [])
     
     lazy var paymentCard = PaymentCardView()
@@ -107,7 +107,8 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         render(reactor: reactor)
     }
 
-    func dispatch(to reactor: PaymentCardDecoReactor) {       self.completeButton.rx.tap.map { .didTapCompleteButton(self.cardVM) }
+    func dispatch(to reactor: PaymentCardDecoReactor) {
+        self.completeButton.rx.tap.map { .didTapCompleteButton(self.cardVM) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -245,9 +246,12 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
                     imageArray.append(image)
                 }
                 self.tableView.updatePhotoCell(img: imageArray)
+                // image Array 에 image 넣기
+                self.cardVM.images = imageArray
+                print("🔔🔔🔔🔔이미지 넣기🔔🔔🔔🔔")
+                print(self.cardVM.images)
             }
         }
-        cardVM.images = imageArray
     }
     
 }
