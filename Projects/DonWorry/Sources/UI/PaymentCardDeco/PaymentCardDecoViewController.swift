@@ -26,9 +26,9 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     var cardVM = CardViewModel(cardColor: .pink,
                                payDate: Date(),
-                               bank: "카뱅" ,
-                               holder: "버리",
-                               number: "123445",
+                               bank: UserServiceImpl().fetchLocalUser()?.bankAccount.bank ?? "은행" ,
+                               holder: UserServiceImpl().fetchLocalUser()?.bankAccount.accountHolderName ?? "계좌주인",
+                               number: UserServiceImpl().fetchLocalUser()?.bankAccount.accountNumber ?? "00000000",
                                images: [])
     
     lazy var paymentCard = PaymentCardView()
@@ -165,7 +165,7 @@ extension PaymentCardDecoViewController {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardListView:
-            self.navigationController?.popViewController(animated: true)
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         case .completePaymentCardDeco:
             NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
             
@@ -183,6 +183,7 @@ extension PaymentCardDecoViewController {
         scrollView.isScrollEnabled = true
         tableView.isScrollEnabled = false
         tableView.paymentCardDecoTableViewDelegate = self
+//        tableView.vcDelegate = self
     }
     
     private func layout() {
@@ -257,6 +258,10 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
 }
 
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
+    func updateAccountCell(bank: String, holder: String, number: String) {
+        
+    }
+    
     
     func updateCardColor(with color: CardColor) {
         paymentCard.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
@@ -288,5 +293,23 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         self.present(phPickerVC, animated: true)
     }
     
+    func updateHolder(holder: String) {
+        if !holder.isEmpty {
+            paymentCard.accountHodlerNameLabel.text = "(\(holder))"
+            cardVM.holder = holder
+        } else {
+            paymentCard.accountHodlerNameLabel.text = "(예금주명)"
+        }
+    }
+    
+    
+    func updateAccountNumber(number: String) {
+        if !number.isEmpty {
+            paymentCard.accountNumberLabel.text = "\(number)"
+            cardVM.number = number
+        } else {
+            paymentCard.accountNumberLabel.text = "000000-00000"
+        }
+    }
 
 }
