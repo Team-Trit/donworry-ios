@@ -147,7 +147,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     }(UIButton())
     
     @objc private func editPrice() {
-        print("edit")
+        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController()
+        navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
     
     @objc private func didTapBottomButton() {
@@ -191,6 +192,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
         priceLabel.text = viewModel.totalAmountString
         if viewModel.isAdmin {
+            editButton.isHidden = false
             bottomButton.setTitle("삭제하기", for: .normal)
             bottomButton.backgroundColor = .designSystem(.redTopGradient)
         } else {
@@ -211,7 +213,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
 //MARK: Layout
 extension PaymentCardDetailViewController {
     private func bind() {
-
+        
         navigationBar.leftItem.rx.tap
             .bind {
                 self.navigationController?.popViewController(animated: true)
@@ -292,7 +294,8 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             return viewModel.numOfUsers
         case fileCollectionView:
-            return viewModel.imageUrlStrings.count
+            return 1
+//            return viewModel.imageUrlStrings.count
             //MARK: 추후 사진 수정시 이용됩니다
 //            return cameraImageArray.count
 //            if cameraImageArray.count == 0 {
@@ -337,7 +340,8 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
 //            } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
             cell.FileCollectionViewCellDelegate = self
-            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+//            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            cell.imageUrl = "https://img.sbs.co.kr/newsnet/etv/upload/2021/03/05/30000673929_1280.jpg"
             cell.deleteCircle.isHidden = true
             return cell
 //            }
@@ -350,9 +354,12 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
             //MARK: 추후 사진 수정시 이용됩니다
-//        case fileCollectionView:
+        case fileCollectionView:
 //            guard viewModel.isAdmin else { return }
-//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+            let detailImageViewController = DetailImageViewController()
+            detailImageViewController.imageUrl = "https://i.pinimg.com/originals/2c/2c/60/2c2c60b20cb817a80afd381ae23dab05.jpg"
+            present(detailImageViewController, animated: true)
 //            if cameraImageArray.count < 3 && indexPath.row == 0 {
 //                showPhotoPicker()
 //            }
