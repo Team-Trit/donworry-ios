@@ -41,7 +41,7 @@ final class HomePresenterImpl: HomePresenter {
         if payments.isEmpty { return [.BillCardSection(createOpenStateCard())] }
         var cards: [HomeBillCardItem] = createProgressStateCard(by: isAllPaymentCompleted)
         cards.append(contentsOf: formatBillCardList(from: payments, isTaker: isTaker))
-        cards.append(.LeaveBillCard)
+        if isAllPaymentCompleted { cards.append(.LeaveBillCard) } 
         return [.BillCardSection(cards)]
     }
 
@@ -63,10 +63,6 @@ final class HomePresenterImpl: HomePresenter {
     private func createProgressStateCard(by isAllPaymentCompleted: Bool) -> [HomeBillCardItem] {
         return [.StateBillCard(.init(status: isAllPaymentCompleted ? .done : .progress))]
     }
-//    private func formatStateBillCard(isAllPaymentCompleted: Bool) -> [HomeBillCardItem] {
-//        if isAllPaymentCompleted { return [.StateBillCard(.init(status: .done))]}
-//        else { return .init}
-//    )
 
     private func formatTakeBillCard(
         from payments: [SpaceModels.FetchSpaceList.SpacePayment],
@@ -75,7 +71,12 @@ final class HomePresenterImpl: HomePresenter {
         let completedAmount = payments.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
         let totalAmount = payments.map { $0.amount }.reduce(0, +)
         return [HomeBillCardItem.TakeBillCard(
-            .init(amount: formatter(completedAmount), isCompleted: totalAmount == completedAmount)
+            .init(
+                userCount: payments.filter { !$0.isCompleted }.count,
+                totalCount: payments.count,
+                amount: formatter(completedAmount),
+                isCompleted: totalAmount == completedAmount
+            )
         )]
     }
 

@@ -66,11 +66,11 @@ final class HomeReactor: Reactor {
 
     init(
         _ getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
-        _ SpaceService: SpaceService = SpaceServiceImpl(),
+        _ spaceService: SpaceService = SpaceServiceImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
-        self.spaceService = SpaceService
+        self.spaceService = spaceService
         self.homePresenter = homePresenter
         self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
     }

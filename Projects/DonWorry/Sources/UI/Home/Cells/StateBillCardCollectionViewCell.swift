@@ -22,23 +22,8 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
         case close
     }
 
-    lazy var imageView: UIImageView = {
+    lazy var statusImageView: UIImageView = {
         let v = UIImageView()
-
-        return v
-    }()
-    lazy var periodLabel: UILabel = {
-        let v = UILabel()
-        v.font = .designSystem(weight: .heavy, size: ._30)
-        v.textColor = .designSystem(.white)
-        v.text = "•••"
-        return v
-    }()
-
-    lazy var circleView: UIView = {
-        let v = UIView()
-        v.backgroundColor = .designSystem(.grayF6F6F6)
-        v.alpha = 0.51
         return v
     }()
 
@@ -54,8 +39,8 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
             guard let viewModel = viewModel else {
                 return
             }
-
             titleLabel.text = self.setTitle(by: viewModel.status)
+            statusImageView.image = self.setImage(by: viewModel.status)
         }
     }
     override init(frame: CGRect) {
@@ -71,23 +56,19 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
-        self.contentView.addSubview(self.circleView)
+        self.contentView.addSubview(self.statusImageView)
         self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.periodLabel)
 
-        self.circleView.snp.makeConstraints { make in
+        self.statusImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(83)
-        }
-        self.periodLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.width.height.equalTo(84)
         }
         self.titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(circleView.snp.bottom).offset(19.5)
+            make.top.equalTo(statusImageView.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
 
-        self.circleView.roundCorners(83/2)
+        self.statusImageView.roundCorners(42)
         self.contentView.addGradient(
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
@@ -109,7 +90,16 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
         }
     }
 
-//    private func setImage(by status: SpaceStatus) -> UIImage {
-//
-//    }
+    private func setImage(by status: SpaceStatus) -> UIImage? {
+        switch status {
+        case .open:
+            return UIImage(.ic_billcard_ing)
+        case .progress:
+            return UIImage(.ic_billcard_ing)
+        case .done:
+            return UIImage(.ic_billcard_check)
+        case .close:
+            return UIImage(.ic_billcard_ing)
+        }
+    }
 }

@@ -78,18 +78,13 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
-    lazy var completeCoverView: UIView = {
-        let v = UIView()
-        v.isHidden = true
-        return v
-    }()
 
     var viewModel: GiveBillCardCellViewModel? {
         didSet {
             self.nickNameLabel.text = viewModel?.nickName
             self.amountLabel.text = viewModel?.amount
             profileImageView.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
-            completeCoverView.isHidden = !(viewModel?.isCompleted ?? false)
+            if (viewModel?.isCompleted ?? false) { self.addCompleteView() }
         }
     }
 
@@ -107,7 +102,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
     private func setUI() {
         self.contentView.backgroundColor = .designSystem(.brown)
         self.contentView.addSubview(self.wholeStackView)
-        self.contentView.addSubview(self.completeCoverView)
+
         self.wholeStackView.addArrangedSubview(self.profileStackView)
         self.wholeStackView.addArrangedSubview(self.descriptionStackView)
         self.profileStackView.addArrangedSubview(self.profileImageView)
@@ -124,31 +119,10 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         self.profileImageView.snp.makeConstraints { make in
             make.width.height.equalTo(76)
         }
-        self.completeCoverView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
 
         self.profileImageView.roundCorners(38)
         self.contentView.roundCorners(8)
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)
-        self.addCompleteCoverViewBlurEffect()
     }
 
-    private func addCompleteCoverViewBlurEffect() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemThinMaterial)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = completeCoverView.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        self.addCompleteCheckImageView(to: blurEffectView)
-        self.completeCoverView.addSubview(blurEffectView)
-    }
-
-    private func addCompleteCheckImageView(to superView: UIVisualEffectView) {
-        let checkImageView = UIImageView(image: .init(.ic_check_white))
-        superView.contentView.addSubview(checkImageView)
-        checkImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(36)
-        }
-    }
 }
