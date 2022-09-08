@@ -15,11 +15,33 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+enum paymentAmountEditType {
+    case create
+    case update
+}
+
 final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
+    private var editType: paymentAmountEditType = .create
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
+    
+    
+    init(editType: paymentAmountEditType = .create) {
+        super.init(nibName: nil, bundle: nil)
+        if editType == .update {
+            self.editType = .update
+            navigationBar = .init(title: "")
+            nextButton.title = "수정 완료"
+        }
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -149,7 +171,7 @@ extension PaymentCardAmountEditViewController {
                 self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
-        
+        if editType == .update { return }
         navigationBar.rightItem!.rx.tap
             .bind {
                 guard let controllers = self.navigationController?.viewControllers else { return }

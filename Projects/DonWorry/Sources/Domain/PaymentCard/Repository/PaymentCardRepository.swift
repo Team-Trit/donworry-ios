@@ -56,6 +56,13 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
+    func putEditPaymentCard(id: Int, totalAmount: Int, name: String) -> Observable<PaymentCardModels.PutCard.Response> {
+        network.request(PutEditPaymentCardAPI(request: .init(id: id, totalAmount: totalAmount, name: name)))
+            .compactMap { _ in
+                return .init(card: .init(id: id, totalAmount: totalAmount, name: name))
+            }.asObservable()
+    }
+    
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }

@@ -42,11 +42,11 @@ class FileCollectionViewCell: UICollectionViewCell {
     }(UIButton())
 
     @objc private func deletePhoto(_ sender: UIButton) {
-        
-        if !cameraImageArray.isEmpty {
-            cameraImageArray.remove(at: deleteCircle.tag)
-            FileCollectionViewCellDelegate?.deletePhoto()
-        }
+        //MARK: 추후 사진 수정시 이용됩니다
+//        if !cameraImageArray.isEmpty {
+//            cameraImageArray.remove(at: deleteCircle.tag)
+//            FileCollectionViewCellDelegate?.deletePhoto()
+//        }
     }
     
     override init(frame: CGRect) {

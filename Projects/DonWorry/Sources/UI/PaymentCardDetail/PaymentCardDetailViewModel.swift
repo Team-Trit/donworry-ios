@@ -21,7 +21,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
     let payer: User = User.dummyUser1
     @Published var paymentCard: cardResponse.PaymentCard = .init(id: -1, totalAmount: 0, users: [], imgUrls: [])
     
-    var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
+    var paymentUseCase: PaymentCardService = PaymentCardServiceImpl()
     var userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
     
     init(cardID: Int, cardName: String) {
@@ -31,7 +31,6 @@ class PaymentCardDetailViewModel:BaseViewModel {
             .subscribe(onNext: { [weak self] response in
                 self?.paymentCard = response.card
             }).disposed(by: disposeBag)
-        
     }
     
     var isAttended: Bool = false
@@ -83,6 +82,10 @@ class PaymentCardDetailViewModel:BaseViewModel {
             .subscribe(onNext: { str in
                 print(str)
             }).disposed(by: disposeBag)
+        //MARK: 추후 삭제될 코드입니다.
+//        paymentUseCase.putEditPaymentCard(id: paymentCard.id, totalAmount: 300, name: "300")
+//            .subscribe(onNext: { str in
+//                print(str)
+//            }).disposed(by: disposeBag)
     }
-    
 }

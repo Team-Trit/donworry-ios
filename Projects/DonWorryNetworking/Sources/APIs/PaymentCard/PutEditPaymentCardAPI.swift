@@ -18,6 +18,9 @@ public struct PutEditPaymentCardAPI: ServiceAPI {
     public var headers: [String : String]? {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
     }
+    public init(request: Request) {
+        self.request = request
+    }
 }
 
 extension PutEditPaymentCardAPI {

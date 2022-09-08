@@ -18,7 +18,7 @@ import Combine
 
 // MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
 
-var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
+//var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
 
 final class PaymentCardDetailViewController: BaseViewController, View {
     
@@ -147,7 +147,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     }(UIButton())
     
     @objc private func editPrice() {
-        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController()
+        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
         navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
     
@@ -161,6 +161,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             
             let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
                 self.viewModel.deletePaymentCard()
+                self.navigationController?.popViewController(animated: true)
             })
             let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
             
@@ -294,8 +295,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             return viewModel.numOfUsers
         case fileCollectionView:
-            return 1
-//            return viewModel.imageUrlStrings.count
+            return viewModel.imageUrlStrings.count
             //MARK: 추후 사진 수정시 이용됩니다
 //            return cameraImageArray.count
 //            if cameraImageArray.count == 0 {
@@ -340,8 +340,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
 //            } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
             cell.FileCollectionViewCellDelegate = self
-//            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
-            cell.imageUrl = "https://img.sbs.co.kr/newsnet/etv/upload/2021/03/05/30000673929_1280.jpg"
+            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
             cell.deleteCircle.isHidden = true
             return cell
 //            }
@@ -352,14 +351,15 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
         case attendanceCollectionView:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
+            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
             //MARK: 추후 사진 수정시 이용됩니다
         case fileCollectionView:
 //            guard viewModel.isAdmin else { return }
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
             let detailImageViewController = DetailImageViewController()
-            detailImageViewController.imageUrl = "https://i.pinimg.com/originals/2c/2c/60/2c2c60b20cb817a80afd381ae23dab05.jpg"
+            detailImageViewController.imageUrl = viewModel.imageUrlStrings[indexPath.row]
             present(detailImageViewController, animated: true)
+            //MARK: 추후 사진 수정시 이용됩니다
 //            if cameraImageArray.count < 3 && indexPath.row == 0 {
 //                showPhotoPicker()
 //            }
@@ -399,7 +399,6 @@ extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
 //        phPickerVC.delegate = self
 //        self.present(phPickerVC, animated: true)
 //    }
-//
 //    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
 //        dismiss(animated: true)
 //        var images = [UIImage]()
