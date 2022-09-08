@@ -10,7 +10,6 @@ import UIKit
 import DesignSystem
 
 final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "LeaveSpaceBillCardCollectionViewCell"
     lazy var leaveImageView: UIImageView = {
         let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .heavy)
         let v = UIImageView(image: UIImage(systemName: "rectangle.portrait.and.arrow.right", withConfiguration: configuration))

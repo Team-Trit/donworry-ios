@@ -11,12 +11,13 @@ import Models
 import DonWorryExtensions
 
 protocol HomePresenter {
-    func formatSection(
+    func formatSpaceCellViewModel(
         spaceList: [SpaceModels.FetchSpaceList.Space],
         selectedIndex: Int
     ) -> [SpaceCellViewModel]
 
     func formatSection(
+        isAllPaymentCompleted: Bool,
         payments: [SpaceModels.FetchSpaceList.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection]
@@ -24,7 +25,7 @@ protocol HomePresenter {
 
 final class HomePresenterImpl: HomePresenter {
 
-    func formatSection(
+    func formatSpaceCellViewModel(
         spaceList: [SpaceModels.FetchSpaceList.Space],
         selectedIndex: Int
     ) -> [SpaceCellViewModel] {
@@ -33,11 +34,12 @@ final class HomePresenterImpl: HomePresenter {
         }
     }
     func formatSection(
+        isAllPaymentCompleted: Bool,
         payments: [SpaceModels.FetchSpaceList.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection] {
-        if payments.isEmpty { return [.BillCardSection([.StateBillCard])] }
-        var cards: [HomeBillCardItem] = [.StateBillCard]
+        if payments.isEmpty { return [.BillCardSection(createOpenStateCard())] }
+        var cards: [HomeBillCardItem] = createProgressStateCard(by: isAllPaymentCompleted)
         cards.append(contentsOf: formatBillCardList(from: payments, isTaker: isTaker))
         cards.append(.LeaveBillCard)
         return [.BillCardSection(cards)]
@@ -53,6 +55,18 @@ final class HomePresenterImpl: HomePresenter {
             return formatGiveBillCardList(from: payments, isTaker: isTaker)
         }
     }
+
+    private func createOpenStateCard() -> [HomeBillCardItem] {
+        return [.StateBillCard(.init(status: .open))]
+    }
+
+    private func createProgressStateCard(by isAllPaymentCompleted: Bool) -> [HomeBillCardItem] {
+        return [.StateBillCard(.init(status: isAllPaymentCompleted ? .done : .progress))]
+    }
+//    private func formatStateBillCard(isAllPaymentCompleted: Bool) -> [HomeBillCardItem] {
+//        if isAllPaymentCompleted { return [.StateBillCard(.init(status: .done))]}
+//        else { return .init}
+//    )
 
     private func formatTakeBillCard(
         from payments: [SpaceModels.FetchSpaceList.SpacePayment],

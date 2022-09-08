@@ -64,7 +64,9 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         let v = UILabel()
         v.textColor = .designSystem(.white)
         v.font = .designSystem(weight: .bold, size: ._13)
+        v.adjustsFontForContentSizeCategory = true
         v.text = "줄돈"
+
         v.textAlignment = .center
         return v
     }()
@@ -72,6 +74,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         let v = UILabel()
         v.textColor = .designSystem(.white)
         v.font = .designSystem(weight: .heavy, size: ._20)
+        v.adjustsFontForContentSizeCategory = true
         v.textAlignment = .center
         return v
     }()
@@ -90,7 +93,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
                 profileImageView.kf.setImage(with: urlString)
             }
             if let viewModel = viewModel {
-//                completeCoverView.isHidden = !viewModel.isCompleted
+                completeCoverView.isHidden = !viewModel.isCompleted
             }
         }
     }
@@ -109,7 +112,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
     private func setUI() {
         self.contentView.backgroundColor = .designSystem(.brown)
         self.contentView.addSubview(self.wholeStackView)
-//        self.contentView.addSubview(self.completeCoverView)
+        self.contentView.addSubview(self.completeCoverView)
         self.wholeStackView.addArrangedSubview(self.profileStackView)
         self.wholeStackView.addArrangedSubview(self.descriptionStackView)
         self.profileStackView.addArrangedSubview(self.profileImageView)
@@ -118,21 +121,22 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         self.descriptionStackView.addArrangedSubview(self.amountLabel)
 
         self.wholeStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(25)
-            make.bottom.equalToSuperview().inset(19)
-            make.leading.trailing.equalToSuperview().inset(25)
+            make.top.equalToSuperview().offset(32)
+            make.bottom.equalToSuperview().inset(24)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.centerX.equalToSuperview()
         }
         self.profileImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(60)
+            make.width.height.equalTo(76)
         }
-//        self.completeCoverView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
+        self.completeCoverView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
-        self.profileImageView.roundCorners(30)
+        self.profileImageView.roundCorners(38)
         self.contentView.roundCorners(8)
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)
-//        self.addCompleteCoverViewBlurEffect()
+        self.addCompleteCoverViewBlurEffect()
     }
 
     private func addCompleteCoverViewBlurEffect() {
