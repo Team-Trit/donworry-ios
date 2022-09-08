@@ -114,6 +114,11 @@ extension ProfileViewController {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        accountButtonStackView.deleteButton.rx.tap
+            .map { Reactor.Action.pressAccountDeleteButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         navigationBar.leftItem.rx.tap
             .map { Reactor.Action.pressBackButton }
             .bind(to: reactor.action)
@@ -216,8 +221,15 @@ extension ProfileViewController {
             break
             
         case .deleteAccountSheet:
-            // TODO: 회원 삭제 sheet present
-            break
+            let alert = UIAlertController(title: "정말로 탈퇴하시겠습니까?", message: "탈퇴 시 회원님의 모든 정보가 삭제되고 이후 복구할 수 없습니다.", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive) { _ in
+                self.reactor?.action.onNext(.deleteAccount)
+            }
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+            
+            alert.addAction(confirmAction)
+            alert.addAction(cancelAction)
+            self.present(alert, animated: true)
             
         default:
             break

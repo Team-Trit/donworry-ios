@@ -36,6 +36,7 @@ final class ProfileViewReactor: Reactor {
         case pressBlogButton
         case pressLogoutButton
         case pressAccountDeleteButton
+        case deleteAccount
     }
     
     enum Mutation {
@@ -127,6 +128,10 @@ final class ProfileViewReactor: Reactor {
             
         case .pressAccountDeleteButton:
             return .just(.routeTo(step: .deleteAccountSheet))
+            
+        case .deleteAccount:
+            // TODO: 회원 탈퇴 API 호출
+            return .empty()
         }
     }
     
