@@ -22,6 +22,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
     @Published var paymentCard: cardResponse.PaymentCard = .init(id: -1, totalAmount: 0, users: [], imgUrls: [])
     
     var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
+    var userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
     
     init(cardID: Int, cardName: String) {
         self.paymentCardName = cardName
@@ -50,11 +51,8 @@ class PaymentCardDetailViewModel:BaseViewModel {
     }
     
     var isAdmin: Bool {
-        //TODO: admin인지 확인
-        return true
-        guard paymentCard.users.count > 0 else { return false }
-        print(payer.id == paymentCard.users.filter{$0.isTaker}.first?.id)
-        return payer.id == paymentCard.users.filter{$0.isTaker}.first?.id
+        guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else { return false }
+        return userID == paymentCard.users.filter{$0.isTaker}.first?.id
     }
     
     var numOfFilesWhenNoImages: Int {

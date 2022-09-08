@@ -55,7 +55,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
 
     private func dateFormatting(_ dateString: String) -> String {
         if let date = Formatter.fullDateFormatter.date(from: dateString) {
-            return Formatter.paymentCardDateFormatter.string(from: date)
+            return Formatter.mmddDateFormatter.string(from: date)
         }
         return "00/00"
     }
