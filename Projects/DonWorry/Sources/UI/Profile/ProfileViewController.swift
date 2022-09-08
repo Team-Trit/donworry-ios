@@ -6,6 +6,7 @@
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
+import PhotosUI
 import UIKit
 
 import BaseArchitecture
@@ -16,6 +17,7 @@ import RxCocoa
 import RxFlow
 import RxSwift
 import SnapKit
+
 
 enum ProfileTableViewCellType {
     case user
@@ -74,25 +76,25 @@ extension ProfileViewController {
         }
         
         inquiryButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(30)
+            make.top.equalTo(profileTableView.snp.bottom).offset(25)
             make.trailing.equalTo(questionButtonView.snp.leading).offset(-50)
             make.width.height.equalTo(50)
         }
         
         questionButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(30)
+            make.top.equalTo(profileTableView.snp.bottom).offset(25)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(50)
         }
         
         blogButtonView.snp.makeConstraints { make in
-            make.top.equalTo(profileTableView.snp.bottom).offset(30)
+            make.top.equalTo(profileTableView.snp.bottom).offset(25)
             make.leading.equalTo(questionButtonView.snp.trailing).offset(50)
             make.width.height.equalTo(50)
         }
         
         accountButtonStackView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
         }
     }
@@ -145,8 +147,60 @@ extension ProfileViewController {
             self.navigationController?.popViewController(animated: true)
             
         case .profileImageSheet:
-            // TODO: ChageProfile Image
-            break
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let choosePhotoAction = UIAlertAction(title: "앨범에서 사진 선택", style: .default) { _ in
+                var configuration = PHPickerConfiguration()
+                configuration.filter = .images
+                let picker = PHPickerViewController(configuration: configuration)
+                picker.delegate = self
+                self.present(picker, animated: true)
+            }
+            let takePhotoAction = UIAlertAction(title: "사진 촬영", style: .default) { _ in
+                let imgPickerController = UIImagePickerController()
+                imgPickerController.sourceType = .camera
+                imgPickerController.allowsEditing = true
+                imgPickerController.delegate = self
+                
+                switch AVCaptureDevice.authorizationStatus(for: .video) {
+                case .authorized:
+                    self.present(imgPickerController, animated: true)
+                    
+                case .notDetermined:
+                    AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                            guard let self = self else { return }
+                                if granted {
+                                    DispatchQueue.main.async {
+                                        self.present(imgPickerController, animated: true)
+                                    }
+                                }
+                            }
+                    
+                case .denied, .restricted:
+                    let alert = UIAlertController(title: nil, message: "카메라 촬영 권한이 없습니다.\n카메라 권한을 허용해주세요.", preferredStyle: .alert)
+                    let settingAction = UIAlertAction(title: "설정", style: .default) { _ in
+                        // 설정으로 이동
+                        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                        if UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                    let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+                    
+                    alert.addAction(settingAction)
+                    alert.addAction(cancelAction)
+                    self.present(alert, animated: true)
+                    
+                @unknown default:
+                    break
+                }
+            }
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+            
+            actionSheet.addAction(choosePhotoAction)
+            actionSheet.addAction(takePhotoAction)
+            actionSheet.addAction(cancelAction)
+            
+            self.present(actionSheet, animated: true)
             
         case .nicknameEdit:
             let vc = NicknameEditViewController()
@@ -197,17 +251,16 @@ extension ProfileViewController: UITableViewDataSource {
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.imageURL }
+                    .distinctUntilChanged()
                     .asDriver(onErrorJustReturn: "default_profile_image")
-                    .map { UIImage(Asset(rawValue: $0)!) }
-                    .drive(cell.profileImageView.rx.image)
-                    .disposed(by: cell.disposeBag)
-                    /*
-                     프로필 이미지 추가 후 Kingfisher 사용
-                    .drive(onNext: { imageURL in
-                        guard let url = URL(string: imageURL) else { return }
-                        cell.profileImageView.kf.setImage(with: url)
+                    .drive(onNext: { imgURL in
+                        if imgURL != "default_profile_image", let url = URL(string: imgURL) {
+                            cell.profileImageView.kf.setImage(with: url)
+                        } else {
+                            cell.profileImageView.image = UIImage(.default_profile_image)
+                        }
                     })
-                     */
+                    .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.nickname }
                     .asDriver(onErrorJustReturn: "")
@@ -288,5 +341,40 @@ extension ProfileViewController: UITableViewDelegate {
             guard let cell = cell as? ProfileTableViewServiceCell else { return }
             cell.disposeBag = DisposeBag()
         }
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+extension ProfileViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        let selectedPhoto = results.first?.itemProvider
+        selectedPhoto?.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier, completionHandler: { url, error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            guard let imgURL = url?.absoluteString else { return }
+            self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
+        })
+    }
+}
+
+// MARK: - UINavigationControllerDelegate, UIImagePickerControllerDelegate
+extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.editedImage] as? UIImage else { return }
+        let imgName = UUID().uuidString+".jpeg"
+        let documentDirectory = NSTemporaryDirectory()
+        let localPath = documentDirectory.appending(imgName)
+        let data = image.jpegData(compressionQuality: 0.3)! as NSData
+        data.write(toFile: localPath, atomically: true)
+        let imgURL = URL.init(fileURLWithPath: localPath).absoluteString
+        self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
     }
 }

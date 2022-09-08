@@ -92,7 +92,7 @@ extension NicknameEditViewController {
             .disposed(by: disposeBag)
         
         doneButton.rx.tap
-            .map { Reactor.Action.doneButtonPressed }
+            .map { Reactor.Action.pressDoneButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }

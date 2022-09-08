@@ -20,7 +20,7 @@ final class NicknameEditViewReactor: Reactor {
     enum Action {
         case pressBackButton
         case updateNickname(nickname: String)
-        case doneButtonPressed
+        case pressDoneButton
     }
     
     enum Mutation {
@@ -52,10 +52,14 @@ final class NicknameEditViewReactor: Reactor {
             user.nickName = nickname
             return .just(Mutation.nicknameChanged(count: nickname.count))
             
-        case .doneButtonPressed:
-            // TODO: User 정보 수정 API Call
-            _ = userService.saveLocalUser(user: user)
-            return .just(Mutation.routeTo(step: .pop))
+        case .pressDoneButton:
+            return userService.updateUser(nickname: user.nickName,
+                                  imgURL: nil,
+                                  bank: nil,
+                                  holder: nil,
+                                  accountNumber: nil,
+                                  isAgreeMarketing: nil)
+            .map { _ in .routeTo(step: .pop) }
         }
     }
     

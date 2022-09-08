@@ -79,9 +79,13 @@ final class AccountEditViewReactor: Reactor {
             return .just(Mutation.updateValidation)
             
         case .pressDoneButton:
-            // TODO: User 수정 API Call
-            _ = userService.saveLocalUser(user: user)
-            return .just(Mutation.routeTo(step: .pop))
+            return userService.updateUser(nickname: nil,
+                                  imgURL: nil,
+                                  bank: user.bankAccount.bank,
+                                  holder: user.bankAccount.accountHolderName,
+                                  accountNumber: user.bankAccount.accountNumber,
+                                  isAgreeMarketing: nil)
+            .map { _ in .routeTo(step: .pop) }
         }
     }
     

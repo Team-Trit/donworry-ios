@@ -23,21 +23,17 @@ final class ProfileViewReactor: Reactor {
     private var user: User
     enum Action {
         case viewWillAppear
-        
         case pressBackButton
-        
         case pressUpdateProfileImageButton
+        case updateProfileImage(imgURL: String)
         case pressUpdateNickNameButton
         case pressUpdateAccountButton
-        
         case pressNoticeButton
         case pressTermButton
         case pressPushSettingButton
-        
-        case inquiryButtonPressed
-        case questionsButtonPressed
-        case blogButtonPressed
-        
+        case pressInquiryButton
+        case pressQuestionButton
+        case pressBlogButton
         case pressLogoutButton
         case pressAccountDeleteButton
     }
@@ -74,13 +70,26 @@ final class ProfileViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return .just(Mutation.updateUser(userService.fetchLocalUser()!))
+            guard let currentUser = userService.fetchLocalUser() else { return .empty() }
+            return .just(Mutation.updateUser(currentUser))
             
         case .pressBackButton:
             return .just(.routeTo(step: .pop))
             
         case .pressUpdateProfileImageButton:
             return .just(.routeTo(step: .profileImageSheet))
+            
+        case .updateProfileImage(let imgURL):
+            return userService.updateUser(nickname: nil,
+                                   imgURL: imgURL,
+                                   bank: nil,
+                                   holder: nil,
+                                   accountNumber: nil,
+                                   isAgreeMarketing: nil)
+            .map { _ in
+                let currentUser = self.userService.fetchLocalUser()!
+                return .updateUser(currentUser)
+            }
             
         case .pressUpdateNickNameButton:
             return .just(Mutation.routeTo(step: .nicknameEdit))
@@ -100,15 +109,15 @@ final class ProfileViewReactor: Reactor {
             // TODO: 알림설정
             return .empty()
             
-        case .inquiryButtonPressed:
+        case .pressInquiryButton:
             // TODO: 1대1 문의
             return .empty()
             
-        case .questionsButtonPressed:
+        case .pressQuestionButton:
             // TODO: 자주 찾는 질문
             return .empty()
             
-        case .blogButtonPressed:
+        case .pressBlogButton:
             // TODO: 블로그
             return .empty()
             
