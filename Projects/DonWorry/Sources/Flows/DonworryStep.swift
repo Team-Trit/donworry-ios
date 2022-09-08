@@ -13,6 +13,9 @@ enum DonworryStep: Step {
     case none
     case popViewController
     
+    // Temporary
+    case home
+    
     // Login Flow
     case loginIsRequired
     case userInfoIsRequired(provider: LoginProvider, accessToken: String)

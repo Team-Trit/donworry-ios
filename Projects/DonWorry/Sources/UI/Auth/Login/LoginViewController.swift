@@ -6,16 +6,19 @@
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
+import AuthenticationServices
 import UIKit
 
 import BaseArchitecture
 import DesignSystem
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 import SnapKit
 
-final class LoginViewController: BaseViewController, View {
+final class LoginViewController: BaseViewController, View, Stepper {
+    let steps = PublishRelay<Step>()
     private lazy var labelStackView = LabelStackView()
     lazy var testUserButton: UIButton = {
         let v = UIButton()
@@ -47,7 +50,7 @@ final class LoginViewController: BaseViewController, View {
     
     func bind(reactor: LoginViewReactor) {
         dispatch(to: reactor)
-        render(reactor)   
+        render(reactor)
     }
 }
 
@@ -55,11 +58,11 @@ final class LoginViewController: BaseViewController, View {
 extension LoginViewController {
     private func setUI() {
         view.addSubviews(backgroundView, labelStackView, appleLoginButton, googleLoginButton, kakaoLoginButton)
-
+        
         backgroundView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
-
+        
         labelStackView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(70)
             make.centerX.equalToSuperview()
@@ -113,21 +116,45 @@ extension LoginViewController {
     }
     
     private func render(_ reactor: LoginViewReactor) {
+        reactor.pulse(\.$appleLoginTrigger)
+            .asDriver(onErrorJustReturn: ())
+            .compactMap { $0 }
+            .drive(onNext: { _ in
+                let appleIDProvider = ASAuthorizationAppleIDProvider()
+                let request = appleIDProvider.createRequest()
+                request.requestedScopes = [.fullName, .email]
+                
+                let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+                authorizationController.delegate = self
+                authorizationController.presentationContextProvider = self
+                authorizationController.performRequests()
+            })
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] step in self?.move(to: step) })
+            .subscribe(onNext: { [weak self] step in
+                self?.route(to: step)
+            })
             .disposed(by: disposeBag)
     }
 }
 
+// MARK: - Route
 extension LoginViewController {
-    private func move(to step: LoginStep) {
+    private func route(to step: DonworryStep) {
         switch step {
+        case let .userInfoIsRequired(provider, accessToken):
+            self.steps.accept(DonworryStep.userInfoIsRequired(provider: provider, accessToken: accessToken))
+            
         case .home:
             let homeViewController = HomeViewController()
             homeViewController.reactor = HomeReactor()
             self.navigationController?.setViewControllers([homeViewController], animated: true)
+            
+        default:
+            break
         }
     }
 }
@@ -141,5 +168,53 @@ extension LoginViewController {
         default:
             break
         }
+    }
+}
+
+// MARK: - Apple Login
+extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        switch authorization.credential {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            
+            // Create an account in your system.
+            let userIdentifier = appleIDCredential.user
+            let fullName = appleIDCredential.fullName
+            let email = appleIDCredential.email
+            
+            if let authorizationCode = appleIDCredential.authorizationCode,
+               let identityToken = appleIDCredential.identityToken,
+               let authString = String(data: authorizationCode, encoding: .utf8),
+               let tokenString = String(data: identityToken, encoding: .utf8) {
+                print("authorizationCode: \(authorizationCode)")
+                print("identityToken: \(identityToken)")
+                print("authString: \(authString)")
+                print("tokenString: \(tokenString)")
+                
+            }
+            print("useridentifier: \(userIdentifier)")
+            print("fullName: \(fullName)")
+            print("email: \(email)")
+            
+        case let passwordCredential as ASPasswordCredential:
+            
+            // Sign in using an existing iCloud Keychain credential.
+            let username = passwordCredential.user
+            let password = passwordCredential.password
+            
+            print("username: \(username)")
+            print("password: \(password)")
+            
+        default:
+            break
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("로그인 실패")
     }
 }

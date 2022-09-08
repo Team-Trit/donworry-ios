@@ -24,6 +24,10 @@ final class LoginFlow: Flow {
         guard let step = step as? DonworryStep else { return .none }
         
         switch step {
+            // MARK: - Temporary
+        case .home:
+            return .none
+            
         case .none:
             return .none
             
@@ -64,7 +68,7 @@ extension LoginFlow {
         let reactor = LoginViewReactor()
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+        return .one(flowContributor: .contribute(withNext: vc))
     }
     
     private func navigateToEnterUserInfoView(provider: LoginProvider, accessToken: String) -> FlowContributors {
