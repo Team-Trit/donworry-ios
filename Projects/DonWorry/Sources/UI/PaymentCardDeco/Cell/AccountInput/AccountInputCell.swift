@@ -8,8 +8,11 @@
 
 import UIKit
 import DesignSystem
+import RxSwift
 
 class AccountInputCell: UITableViewCell {
+    
+    let disposeBag = DisposeBag()
     
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!

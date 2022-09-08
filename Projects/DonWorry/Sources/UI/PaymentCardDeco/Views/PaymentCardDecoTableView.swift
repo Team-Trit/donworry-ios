@@ -24,6 +24,8 @@ protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateCardColor(with color: CardColor)
     func updatePayDate(with date : Date)
     func showPhotoPicker()
+    func updateHolder(holder: String)
+    func updateAccountNumber(number: String)
 }
 
 protocol PhotoUpdateDelegate: AnyObject {
@@ -112,7 +114,7 @@ extension PaymentCardDecoTableView {
 
 
 /* Cell Delegate 구현 */
-extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate, PayDatePickerCellDelegate{
+extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate, PayDatePickerCellDelegate {
     
     // ColorPickerCellDelegate
     func updateCardColor(with color : CardColor) {
@@ -214,6 +216,25 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 2: // 계좌번호
                 let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
                 cell.configure(isHidden: expandableItem.isHidden)
+            
+                cell.accountInputField.holderTextField.textField.rx.text
+                                .orEmpty
+                                .distinctUntilChanged()
+                                .subscribe(onNext: { text in
+                                    self.paymentCardDecoTableViewDelegate?.updateHolder(holder: text)
+                                })
+                                .disposed(by: cell.disposeBag)
+            
+            cell.accountInputField.accountTextField.textField.rx.text
+                              .orEmpty
+                              .distinctUntilChanged()
+                              .subscribe(onNext: { text in
+                                  self.paymentCardDecoTableViewDelegate?
+                                      .updateAccountNumber(number: text)
+                               })
+                              .disposed(by: cell.disposeBag)
+                                    
+            
                 return cell
             
             case 3: // 파일추가
