@@ -12,6 +12,7 @@ import Models
 
 enum PaymentCardError: Error {
     case parsingError
+    case noUser
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -79,7 +80,8 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             category: .init(id: dto.category.id, name: dto.category.name, imgURL: dto.category.imgURL),
             account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder),
             taker: .init(id: dto.taker.id, nickname: dto.taker.nickname, imgURL: dto.taker.imgURL),
-            givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) }
+            givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) },
+            isUserParticipatedIn: false
         )
     }
     

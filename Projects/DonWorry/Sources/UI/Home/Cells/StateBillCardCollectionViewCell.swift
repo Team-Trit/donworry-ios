@@ -10,20 +10,20 @@ import UIKit
 import DesignSystem
 import DonWorryExtensions
 
+struct StateBillCardViewModel: Equatable {
+    var status: StateBillCardCollectionViewCell.SpaceStatus
+}
 final class StateBillCardCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "StateBillCardCollectionViewCell"
-    lazy var periodLabel: UILabel = {
-        let v = UILabel()
-        v.font = .designSystem(weight: .heavy, size: ._30)
-        v.textColor = .designSystem(.white)
-        v.text = "•••"
-        return v
-    }()
 
-    lazy var circleView: UIView = {
-        let v = UIView()
-        v.backgroundColor = .designSystem(.grayF6F6F6)
-        v.alpha = 0.51
+    enum SpaceStatus {
+        case open
+        case progress
+        case done
+        case close
+    }
+
+    lazy var statusImageView: UIImageView = {
+        let v = UIImageView()
         return v
     }()
 
@@ -31,10 +31,18 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
         let v = UILabel()
         v.font = .designSystem(weight: .heavy, size: ._15)
         v.textColor = .designSystem(.white)
-        v.text = "참석확인 중"
         return v
     }()
 
+    var viewModel: StateBillCardViewModel? {
+        didSet {
+            guard let viewModel = viewModel else {
+                return
+            }
+            titleLabel.text = self.setTitle(by: viewModel.status)
+            statusImageView.image = self.setImage(by: viewModel.status)
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -48,23 +56,19 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
-        self.contentView.addSubview(self.circleView)
+        self.contentView.addSubview(self.statusImageView)
         self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.periodLabel)
 
-        self.circleView.snp.makeConstraints { make in
+        self.statusImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(83)
-        }
-        self.periodLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.width.height.equalTo(84)
         }
         self.titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(circleView.snp.bottom).offset(19.5)
+            make.top.equalTo(statusImageView.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
 
-        self.circleView.roundCorners(83/2)
+        self.statusImageView.roundCorners(42)
         self.contentView.addGradient(
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
@@ -73,11 +77,29 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)
     }
 
-    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
+    private func setTitle(by status: SpaceStatus) -> String {
+        switch status {
+        case .open:
+            return "참석확인 중"
+        case .progress:
+            return "정산 내역 보기"
+        case .done:
+            return "정산 완료"
+        case .close:
+            return ""
+        }
+    }
 
-        let circularlayoutAttributes = layoutAttributes as! CircularCollectionViewLayoutAttributes
-        self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
-        self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
+    private func setImage(by status: SpaceStatus) -> UIImage? {
+        switch status {
+        case .open:
+            return UIImage(.ic_billcard_ing)
+        case .progress:
+            return UIImage(.ic_billcard_ing)
+        case .done:
+            return UIImage(.ic_billcard_check)
+        case .close:
+            return UIImage(.ic_billcard_ing)
+        }
     }
 }

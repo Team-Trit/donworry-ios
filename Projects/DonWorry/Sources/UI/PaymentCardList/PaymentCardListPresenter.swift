@@ -32,7 +32,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
     private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response.PaymentCard) -> PaymentCardCellViewModel {
         return .init(
             id: paymentCard.id,
-                     name: paymentCard.name,
+            name: paymentCard.name,
             totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
             number: paymentCard.spaceJoinUserCount,
             categoryImageName: paymentCard.category.name,
@@ -45,7 +45,9 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
                 .init(id: $0.id, nickName: $0.nickname, imageURL: $0.imgURL)
             },
             dateString: dateFormatting(paymentCard.paymentDate),
-            backgroundColor: paymentCard.bgColor)
+            backgroundColor: paymentCard.bgColor,
+            isUserParticipated: paymentCard.isUserParticipatedIn
+        )
     }
 
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {

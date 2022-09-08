@@ -29,13 +29,48 @@ protocol PaymentCardService {
 final class PaymentCardServiceImpl: PaymentCardService {
     
     private let paymentCardRepository: PaymentCardRepository
+    private let userAccountRepository: UserAccountRepository
 
-    init(paymentCardRepository: PaymentCardRepository = PaymentCardRepositoryImpl()) {
+    init(
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
+        paymentCardRepository: PaymentCardRepository = PaymentCardRepositoryImpl()
+    ) {
+        self.userAccountRepository = userAccountRepository
         self.paymentCardRepository = paymentCardRepository
     }
 
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response> {
         paymentCardRepository.fetchPaymentCardList(spaceID: spaceID)
+            .compactMap { [weak self] in
+                self?.compareUserIsParticipatedInPaymentCard(response: $0)
+            }
+    }
+
+    // 유저가 정산 카드에 참여했는지 안했는지 판단해주는 메소드
+    // 참여했다면 isUserParticipatedIn을 True로 변환res
+    private func compareUserIsParticipatedInPaymentCard(
+        response: PaymentCardModels.FetchCardList.Response
+    ) -> PaymentCardModels.FetchCardList.Response {
+        guard let userAccount = userAccountRepository.fetchLocalUserAccount() else { return response }
+        return .init(
+            isAllPaymentCompleted: response.isAllPaymentCompleted,
+            space: response.space,
+            cards: response.cards.map { c in
+                    .init(
+                        id: c.id,
+                        spaceJoinUserCount: c.spaceJoinUserCount,
+                        cardJoinUserCount: c.cardJoinUserCount,
+                        name: c.name,
+                        totalAmount: c.totalAmount,
+                        bgColor: c.bgColor,
+                        paymentDate: c.paymentDate,
+                        category: c.category,
+                        account: c.account,
+                        taker: c.taker,
+                        givers: c.givers,
+                        isUserParticipatedIn: c.givers.contains { $0.id == userAccount.id } || (c.taker.id == userAccount.id)
+                    )
+            })
     }
     func joinPaymentCardList(ids: [Int]) -> Observable<String> {
         paymentCardRepository.joinPaymentCardList(ids: ids)
