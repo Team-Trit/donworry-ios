@@ -19,18 +19,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         
-        if (userService.fetchLocalToken() != nil) && (userService.fetchLocalUser() != nil) {
+//        if (userService.fetchLocalToken() != nil) && (userService.fetchLocalUser() != nil) {
             // MARK: Local Storage에 토큰과 유저가 저장되어 있으므로 HomeView로 이동
-            let rootViewController = HomeViewController()
-            rootViewController.reactor = HomeReactor()
+            let rootViewController = LoginViewController()
+            rootViewController.reactor = LoginViewReactor()
             let navigationController = UINavigationController(rootViewController: rootViewController)
             navigationController.setNavigationBarHidden(true, animated: false)
-            window.rootViewController = rootViewController
-        } else {
-            // MARK: Login Flow
-            let appFlow = AppFlow(with: window)
-            self.coordinator.coordinate(flow: appFlow, with: AppStepper())
-        }
+            window.rootViewController = navigationController
+//        } else {
+//            // MARK: Login Flow
+//            let appFlow = AppFlow(with: window)
+//            self.coordinator.coordinate(flow: appFlow, with: AppStepper())
+//        }
         
         window.makeKeyAndVisible()
         self.window = window

@@ -20,6 +20,7 @@ struct PaymentCardCellViewModel: Equatable {
     var participatedUserList: [User]
     var dateString: String
     var backgroundColor: String
+    var isUserParticipated: Bool
 
     struct User: Equatable {
         var id: Int
@@ -34,8 +35,10 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
         let v = UIView()
         return v
     }()
+
     var viewModel: PaymentCardCellViewModel? {
         didSet {
+            self.isParticipated(viewModel?.isUserParticipated ?? false)
             self.paymentCardInRoomView.viewModel = viewModel.map { model in
                 return PaymentCardInRoomViewModel(
                     id: model.id,
@@ -56,6 +59,7 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
             }
         }
     }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -69,9 +73,6 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
-
-        self.layer.borderColor = UIColor.designSystem(.white)?.cgColor
-        self.layer.borderWidth = 0.5
         self.layer.cornerRadius = 20
         self.contentView.addSubview(self.paymentCardInRoomView)
 
@@ -82,21 +83,16 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
         self.paymentCardInRoomView.layer.masksToBounds = true
     }
 
-    private func addCompleteCoverViewBlurEffect() {
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.frame = completeCoverView.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        self.addCompleteCheckImageView(to: blurEffectView)
-        self.completeCoverView.addSubview(blurEffectView)
-    }
-
-    private func addCompleteCheckImageView(to superView: UIVisualEffectView) {
-        let checkImageView = UIImageView(image: .init(.ic_check_white))
-        superView.contentView.addSubview(checkImageView)
-        checkImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(36)
+    private func isParticipated(_ direction: Bool?) {
+        guard let direction = direction else { return }
+        if direction {
+            let imageView = UIImageView(image: UIImage(.ic_check_gradient))
+            self.contentView.addSubview(imageView)
+            imageView.snp.makeConstraints { make in
+                make.width.height.equalTo(24)
+                make.trailing.equalToSuperview().offset(9)
+                make.top.equalToSuperview().offset(-9)
+            }
         }
     }
 }

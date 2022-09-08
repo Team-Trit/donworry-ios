@@ -34,9 +34,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     }
 
     private func dispatch(to reactor: Reactor) {
-        self.rx.viewDidLoad.map { _ in .viewDidLoad }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
 
         self.rx.viewWillAppear.map { _ in .viewWillAppear }
             .bind(to: reactor.action)
@@ -127,13 +124,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         billCardCollectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
-        reactor.pulse(\.$reload)
-            .observe(on: MainScheduler.instance)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] in
-                self?.spaceCollectionView.reloadData()
-            }).disposed(by: disposeBag)
-        
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -345,8 +335,8 @@ extension HomeViewController: UICollectionViewDataSource {
             return giveBillCardCollectionViewCell(for: indexPath, viewModel: viewModel)
         case .TakeBillCard(let viewModel):
             return takeBillCardCollectionViewCell(for: indexPath, viewModel: viewModel)
-        case .StateBillCard:
-            return stateBillCardCollectionViewCell(for: indexPath)
+        case .StateBillCard(let viewModel):
+            return stateBillCardCollectionViewCell(for: indexPath, viewModel: viewModel)
         case .LeaveBillCard:
             return leaveBillCardCollectionViewCell(for: indexPath)
         }
@@ -376,13 +366,15 @@ extension HomeViewController: UICollectionViewDataSource {
         return cell
     }
     private func stateBillCardCollectionViewCell(
-        for indexPath: IndexPath
+        for indexPath: IndexPath,
+        viewModel: StateBillCardViewModel
     ) -> StateBillCardCollectionViewCell {
         let cell = billCardCollectionView.dequeueReusableCell(
             StateBillCardCollectionViewCell.self,
             for: indexPath
         )
         cell.tag = 0
+        cell.viewModel = viewModel
         return cell
     }
     private func leaveBillCardCollectionViewCell(
