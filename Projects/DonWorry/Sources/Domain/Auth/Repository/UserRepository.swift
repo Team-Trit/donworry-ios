@@ -171,27 +171,6 @@ extension UserRepository {
                                       holder: String?,
                                       accountNumber: String?,
                                       isAgreeMarketing: Bool?) -> PatchUserAPI.Request {
-        return .init(nickname: nickname,
-                     imgURL: imgURL,
-                     bank: bank,
-                     number: accountNumber,
-                     holder: holder,
-                     userID: nil,
-                     isAgreeMarketing: isAgreeMarketing,
-                     id: nil,
-                     innerUserNickname: nickname,
-                     email: nil,
-                     innerUserIsAgreeMarketing: isAgreeMarketing,
-                     provider: nil,
-                     providerID: nil,
-                     role: nil,
-                     password: nil,
-                     username: holder,
-                     authorities: nil,
-                     accountNonExpired: nil,
-                     accountNonLocked: nil,
-                     credentialsNonExpired: nil,
-                     enabled: nil
-        )
+        return .init(nickname: nickname, imgURL: imgURL, id: nil, bank: bank, number: accountNumber, holder: holder, userID: nil, isAgreeMarketing: isAgreeMarketing)
     }
 }
