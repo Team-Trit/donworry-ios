@@ -10,6 +10,11 @@ import UIKit
 import DesignSystem
 import RxSwift
 
+protocol AccountInputCellDelegate {
+    func holderTextFieldDidChanged()
+    func accountTextFieldDidChanged()
+}
+
 class AccountInputCell: UITableViewCell {
     
     let disposeBag = DisposeBag()
@@ -42,6 +47,9 @@ class AccountInputCell: UITableViewCell {
         self.navigationController.present(vc)
         
         */
+        self.accountInputField.chooseBankButton.rx.tap
+            .subscribe(onNext: {
+            }).disposed(by: disposeBag)
     }
 
 }

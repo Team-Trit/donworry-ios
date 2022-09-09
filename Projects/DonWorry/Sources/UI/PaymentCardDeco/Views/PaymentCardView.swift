@@ -27,7 +27,13 @@ struct PaymentCardViewModel {
 }
 
 public class PaymentCardView: UIView {
-    
+
+    func setColor(by color: CardColor) {
+        self.backgroundColor = UIColor(hex: color.rawValue)?.withAlphaComponent(0.72)
+        self.cardSideView.backgroundColor = UIColor(hex: color.rawValue)
+        self.dateLabel.textColor = UIColor(hex: color.rawValue)
+    }
+
     // MARK: - Constructors
 
     override init(frame: CGRect) {
@@ -39,24 +45,7 @@ public class PaymentCardView: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - 카드정산날짜포메팅함수
-    
-    fileprivate func formatPayDate(s: String) -> (String, String) {
-        if s.count > 5 {
-            return ("", "MM/YY")
-        }
-        var num = Array(s)
-        if s.count <= 4 {
-            num.append(contentsOf: Array("MM/YY")[s.count ... 4])
-        }
-        var s1 = String(num).replacingOccurrences(of: "Y", with: "").replacingOccurrences(of: "M", with: "")
-        if s.count < 3 {
-            s1 = s1.replacingOccurrences(of: "/", with: "")
-        }
-        return (s1, String(num).replacingOccurrences(of: s1, with: ""))
-    }
-    
+
     //MARK: - Views
     
     lazy var nameLabel: UILabel = {
@@ -149,8 +138,6 @@ public class PaymentCardView: UIView {
     lazy var userImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(named: "profile-sample")
-//        $0.layer.borderColor = UIColor.designSystem(.white)?.cgColor
-//        $0.layer.borderWidth = 1
         $0.contentMode = .scaleAspectFill
         $0.frame.size.width = 30
         $0.frame.size.height = 30
@@ -177,101 +164,11 @@ public class PaymentCardView: UIView {
         $0.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         return $0
     }(UIView())
-    
-    
-    // MARK: - Store Properties
-    
-    fileprivate var bank: String! {
-        didSet {
-            if bank == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "은행명", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                bankLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: bank, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            bankLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var accountNumber: String! {
-        didSet {
-            if accountNumber == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "000-000-000000", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                accountNumberLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: accountNumber, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            accountNumberLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var accountHolderName: String! {
-        didSet {
-            if accountHolderName == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "(예금주)", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                accountHodlerNameLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: accountHolderName, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            accountHodlerNameLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var payDate: String! {
-        didSet {
-            if payDate == "" {
-                let nums = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "MM/YY", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                nums.append(placeholder)
-                dateLabel.attributedText = nums
-            }
-            let formatedStr = formatPayDate(s: payDate)
-            let nums = NSMutableAttributedString(string: formatedStr.0, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            let placeholder = NSMutableAttributedString(string: formatedStr.1, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.gray,
-            ])
-            nums.append(placeholder)
-            dateLabel.attributedText = nums
-        }
-    }
-    
-    
+
     //MARK: - attributes
     
     func attributes() {
-        backgroundColor = UIColor(hex: "#FF5454B8") // op: 72
         layer.cornerRadius = 20
-        
     }
     
     //MARK: - layout
@@ -335,8 +232,6 @@ public class PaymentCardView: UIView {
             userImageView.widthAnchor.constraint(equalToConstant: 30),
             userImageView.heightAnchor.constraint(equalToConstant: 30),
         ])
-        
     }
-    
     
 }

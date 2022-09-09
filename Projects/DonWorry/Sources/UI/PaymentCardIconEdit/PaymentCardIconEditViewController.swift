@@ -43,7 +43,6 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         setUI()
     }
 

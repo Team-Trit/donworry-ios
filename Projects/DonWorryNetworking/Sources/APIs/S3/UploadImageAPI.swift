@@ -21,7 +21,7 @@ public struct UploadImageAPI: ServiceAPI {
 
     public var headers: [String : String]? {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")",
-                "Content-Type": "image/png",]
+                "Content-Type": "image/jpeg",]
     }
 }
 

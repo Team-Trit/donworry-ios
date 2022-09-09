@@ -104,7 +104,9 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("numberOfItemsInSection")
         guard let viewModel = viewModel else { return 0 }
+        print("collectionView의 이미지 : ", viewModel.imageURLs)
         let imageCount = viewModel.imageURLs.count
         return imageCount < 3 ? imageCount + 1 : imageCount
     }

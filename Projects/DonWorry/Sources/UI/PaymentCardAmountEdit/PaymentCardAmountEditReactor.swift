@@ -73,7 +73,6 @@ final class PaymentCardAmountEditReactor: Reactor {
         case .routeTo(let step):
             newState.step = step
         }
-        print(newState)
         return newState
     }
 

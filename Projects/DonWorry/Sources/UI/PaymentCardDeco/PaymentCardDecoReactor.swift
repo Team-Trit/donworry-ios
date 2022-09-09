@@ -18,15 +18,6 @@ enum PaymentCardDecoStep {
     case completePaymentCardDeco
 }
 
-struct CardViewModel {
-    var cardColor: CardColor = .pink
-    var payDate: Date = Date()
-    var bank: String = ""
-    var holder: String = ""
-    var number: String = ""
-    var images: [UIImage?] = []
-}
-
 final class PaymentCardDecoReactor: Reactor {
 
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
@@ -34,19 +25,25 @@ final class PaymentCardDecoReactor: Reactor {
     enum Action {
         case didTapBackButton
         case didTapCloseButton
+        case didTapColor(CardColor)
+        case didTapDate(Date)
         case deleteImage(String)
         case addImage(UIImage)
-        case didTapCompleteButton(CardViewModel)
+        case didTapCompleteButton
     }
 
     enum Mutation {
         case routeTo(PaymentCardDecoStep)
         case updateImageURLs(String)
+        case updatePaymentCardColor(CardColor)
+        case updatePaymentCardDate(Date)
     }
 
     struct State {
         var paymentCard: PaymentCardModels.CreateCard.Request
         var imageURLs: [String] = []
+        var selectedColor: CardColor = .pink
+        var selectedDate: Date = Date()
 
         @Pulse var step: PaymentCardDecoStep?
     }
@@ -55,23 +52,27 @@ final class PaymentCardDecoReactor: Reactor {
 
     init(
         paymentCard: PaymentCardModels.CreateCard.Request,
+        getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
         uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl()
-    ){
+    ) {
         self.initialState = .init(paymentCard: paymentCard)
         self.uploadImageUseCase = uploadImageUseCase
+        self.getUserAccountUseCase = getUserAccountUseCase
         self.paymentCardService = paymentCardService
     }
     
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        
         case .didTapBackButton:
             return .just(.routeTo(.pop))
-            
         case .didTapCloseButton:
             return .just(.routeTo(.paymentCardListView))
+        case .didTapColor(let color):
+            return .just(.updatePaymentCardColor(color))
+        case .didTapDate(let date):
+            return .just(.updatePaymentCardDate(date))
         case .deleteImage(let imageURL):
             return .just(.updateImageURLs(imageURL))
         case .addImage(let image):
@@ -86,7 +87,6 @@ final class PaymentCardDecoReactor: Reactor {
 //
 //            return createCar
             return .just(.routeTo(.pop))
-
         }
     }
 
@@ -95,6 +95,13 @@ final class PaymentCardDecoReactor: Reactor {
         switch mutation {
         case .routeTo(let step):
             newState.step = step
+        case .updatePaymentCardDate(let date):
+            let dateString = Formatter.fullDateFormatter.string(from: date)
+            newState.paymentCard.paymentDate = Formatter.addTimeZone(dateString: dateString)
+            newState.selectedDate = date
+        case .updatePaymentCardColor(let color):
+            newState.paymentCard.bgColor = color.rawValue
+            newState.selectedColor = color
         case .updateImageURLs(let imageURL):
             if let firstIndex = currentState.imageURLs.firstIndex(where: { $0 == imageURL }) {
                 newState.imageURLs.remove(at: firstIndex)
@@ -106,6 +113,7 @@ final class PaymentCardDecoReactor: Reactor {
         return newState
     }
 
+    private let getUserAccountUseCase: GetUserAccountUseCase
     private let paymentCardService: PaymentCardService
     private let uploadImageUseCase: UploadImageUseCase
 }

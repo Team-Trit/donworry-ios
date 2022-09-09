@@ -22,14 +22,7 @@ import DonWorryExtensions
 final class PaymentCardDecoViewController: BaseViewController, View, UINavigationControllerDelegate {
     
     typealias Reactor = PaymentCardDecoReactor
-    
-    var cardVM = CardViewModel(cardColor: .pink,
-                               payDate: Date(),
-                               bank: UserServiceImpl().fetchLocalUser()?.bankAccount.bank ?? "은행명" ,
-                               holder: UserServiceImpl().fetchLocalUser()?.bankAccount.accountHolderName ?? "(예금주명)",
-                               number: UserServiceImpl().fetchLocalUser()?.bankAccount.accountNumber ?? "000000-00000",
-                               images: [])
-    
+
     lazy var paymentCardView = PaymentCardView()
     
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
@@ -91,14 +84,14 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
         $0.setTitle("완료", for: .normal)
         return $0
     }(UIButton())
-    
-    
+
     // MARK: - LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         attributes()
         layout()
+        setNotification()
     }
     
     // MARK: - Binding
@@ -109,7 +102,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     }
 
     func dispatch(to reactor: PaymentCardDecoReactor) {
-        self.completeButton.rx.tap.map { .didTapCompleteButton(self.cardVM) }
+        self.completeButton.rx.tap.map { .didTapCompleteButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -124,7 +117,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     }
     
     func render(reactor: PaymentCardDecoReactor) {
-        
+
         reactor.state.map { "\($0.paymentCard.name)" }
             .bind(to: (navigationBar.titleLabel?.rx.text)!)
             .disposed(by: disposeBag)
@@ -132,6 +125,19 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: paymentCardView.nameLabel.rx.text)
             .disposed(by: disposeBag)
+
+        reactor.state.map { $0.selectedDate }
+            .map { Formatter.mmddDateFormatter.string(from: $0) }
+            .observe(on: MainScheduler.instance)
+            .bind(to: paymentCardView.dateLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.selectedColor }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.tableView.selectedColor = $0
+                self?.paymentCardView.setColor(by: $0)
+            }).disposed(by: disposeBag)
 
         reactor.state
             .map{ "\($0.paymentCard.totalAmount.formatted())"}
@@ -147,6 +153,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
         reactor.state.map { $0.imageURLs }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
+                print($0)
                 self?.tableView.filePickerCellViewModel = .init(imageURLs: $0)
                 self?.tableView.reloadRows(
                     at: [IndexPath(row: 3, section: 0)],
@@ -163,6 +170,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     }
 }
 
+// MARK: Routing
 
 extension PaymentCardDecoViewController {
     func move(to step: PaymentCardDecoStep) {
@@ -187,10 +195,9 @@ extension PaymentCardDecoViewController {
         view.backgroundColor = .designSystem(.white2)
         scrollView.isScrollEnabled = true
         tableView.isScrollEnabled = false
-        tableView.paymentCardDecoTableViewDelegate = self
         imagePicker.delegate = self
-        paymentCardView.dateLabel.text = cardVM.payDate.getDateToString(format: "MM/dd")
-        
+        tableView.paymentCardDecoTableViewDelegate = self
+        paymentCardView.dateLabel.text = "MM/dd"
     }
     
     private func layout() {
@@ -240,6 +247,52 @@ extension PaymentCardDecoViewController {
         }
     }
 
+    private func setNotification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    /// 배경 터치시  포커싱 해제
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        view.endEditing(true)
+    }
+
+    /// 키보드 Show 시에 위치 조정
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.scrollView.contentInset = .init(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+                self.scrollView.setContentOffset(.init(x: 0, y: 236), animated: true)
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    /// 키보드 Hide 시에 위치 조정
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 1) {
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.scrollView.contentInset = .zero
+                self.scrollView.setContentOffset(.init(x: 0, y: 0), animated: true)
+                self.view.layoutIfNeeded()
+            })
+            self.view.layoutIfNeeded()
+        }
+    }
 }
 
 // MARK: UIImagePickerControllerDelegate
@@ -259,10 +312,7 @@ extension PaymentCardDecoViewController: UIImagePickerControllerDelegate {
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
     func updateCardColor(with color: CardColor) {
-        paymentCardView.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
-        paymentCardView.cardSideView.backgroundColor = UIColor(hex:color.rawValue)
-        paymentCardView.dateLabel.textColor = UIColor(hex:color.rawValue)
-        cardVM.cardColor = color
+        reactor?.action.onNext(.didTapColor(color))
     }
     
     func updateTableViewHeight(to height: CGFloat) {
@@ -273,11 +323,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     }
     
     func updatePayDate(with date : Date) {
-        let formmater = DateFormatter()
-        formmater.dateFormat = "MM/dd"
-        formmater.locale = Locale(identifier: "ko_KR")
-        paymentCardView.dateLabel.text = formmater.string(from: date)
-        cardVM.payDate = date
+        reactor?.action.onNext(.didTapDate(date))
     }
 
     func showPhotoPicker() {
@@ -321,10 +367,10 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     func updateHolder(holder: String) {
         if !holder.isEmpty {
             paymentCardView.accountHodlerNameLabel.text = "(\(holder))"
-            cardVM.holder = holder
+//            cardVM.holder = holder
         } else {
             paymentCardView.accountHodlerNameLabel.text = "(예금주명)"
-            cardVM.holder = ""
+//            cardVM.holder = ""
         }
     }
     
@@ -332,10 +378,10 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     func updateAccountNumber(number: String) {
         if !number.isEmpty {
             paymentCardView.accountNumberLabel.text = "\(number)"
-            cardVM.number = number
+//            cardVM.number = number
         } else {
             paymentCardView.accountNumberLabel.text = "000000-00000"
-            cardVM.number = ""
+//            cardVM.number = ""
         }
     }
 
