@@ -161,8 +161,8 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         self.collectionView.rx.itemSelected
             .compactMap { [weak self] in
-                self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
-            }.map { .didTapAddPaymentCard }
+                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
+            }.map { _ in .didTapAddPaymentCard }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }

@@ -64,10 +64,14 @@ enum PaymentCardModels {
             var bgColor: String
             var paymentDate: String
             var imageURLs: [String]
+            var viewModel: ViewModel
+            struct ViewModel {
+                var categoryIconName: String
+            }
 
             static var initialValue: Request = .init(
                 spaceID: -1, categoryID: -1, bank: "", number: "", holder: "",
-                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [])
+                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [], viewModel: .init(categoryIconName: ""))
         }
 
         struct Response {

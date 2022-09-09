@@ -106,11 +106,9 @@ extension PaymentCardAmountEditViewController {
     
     private func render(_ reactor: Reactor) {
 
-        reactor.state.map { $0.paymentCard.categoryID }
+        reactor.state.map { $0.paymentCard.viewModel.categoryIconName }
             .distinctUntilChanged()
-            .map {
-                UIImage(.init(rawValue: icons[$0].iconName) ?? .ic_cake)
-            }
+            .map { UIImage(assetName: $0) }
             .bind(to: iconImageView.rx.image)
             .disposed(by: disposeBag)
 

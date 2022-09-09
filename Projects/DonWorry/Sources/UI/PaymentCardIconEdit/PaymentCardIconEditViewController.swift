@@ -13,27 +13,8 @@ import RxCocoa
 import RxSwift
 import DesignSystem
 
-
-struct Category {
-    let iconName: String
-}
-
-let icons: [Category] = [Category(iconName: "ic_chicken"),
-                                 Category(iconName: "ic_coffee"),
-                                 Category(iconName: "ic_wine"),
-                                 Category(iconName: "ic_shoppingcart"),
-                                 Category(iconName: "ic_movie"),
-                                 Category(iconName: "ic_spoonknife"),
-                                 Category(iconName: "ic_cake"),
-                                 Category(iconName: "ic_car"),
-                                 Category(iconName: "ic_icecream")]
-
 final class PaymentCardIconEditViewController: BaseViewController, View {
-
-
     typealias Reactor = PaymentCardIconEditViewReactor
-    private var categoryID: Int = 3
-
 
     // MARK: - Views
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
@@ -72,7 +53,12 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
         self.dispatch(to: reactor)
     }
     
-    func dispatch(to reactor: Reactor) {                self.nextButton.rx.tap.map { .didTapNextButton }
+    func dispatch(to reactor: Reactor) {
+        self.rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.nextButton.rx.tap.map { .didTapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -89,11 +75,12 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
 
         self.iconCollectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
-        
+
         self.iconCollectionView.rx.itemSelected
-            .map { _ in
-                    .fetchIcon(self.categoryID)
-            }
+            .compactMap { [weak self] in
+                self?.iconCollectionView.cellForItem(at: $0) as? PaymentIconCell
+            }.compactMap { $0.viewModel?.id }
+            .map { .didTapIconCell($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -109,7 +96,13 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
             .distinctUntilChanged()
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
-        
+
+        reactor.state.map { $0.categoryCellViewModel }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.iconCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -197,21 +190,16 @@ extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollect
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return reactor?.currentState.categoryCellViewModel.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell else { return UICollectionViewCell() }
-//        if (indexPath.row == 0) {
-//            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-//         }
-        cell.configure(with: icons[indexPath.row].iconName)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell,
+              let reactor = reactor else { return UICollectionViewCell() }
+        let viewModel = reactor.currentState.categoryCellViewModel[indexPath.item]
+        cell.configure(with: viewModel)
+        let isSelected = viewModel.id == reactor.currentState.paymentCard.categoryID
+        cell.setBackgroundColor(isSelected: isSelected)
         return cell
     }
-
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        categoryID = indexPath.row
-    }
-
 }

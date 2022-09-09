@@ -19,7 +19,7 @@ import SnapKit
 import DesignSystem
 import DonWorryExtensions
 
-final class PaymentCardDecoViewController: BaseViewController, View {
+final class PaymentCardDecoViewController: BaseViewController, View, UINavigationControllerDelegate {
     
     typealias Reactor = PaymentCardDecoReactor
     
@@ -33,9 +33,11 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     lazy var paymentCardView = PaymentCardView()
     
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
-    
+
     private lazy var tableView = PaymentCardDecoTableView()
-    
+
+    private let imagePicker = UIImagePickerController()
+
     private lazy var scrollView: UIScrollView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.showsVerticalScrollIndicator = false
@@ -130,20 +132,23 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: paymentCardView.nameLabel.rx.text)
             .disposed(by: disposeBag)
-        
+
         reactor.state
             .map{ "\($0.paymentCard.totalAmount.formatted())"}
             .bind(to: paymentCardView.totalAmountLabel.rx.text)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.paymentCard.categoryID }
+        reactor.state.map { $0.paymentCard.viewModel.categoryIconName }
             .distinctUntilChanged()
-            .map {
-                UIImage(.init(rawValue: icons[$0].iconName) ?? .ic_cake)
-            }
+            .map { UIImage(assetName: $0) }
             .bind(to: paymentCardView.icon.rx.image)
             .disposed(by: disposeBag)
-        
+
+        reactor.state.map { $0.imageURLs }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+//                self?.
+            }).disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
@@ -152,9 +157,6 @@ final class PaymentCardDecoViewController: BaseViewController, View {
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
-
-    
-    
 }
 
 
@@ -182,7 +184,7 @@ extension PaymentCardDecoViewController {
         scrollView.isScrollEnabled = true
         tableView.isScrollEnabled = false
         tableView.paymentCardDecoTableViewDelegate = self
-//        tableView.vcDelegate = self
+        imagePicker.delegate = self
         paymentCardView.dateLabel.text = cardVM.payDate.getDateToString(format: "MM/dd")
         
     }
@@ -236,27 +238,19 @@ extension PaymentCardDecoViewController {
 
 }
 
-extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        dismiss(animated: true)
-        var imageArray = [UIImage]()
-        for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
-                error in
-                if let image = object as? UIImage {
-                    imageArray.append(image)
-                }
-                self.tableView.updatePhotoCell(img: imageArray)
-                // image Array 에 image 넣기
-                self.cardVM.images = imageArray
-                print("🔔🔔🔔🔔이미지 넣기🔔🔔🔔🔔")
-                print(self.cardVM.images)
-            }
+// MARK: UIImagePickerControllerDelegate
+
+extension PaymentCardDecoViewController: UIImagePickerControllerDelegate {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        DispatchQueue.main.async { [weak self] in
+            guard let image = (info[UIImagePickerController.InfoKey.originalImage] as? UIImage) else { return }
+            self?.reactor?.action.onNext(.addImage(image))
+            picker.dismiss(animated: true, completion: nil)
         }
     }
-    
 }
+
+// MARK: PaymentCardDecoTableViewDelegate
 
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
@@ -281,15 +275,45 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         paymentCardView.dateLabel.text = formmater.string(from: date)
         cardVM.payDate = date
     }
-    
+
     func showPhotoPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 3
-        let phPickerVC = PHPickerViewController(configuration: config)
-        phPickerVC.delegate = self
-        self.present(phPickerVC, animated: true)
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
+                if granted {
+                    DispatchQueue.main.async {
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("Camera", comment: ""), style: .default) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.imagePicker.sourceType = .camera
+                            self.present(self.imagePicker, animated: true, completion: nil)
+                        })
+                    }
+                }
+            })
+            PHPhotoLibrary.requestAuthorization( { status in
+                switch status {
+                case .authorized:
+                    DispatchQueue.main.async {
+                        alertController.addAction(UIAlertAction(title: "Gallery", style: .default) { [weak self] action in
+                            guard let self = self else { return }
+                            self.imagePicker.sourceType = .photoLibrary
+                            self.imagePicker.allowsEditing = false
+                            self.present(self.imagePicker, animated: true, completion: nil)
+                        })
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: { _ in
+                        }))
+
+                        alertController.modalPresentationStyle = .popover
+
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                default:
+                    break
+                }
+            })
+        }
     }
-    
+
     func updateHolder(holder: String) {
         if !holder.isEmpty {
             paymentCardView.accountHodlerNameLabel.text = "(\(holder))"

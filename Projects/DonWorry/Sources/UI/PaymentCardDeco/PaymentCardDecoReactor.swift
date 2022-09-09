@@ -34,17 +34,20 @@ final class PaymentCardDecoReactor: Reactor {
     enum Action {
         case didTapBackButton
         case didTapCloseButton
+        case deleteImage(String)
+        case addImage(UIImage)
         case didTapCompleteButton(CardViewModel)
     }
 
     enum Mutation {
         case routeTo(PaymentCardDecoStep)
-        case setLoading(Bool)
+        case updateImageURLs(String)
     }
 
     struct State {
-        var isLoading: Bool = false
         var paymentCard: PaymentCardModels.CreateCard.Request
+        var imageURLs: [String] = []
+
         @Pulse var step: PaymentCardDecoStep?
     }
 
@@ -52,9 +55,11 @@ final class PaymentCardDecoReactor: Reactor {
 
     init(
         paymentCard: PaymentCardModels.CreateCard.Request,
+        uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl()
     ){
         self.initialState = .init(paymentCard: paymentCard)
+        self.uploadImageUseCase = uploadImageUseCase
         self.paymentCardService = paymentCardService
     }
     
@@ -67,15 +72,18 @@ final class PaymentCardDecoReactor: Reactor {
             
         case .didTapCloseButton:
             return .just(.routeTo(.paymentCardListView))
-             
-        case .didTapCompleteButton(let cardVM):
-            
-            let card = currentState.paymentCard
-//            let createCard =  paymentCardService
+        case .deleteImage(let imageURL):
+            return .just(.updateImageURLs(imageURL))
+        case .addImage(let image):
+            return uploadImageUseCase.uploadCard(request: .init(image: image))
+                .map { .updateImageURLs($0.imageURL) }
+        case .didTapCompleteButton:
+//            let card = currentState.paymentCard
+//            let createCard = paymentCardService
 //                                .map { response -> Mutation in
 //                                    return Mutation.routeTo(.completePaymentCardDeco)
 //                                }
-                                
+//
 //            return createCar
             return .just(.routeTo(.pop))
 
@@ -84,17 +92,19 @@ final class PaymentCardDecoReactor: Reactor {
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-         switch mutation {
-             case .routeTo(let step):
-                 newState.step = step
-             case .setLoading(let isLoading):
-                 newState.isLoading = isLoading
-         
-         }
+        switch mutation {
+        case .routeTo(let step):
+            newState.step = step
+        case .updateImageURLs(let imageURL):
+            if let firstIndex = currentState.imageURLs.firstIndex(where: { $0 == imageURL }) {
+                newState.imageURLs.remove(at: firstIndex)
+            } else {
+                newState.imageURLs.append(imageURL)
+            }
+        }
         return newState
     }
-//    private func createCard() -> Observable<Mutation> {
-//        paymentCardService
-//    }
+
     private let paymentCardService: PaymentCardService
+    private let uploadImageUseCase: UploadImageUseCase
 }

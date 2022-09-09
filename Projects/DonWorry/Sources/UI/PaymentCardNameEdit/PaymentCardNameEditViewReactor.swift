@@ -26,7 +26,7 @@ final class PaymentCardNameEditViewReactor: Reactor {
     enum Action {
         case didTapBackButton
         case didTapNextButton
-        case fetchCardName(String)
+        case typeCardName(String)
     }
 
     enum Mutation {
@@ -58,7 +58,7 @@ final class PaymentCardNameEditViewReactor: Reactor {
             let step: PaymentCardNameEditStep = (currentState.type == .create) ? .paymentCardIconEdit : .pop
             return .just(.routeTo(step))
 
-        case .fetchCardName(let newName):
+        case .typeCardName(let newName):
             return .just(Mutation.updateCardName(newName))
 
         }

@@ -25,10 +25,8 @@ final class JudgeSpaceAdminUseCaseImpl: JudgeSpaceAdminUseCase {
     // 현재 정산방의 방장이 유저인지 확인해줍니다.
     func judgeUserIsSpaceAdmin(spaceAdminID: Int) -> Observable<Bool> {
         guard let userAccount = userAccountRepository.fetchLocalUserAccount() else {
-            print("HI")
             return .just(false)
         }
-        print("HELLO", userAccount)
         return .just(userAccount.id == spaceAdminID)
     }
 }

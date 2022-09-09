@@ -38,7 +38,7 @@ final class JoinSpaceViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        setNotifiaction()
+        setNotification()
     }
 
     func bind(reactor: JoinSpaceReactor) {
@@ -79,7 +79,7 @@ final class JoinSpaceViewController: BaseViewController, View {
         print(message)
     }
 
-    private func setNotifiaction() {
+    private func setNotification() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
