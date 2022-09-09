@@ -38,7 +38,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         v.alignment = .center
         return v
     }()
-    private let leftButtomButton: DWButton = {
+    lazy var leftButtomButton: DWButton = {
         let v = DWButton.create(.mediumBlue)
         v.title = "상세내역 보기"
         v.addTarget(self, action: #selector(showSheet), for: .touchUpInside)
@@ -83,7 +83,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
                     account: status?.account.number ?? "",
                     name: status?.account.holder ?? ""
                 )
-                self?.tableView.reloadData()
             }).disposed(by: disposeBag)
 
         reactor.pulse(\.$toast)
@@ -138,7 +137,6 @@ extension SentMoneyDetailViewController {
             make.leading.trailing.equalToSuperview().inset(25)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-
 
         leftButtomButton.addGradient(
             startColor: .designSystem(.blueTopGradient)!,
