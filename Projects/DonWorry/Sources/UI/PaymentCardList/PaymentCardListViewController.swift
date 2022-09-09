@@ -40,7 +40,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var spaceIDCopyButton: UIButton = {
         let v = UIButton(type: .system)
         v.setImage(.init(.btn_copy), for: .normal)
-        
+        v.addTarget(self, action: #selector(copySpaceID), for: .touchUpInside)
         return v
     }()
     lazy var startPaymentAlgorithmButton: UIButton = {
@@ -106,6 +106,11 @@ final class PaymentCardListViewController: BaseViewController, View {
         NotificationCenter.default.addObserver(self, selector: #selector(popToSelf), name: .init("popToPaymentCardList"), object: nil)
     }
 
+    @objc
+    private func copySpaceID() {
+        UIPasteboard.general.string = reactor?.currentState.space.shareID
+    }
+    
     @objc
     private func popToSelf() {
         self.navigationController?.popToViewController(self, animated: true)
