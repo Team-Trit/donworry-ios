@@ -24,6 +24,10 @@ final class LoginFlow: Flow {
         guard let step = step as? DonworryStep else { return .none }
         
         switch step {
+            // TODO: 삭제하기
+        case .home:
+            return .none
+            
         case .none:
             return .none
             
@@ -33,8 +37,8 @@ final class LoginFlow: Flow {
         case .loginIsRequired:
             return self.navigateToLoginView()
             
-        case let .userInfoIsRequired(provider, accessToken):
-            return self.navigateToEnterUserInfoView(provider: provider, accessToken: accessToken)
+        case let .userInfoIsRequired(provider, token):
+            return self.navigateToEnterUserInfoView(provider: provider, token: token)
             
         case .bankSelectIsRequired(let delegate):
             return self.presentBankSelectView(delegate)
@@ -64,12 +68,12 @@ extension LoginFlow {
         let reactor = LoginViewReactor()
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: vc, withNextStepper: reactor))
+        return .one(flowContributor: .contribute(withNext: vc))
     }
     
-    private func navigateToEnterUserInfoView(provider: LoginProvider, accessToken: String) -> FlowContributors {
+    private func navigateToEnterUserInfoView(provider: LoginProvider, token: String) -> FlowContributors {
         let vc = EnterUserInfoViewController()
-        let reactor = EnterUserInfoViewReactor(provider: provider, accessToken: accessToken)
+        let reactor = EnterUserInfoViewReactor(provider: provider, token: token)
         vc.reactor = reactor
         self.rootViewController.pushViewController(vc, animated: true)
         return .one(flowContributor: .contribute(withNext: vc))

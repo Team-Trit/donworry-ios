@@ -29,7 +29,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
         return accontInfo
     }()
-
     lazy var buttonStackView: UIStackView = {
         let v = UIStackView()
         v.axis = .horizontal
@@ -104,8 +103,6 @@ extension SentMoneyDetailViewController {
         self.view.backgroundColor = .white
         let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(copyTap))
         view.backgroundColor = .white
-
-
         accountInfo.addGestureRecognizer(copyTapGesture)
     }
 
@@ -126,7 +123,6 @@ extension SentMoneyDetailViewController {
             make.leading.trailing.equalToSuperview().inset(25)
             make.height.equalTo(90)
         }
-        
         buttonStackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(25)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
@@ -142,4 +138,3 @@ extension SentMoneyDetailViewController {
         )
     }
 }
-

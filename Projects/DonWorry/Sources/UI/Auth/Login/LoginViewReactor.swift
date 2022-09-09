@@ -6,33 +6,31 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import ReactorKit
-import RxCocoa
-import RxFlow
 import Models
+import ReactorKit
 
-enum LoginStep {
-    case home
-}
-
-final class LoginViewReactor: Reactor, Stepper {
-    let steps = PublishRelay<Step>()
+final class LoginViewReactor: Reactor {
+    // TODO: 삭제하기
     private let testUserService: TestUserService
     private let userService: UserService
-    private let disposeBag = DisposeBag()
+    
     enum Action {
         case appleLoginButtonPressed
         case googleLoginButtonPressed
+        case proceedWithAppleToken(identityToken: String)
         case kakaoLoginButtonPressed
+        // TODO: 삭제하기
         case didTapTestUserButton
     }
     
     enum Mutation {
-        case routeTo(LoginStep)
+        case performAppleLogin
+        case routeTo(DonworryStep)
     }
     
     struct State {
-        @Pulse var step: LoginStep?
+        @Pulse var appleLoginTrigger: Void?
+        @Pulse var step: DonworryStep?
     }
     
     let initialState: State
@@ -49,10 +47,10 @@ final class LoginViewReactor: Reactor, Stepper {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .appleLoginButtonPressed:
-            // MARK: 카카오 로그인 연결을 끊기위한 임시 코드
-//            self.steps.accept(DonworryStep.userInfoIsRequired)
-            userService.unlinkKakao()
-            return .empty()
+            return .just(Mutation.performAppleLogin)
+            
+        case .proceedWithAppleToken(let identityToken):
+            return .just(.routeTo(DonworryStep.userInfoIsRequired(provider: .APPLE, token: identityToken)))
             
         case .googleLoginButtonPressed:
             // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
@@ -60,15 +58,12 @@ final class LoginViewReactor: Reactor, Stepper {
             return .empty()
             
         case .kakaoLoginButtonPressed:
-            userService.loginWithKakao()
-                .subscribe(onNext: { [unowned self] oauthToken in
-                    self.steps.accept(DonworryStep.userInfoIsRequired(provider: .APPLE, accessToken: oauthToken.accessToken))
-                }) { error in
-                    print(error)
+            return userService.loginWithKakao()
+                .map { oauthToken in
+                    return .routeTo(DonworryStep.userInfoIsRequired(provider: .KAKAO, token: oauthToken.accessToken))
                 }
-                .disposed(by: disposeBag)
-            return .empty()
             
+            // TODO: 삭제하기
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
             return testUserService.signIn(1)
@@ -77,13 +72,16 @@ final class LoginViewReactor: Reactor, Stepper {
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
+        case .performAppleLogin:
+            newState.appleLoginTrigger = ()
+            
         case .routeTo(let step):
-            state.step = step
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }

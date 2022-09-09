@@ -12,6 +12,10 @@ import Models
 import ReactorKit
 import RxCocoa
 
+protocol EnterUserInfoViewDelegate: AnyObject {
+    func saveBank(_ selectedBank: String)
+}
+
 enum SelectBankStep {
     case none
     

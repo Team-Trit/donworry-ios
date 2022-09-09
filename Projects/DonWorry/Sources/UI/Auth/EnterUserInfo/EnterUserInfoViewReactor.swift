@@ -6,37 +6,23 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import DesignSystem
 import Models
 import ReactorKit
-import RxCocoa
-
-enum TextFieldType {
-    case nickname
-    case accountHolder
-    case accountNumber
-}
-
-enum LoginProvider: String {
-    case APPLE
-    case GOOGLE
-    case KAKAO
-}
-
-protocol EnterUserInfoViewDelegate: AnyObject {
-    func saveBank(_ selectedBank: String)
-}
 
 final class EnterUserInfoViewReactor: Reactor {
-    private let disposeBag = DisposeBag()
-    private var user = SignUpUserModel(provider: "",
+    enum TextFieldType {
+        case nickname
+        case accountHolder
+        case accountNumber
+    }
+    private var user = SignUpUserModel(provider: .none,
                                      nickname: "",
                                      email: "",
                                      bank: "",
                                      bankNumber: "",
                                      bankHolder: "",
                                      isAgreeMarketing: false,
-                                     accessToken: "")
+                                     token: "")
     
     enum Action {
         case backButtonPressed
@@ -59,13 +45,13 @@ final class EnterUserInfoViewReactor: Reactor {
         var accountHolder: String
         var accountNumber: String
         var bank: String
-        var isNextButtonAvailable: Bool
+        @Pulse var isNextButtonAvailable: Bool
         @Pulse var step: DonworryStep?
     }
     
     let initialState: State
     
-    init(provider: LoginProvider, accessToken: String) {
+    init(provider: LoginProvider, token: String) {
         self.initialState = State(
             nickname: "",
             accountHolder: "",
@@ -73,8 +59,8 @@ final class EnterUserInfoViewReactor: Reactor {
             bank: "은행선택",
             isNextButtonAvailable: false
         )
-        self.user.provider = provider.rawValue
-        self.user.accessToken = accessToken
+        self.user.provider = provider
+        self.user.token = token
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

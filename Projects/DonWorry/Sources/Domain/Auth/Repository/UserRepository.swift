@@ -25,7 +25,7 @@ final class UserRepositoryImpl: UserRepository {
     }
     
     // 카카오 기반 회원가입 API 호출
-    func postUser(provider: String,
+    func postUserWithKakao(provider: String,
                   nickname: String,
                   email: String,
                   bank: String,
@@ -33,7 +33,7 @@ final class UserRepositoryImpl: UserRepository {
                   bankHolder: String,
                   isAgreeMarketing: Bool,
                   accessToken: String) -> Observable<(Models.User, AuthenticationToken)> {
-        let api = PostUserAPI(request: createUserRequest(
+        let api = KakaoRegisterAPI(request: createKakaoUserRequest(
             provider: provider,
             nickname: nickname,
             email: email,
@@ -42,6 +42,32 @@ final class UserRepositoryImpl: UserRepository {
             bankHolder: bankHolder,
             isAgreeMarketing: isAgreeMarketing
         ),accessToken: accessToken)
+
+        return network.request(api)
+            .compactMap { [weak self] in
+                (self?.convertToUser(userDTO: $0), self?.convertToToken($0)) as? (Models.User, AuthenticationToken)
+            }
+            .asObservable()
+    }
+    
+    // 애플 기반 회원가입 API 호출
+    func postUserWithApple(provider: String,
+                  nickname: String,
+                  email: String,
+                  bank: String,
+                  bankNumber: String,
+                  bankHolder: String,
+                  isAgreeMarketing: Bool,
+                  identityToken: String) -> Observable<(Models.User, AuthenticationToken)> {
+        let api = AppleRegisterAPI(request: createAppleUserRequest(
+            provider: provider,
+            nickname: nickname,
+            email: email,
+            bank: bank,
+            bankNumber: bankNumber,
+            bankHolder: bankHolder,
+            isAgreeMarketing: isAgreeMarketing
+        ),identityToken: identityToken)
 
         return network.request(api)
             .compactMap { [weak self] in
@@ -129,13 +155,31 @@ extension UserRepository {
         return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_image")
     }
     
-    fileprivate func createUserRequest(provider: String,
+    fileprivate func createKakaoUserRequest(provider: String,
                                    nickname: String,
                                    email: String,
                                    bank: String,
                                    bankNumber: String,
                                    bankHolder: String,
-                                   isAgreeMarketing: Bool) -> PostUserAPI.Request {
+                                   isAgreeMarketing: Bool) -> KakaoRegisterAPI.Request {
+        return .init(
+            provider: provider,
+            nickname: nickname,
+            email: email,
+            bank: bank,
+            bankNumber: bankNumber,
+            bankHolder: bankHolder,
+            isAgreeMarketing: isAgreeMarketing
+        )
+    }
+    
+    fileprivate func createAppleUserRequest(provider: String,
+                                   nickname: String,
+                                   email: String,
+                                   bank: String,
+                                   bankNumber: String,
+                                   bankHolder: String,
+                                   isAgreeMarketing: Bool) -> AppleRegisterAPI.Request {
         return .init(
             provider: provider,
             nickname: nickname,

@@ -127,14 +127,14 @@ extension EnterUserInfoViewController {
     }
 
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        reactor.state.map { $0.isNextButtonAvailable }
-            .asDriver(onErrorJustReturn: false)
-            .drive(self.nextButton.rx.isEnabled)
-            .disposed(by: disposeBag)
-        
         reactor.state.map { $0.bank }
             .asDriver(onErrorJustReturn: "은행선택")
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isNextButtonAvailable)
+            .asDriver(onErrorJustReturn: false)
+            .drive(self.nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)

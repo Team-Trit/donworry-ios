@@ -38,15 +38,36 @@ final class ConfirmTermViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-            return userService.signUp(provider: user.provider,
-                                      nickname: user.nickname,
-                                      email: user.email,
-                                      bank: user.bank,
-                                      bankNumber: user.bankNumber,
-                                      bankHolder: user.bankHolder,
-                                      isAgreeMarketing: user.isAgreeMarketing,
-                                      accessToken: user.accessToken)
-            .map { _ in .completeLogin }
+            switch user.provider {
+            case .APPLE:
+                return userService.registerUserWithApple(provider: user.provider.rawValue,
+                                                         nickname: user.nickname,
+                                                         email: user.email,
+                                                         bank: user.bank,
+                                                         bankNumber: user.bankNumber,
+                                                         bankHolder: user.bankHolder,
+                                                         isAgreeMarketing: user.isAgreeMarketing,
+                                                         identityToken: user.token)
+                .map { _ in .completeLogin }
+                
+            case .GOOGLE:
+                // TODO: Google API 호출
+                return .empty()
+                
+            case .KAKAO:
+                return userService.registerUserWithKakao(provider: user.provider.rawValue,
+                                                         nickname: user.nickname,
+                                                         email: user.email,
+                                                         bank: user.bank,
+                                                         bankNumber: user.bankNumber,
+                                                         bankHolder: user.bankHolder,
+                                                         isAgreeMarketing: user.isAgreeMarketing,
+                                                         accessToken: user.token)
+                .map { _ in .completeLogin }
+                
+            default:
+                return .empty()
+            }
         }
     }
     
