@@ -8,6 +8,7 @@
 
 import UIKit
 import DesignSystem
+import Models
 
 class AlertTableViewCell: UITableViewCell {
     
