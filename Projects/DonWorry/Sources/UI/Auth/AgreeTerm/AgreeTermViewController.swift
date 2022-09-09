@@ -16,7 +16,7 @@ import RxFlow
 import RxSwift
 import SnapKit
 
-final class AgreeTermViewController: BaseViewController, View {
+final class AgreeTermViewController: BaseViewController, View, Stepper {
     typealias Reactor = AgreeTermViewReactor
     let steps = PublishRelay<Step>()
     private lazy var navigationBar = DWNavigationBar(title: "돈워리 이용약관")
@@ -105,6 +105,30 @@ extension AgreeTermViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(doneButton.rx.isEnabled)
             .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: DonworryStep.none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                self?.route(to: $0)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension AgreeTermViewController {
+    private func route(to step: DonworryStep) {
+        switch step {
+        case .popViewController:
+            self.steps.accept(DonworryStep.popViewController)
+            
+        case let .confirmTermIsRequired(checkedTerms, newUser):
+            self.steps.accept(DonworryStep.confirmTermIsRequired(checkedTerms: checkedTerms, newUser: newUser))
+            
+        default:
+            break
+        }
     }
 }
 
@@ -123,7 +147,7 @@ extension AgreeTermViewController: UITableViewDataSource {
         cell.checkButton.rx.tap
             .map { Reactor.Action.checkButtonPressed(index) }
             .bind(to: reactor!.action)
-            .disposed(by: disposeBag)
+            .disposed(by: cell.disposeBag)
         
         reactor?.state.map { $0.isChecked[index] }
             .asDriver(onErrorJustReturn: false)
@@ -131,7 +155,7 @@ extension AgreeTermViewController: UITableViewDataSource {
                     cell.checkButton.setImage(UIImage(systemName: $0 ? "checkmark.circle.fill" : "circle"), for: .normal)
                     cell.checkButton.tintColor = .designSystem($0 ? .mainBlue : .grayC5C5C5)
             }
-            .disposed(by: disposeBag)
+            .disposed(by: cell.disposeBag)
         return cell
     }
 }
@@ -140,5 +164,10 @@ extension AgreeTermViewController: UITableViewDataSource {
 extension AgreeTermViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 50
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? AgreeTermTableViewCell else { return }
+        cell.disposeBag = DisposeBag()
     }
 }

@@ -9,6 +9,7 @@
 import UIKit
 
 import DesignSystem
+import RxSwift
 import SnapKit
 
 final class AgreeTermTableViewCell: UITableViewCell {
@@ -25,6 +26,7 @@ final class AgreeTermTableViewCell: UITableViewCell {
         v.font = .designSystem(weight: .regular, size: ._15)
         return v
     }()
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

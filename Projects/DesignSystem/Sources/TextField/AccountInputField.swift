@@ -47,7 +47,10 @@ extension AccountInputField {
         self.addSubview(chooseBankButton)
         self.addSubview(holderTextField)
         self.addSubview(accountTextField)
-        
+    
+        self.snp.makeConstraints { make in
+            make.height.equalTo(100)
+        }
         switch type {
         case .EnterUserInfo:
             chooseBankButton.snp.makeConstraints { make in

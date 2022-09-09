@@ -9,11 +9,12 @@
 import UIKit
 
 import DesignSystem
+import RxSwift
 import SnapKit
 
 final class ProfileTableViewServiceCell: UITableViewCell {
     static let identifier = "ProfileTableViewServiceCell"
-    private lazy var titleLabel: UILabel = {
+    lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .regular, size: ._15)
         return v
@@ -25,12 +26,7 @@ final class ProfileTableViewServiceCell: UITableViewCell {
         return v
     }()
     private lazy var separatorLine = SeparatorLine()
-    var service: ProfileViewModelItem? {
-        didSet {
-            guard let service = service as? ProfileViewModelServiceItem else { return }
-            titleLabel.text = service.label
-        }
-    }
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

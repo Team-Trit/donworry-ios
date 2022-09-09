@@ -7,71 +7,60 @@
 //
 
 import ReactorKit
-import RxCocoa
-import RxFlow
 
-final class ConfirmTermViewReactor: Reactor, Stepper {
+final class ConfirmTermViewReactor: Reactor {
     let checkedTerms: [String]
-    // User Info
-    private let accessToken: String
-    private let nickname: String
-    private let bank: String
-    private let holder: String
-    private let number: String
-    private let isAgreeMarketing: Bool
+    private var user: SignUpUserModel
     private let userService: UserService
     
-    let steps = PublishRelay<Step>()
     enum Action {
         case confirmButtonPressed
     }
     
     enum Mutation {
-        case signUpComplete
+        case completeLogin
+        case routeTo(step: DonworryStep)
     }
     
     struct State {
-        
+        @Pulse var step: DonworryStep?
     }
     
     let initialState: State
     
-    init(checkedTerms: [String], accessToken: String, nickname: String, bank: String, holder: String, number: String, isAgreeMarketing: Bool) {
-        self.initialState = State()
+    init(checkedTerms: [String], newUser: SignUpUserModel, userService: UserService) {
         self.checkedTerms = checkedTerms
-        self.accessToken = accessToken
-        self.nickname = nickname
-        self.bank = bank
-        self.holder = holder
-        self.number = number
-        self.isAgreeMarketing = isAgreeMarketing
-        self.userService = UserServiceImpl()
+        self.user = newUser
+        self.userService = userService
+        self.initialState = State()
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-
-            return userService.signUp(provider: "KAKAO",
-                                      nickname: nickname,
-                                      email: "qweqwe@qwe.com",
-                                      bank: bank,
-                                      bankNumber: number,
-                                      bankHolder: holder,
-                                      isAgreeMarketing: isAgreeMarketing,
-                                      accessToken: accessToken)
-                .map { _ in Mutation.signUpComplete }
+            return userService.signUp(provider: user.provider,
+                                      nickname: user.nickname,
+                                      email: user.email,
+                                      bank: user.bank,
+                                      bankNumber: user.bankNumber,
+                                      bankHolder: user.bankHolder,
+                                      isAgreeMarketing: user.isAgreeMarketing,
+                                      accessToken: user.accessToken)
+            .map { _ in .completeLogin }
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
-        case .signUpComplete:
-            self.steps.accept(DonworryStep.homeIsRequired)
+        case .completeLogin:
+            break
+            
+        case .routeTo(let step):
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }

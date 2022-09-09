@@ -16,21 +16,6 @@ import RxKakaoSDKCommon
 import RxKakaoSDKUser
 import RxSwift
 
-protocol UserRepository {
-    func postUser(provider: String,
-                  nickname: String,
-                  email: String,
-                  bank: String,
-                  bankNumber: String,
-                  bankHolder: String,
-                  isAgreeMarketing: Bool,
-                  accessToken: String) -> Observable<(Models.User, AuthenticationToken)>
-    
-    func kakaoLogin() -> Observable<OAuthToken>
-    func kakaoLogout()
-    func kakaoUnlink()
-}
-
 final class UserRepositoryImpl: UserRepository {
     private let network: NetworkServable
     private let disposeBag = DisposeBag()
@@ -39,6 +24,7 @@ final class UserRepositoryImpl: UserRepository {
         self.network = network
     }
     
+    // 카카오 기반 회원가입 API 호출
     func postUser(provider: String,
                   nickname: String,
                   email: String,
@@ -58,11 +44,32 @@ final class UserRepositoryImpl: UserRepository {
         ),accessToken: accessToken)
 
         return network.request(api)
-            .compactMap { [ weak self] in
-                (self?.convertToUser($0), self?.convertToToken($0)) as? (Models.User, AuthenticationToken)
+            .compactMap { [weak self] in
+                (self?.convertToUser(userDTO: $0), self?.convertToToken($0)) as? (Models.User, AuthenticationToken)
+            }
+            .asObservable()
+    }
+    
+    // 유저 정보 수정 API 호출
+    func patchUser(nickname: String?,
+                   imgURL: String?,
+                   bank: String?,
+                   holder: String?,
+                   accountNumber: String?,
+                   isAgreeMarketing: Bool?) -> Observable<Models.User> {
+        let api = PatchUserAPI(request: patchUserRequest(nickname: nickname,
+                                                         imgURL: imgURL,
+                                                         bank: bank,
+                                                         holder: holder,
+                                                         accountNumber: accountNumber,
+                                                         isAgreeMarketing: isAgreeMarketing))
+        return network.request(api)
+            .compactMap { [weak self] response in
+                return self?.convertToUser(patchUserDTO: response) as? Models.User
             }.asObservable()
     }
     
+    // 카카오 소셜 로그인
     func kakaoLogin() -> Observable<OAuthToken> {
         return Observable.create { result in
             if (UserApi.isKakaoTalkLoginAvailable()) {
@@ -103,12 +110,32 @@ final class UserRepositoryImpl: UserRepository {
             })
             .disposed(by: disposeBag)
     }
-    
+}
 
+// MARK: - Helper
+extension UserRepository {
+    fileprivate func convertToToken(_ dto: DTO.PostUser) -> AuthenticationToken {
+        return .init(type: dto.tokenType, accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+    }
     
+    fileprivate func convertToUser(userDTO dto: DTO.PostUser) -> Models.User {
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "default_profile_image")
+    }
     
+    fileprivate func convertToUser(patchUserDTO dto: DTO.PatchUser) -> Models.User {
+        let bankAccount = BankAccount(bank: dto.account.bank,
+                                      accountHolderName: dto.account.holder,
+                                      accountNumber: dto.account.number)
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_image")
+    }
     
-    private func createUserRequest(provider: String, nickname: String, email: String, bank: String, bankNumber: String, bankHolder: String, isAgreeMarketing: Bool) -> PostUserAPI.Request {
+    fileprivate func createUserRequest(provider: String,
+                                   nickname: String,
+                                   email: String,
+                                   bank: String,
+                                   bankNumber: String,
+                                   bankHolder: String,
+                                   isAgreeMarketing: Bool) -> PostUserAPI.Request {
         return .init(
             provider: provider,
             nickname: nickname,
@@ -119,15 +146,23 @@ final class UserRepositoryImpl: UserRepository {
             isAgreeMarketing: isAgreeMarketing
         )
     }
-}
-
-// MARK: - Helper
-extension UserRepository {
-    fileprivate func convertToToken(_ dto: DTO.User) -> AuthenticationToken {
-        return .init(type: dto.tokenType, accessToken: dto.accessToken, refreshToken: dto.refreshToken)
-    }
     
-    fileprivate func convertToUser(_ dto: DTO.User) -> Models.User {
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "")
+    fileprivate func patchUserRequest(nickname: String?,
+                                      imgURL: String?,
+                                      bank: String?,
+                                      holder: String?,
+                                      accountNumber: String?,
+                                      isAgreeMarketing: Bool?) -> PatchUserAPI.Request {
+        if let nickname = nickname {
+            return .init(nickname: nickname)
+        } else if let imgURL = imgURL {
+            return .init(imgUrl: imgURL)
+        } else if let bank = bank, let accountNumber = accountNumber, let holder = holder {
+            return .init(bank: bank, number: accountNumber, holder: holder)
+        } else if let isAgreeMarketing = isAgreeMarketing {
+            return .init(isAgreeMarketing: isAgreeMarketing)
+        } else {
+            return .init()
+        }
     }
 }

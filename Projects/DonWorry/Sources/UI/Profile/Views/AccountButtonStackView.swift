@@ -12,7 +12,7 @@ import DesignSystem
 import SnapKit
 
 final class AccountButtonStackView: UIStackView {
-    private lazy var logoutButton: UIButton = {
+    lazy var logoutButton: UIButton = {
         let v = UIButton()
         v.setTitle("로그아웃", for: .normal)
         v.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
@@ -27,7 +27,7 @@ final class AccountButtonStackView: UIStackView {
         return v
     }()
     
-    private lazy var deleteButton: UIButton = {
+    lazy var deleteButton: UIButton = {
         let v = UIButton()
         v.setTitle("회원탈퇴", for: .normal)
         v.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
