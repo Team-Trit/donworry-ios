@@ -140,10 +140,10 @@ extension UserRepository {
     }
     
     fileprivate func convertToUser(patchUserDTO dto: DTO.PatchUser) -> Models.User {
-        let bankAccount = BankAccount(bank: dto.userUpdateCommand.account.bank,
-                                      accountHolderName: dto.userUpdateCommand.account.holder,
-                                      accountNumber: dto.userUpdateCommand.account.number)
-        return .init(id: dto.user.user.id, nickName: dto.userUpdateCommand.nickname, bankAccount: bankAccount, image: dto.userUpdateCommand.imgURL)
+        let bankAccount = BankAccount(bank: dto.account.bank,
+                                      accountHolderName: dto.account.holder,
+                                      accountNumber: dto.account.number)
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_image")
     }
     
     fileprivate func createUserRequest(provider: String,
@@ -170,27 +170,16 @@ extension UserRepository {
                                       holder: String?,
                                       accountNumber: String?,
                                       isAgreeMarketing: Bool?) -> PatchUserAPI.Request {
-        return .init(nickname: nickname,
-                     imgURL: imgURL,
-                     bank: bank,
-                     number: accountNumber,
-                     holder: holder,
-                     userID: nil,
-                     isAgreeMarketing: isAgreeMarketing,
-                     id: nil,
-                     innerUserNickname: nickname,
-                     email: nil,
-                     innerUserIsAgreeMarketing: isAgreeMarketing,
-                     provider: nil,
-                     providerID: nil,
-                     role: nil,
-                     password: nil,
-                     username: holder,
-                     authorities: nil,
-                     accountNonExpired: nil,
-                     accountNonLocked: nil,
-                     credentialsNonExpired: nil,
-                     enabled: nil
-        )
+        if let nickname = nickname {
+            return .init(nickname: nickname)
+        } else if let imgURL = imgURL {
+            return .init(imgUrl: imgURL)
+        } else if let bank = bank, let accountNumber = accountNumber, let holder = holder {
+            return .init(bank: bank, number: accountNumber, holder: holder)
+        } else if let isAgreeMarketing = isAgreeMarketing {
+            return .init(isAgreeMarketing: isAgreeMarketing)
+        } else {
+            return .init()
+        }
     }
 }
