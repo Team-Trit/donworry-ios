@@ -24,6 +24,7 @@ final class UserRepositoryImpl: UserRepository {
         self.network = network
     }
     
+    // 카카오 기반 회원가입 API 호출
     func postUser(provider: String,
                   nickname: String,
                   email: String,
@@ -49,6 +50,7 @@ final class UserRepositoryImpl: UserRepository {
             .asObservable()
     }
     
+    // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
                    imgURL: String?,
                    bank: String?,
@@ -67,6 +69,7 @@ final class UserRepositoryImpl: UserRepository {
             }.asObservable()
     }
     
+    // 카카오 소셜 로그인
     func kakaoLogin() -> Observable<OAuthToken> {
         return Observable.create { result in
             if (UserApi.isKakaoTalkLoginAvailable()) {
