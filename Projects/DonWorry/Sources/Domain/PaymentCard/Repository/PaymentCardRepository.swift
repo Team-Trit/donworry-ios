@@ -14,7 +14,8 @@ import RxSwift
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
-    func uploadImage(request: PaymentCardModels.UploadImage.Request) -> Observable<PaymentCardModels.UploadImage.Response>
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -42,6 +43,11 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             .compactMap { str in
                     return str
             }.asObservable()
+    }
+
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        network.request(PostPaymentCardAPI(request: createPostPaymentCardReqeust(paymentCard: request)))
+            .compactMap { _ in .init() }.asObservable()
     }
 
     // SpaceDTO에서 Space도메인으로 변환해줍니다.
@@ -76,27 +82,12 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         )
     }
 
-    func uploadImage(request: PaymentCardModels.UploadImage.Request) -> Observable<PaymentCardModels.UploadImage.Response> {
-        guard let imageData = request.image.pngData() else { return .error(PaymentCardError.parsingError)}
-        return network.request(UploadImageAPI(request: .init(imageData: imageData)))
-            .compactMap { response in
-                    .init(imageURL: response.imgUrl)
-            }.asObservable()
-    }
 
-//    private func convertToPostPaymentCard(spaceId: Int, paymentCard: PaymentCard) -> PostPaymentCardAPI.Request {
-//        return .init(
-//            spaceID: spaceId,
-//            categoryID: 0,
-//            bank: paymentCard.bankAccount?.bank ?? "",
-//            number: paymentCard.bankAccount?.accountNumber ?? "",
-//            holder: paymentCard.bankAccount?.accountHolderName ?? "",
-//            name: paymentCard.name,
-//            totalAmount: paymentCard.totalAmount,
-//            bgColor: paymentCard.backgroundColor,
-//            paymentDate: paymentCard.date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss")
-//        )
-//    }
+    private func createPostPaymentCardReqeust(paymentCard: PaymentCardModels.CreateCard.Request) -> PostPaymentCardAPI.Request {
+        return  .init(
+            spaceID: paymentCard.spaceID, categoryID: paymentCard.categoryID, bank: paymentCard.bank, number: paymentCard.number, holder: paymentCard.holder, name: paymentCard.name, totalAmount: paymentCard.totalAmount, bgColor: paymentCard.bgColor, paymentDate: paymentCard.paymentDate)
+
+    }
     
     
 }

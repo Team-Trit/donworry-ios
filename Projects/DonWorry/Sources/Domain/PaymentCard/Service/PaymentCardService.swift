@@ -13,7 +13,7 @@ import Models
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
-//    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.CreateCard.Response>
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
 }
 
 final class PaymentCardServiceImpl: PaymentCardService {
@@ -36,9 +36,9 @@ final class PaymentCardServiceImpl: PaymentCardService {
             }
     }
 
-//    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.CreateCard.Response> {
-//        paymentCardRepository.crea
-//    }
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        paymentCardRepository.createCard(request: request)
+    }
 
     // 유저가 정산 카드에 참여했는지 안했는지 판단해주는 메소드
     // 참여했다면 isUserParticipatedIn을 True로 변환res
