@@ -146,8 +146,12 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
 
         reactor.state.map { $0.imageURLs }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: {
-//                self?.
+            .subscribe(onNext: { [weak self] in
+                self?.tableView.filePickerCellViewModel = .init(imageURLs: $0)
+                self?.tableView.reloadRows(
+                    at: [IndexPath(row: 3, section: 0)],
+                    with: .none
+                )
             }).disposed(by: disposeBag)
         
         reactor.pulse(\.$step)

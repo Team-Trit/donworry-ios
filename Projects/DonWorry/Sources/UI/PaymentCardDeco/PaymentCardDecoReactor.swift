@@ -101,6 +101,7 @@ final class PaymentCardDecoReactor: Reactor {
             } else {
                 newState.imageURLs.append(imageURL)
             }
+            print(newState)
         }
         return newState
     }

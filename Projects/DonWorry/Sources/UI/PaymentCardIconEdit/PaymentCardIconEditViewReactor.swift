@@ -90,6 +90,6 @@ final class PaymentCardIconEditViewReactor: Reactor {
         }
         return newState
     }
-    
+
     private let getAllCategoriesUseCase: GetAllCategoriesUseCase
 }

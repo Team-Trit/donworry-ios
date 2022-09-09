@@ -41,10 +41,10 @@ class PaymentCardDecoTableView: UITableView {
         CardDecoItem(title: "파일 추가 (선택)"),
     ]
     private var selectedIndex: Int = -1
-    
+
     weak var paymentCardDecoTableViewDelegate: PaymentCardDecoTableViewDelegate?
     weak var photoUpdateDelegate: PhotoUpdateDelegate?
-    
+    var filePickerCellViewModel: FilePickerCellViewModel?
     // MARK: - Constructors
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: .zero, style: .insetGrouped)
@@ -241,10 +241,8 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
                 cell.configure(isHidden: expandableItem.isHidden)
                 cell.filePickerCellCollectionViewDelegate = self
-                self.photoUpdateDelegate = cell
-            
+            cell.viewModel = filePickerCellViewModel
                 return cell
-
             default:
                 return UITableViewCell()
         }
