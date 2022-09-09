@@ -66,15 +66,20 @@ final class PaymentCardAmountEditReactor: Reactor {
             newState.amount = setNewAmount(state.amount, with: amount)
             if newState.amount != "0" {
                 newState.isButtonEnabled = true
-                newState.paymentCard.totalAmount = Int(amount) ?? 0
+                newState.paymentCard.totalAmount = convertAmount(newState.amount)
             } else {
                 newState.isButtonEnabled = false
             }
         case .routeTo(let step):
             newState.step = step
         }
-        
+        print(newState)
         return newState
+    }
+
+    func convertAmount(_ amount: String) -> Int {
+        let amount = amount.components(separatedBy: [","]).joined()
+        return Int(amount) ?? 0
     }
 }
 

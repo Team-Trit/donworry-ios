@@ -155,12 +155,6 @@ extension PaymentCardAmountEditViewController {
         paymentCardDecoViewController.reactor =  PaymentCardDecoReactor(paymentCard: newPaymentCard)
         return paymentCardDecoViewController
     }
-
-    func convertAmount(_ amount: String) -> Int {
-        let amount = amount.components(separatedBy: [","]).joined()
-        return Int(amount) ?? 0
-    }
-    
 }
 
 // MARK: - Layout
