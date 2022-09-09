@@ -11,7 +11,7 @@ import DesignSystem
 import Kingfisher
 
 protocol PhotoCellDelegate: AnyObject {
-    func deletePhoto()
+    func deletePhoto(imageURL: String)
 }
 
 class PhotoCell: UICollectionViewCell {
@@ -25,6 +25,7 @@ class PhotoCell: UICollectionViewCell {
             }
         }
     }
+
     lazy var container: UIImageView = {
         $0.contentMode = .scaleAspectFill
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -40,7 +41,11 @@ class PhotoCell: UICollectionViewCell {
     }(UIButton())
 
     @objc private func deletePhoto(_ sender: UIButton) {
+        guard let viewModel = viewModel else {
+            return
+        }
 
+        photoCellDelegate?.deletePhoto(imageURL: viewModel)
     }
     
     override init(frame: CGRect) {

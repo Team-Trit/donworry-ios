@@ -11,12 +11,10 @@ import UIKit
 struct CardDecoItem {
     let title: String
     var isHidden = true
-    var imageUrls: [String] = []
 
-    init(title: String, isHidden: Bool = true, imagUrls: [String] = []){
+    init(title: String, isHidden: Bool = true) {
         self.title = title
         self.isHidden = isHidden
-        self.imageUrls = imagUrls
     }
     
 }
@@ -26,6 +24,7 @@ protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateCardColor(with color: CardColor)
     func updatePayDate(with date : Date)
     func showPhotoPicker()
+    func deleteImage(imageURL: String)
     func updateHolder(holder: String)
     func updateAccountNumber(number: String)
 }
@@ -134,6 +133,10 @@ extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorP
     // FilePickerCellCollectionViewDelegate
     func selectPhoto(){
         paymentCardDecoTableViewDelegate?.showPhotoPicker()
+    }
+
+    func deletePhoto(imageURL: String) {
+        paymentCardDecoTableViewDelegate?.deleteImage(imageURL: imageURL)
     }
     
 }
@@ -245,7 +248,6 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
             cell.configure(isHidden: expandableItem.isHidden)
             cell.filePickerCellCollectionViewDelegate = self
-            cell.viewModel = .init(imageURLs: expandableItem.imageUrls)
             cell.viewModel = filePickerCellViewModel
             return cell
         default:

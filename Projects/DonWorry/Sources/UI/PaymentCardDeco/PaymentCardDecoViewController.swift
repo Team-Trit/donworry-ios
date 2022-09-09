@@ -162,7 +162,6 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
                 self?.tableView.reloadData()
             }).disposed(by: disposeBag)
 
-
         reactor.state.map { $0.bankAccount }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
@@ -370,6 +369,10 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
                 }
             })
         }
+    }
+
+    func deleteImage(imageURL: String) {
+        reactor?.action.onNext(.deleteImage(imageURL))
     }
 
     func updateHolder(holder: String) {

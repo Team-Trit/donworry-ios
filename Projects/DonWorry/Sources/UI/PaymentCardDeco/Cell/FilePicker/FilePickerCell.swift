@@ -13,6 +13,7 @@ import DesignSystem
 
 protocol FilePickerCellCollectionViewDelegate: AnyObject {
     func selectPhoto()
+    func deletePhoto(imageURL: String)
 }
 
 
@@ -106,6 +107,7 @@ extension FilePickerCell: UICollectionViewDataSource {
         if viewModel.imageURLs.count > 2 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
             cell.viewModel = viewModel.imageURLs[indexPath.row]
+            cell.photoCellDelegate = self
             cell.deleteCircle.tag = indexPath.row
             return cell
         } else {
@@ -115,6 +117,7 @@ extension FilePickerCell: UICollectionViewDataSource {
             } else {
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
                 cell.viewModel = viewModel.imageURLs[indexPath.row - 1]
+                cell.photoCellDelegate = self
                 cell.deleteCircle.tag = (indexPath.row - 1)
                 return cell
             }
@@ -138,5 +141,12 @@ extension FilePickerCell: UICollectionViewDelegateFlowLayout {
         if viewModel.imageURLs.count < 3 && indexPath.row == 0 {
             filePickerCellCollectionViewDelegate?.selectPhoto()
         }
+    }
+}
+
+extension FilePickerCell: PhotoCellDelegate {
+    
+    func deletePhoto(imageURL: String) {
+        self.filePickerCellCollectionViewDelegate?.deletePhoto(imageURL: imageURL)
     }
 }
