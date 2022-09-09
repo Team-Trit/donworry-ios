@@ -15,7 +15,6 @@ protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
-
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -85,9 +84,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
 
     private func createPostPaymentCardReqeust(paymentCard: PaymentCardModels.CreateCard.Request) -> PostPaymentCardAPI.Request {
         return  .init(
-            spaceID: paymentCard.spaceID, categoryID: paymentCard.categoryID, bank: paymentCard.bank, number: paymentCard.number, holder: paymentCard.holder, name: paymentCard.name, totalAmount: paymentCard.totalAmount, bgColor: paymentCard.bgColor, paymentDate: paymentCard.paymentDate)
+            spaceID: paymentCard.spaceID, categoryID: paymentCard.categoryID, bank: paymentCard.bank, number: paymentCard.accountNumber, holder: paymentCard.holder, name: paymentCard.name, totalAmount: paymentCard.totalAmount, bgColor: paymentCard.bgColor, paymentDate: paymentCard.paymentDate, imgUrls: paymentCard.imageURLs)
 
     }
-    
-    
 }

@@ -86,7 +86,7 @@ final class PaymentCardIconEditViewReactor: Reactor {
                 newState.isNextButtonEnabled = false
             }
         case .updatePaymentCard(let categoryName):
-            newState.paymentCard.viewModel = .init(categoryIconName: categoryName)
+            newState.paymentCard.viewModel.categoryIconName = categoryName
         }
         return newState
     }

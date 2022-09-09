@@ -26,7 +26,6 @@ final class PaymentIconCell: UICollectionViewCell {
     
     override var isSelected: Bool {
         didSet{
-            print(isSelected)
             if isSelected {
                 UIView.animate(withDuration: 0.1) {
 

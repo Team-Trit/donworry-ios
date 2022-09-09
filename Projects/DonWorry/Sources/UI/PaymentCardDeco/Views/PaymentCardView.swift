@@ -34,6 +34,12 @@ public class PaymentCardView: UIView {
         self.dateLabel.textColor = UIColor(hex: color.rawValue)
     }
 
+    func setBankAccount(_ bankAccount: BankAccount) {
+        self.bankLabel.text = bankAccount.bank
+        self.accountNumberLabel.text = bankAccount.accountNumber
+        self.accountHodlerNameLabel.text = bankAccount.accountHolderName
+    }
+    
     // MARK: - Constructors
 
     override init(frame: CGRect) {
@@ -66,7 +72,6 @@ public class PaymentCardView: UIView {
     }(UIStackView())
 
     lazy var icon: UIImageView = {
-        $0.image = UIImage(named: "chicken")
         $0.contentMode = .scaleAspectFit
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -81,7 +86,7 @@ public class PaymentCardView: UIView {
         $0.textColor = .white
         return $0
     }(UILabel())
-    
+
     lazy var bankLabel: UILabel = {
         $0.text = "은행명"
         $0.translatesAutoresizingMaskIntoConstraints = false

@@ -34,6 +34,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     private lazy var scrollView: UIScrollView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.showsVerticalScrollIndicator = false
+        $0.keyboardDismissMode = .onDrag
         return $0
     }(UIScrollView())
     
@@ -102,6 +103,10 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     }
 
     func dispatch(to reactor: PaymentCardDecoReactor) {
+        self.rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.completeButton.rx.tap.map { .didTapCompleteButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -118,7 +123,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     
     func render(reactor: PaymentCardDecoReactor) {
 
-        reactor.state.map { "\($0.paymentCard.name)" }
+        reactor.state.map { "\($0.paymentCard.viewModel.spaceName)" }
             .bind(to: (navigationBar.titleLabel?.rx.text)!)
             .disposed(by: disposeBag)
         
@@ -153,14 +158,17 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
         reactor.state.map { $0.imageURLs }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
-                print($0)
                 self?.tableView.filePickerCellViewModel = .init(imageURLs: $0)
-                self?.tableView.reloadRows(
-                    at: [IndexPath(row: 3, section: 0)],
-                    with: .none
-                )
+                self?.tableView.reloadData()
             }).disposed(by: disposeBag)
-        
+
+
+        reactor.state.map { $0.bankAccount }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.paymentCardView.setBankAccount($0)
+            }).disposed(by: disposeBag)
+
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -310,7 +318,7 @@ extension PaymentCardDecoViewController: UIImagePickerControllerDelegate {
 // MARK: PaymentCardDecoTableViewDelegate
 
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
-    
+
     func updateCardColor(with color: CardColor) {
         reactor?.action.onNext(.didTapColor(color))
     }
@@ -365,24 +373,12 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     }
 
     func updateHolder(holder: String) {
-        if !holder.isEmpty {
-            paymentCardView.accountHodlerNameLabel.text = "(\(holder))"
-//            cardVM.holder = holder
-        } else {
-            paymentCardView.accountHodlerNameLabel.text = "(예금주명)"
-//            cardVM.holder = ""
-        }
+
     }
-    
-    
+
     func updateAccountNumber(number: String) {
-        if !number.isEmpty {
-            paymentCardView.accountNumberLabel.text = "\(number)"
-//            cardVM.number = number
-        } else {
-            paymentCardView.accountNumberLabel.text = "000000-00000"
-//            cardVM.number = ""
-        }
+        
     }
+
 
 }

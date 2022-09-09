@@ -28,6 +28,6 @@ struct Formatter {
     }()
 
     static func addTimeZone(dateString: String) -> String {
-        return dateString + "100Z"
+        return dateString + ".100Z"
     }
 }

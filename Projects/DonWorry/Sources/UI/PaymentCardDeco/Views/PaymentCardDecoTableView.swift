@@ -11,10 +11,12 @@ import UIKit
 struct CardDecoItem {
     let title: String
     var isHidden = true
+    var imageUrls: [String] = []
 
-    init(title: String, isHidden: Bool = true){
+    init(title: String, isHidden: Bool = true, imagUrls: [String] = []){
         self.title = title
         self.isHidden = isHidden
+        self.imageUrls = imagUrls
     }
     
 }
@@ -34,7 +36,7 @@ protocol PhotoUpdateDelegate: AnyObject {
 
 class PaymentCardDecoTableView: UITableView {
     
-    private var cardDecoItems: [CardDecoItem] = [
+    var cardDecoItems: [CardDecoItem] = [
         CardDecoItem(title: "배경 선택"),
         CardDecoItem(title: "날짜 선택"),
         CardDecoItem(title: "계좌번호 입력 (선택)"),
@@ -198,7 +200,7 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let expandableItem = self.cardDecoItems[indexPath.row]
 
         switch indexPath.row {
@@ -243,13 +245,11 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
             cell.configure(isHidden: expandableItem.isHidden)
             cell.filePickerCellCollectionViewDelegate = self
-            print("리로드해요 : ", filePickerCellViewModel)
+            cell.viewModel = .init(imageURLs: expandableItem.imageUrls)
             cell.viewModel = filePickerCellViewModel
             return cell
         default:
             return UITableViewCell()
         }
-
     }
-
 }

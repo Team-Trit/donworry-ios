@@ -57,7 +57,7 @@ enum PaymentCardModels {
             var spaceID: Int
             var categoryID: Int
             var bank: String
-            var number: String
+            var accountNumber: String
             var holder: String
             var name: String
             var totalAmount: Int
@@ -67,11 +67,12 @@ enum PaymentCardModels {
             var viewModel: ViewModel
             struct ViewModel {
                 var categoryIconName: String
+                var spaceName: String
             }
 
             static var initialValue: Request = .init(
-                spaceID: -1, categoryID: -1, bank: "", number: "", holder: "",
-                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [], viewModel: .init(categoryIconName: ""))
+                spaceID: -1, categoryID: -1, bank: "", accountNumber: "", holder: "",
+                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [], viewModel: .init(categoryIconName: "", spaceName: ""))
         }
 
         struct Response {

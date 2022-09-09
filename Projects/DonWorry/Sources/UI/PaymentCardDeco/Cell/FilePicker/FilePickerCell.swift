@@ -37,9 +37,18 @@ final class FilePickerCell: UITableViewCell {
         }
     }
 
-    var viewModel: FilePickerCellViewModel?
+    var viewModel: FilePickerCellViewModel? {
+        didSet {
+            DispatchQueue.main.async {
+                self.pickerCollectionView.reloadData()
+            }
+        }
+    }
     lazy var pickerCollectionView: UICollectionView = {
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 15
+        layout.minimumInteritemSpacing = 15
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.isScrollEnabled = false
         return cv
     }()
@@ -68,7 +77,7 @@ extension FilePickerCell {
         pickerCollectionView.register(PhotoAddCell.self, forCellWithReuseIdentifier: "PhotoAddCell")
 
         pickerCollectionView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(10)
+            $0.edges.equalToSuperview().inset(15)
         }
         
     }
@@ -84,29 +93,10 @@ extension FilePickerCell {
 
 // MARK: - CollectionView
 
-extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
-    
-    private func createCollecionViewLayout() -> UICollectionViewCompositionalLayout{
-        
-        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(84), heightDimension: .absolute(84))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(84))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 3)
-        group.interItemSpacing = .fixed(15)
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = CGFloat(0)
-        
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        
-        return layout
-    }
-    
+extension FilePickerCell: UICollectionViewDataSource {
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("numberOfItemsInSection")
         guard let viewModel = viewModel else { return 0 }
-        print("collectionView의 이미지 : ", viewModel.imageURLs)
         let imageCount = viewModel.imageURLs.count
         return imageCount < 3 ? imageCount + 1 : imageCount
     }
@@ -115,7 +105,6 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
         guard let viewModel = viewModel else { return .init() }
         if viewModel.imageURLs.count > 2 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-//            cell.photoCellDelegate = self
             cell.viewModel = viewModel.imageURLs[indexPath.row]
             cell.deleteCircle.tag = indexPath.row
             return cell
@@ -125,36 +114,29 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
-//                cell.photoCellDelegate = self
                 cell.viewModel = viewModel.imageURLs[indexPath.row - 1]
                 cell.deleteCircle.tag = (indexPath.row - 1)
                 return cell
             }
         }
     }
-    
-    
+}
+
+extension FilePickerCell: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let width = (collectionView.bounds.width - 20 - 30) / 3
+        return .init(width: width, height: width)
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
         if viewModel.imageURLs.count < 3 && indexPath.row == 0 {
             filePickerCellCollectionViewDelegate?.selectPhoto()
         }
     }
-    
 }
-
-//extension FilePickerCell: PhotoUpdateDelegate, PhotoCellDelegate {
-
-//    func updatePhotoCell(img: [UIImage]) {
-//        DispatchQueue.main.async {
-//            self.pickerCollectionView.reloadData()
-//        }
-//    }
-//
-//    func deletePhoto() {
-//        DispatchQueue.main.async {
-//            self.pickerCollectionView.reloadData()
-//        }
-//    }
-
-//}

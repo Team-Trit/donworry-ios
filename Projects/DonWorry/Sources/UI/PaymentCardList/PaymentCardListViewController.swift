@@ -288,9 +288,10 @@ extension PaymentCardListViewController {
 
     private func createPaymentCard() -> UIViewController {
         let createCard = PaymentCardNameEditViewController()
-        let spaceID = reactor!.currentState.space.id
+        let space = reactor!.currentState.space
         var newPaymentCard = PaymentCardModels.CreateCard.Request.initialValue
-        newPaymentCard.spaceID = spaceID
+        newPaymentCard.spaceID = space.id
+        newPaymentCard.viewModel.spaceName = space.title
         createCard.reactor = PaymentCardNameEditViewReactor(
             type: .create, paymentCard: newPaymentCard
         )

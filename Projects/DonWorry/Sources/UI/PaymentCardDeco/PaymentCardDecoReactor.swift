@@ -23,6 +23,7 @@ final class PaymentCardDecoReactor: Reactor {
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
     
     enum Action {
+        case viewDidLoad
         case didTapBackButton
         case didTapCloseButton
         case didTapColor(CardColor)
@@ -33,6 +34,7 @@ final class PaymentCardDecoReactor: Reactor {
     }
 
     enum Mutation {
+        case updateBankAccount(BankAccount)
         case routeTo(PaymentCardDecoStep)
         case updateImageURLs(String)
         case updatePaymentCardColor(CardColor)
@@ -44,7 +46,7 @@ final class PaymentCardDecoReactor: Reactor {
         var imageURLs: [String] = []
         var selectedColor: CardColor = .pink
         var selectedDate: Date = Date()
-
+        var bankAccount: BankAccount
         @Pulse var step: PaymentCardDecoStep?
     }
 
@@ -56,7 +58,7 @@ final class PaymentCardDecoReactor: Reactor {
         uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl()
     ) {
-        self.initialState = .init(paymentCard: paymentCard)
+        self.initialState = .init(paymentCard: paymentCard, bankAccount: .init(bank: "", accountHolderName: "", accountNumber: ""))
         self.uploadImageUseCase = uploadImageUseCase
         self.getUserAccountUseCase = getUserAccountUseCase
         self.paymentCardService = paymentCardService
@@ -65,6 +67,14 @@ final class PaymentCardDecoReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .viewDidLoad:
+            let getUserAccount = getUserAccountUseCase.getUserAccount()
+                .compactMap { $0 }
+                .map { Mutation.updateBankAccount($0.bankAccount)}
+            let initailDate = Observable.just(Mutation.updatePaymentCardDate(Date()))
+            let bgColor = Observable.just(Mutation.updatePaymentCardColor(.pink))
+            let initialImage = Observable.just(Mutation.updateImageURLs(""))
+            return .concat([getUserAccount, initailDate, bgColor, initialImage])
         case .didTapBackButton:
             return .just(.routeTo(.pop))
         case .didTapCloseButton:
@@ -79,20 +89,19 @@ final class PaymentCardDecoReactor: Reactor {
             return uploadImageUseCase.uploadCard(request: .init(image: image))
                 .map { .updateImageURLs($0.imageURL) }
         case .didTapCompleteButton:
-//            let card = currentState.paymentCard
-//            let createCard = paymentCardService
-//                                .map { response -> Mutation in
-//                                    return Mutation.routeTo(.completePaymentCardDeco)
-//                                }
-//
-//            return createCar
-            return .just(.routeTo(.pop))
+            let createCard = reqeustCreateCard()
+            return createCard
         }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
+        case .updateBankAccount(let bankAccount):
+            newState.bankAccount = bankAccount
+            newState.paymentCard.bank = bankAccount.bank
+            newState.paymentCard.holder = bankAccount.accountHolderName
+            newState.paymentCard.accountNumber = bankAccount.accountNumber
         case .routeTo(let step):
             newState.step = step
         case .updatePaymentCardDate(let date):
@@ -103,14 +112,25 @@ final class PaymentCardDecoReactor: Reactor {
             newState.paymentCard.bgColor = color.rawValue
             newState.selectedColor = color
         case .updateImageURLs(let imageURL):
-            if let firstIndex = currentState.imageURLs.firstIndex(where: { $0 == imageURL }) {
-                newState.imageURLs.remove(at: firstIndex)
+            // 빈 스트링일 경우 빈 배열 반환
+            if imageURL.isEmpty {
+                newState.imageURLs = currentState.imageURLs
             } else {
-                newState.imageURLs.append(imageURL)
+                // 추가하기, 취소하기
+                if let firstIndex = currentState.imageURLs.firstIndex(where: { $0 == imageURL }) {
+                    newState.imageURLs.remove(at: firstIndex)
+                } else {
+                    newState.imageURLs.append(imageURL)
+                }
             }
         }
         print(newState)
         return newState
+    }
+
+    private func reqeustCreateCard() -> Observable<Mutation> {
+        return paymentCardService.createCard(request: currentState.paymentCard)
+            .map { _ in .routeTo(.completePaymentCardDeco) }
     }
 
     private let getUserAccountUseCase: GetUserAccountUseCase

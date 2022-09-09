@@ -35,11 +35,13 @@ extension PostPaymentCardAPI {
         public let bank, number, holder, name: String
         public let totalAmount: Int
         public let bgColor, paymentDate: String
+        public let imgUrls: [String]
 
         public enum CodingKeys: String, CodingKey {
             case spaceID = "spaceId"
             case categoryID = "categoryId"
             case bank, number, holder, name, totalAmount, bgColor, paymentDate
+            case imgUrls
         }
         
         public init(
@@ -51,7 +53,8 @@ extension PostPaymentCardAPI {
             name: String,
             totalAmount: Int,
             bgColor: String,
-            paymentDate: String
+            paymentDate: String,
+            imgUrls: [String]
         ) {
             self.spaceID = spaceID
             self.categoryID = categoryID
@@ -62,8 +65,7 @@ extension PostPaymentCardAPI {
             self.totalAmount = totalAmount
             self.bgColor = bgColor
             self.paymentDate = paymentDate
+            self.imgUrls = imgUrls
         }
-        
-        
     }
 }
