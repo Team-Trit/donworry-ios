@@ -38,6 +38,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
         let recievedMoney = UILabel()
         recievedMoney.translatesAutoresizingMaskIntoConstraints = false
         recievedMoney.font = UIFont.systemFont(ofSize: 15, weight: .heavy)
+        recievedMoney.textAlignment = .right
         return recievedMoney
     }()
 
@@ -64,7 +65,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
         
         contentView.addSubview(recievedMoney)
         recievedMoney.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        recievedMoney.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        recievedMoney.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         recievedMoney.widthAnchor.constraint(equalToConstant: 160).isActive = true
         
     }

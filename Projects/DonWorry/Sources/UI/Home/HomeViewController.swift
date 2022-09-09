@@ -230,12 +230,14 @@ extension HomeViewController {
             spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .joinSpace:
-            let joinSpaceViewController = JoinSpaceViewController()
-            joinSpaceViewController.reactor = JoinSpaceReactor()
+            let joinSpaceViewController = RecievedMoneyDetailViewController()
+            joinSpaceViewController.modalPresentationStyle = .overFullScreen
+//            joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
         case .recievedMoneyDetail(let spaceID):
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
             recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor(spaceID: spaceID)
+            recieveMoneyDetailViewController.modalPresentationStyle = .overFullScreen
             self.present(recieveMoneyDetailViewController, animated: true)
         case .sentMoneyDetail(let spaceID, let paymentID):
             let sentMoneyDetailViewController = SentMoneyDetailViewController()

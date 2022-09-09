@@ -17,6 +17,15 @@ import DonWorryExtensions
 
 final class RecievedMoneyDetailViewController: BaseViewController, View {
     typealias Reactor = ReceivedMoneyDetailReactor
+    
+    private let closeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .black
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)), for: .normal)
+        button.addTarget(self, action: #selector(sheetClosed), for: .touchUpInside)
+        return button
+    }()
 
     private var statusView: RecieveMoneyDetailStatusView = {
         let status = RecieveMoneyDetailStatusView()
@@ -60,6 +69,11 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
         attributes()
         layout()
     }
+    
+    @objc func sheetClosed() {
+        self.dismiss(animated: true)
+        
+    }
 
     func bind(reactor: Reactor) {
         rx.viewDidLoad.map { .viewDidLoad }
@@ -84,8 +98,12 @@ extension RecievedMoneyDetailViewController {
     }
 
     private func layout() {
+        view.addSubview(closeButton)
+        closeButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
+        closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
+        
         view.addSubview(statusView)
-        statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50).isActive = true
+        statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 90).isActive = true
         statusView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         statusView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         statusView.heightAnchor.constraint(equalToConstant: 150).isActive = true
