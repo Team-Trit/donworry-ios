@@ -90,18 +90,6 @@ enum PaymentCardModels {
         }
     }
     
-    
-    enum UploadImage {
-        
-        struct Request {
-            let image: UIImage
-        }
-        
-        struct Response {
-            let imageURL: String
-        }
-    }
-    
     enum Empty {
         struct Response {}
     }
