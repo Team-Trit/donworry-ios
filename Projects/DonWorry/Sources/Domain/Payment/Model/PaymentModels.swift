@@ -61,7 +61,6 @@ enum PaymentModels {
                 let id: Int
                 let nickname: String
                 let imgURL: String?
-
             }
         }
     }
