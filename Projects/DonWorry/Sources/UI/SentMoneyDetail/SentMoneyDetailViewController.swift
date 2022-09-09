@@ -115,7 +115,10 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         questionView.isHidden.toggle()
     }
 
+    // taker의 계좌번호는 어떻게 불러오지...?
     @objc private func copyTap() {
+        let myPaymentID: String = "110-1145-1456"
+        UIPasteboard.general.string = myPaymentID
     }
 }
 
