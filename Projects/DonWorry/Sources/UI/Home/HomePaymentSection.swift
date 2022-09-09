@@ -12,7 +12,7 @@ import RxDataSources
 enum HomeBillCardItem: Equatable {
     case TakeBillCard(TakeBillCardCellViewModel)
     case GiveBillCard(GiveBillCardCellViewModel)
-    case StateBillCard
+    case StateBillCard(StateBillCardViewModel)
     case LeaveBillCard
 }
 

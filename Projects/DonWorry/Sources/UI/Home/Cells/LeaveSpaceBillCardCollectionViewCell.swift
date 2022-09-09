@@ -10,18 +10,8 @@ import UIKit
 import DesignSystem
 
 final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
-    static let identifier: String = "LeaveSpaceBillCardCollectionViewCell"
     lazy var leaveImageView: UIImageView = {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .heavy)
-        let v = UIImageView(image: UIImage(systemName: "rectangle.portrait.and.arrow.right", withConfiguration: configuration))
-        v.tintColor = .designSystem(.white)
-        return v
-    }()
-
-    lazy var circleView: UIView = {
-        let v = UIView()
-        v.backgroundColor = .designSystem(.grayF6F6F6)
-        v.alpha = 0.51
+        let v = UIImageView(image: UIImage(.ic_billcard_leave))
         return v
     }()
 
@@ -41,41 +31,28 @@ final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
         setUI()
     }
 
     private func setUI() {
-        self.contentView.addSubview(self.circleView)
         self.contentView.addSubview(self.titleLabel)
         self.contentView.addSubview(self.leaveImageView)
 
-        self.circleView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(83)
-        }
         self.leaveImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(84)
         }
         self.titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(circleView.snp.bottom).offset(19.5)
+            make.top.equalTo(leaveImageView.snp.bottom).offset(19)
             make.centerX.equalToSuperview()
         }
 
-        self.circleView.roundCorners(83/2)
+        self.leaveImageView.roundCorners(42)
         self.contentView.addGradient(
             startColor: .designSystem(.redTopGradient)!,
             endColor: .designSystem(.redBottomGradient)!
         )
         self.contentView.roundCorners(8)
         self.addShadow(shadowColor: UIColor.black.withAlphaComponent(0.4).cgColor)
-    }
-
-    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
-
-        let circularlayoutAttributes = layoutAttributes as! CircularCollectionViewLayoutAttributes
-        self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
-        self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
     }
 }

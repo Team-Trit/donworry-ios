@@ -106,8 +106,6 @@ extension PaymentCardNameEditViewController {
             $0.leading.trailing.equalToSuperview().inset(25)
             $0.bottom.equalToSuperview().inset(50)
         }
-
-
     }
 
 }
@@ -116,19 +114,19 @@ extension PaymentCardNameEditViewController {
 extension PaymentCardNameEditViewController {
     private func setTitleLabelText(type: PaymentCardNameEditViewType) -> String {
         switch type {
-            case .create:
-                return "정산내역을\n추가해볼까요?"
-            case .update:
-                return "정산항목명을\n수정해볼까요?"
+        case .create:
+            return "정산내역을\n추가해볼까요?"
+        case .update:
+            return "정산항목명을\n수정해볼까요?"
         }
     }
 
     private func setPlaceholderText(type: PaymentCardNameEditViewType)  -> String {
         switch type {
-            case .create:
-                return "정산하고자 하는 항목을 입력하세요"
-            case .update:
-                return "정산항목명을 입력하세요"
+        case .create:
+            return "정산하고자 하는 항목을 입력하세요"
+        case .update:
+            return "정산항목명을 입력하세요"
         }
     }
 }

@@ -11,7 +11,7 @@ import DesignSystem
 
 class SentMoneyDetailStatusView: UIView {
     
-    private let title: UILabel = {
+    let titleLabel: UILabel = {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.font = .designSystem(weight: .heavy, size: ._25)
@@ -28,6 +28,28 @@ class SentMoneyDetailStatusView: UIView {
         return nameSubTitle
     }()
     
+    
+    
+    private let questionButton: UIImageView = {
+        let questionButton = UIImageView()
+        questionButton.translatesAutoresizingMaskIntoConstraints = false
+        questionButton.image = UIImage(named: "QuestionMark")
+        return questionButton
+    }()
+    
+    private let questionView: QuestionInformationView = {
+        let questionView = QuestionInformationView()
+        questionView.isHidden = true
+        questionView.frame = CGRect(x: 170, y: 40, width: 168, height: 76)
+        questionView.layer.masksToBounds = true
+        questionView.layer.cornerRadius = 8
+        questionView.backgroundColor = .designSystem(.grayF6F6F6)
+        return questionView
+    }()
+    
+    
+    
+    
     private let leftSmallTitle: UILabel = {
         let leftSmallTitle = UILabel()
         leftSmallTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -37,15 +59,16 @@ class SentMoneyDetailStatusView: UIView {
         return leftSmallTitle
     }()
     
-    private let paymentAmount: UILabel = {
+    private lazy var paymentAmountLabel: UILabel = {
         let paymentAmount = UILabel()
         paymentAmount.translatesAutoresizingMaskIntoConstraints = false
         paymentAmount.font = .designSystem(weight: .heavy, size: ._25)
         paymentAmount.textColor = .designSystem(.mainBlue)
+        paymentAmount.attributedText = makeAtrributedString(money: 100000, fontSize: 20, wonColor: .black)
         return paymentAmount
     }()
     
-    private let totalAmountLabel: UILabel = {
+    let totalAmountDescriptionLabel: UILabel = {
         let totalAmountLabel = UILabel()
         totalAmountLabel.translatesAutoresizingMaskIntoConstraints = false
         totalAmountLabel.text = "총 정산 내역"
@@ -55,20 +78,21 @@ class SentMoneyDetailStatusView: UIView {
         return totalAmountLabel
     }()
 
-    private lazy var totalAmount: UILabel = {
+    private lazy var totalAmountLabel: UILabel = {
         let totalAmount = UILabel()
         totalAmount.translatesAutoresizingMaskIntoConstraints = false
         totalAmount.textColor = .designSystem(.mainBlue)
         totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
         totalAmount.layer.opacity = 0.2
-        totalAmount.attributedText = makeAtrributedString(money: 120000)
+        totalAmount.attributedText = makeAtrributedString(money: 120000, fontSize: 18, wonColor: .black)
         return totalAmount
     }()
     
     private let progressView: UIProgressView = {
         let progressView = UIProgressView(progressViewStyle: .bar)
+        progressView.progress = 0
         progressView.translatesAutoresizingMaskIntoConstraints = false
-        progressView.trackTintColor = .designSystem(.white)
+        progressView.trackTintColor = .designSystem(.grayF6F6F6)
         progressView.progressTintColor = .designSystem(.mainBlue)
         progressView.layer.cornerRadius = 5
         progressView.clipsToBounds = true
@@ -81,62 +105,76 @@ class SentMoneyDetailStatusView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         render()
+        let appearTapGesture = UITapGestureRecognizer(target: self, action: #selector(appearInfoTap))
+        questionButton.addGestureRecognizer(appearTapGesture)
+        questionButton.isUserInteractionEnabled = true
+ 
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc private func appearInfoTap() {
+        questionView.isHidden.toggle()
+    }
+    
     func render() {
-        addSubview(title)
-        title.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
-        title.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-        title.heightAnchor.constraint(equalToConstant: 22).isActive = true
-        
+        addSubview(titleLabel)
+        titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 25).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        titleLabel.heightAnchor.constraint(equalToConstant: 22).isActive = true
+
         addSubview(nameSubTitle)
-        nameSubTitle.bottomAnchor.constraint(equalTo: title.bottomAnchor).isActive = true
-        nameSubTitle.leadingAnchor.constraint(equalTo: title.trailingAnchor, constant: 5).isActive = true
-        
+        nameSubTitle.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
+        nameSubTitle.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 5).isActive = true
+
         addSubview(leftSmallTitle)
-        leftSmallTitle.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 20).isActive = true
+        leftSmallTitle.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
         leftSmallTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         
-        
-        addSubview(paymentAmount)
-        paymentAmount.topAnchor.constraint(equalTo: leftSmallTitle.bottomAnchor, constant: 0).isActive = true
-        paymentAmount.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        addSubview(totalAmountDescriptionLabel)
+        totalAmountDescriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
+        totalAmountDescriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
         
         addSubview(totalAmountLabel)
-        totalAmountLabel.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 20).isActive = true
+        totalAmountLabel.topAnchor.constraint(equalTo: totalAmountDescriptionLabel.bottomAnchor).isActive = true
         totalAmountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
         
-        addSubview(totalAmount)
-        totalAmount.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor).isActive = true
-        totalAmount.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
-
+        addSubview(paymentAmountLabel)
+        paymentAmountLabel.topAnchor.constraint(equalTo: leftSmallTitle.bottomAnchor, constant: 0).isActive = true
+        paymentAmountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         
+        addSubview(questionButton)
+        questionButton.centerYAnchor.constraint(equalTo: paymentAmountLabel.centerYAnchor).isActive = true
+        questionButton.leadingAnchor.constraint(equalTo: paymentAmountLabel.trailingAnchor, constant: 10).isActive = true
+        questionButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
+        questionButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+
+        addSubview(questionView)
+
         addSubview(progressView)
-        progressView.topAnchor.constraint(equalTo: paymentAmount.bottomAnchor, constant: 15).isActive = true
+        progressView.topAnchor.constraint(equalTo: paymentAmountLabel.bottomAnchor, constant: 15).isActive = true
         progressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         progressView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         progressView.heightAnchor.constraint(equalToConstant: 8).isActive = true
     }
 
-    func configure(recievedUser: String, payment: Int, totalAmount: Int) {
-        title.text = recievedUser
-        paymentAmount.attributedText = makeAtrributedString(money: payment)
-        progressView.setProgress(Float(payment)/Float(totalAmount), animated: false)
+    func configure(recievedUser: String?, payment: Int, totalAmount: Int) {
+        titleLabel.text = recievedUser
+        paymentAmountLabel.attributedText = makeAtrributedString(money: payment, fontSize: 20, wonColor: .black)
+        progressView.setProgress(Float(payment)/Float(totalAmount), animated: true)
     }
+}
+
+func makeAtrributedString(money: Int, fontSize: Int, wonColor: UIColor) -> NSMutableAttributedString {
+    let numberformatter = NumberFormatter()
+    numberformatter.numberStyle = .decimal
+    let paymentString = numberformatter.string(for: money)! + "원"
+    let attributedQuote = NSMutableAttributedString(string: paymentString)
+    attributedQuote.addAttribute(.foregroundColor, value: wonColor, range: (paymentString as NSString).range(of: "원"))
+    attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: CGFloat(fontSize), weight: .bold), range: (paymentString as NSString).range(of: "원"))
     
-    func makeAtrributedString(money: Int) -> NSMutableAttributedString {
-        let numberformatter = NumberFormatter()
-        numberformatter.numberStyle = .decimal
-        let paymentString = numberformatter.string(for: money)! + "원"
-        let attributedQuote = NSMutableAttributedString(string: paymentString)
-        attributedQuote.addAttribute(.foregroundColor, value: UIColor.black, range: (paymentString as NSString).range(of: "원"))
-        attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: 20, weight: .bold), range: (paymentString as NSString).range(of: "원"))
-        
-        return attributedQuote
-    }
+    return attributedQuote
 }
 

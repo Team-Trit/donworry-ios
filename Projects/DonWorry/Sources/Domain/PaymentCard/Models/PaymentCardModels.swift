@@ -31,6 +31,7 @@ enum PaymentCardModels {
                 let account: BankAccount
                 let taker: User
                 let givers: [User]
+                let isUserParticipatedIn: Bool
 
                 struct User {
                     let id: Int

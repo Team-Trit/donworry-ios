@@ -14,8 +14,8 @@ import Models
 enum HomeStep {
     case spaceName
     case joinSpace
-    case recievedMoneyDetail
-    case sentMoneyDetail
+    case recievedMoneyDetail(Int)
+    case sentMoneyDetail(Int, Int)
     case alert
     case profile
     case leaveAlertMessage // 확인메시지 알람창 -> 토스트
@@ -32,14 +32,13 @@ final class HomeReactor: Reactor {
     typealias Index = Int
 
     enum Action {
-        case viewDidLoad
         case viewWillAppear
         case didSelectSpace(at: Int)
         case didTapAlarm
         case didTapSearchButton
         case didTapCreateSpaceButton
         case didTapProfileImage
-        case didTapGiveBillCard
+        case didTapGiveBillCard(Int)
         case didTapTakeBillCard
         case didTapStateBillCard
         case didTapLeaveBillCard
@@ -60,7 +59,6 @@ final class HomeReactor: Reactor {
         var selectedSpaceIndex: Int // 선택된 정산방 index
         var homeHeader: HeaderModel? // 헤더 뷰모델
 
-        @Pulse var reload: Void?
         @Pulse var step: HomeStep?
     }
 
@@ -68,24 +66,19 @@ final class HomeReactor: Reactor {
 
     init(
         _ getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
-        _ SpaceService: SpaceService = SpaceServiceImpl(),
+        _ spaceService: SpaceService = SpaceServiceImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
-        self.spaceService = SpaceService
+        self.spaceService = spaceService
         self.homePresenter = homePresenter
         self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .viewDidLoad:
-            return .concat([
-                getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) },
-                spaceService.fetchSpaceList().map { .updateSpaceList($0) }
-            ])
         case .viewWillAppear:
-            return spaceService.fetchSpaceList().map { .updateSpaceList($0) }
+            return .concat([requestUserAccount(), requestSpaceList()])
         case .didSelectSpace(let index):
             return .just(.updateSpace(index))
         case .didTapAlarm:
@@ -96,10 +89,12 @@ final class HomeReactor: Reactor {
             return .just(.routeTo(.spaceName))
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
-        case .didTapGiveBillCard:
-            return .just(.routeTo(.sentMoneyDetail))
+        case .didTapGiveBillCard(let paymentID):
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.sentMoneyDetail(selectedSpace.id, paymentID)))
         case .didTapTakeBillCard:
-            return .just(.routeTo(.recievedMoneyDetail))
+            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+            return .just(.routeTo(.recievedMoneyDetail(selectedSpace.id)))
         case .didTapStateBillCard:
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
             return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
@@ -126,16 +121,16 @@ final class HomeReactor: Reactor {
 
             if currentState.selectedSpaceIndex < spaceList.count {
                 let selectedSpace = spaceList[currentState.selectedSpaceIndex]
-                newState.spaceViewModelList = homePresenter.formatSection(
+                newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
                     spaceList: spaceList,
                     selectedIndex: currentState.selectedSpaceIndex
                 )
                 newState.sections = homePresenter.formatSection(
+                    isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
                 newState.spaceList = spaceList
-                newState.reload = ()
             }
 
             // 삭제하고 홈으로 돌아온 경우 선택된 정산방 index가 전체 정산방보다 큰 경우가 나옵니다.
@@ -144,25 +139,26 @@ final class HomeReactor: Reactor {
                 let initialIndex = spaceList.count - 1 // 마지막 정산방
                 newState.selectedSpaceIndex = initialIndex
                 let selectedSpace = spaceList[initialIndex]
-                newState.spaceViewModelList = homePresenter.formatSection(
+                newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
                     spaceList: spaceList,
                     selectedIndex: initialIndex
                 )
                 newState.sections = homePresenter.formatSection(
+                    isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
                 newState.spaceList = spaceList
-                newState.reload = ()
             }
         case .updateSpace(let index): // 셀이 눌렸을 때 리로드
             let selectedSpace = currentState.spaceList[index]
             newState.selectedSpaceIndex = index
-            newState.spaceViewModelList = homePresenter.formatSection(
+            newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
                 spaceList: currentState.spaceList,
                 selectedIndex: index
             )
             newState.sections = homePresenter.formatSection(
+                isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                 payments: selectedSpace.payments,
                 isTaker: selectedSpace.isTaker
             )
@@ -179,6 +175,14 @@ final class HomeReactor: Reactor {
                 .map { .updateSpaceList($0) }
         }
         return .just(.routeTo(.cantLeaveSpace))
+    }
+
+    private func requestSpaceList() -> Observable<Mutation> {
+        spaceService.fetchSpaceList().map { .updateSpaceList($0) }
+    }
+
+    private func requestUserAccount() -> Observable<Mutation> {
+        getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) }
     }
 
     private let getUserAccountUseCase: GetUserAccountUseCase

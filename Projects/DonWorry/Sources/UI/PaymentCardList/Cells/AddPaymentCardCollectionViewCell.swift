@@ -35,15 +35,14 @@ final class AddPaymentCardCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setUI()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
         setUI()
     }
 

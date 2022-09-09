@@ -20,7 +20,17 @@ import RxSwift
 // UINavigationController로 감싼 후 들어와야 합니다..!
 final class ParticipatePaymentCardViewController: BaseViewController, View {
     
-    let viewModel = ParticipatePaymentCardViewModel()
+    let viewModel: ParticipatePaymentCardViewModel
+    
+    init(viewModel: ParticipatePaymentCardViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private var cancelBag = Set<AnyCancellable>()
     
     fileprivate var numberOfselectedCardsLabel: UILabel = {
@@ -83,7 +93,8 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     }
     
     @objc private func checkAttendance() {
-        //TODO: 참석확인
+        viewModel.checkAttendance()
+        dismiss(animated: true)
     }
     
     override func viewDidLoad() {
@@ -99,6 +110,13 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.numberOfselectedCardsLabel.text = "\($0.count)"
+                self?.participateCollectionView.reloadData()
+            }
+            .store(in: &cancelBag)
+        
+        viewModel.$paymentCards
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
                 self?.participateCollectionView.reloadData()
             }
             .store(in: &cancelBag)

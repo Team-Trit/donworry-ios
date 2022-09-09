@@ -60,7 +60,7 @@ class RecieveMoneyDetailStatusView: UIView {
     private let progressView: UIProgressView = {
         let progressView = UIProgressView(progressViewStyle: .bar)
         progressView.translatesAutoresizingMaskIntoConstraints = false
-        progressView.trackTintColor = .designSystem(.white)
+        progressView.trackTintColor = .designSystem(.grayF6F6F6)
         progressView.progressTintColor = .designSystem(.mainBlue)
         progressView.layer.cornerRadius = 5
         progressView.clipsToBounds = true
