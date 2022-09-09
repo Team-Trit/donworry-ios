@@ -26,6 +26,27 @@ final class DWToastFactory {
                 return .designSystem(Pallete.white)?.withAlphaComponent(0.8)
             }
         }
+
+        var messageColor: UIColor? {
+            switch self {
+            case .error:
+                return .designSystem(.white)
+            case .success:
+                return .designSystem(.lightBlue)
+            case .information:
+                return .designSystem(.gray818181)
+            }
+        }
+        var subTitleMessageColor: UIColor? {
+            switch self {
+            case .error:
+                return .designSystem(.white)
+            case .success:
+                return .designSystem(.white)
+            case .information:
+                return .designSystem(.black)
+            }
+        }
     }
     static func show(
         message: String,
@@ -40,7 +61,7 @@ final class DWToastFactory {
             .filter { $0 is DWToastView }
             .forEach { $0.removeFromSuperview() }
 
-        let toastView = DWToastView(message: message, subTitle: subMessage, backgroundColor: type.color)
+        let toastView = DWToastView(message: message, subTitle: subMessage, backgroundColor: type.color, messageColor: type.messageColor, subTitleColor: type.subTitleMessageColor)
         window.addSubview(toastView)
 
         var topConstaint: Constraint?

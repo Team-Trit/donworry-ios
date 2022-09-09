@@ -302,10 +302,6 @@ public class PaymentCardView: UIView {
     func attributes() {
         backgroundColor = UIColor(hex: "#FF5454B8") // op: 72
         layer.cornerRadius = 20
-//        layer.shadowColor = UIColor.black.cgColor
-//        layer.shadowRadius = 20
-//        layer.shadowOpacity = 0.4
-//        layer.shadowOffset = CGSize(width: 0, height: 2)
         
     }
     

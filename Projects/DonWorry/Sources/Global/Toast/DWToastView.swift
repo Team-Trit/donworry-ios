@@ -13,9 +13,12 @@ import DonWorryExtensions
 import DesignSystem
 
 final class DWToastView: UIView {
-    init(message: String, subTitle: String? = nil, backgroundColor: UIColor? = .designSystem(Pallete.black)) {
+    init(message: String, subTitle: String? = nil, backgroundColor: UIColor? = .designSystem(Pallete.black),
+         messageColor: UIColor? = .designSystem(.gray818181), subTitleColor: UIColor? = .designSystem(.black)) {
         super.init(frame: .zero)
 
+        self.messageLabel.textColor = messageColor
+        self.subTitleLabel.textColor = subTitleColor
         self.messageLabel.text = message
         self.subTitleLabel.text = subTitle
         self.backgroundColor = backgroundColor
@@ -37,8 +40,6 @@ extension DWToastView {
         self.roundCorners(25)
         self.messageLabel.font = .designSystem(weight: .bold, size: ._13)
         self.subTitleLabel.font = .designSystem(weight: .bold, size: ._13)
-        self.messageLabel.textColor = .designSystem(.gray818181)
-        self.subTitleLabel.textColor = .designSystem(.black)
         self.messageLabel.textAlignment = .center
         self.subTitleLabel.textAlignment = .center
         self.titleStackView.axis = .vertical
@@ -68,4 +69,11 @@ extension DWToastView {
         }
     }
 
+    private func addShadow() {
+        layer.masksToBounds = false
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowColor = UIColor.black.withAlphaComponent(0.08).cgColor
+        layer.shadowOpacity = 1
+        layer.shadowRadius = 8
+    }
 }

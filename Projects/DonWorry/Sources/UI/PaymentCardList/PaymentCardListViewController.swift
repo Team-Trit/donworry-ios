@@ -47,7 +47,9 @@ final class PaymentCardListViewController: BaseViewController, View {
         let v = UIButton(type: .system)
         v.setTitle("정산 시작", for: .normal)
         v.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
-        v.setTitleColor(UIColor.designSystem(.mainBlue), for: .normal)
+        v.setTitleColor(.designSystem(.mainBlue), for: .normal)
+        v.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
+        v.setTitleColor(.designSystem(.white), for: .disabled)
         v.backgroundColor = .designSystem(.lightBlue)
         return v
     }()
@@ -151,11 +153,15 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.checkParticipatedButton.rx.tap.map { .didTapPaymentCardDetail }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
+        self.startPaymentAlgorithmButton.rx.tap
+            .map { .didTapStartPaymentAlgorithmButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.collectionView.rx.itemSelected
             .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell }
             .subscribe(onNext: { [weak self] cell in
-                // TODO: 화면전환
                 let createCard = PaymentCardNameEditViewController(type: .create)
                 createCard.reactor = PaymentCardNameEditViewReactor()
                 self?.navigationController?.pushViewController(createCard, animated: true)
@@ -164,9 +170,12 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 
     private func render(reactor: Reactor) {
-        reactor.state.map { $0.space.title }
-            .bind(to: navigationBar.titleLabel!.rx.text)
-            .disposed(by: disposeBag)
+        reactor.state.map { ($0.space, $0.isUserAdmin) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (space, isUserAdmin) in
+                self?.navigationBar.titleLabel?.text = space.title
+                self?.startPaymentAlgorithmButton.isEnabled = space.status == "OPEN" && isUserAdmin
+            }).disposed(by: disposeBag)
 
         reactor.state.map { $0.space.shareID }
             .map { "정산방 ID : \($0)" }
@@ -179,12 +188,25 @@ final class PaymentCardListViewController: BaseViewController, View {
                 self?.collectionView.reloadData()
             }).disposed(by: disposeBag)
 
+        // MARK: Pulse
+
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: PaymentCardListStep.none)
             .compactMap { $0 }
             .drive(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$error)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 as? PaymentCardListViewError }
+            .subscribe(onNext: { [weak self] error in
+                self?.showErrorToast(error)
+            }).disposed(by: disposeBag)
+    }
+
+    private func showErrorToast(_ error: PaymentCardListViewError) {
+        DWToastFactory.show(message: error.message, type: .error, duration: 3, completion: nil)
     }
 }
 
@@ -258,19 +280,10 @@ extension PaymentCardListViewController {
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
-        case .cantLeaveAlert:
-            self.present(cantLeaveAlertController(), animated: true)
         case .none:
             break
 
         }
-    }
-
-    private func cantLeaveAlertController() -> UIAlertController {
-        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "정산하러갈게요.", style: .cancel)
-        alert.addAction(cancel)
-        return alert
     }
 
     private func optionAlertController() -> UIAlertController {

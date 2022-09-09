@@ -12,6 +12,7 @@ import RxSwift
 protocol PaymentRepository {
     func fetchGiverPayment(spaceID: Int, paymentID: Int) -> Observable<PaymentModels.FetchGiverPayment.Response>
     func fetchTakerPaymentList(spaceID: Int) -> Observable<PaymentModels.FetchTakerPaymentList.Response>
+    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.Empty.Response>
 }
 
 final class PaymentRepositoryImpl: PaymentRepository {
@@ -35,6 +36,11 @@ final class PaymentRepositoryImpl: PaymentRepository {
             }.asObservable()
     }
 
+    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.Empty.Response> {
+        network.request(PatchPaymentsIsCompletedAPI(request: .init(paymentId: paymentID)))
+            .compactMap { _ in .init() }.asObservable()
+    }
+    
     private func convertToGiverPayment(_ dto: DTO.GetPaymentsGiver) -> PaymentModels.FetchGiverPayment.Response {
         return .init(paymentID: dto.paymentID, spaceID: dto.spaceID, amount: dto.amount, spaceTotalAmount: dto.spaceTotalAmount, isCompleted: dto.isCompleted, takerNickname: dto.takerNickname, account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder), cards: dto.cards.map { .init(name: $0.name, paymentDate: $0.paymentDate, categoryImgURL: $0.categoryImgURL, totalAmount: $0.totalAmount, cardJoinUserCount: $0.cardJoinUserCount, amountPerUser: $0.amountPerUser)})
     }

@@ -13,6 +13,7 @@ import SnapKit
 extension UICollectionViewCell {
 
     func addCompleteView(_ blurWrappedView: UIView = UIView()) {
+        blurWrappedView.tag = 100
         self.contentView.addSubview(blurWrappedView)
         blurWrappedView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -20,6 +21,9 @@ extension UICollectionViewCell {
         addBlurEffectView(to: blurWrappedView)
     }
 
+    func removeCompleteView() {
+        contentView.subviews.filter { $0.tag == 100 }.forEach { $0.removeFromSuperview() }
+    }
     private func addBlurEffectView(to view: UIView) {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)

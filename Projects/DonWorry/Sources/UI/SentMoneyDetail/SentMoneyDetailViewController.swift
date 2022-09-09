@@ -24,7 +24,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
-        accontInfo.configure(bank: "우리은행", account: "1002 - 045 - 401235", name: "임영후")
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
@@ -39,7 +38,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         v.alignment = .center
         return v
     }()
-    private let leftButtomButton: DWButton = {
+    lazy var leftButtomButton: DWButton = {
         let v = DWButton.create(.mediumBlue)
         v.title = "상세내역 보기"
         v.addTarget(self, action: #selector(showSheet), for: .touchUpInside)
@@ -63,6 +62,14 @@ final class SentMoneyDetailViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        rightButtomButton.rx.tap.map { .didTapSendButtton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { !$0.isSent }
+            .bind(to: rightButtomButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
         reactor.state.map { $0.currentStatus }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
@@ -71,6 +78,18 @@ final class SentMoneyDetailViewController: BaseViewController, View {
                     payment: status?.amount ?? 0,
                     totalAmount: status?.spaceTotalAmount ?? 0
                 )
+                self?.accountInfo.configure(
+                    bank: status?.account.bank ?? "",
+                    account: status?.account.number ?? "",
+                    name: status?.account.holder ?? ""
+                )
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                DWToastFactory.show(message: "정산 완료 알림을 보냈어요!")
             }).disposed(by: disposeBag)
     }
 
@@ -112,7 +131,6 @@ extension SentMoneyDetailViewController {
             make.leading.trailing.equalToSuperview().inset(25)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-
 
         leftButtomButton.addGradient(
             startColor: .designSystem(.blueTopGradient)!,

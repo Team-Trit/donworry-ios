@@ -16,6 +16,7 @@ protocol SpaceRepository {
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
     func leaveSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response>
     func deleteSpace(spaceID: Int) -> Observable<SpaceModels.Empty.Response>
+    func startPaymentAlgorithm(request: SpaceModels.StartPaymentAlogrithm.Request) -> Observable<SpaceModels.Empty.Response>
 }
 
 final class SpaceRepositoryImpl: SpaceRepository {
@@ -68,6 +69,11 @@ final class SpaceRepositoryImpl: SpaceRepository {
             .catch { [weak self] in
                 .error(self?.judgeLeaveAndDeleteSpaceError($0) ?? .undefined)
             }.asObservable()
+    }
+
+    func startPaymentAlgorithm(request: SpaceModels.StartPaymentAlogrithm.Request) -> Observable<SpaceModels.Empty.Response> {
+        network.request(PatchSpaceStatusAPI(request: .init(id: request.id, status: request.status.uppercase)))
+            .compactMap { _ in .init() }.asObservable()
     }
     
     private func judgeLeaveAndDeleteSpaceError(_ error: Error) -> SpaceError {

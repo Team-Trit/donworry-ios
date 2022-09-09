@@ -64,4 +64,18 @@ enum PaymentModels {
             }
         }
     }
+
+    // MARK: 정산 완료
+
+    enum CompletePayment {
+        struct Request {
+            let paymentID: Int
+        }
+    }
+
+    // MARK: 성공했는데 응답이 없어도 되는 경우
+
+    enum Empty {
+        struct Response {}
+    }
 }

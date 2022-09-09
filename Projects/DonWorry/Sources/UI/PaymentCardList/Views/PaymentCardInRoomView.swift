@@ -21,6 +21,7 @@ struct PaymentCardInRoomViewModel {
     var backgroundColor: String
     var date: String
     var payer: User
+    var participatedUserCount: Int
     var participatedUserList: [User]
 
     struct User: Equatable {
@@ -37,8 +38,7 @@ public class PaymentCardInRoomView: UIView {
             self.nameLabel.text = viewModel?.name
             self.totalAmountLabel.text = "\(viewModel?.totalAmount ?? "")"
             self.dateLabel.text = viewModel?.date
-            let participatedUserCount = "\(viewModel?.participatedUserList.count ?? 0)"
-            self.participatedUserCountLabel.text = "현재 \(participatedUserCount)명 참가 중 …"
+            self.participatedUserCountLabel.text = "현재 \(viewModel?.participatedUserCount ?? 0)명 참가 중 …"
             self.iconImageView.image = UIImage(assetName: viewModel?.categoryImageName ?? "")
             let backgroundColor = UIColor(hex: (viewModel?.backgroundColor ?? ""))
             self.backgroundColor = backgroundColor?.withAlphaComponent(0.72)
