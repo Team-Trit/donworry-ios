@@ -24,7 +24,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
-        accontInfo.configure(bank: "우리은행", account: "1002 - 045 - 401235", name: "임영후")
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
@@ -79,7 +78,19 @@ final class SentMoneyDetailViewController: BaseViewController, View {
                     payment: status?.amount ?? 0,
                     totalAmount: status?.spaceTotalAmount ?? 0
                 )
-                //self?.tableView.reloadData()
+                self?.accountInfo.configure(
+                    bank: status?.account.bank ?? "",
+                    account: status?.account.number ?? "",
+                    name: status?.account.holder ?? ""
+                )
+                self?.tableView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                DWToastFactory.show(message: "정산 완료 알림을 보냈어요!")
             }).disposed(by: disposeBag)
     }
 

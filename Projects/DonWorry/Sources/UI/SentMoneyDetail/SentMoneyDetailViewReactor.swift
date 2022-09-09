@@ -30,6 +30,8 @@ final class SentMoneyDetailViewReactor : Reactor {
         var currentStatus: Response?
         var cards: [SendingMoneyInfoViewModel] = []
         var isSent: Bool = false
+
+        @Pulse var toast: Void?
     }
 
     let initialState: State
@@ -65,6 +67,7 @@ final class SentMoneyDetailViewReactor : Reactor {
              newState.isSent = response.isCompleted
          case .updateIsSent(let isSent):
              newState.isSent = isSent
+             if isSent { newState.toast = () }
          }
         return newState
     }

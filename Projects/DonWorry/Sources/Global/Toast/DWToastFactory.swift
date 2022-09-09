@@ -32,9 +32,9 @@ final class DWToastFactory {
             case .error:
                 return .designSystem(.white)
             case .success:
-                return .designSystem(.gray818181)
+                return .designSystem(.lightBlue)
             case .information:
-                return .designSystem(.white)
+                return .designSystem(.gray818181)
             }
         }
         var subTitleMessageColor: UIColor? {
@@ -42,9 +42,9 @@ final class DWToastFactory {
             case .error:
                 return .designSystem(.white)
             case .success:
-                return .designSystem(.black)
-            case .information:
                 return .designSystem(.white)
+            case .information:
+                return .designSystem(.black)
             }
         }
     }
