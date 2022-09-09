@@ -33,19 +33,15 @@ final class PaymentCardIconEditViewReactor: Reactor {
     }
 
     struct State {
-        var space: Space
-        var paymentCard: PaymentCardModels.PostCard.Request
+        var paymentCard: PaymentCardModels.CreateCard.Request
         var isNextButtonEnabled: Bool  = false
         @Pulse var step: PaymentCardIconEditStep?
     }
 
     let initialState: State
 
-    init(
-        space: Space,
-        paymentCard: PaymentCardModels.PostCard.Request
-    ){
-        self.initialState = .init(space: space, paymentCard: paymentCard)
+    init(paymentCard: PaymentCardModels.CreateCard.Request){
+        self.initialState = .init(paymentCard: paymentCard)
     }
     
 

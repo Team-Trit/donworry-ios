@@ -160,13 +160,11 @@ final class PaymentCardListViewController: BaseViewController, View {
             .disposed(by: disposeBag)
 
         self.collectionView.rx.itemSelected
-            .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell }
-            .subscribe(onNext: { [weak self] cell in
-                let createCard = PaymentCardNameEditViewController(type: .create)
-                createCard.reactor = PaymentCardNameEditViewReactor()
-                self?.navigationController?.pushViewController(createCard, animated: true)
-
-            }).disposed(by: disposeBag)
+            .compactMap { [weak self] in
+                self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
+            }.map { .didTapAddPaymentCard }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
 
     private func render(reactor: Reactor) {
@@ -280,12 +278,25 @@ extension PaymentCardListViewController {
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
+        case .addPaymentCard:
+            self.navigationController?.pushViewController(createPaymentCard(), animated: true)
         case .none:
             break
 
         }
     }
 
+    private func createPaymentCard() -> UIViewController {
+        let createCard = PaymentCardNameEditViewController()
+        let spaceID = reactor!.currentState.space.id
+        var newPaymentCard = PaymentCardModels.CreateCard.Request.initialValue
+        newPaymentCard.spaceID = spaceID
+        createCard.reactor = PaymentCardNameEditViewReactor(
+            type: .create, paymentCard: newPaymentCard
+        )
+        return createCard
+    }
+    
     private func optionAlertController() -> UIAlertController {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in

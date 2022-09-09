@@ -114,7 +114,7 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] step in
-                self?.move(to: step, reactor: reactor)
+                self?.move(to: step)
             }).disposed(by: disposeBag)
     }
     
@@ -122,20 +122,22 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
 }
 
 extension PaymentCardIconEditViewController {
-    func move(to step: PaymentCardIconEditStep, reactor: Reactor) {
+    func move(to step: PaymentCardIconEditStep) {
         switch step {
         case .pop:
-            self.navigationController?.popViewController(animated: true)
+            navigationController?.popViewController(animated: true)
         case .paymentCardAmountEdit:
-            let amount = PaymentCardAmountEditViewController()
-            amount.reactor =
-            PaymentCardAmountEditReactor(space: reactor.currentState.space,
-                                         amount: "",
-                                         paymentCard: reactor.currentState.paymentCard)
-            self.navigationController?.pushViewController(amount, animated: true)
+            navigationController?.pushViewController(paymentCardAmountEditViewController(), animated: true)
         case .paymentCardList:
             NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
+    }
+
+    private func paymentCardAmountEditViewController() -> UIViewController {
+        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController()
+        let newPaymentCard = reactor!.currentState.paymentCard
+        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(paymentCard: newPaymentCard)
+        return paymentCardAmountEditViewController
     }
 }
 

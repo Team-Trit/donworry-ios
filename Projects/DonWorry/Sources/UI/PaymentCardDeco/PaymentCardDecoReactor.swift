@@ -44,19 +44,17 @@ final class PaymentCardDecoReactor: Reactor {
 
     struct State {
         var isLoading: Bool = false
-        var space: Space
-        var paymentCard: PaymentCardModels.PostCard.Request
+        var paymentCard: PaymentCardModels.CreateCard.Request
         @Pulse var step: PaymentCardDecoStep?
     }
 
     let initialState: State
 
     init(
-        space: Space,
-        paymentCard: PaymentCardModels.PostCard.Request,
+        paymentCard: PaymentCardModels.CreateCard.Request,
         paymentCardService: PaymentCardService = PaymentCardServiceImpl()
     ){
-        self.initialState = .init(space: space, paymentCard: paymentCard)
+        self.initialState = .init(paymentCard: paymentCard)
         self.paymentCardService = paymentCardService
     }
     
@@ -73,27 +71,13 @@ final class PaymentCardDecoReactor: Reactor {
         case .didTapCompleteButton(let cardVM):
             
             let card = currentState.paymentCard
-            let startLoading: Observable<Mutation> = .just(Mutation.setLoading(true))
-            let endLoading: Observable<Mutation> = .just(Mutation.setLoading(false))
-            let createCard =  paymentCardService.createPaymentCard(spaceID: currentState.space.id,
-                                                        paymentCard: PaymentCardModels.PostCard.Request(
-                                                            spaceID: currentState.space.id,
-                                                            categoryID: card.categoryID,
-                                                            bank: cardVM.bank,
-                                                            number: cardVM.number,
-                                                            holder: cardVM.holder,
-                                                            name: card.name,
-                                                            totalAmount: card.totalAmount,
-                                                            bgColor: cardVM.cardColor.rawValue,
-                                                            paymentDate: 
-                                                            cardVM.payDate.modifyDateForNetworking(),
-                                                            images: [] ))
-                                .map { response -> Mutation in
-                                    return Mutation.routeTo(.completePaymentCardDeco)
-                                }
+//            let createCard =  paymentCardService
+//                                .map { response -> Mutation in
+//                                    return Mutation.routeTo(.completePaymentCardDeco)
+//                                }
                                 
-            return .concat([startLoading, createCard, endLoading])
-            
+//            return createCar
+            return .just(.routeTo(.pop))
 
         }
     }
@@ -109,6 +93,8 @@ final class PaymentCardDecoReactor: Reactor {
          }
         return newState
     }
-    
+//    private func createCard() -> Observable<Mutation> {
+//        paymentCardService
+//    }
     private let paymentCardService: PaymentCardService
 }

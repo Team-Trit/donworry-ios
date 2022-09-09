@@ -16,8 +16,7 @@ enum PaymentCardAmountEditStep {
 
 final class PaymentCardAmountEditReactor: Reactor {
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
-    
-    // TODO: RxFlow, Service 추가
+
     enum Action {
         case numberPadPressed(pressedItem: String)
         case nextButtonPressed
@@ -31,9 +30,7 @@ final class PaymentCardAmountEditReactor: Reactor {
     }
     
     struct State {
-        
-        var space: Space
-        var paymentCard: PaymentCardModels.PostCard.Request
+        var paymentCard: PaymentCardModels.CreateCard.Request
         var amount: String
         var isButtonEnabled: Bool = false
         @Pulse var step: PaymentCardAmountEditStep?
@@ -42,11 +39,9 @@ final class PaymentCardAmountEditReactor: Reactor {
     let initialState: State
     
     init(
-        space: Space,
-        amount: String,
-        paymentCard: PaymentCardModels.PostCard.Request
+        paymentCard: PaymentCardModels.CreateCard.Request
     ){
-        self.initialState = State(space: space, paymentCard: paymentCard, amount: "0")
+        self.initialState = State(paymentCard: paymentCard, amount: "0")
     }
     
     
@@ -67,14 +62,14 @@ final class PaymentCardAmountEditReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case let .updateAmount(with):
-            newState.amount = setNewAmount(state.amount, with: with)
+        case let .updateAmount(amount):
+            newState.amount = setNewAmount(state.amount, with: amount)
             if newState.amount != "0" {
                 newState.isButtonEnabled = true
+                newState.paymentCard.totalAmount = Int(amount) ?? 0
             } else {
                 newState.isButtonEnabled = false
             }
-
         case .routeTo(let step):
             newState.step = step
         }
