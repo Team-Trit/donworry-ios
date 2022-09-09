@@ -33,7 +33,7 @@ final class UserRepositoryImpl: UserRepository {
                   bankHolder: String,
                   isAgreeMarketing: Bool,
                   accessToken: String) -> Observable<(Models.User, AuthenticationToken)> {
-        let api = PostUserAPI(request: createUserRequest(
+        let api = KakaoRegisterAPI(request: createUserRequest(
             provider: provider,
             nickname: nickname,
             email: email,
@@ -135,7 +135,7 @@ extension UserRepository {
                                    bank: String,
                                    bankNumber: String,
                                    bankHolder: String,
-                                   isAgreeMarketing: Bool) -> PostUserAPI.Request {
+                                   isAgreeMarketing: Bool) -> KakaoRegisterAPI.Request {
         return .init(
             provider: provider,
             nickname: nickname,

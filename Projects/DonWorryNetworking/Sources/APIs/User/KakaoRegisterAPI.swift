@@ -1,5 +1,5 @@
 //
-//  PostUserAPI.swift
+//  KakaoRegisterAPI.swift
 //  DonWorryNetworking
 //
 //  Created by 김승창 on 2022/08/31.
@@ -10,7 +10,7 @@ import Foundation
 
 import Moya
 
-public struct PostUserAPI: ServiceAPI {
+public struct KakaoRegisterAPI: ServiceAPI {
     public typealias Response = DTO.PostUser
     public var request: Request
     public init(request: Request, accessToken: String) {
@@ -26,7 +26,7 @@ public struct PostUserAPI: ServiceAPI {
     private let accessToken: String
 }
 
-extension PostUserAPI {
+extension KakaoRegisterAPI {
     public struct Request: Encodable {
         public var provider: String
         public var nickname: String
