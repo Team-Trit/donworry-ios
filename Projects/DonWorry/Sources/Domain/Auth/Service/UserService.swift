@@ -17,7 +17,7 @@ import RxKakaoSDKUser
 
 protocol UserRepository {
     // 카카오 기반 회원가입 API 호출
-    func postUser(provider: String,
+    func postUserWithKakao(provider: String,
                   nickname: String,
                   email: String,
                   bank: String,
@@ -25,6 +25,16 @@ protocol UserRepository {
                   bankHolder: String,
                   isAgreeMarketing: Bool,
                   accessToken: String) -> Observable<(Models.User, AuthenticationToken)>
+    
+    // 애플 기반 회원가입 API 호출
+    func postUserWithApple(provider: String,
+                  nickname: String,
+                  email: String,
+                  bank: String,
+                  bankNumber: String,
+                  bankHolder: String,
+                  isAgreeMarketing: Bool,
+                  identityToken: String) -> Observable<(Models.User, AuthenticationToken)>
     
     // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
@@ -53,14 +63,23 @@ protocol AccessTokenRepository {
 }
 
 protocol UserService {
-    func signUp(provider: String,
-                nickname: String,
-                email: String,
-                bank: String,
-                bankNumber: String,
-                bankHolder: String,
-                isAgreeMarketing: Bool,
-                accessToken: String) -> Observable<Models.User>     // 카카오 기반 회원가입 유즈케이스
+    func registerUserWithKakao(provider: String,
+                               nickname: String,
+                               email: String,
+                               bank: String,
+                               bankNumber: String,
+                               bankHolder: String,
+                               isAgreeMarketing: Bool,
+                               accessToken: String) -> Observable<Models.User>      // 카카오 기반 회원가입 유즈케이스
+    
+    func registerUserWithApple(provider: String,
+                               nickname: String,
+                               email: String,
+                               bank: String,
+                               bankNumber: String,
+                               bankHolder: String,
+                               isAgreeMarketing: Bool,
+                               identityToken: String) -> Observable<Models.User>      // 애플 기반 회원가입 유즈케이스
     
     /*
      유저 정보 수정 유즈케이스입니다.
@@ -107,15 +126,15 @@ final class UserServiceImpl: UserService {
         return .just(user)
     }
     
-    func signUp(provider: String,
-                nickname: String,
-                email: String,
-                bank: String,
-                bankNumber: String,
-                bankHolder: String,
-                isAgreeMarketing: Bool,
-                accessToken: String) -> Observable<Models.User> {
-        userRepository.postUser(provider: provider,
+    func registerUserWithKakao(provider: String,
+                               nickname: String,
+                               email: String,
+                               bank: String,
+                               bankNumber: String,
+                               bankHolder: String,
+                               isAgreeMarketing: Bool,
+                               accessToken: String) -> Observable<Models.User> {
+        userRepository.postUserWithKakao(provider: provider,
                                 nickname: nickname,
                                 email: email,
                                 bank: bank,
@@ -123,6 +142,29 @@ final class UserServiceImpl: UserService {
                                 bankHolder: bankHolder,
                                 isAgreeMarketing: isAgreeMarketing,
                                 accessToken: accessToken)
+        .map { [weak self] (user, authentication) -> Models.User in
+            _ = self?.userAccountRepository.saveLocalUserAccount(user)
+            _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
+            return user
+        }
+    }
+    
+    func registerUserWithApple(provider: String,
+                               nickname: String,
+                               email: String,
+                               bank: String,
+                               bankNumber: String,
+                               bankHolder: String,
+                               isAgreeMarketing: Bool,
+                               identityToken: String) -> Observable<Models.User> {
+        userRepository.postUserWithApple(provider: provider,
+                                nickname: nickname,
+                                email: email,
+                                bank: bank,
+                                bankNumber: bankNumber,
+                                bankHolder: bankHolder,
+                                isAgreeMarketing: isAgreeMarketing,
+                                identityToken: identityToken)
         .map { [weak self] (user, authentication) -> Models.User in
             _ = self?.userAccountRepository.saveLocalUserAccount(user)
             _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
@@ -148,6 +190,23 @@ final class UserServiceImpl: UserService {
         }
     }
     
+    func saveLocalUser(user: Models.User) -> Bool {
+        return userAccountRepository.saveLocalUserAccount(user)
+    }
+    
+    func fetchLocalUser() -> Models.User? {
+        return userAccountRepository.fetchLocalUserAccount()
+    }
+    
+    func fetchLocalToken() -> AccessToken? {
+        return accessTokenRepository.fetchAccessToken()
+    }
+    
+    func deleteLocalUser() {
+        _ = userAccountRepository.deleteLocalUserAccount()
+        _ = accessTokenRepository.deleteAccessToken()
+    }
+    
     func loginWithKakao() -> Observable<OAuthToken> {
         return userRepository.kakaoLogin()
     }
@@ -157,22 +216,6 @@ final class UserServiceImpl: UserService {
         userRepository.kakaoUnlink()
     }
     
-    func saveLocalUser(user: Models.User) -> Bool {
-        return userAccountRepository.saveLocalUserAccount(user)
-    }
-    
-    func fetchLocalToken() -> AccessToken? {
-        return accessTokenRepository.fetchAccessToken()
-    }
-    
-    func fetchLocalUser() -> Models.User? {
-        return userAccountRepository.fetchLocalUserAccount()
-    }
-    
-    func deleteLocalUser() {
-        _ = userAccountRepository.deleteLocalUserAccount()
-        _ = accessTokenRepository.deleteAccessToken()
-    }
 }
 
 // MARK: - Convert Methods

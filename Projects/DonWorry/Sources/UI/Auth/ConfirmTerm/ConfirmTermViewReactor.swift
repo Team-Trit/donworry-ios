@@ -48,14 +48,14 @@ final class ConfirmTermViewReactor: Reactor {
                 return .empty()
                 
             case .KAKAO:
-                return userService.signUp(provider: user.provider.rawValue,
-                                          nickname: user.nickname,
-                                          email: user.email,
-                                          bank: user.bank,
-                                          bankNumber: user.bankNumber,
-                                          bankHolder: user.bankHolder,
-                                          isAgreeMarketing: user.isAgreeMarketing,
-                                          accessToken: user.accessToken)
+                return userService.registerUserWithKakao(provider: user.provider.rawValue,
+                                                         nickname: user.nickname,
+                                                         email: user.email,
+                                                         bank: user.bank,
+                                                         bankNumber: user.bankNumber,
+                                                         bankHolder: user.bankHolder,
+                                                         isAgreeMarketing: user.isAgreeMarketing,
+                                                         accessToken: user.accessToken)
                 .map { _ in .completeLogin }
                 
             default:
