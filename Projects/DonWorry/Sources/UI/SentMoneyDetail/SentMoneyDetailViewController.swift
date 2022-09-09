@@ -71,18 +71,11 @@ final class SentMoneyDetailViewController: BaseViewController, View {
                     payment: status?.amount ?? 0,
                     totalAmount: status?.spaceTotalAmount ?? 0
                 )
-                //self?.tableView.reloadData()
             }).disposed(by: disposeBag)
     }
 
     @objc private func copyTap() {
-        
-    }
-    
-    @objc func showSheet() {
-        let vc = FullSheetSentDetailViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: true)
+        UIPasteboard.general.string = String((reactor?.currentState.currentStatus?.account.number)!)
     }
 }
 
