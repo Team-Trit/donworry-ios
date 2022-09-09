@@ -20,12 +20,15 @@ import SnapKit
 final class LoginViewController: BaseViewController, View, Stepper {
     let steps = PublishRelay<Step>()
     private lazy var labelStackView = LabelStackView()
+    
+    // TODO: 삭제하기
     lazy var testUserButton: UIButton = {
         let v = UIButton()
         v.setTitle("", for: .normal)
         v.setBackgroundColor(.clear, for: .normal)
         return v
     }()
+    
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.apple_login_button), for: .normal)
@@ -83,6 +86,7 @@ extension LoginViewController {
             make.centerX.equalToSuperview()
         }
         
+        // TODO: 삭제하기
         view.addSubview(testUserButton)
         testUserButton.snp.makeConstraints { make in
             make.width.height.equalTo(100)
@@ -145,26 +149,15 @@ extension LoginViewController {
 extension LoginViewController {
     private func route(to step: DonworryStep) {
         switch step {
-        case let .userInfoIsRequired(provider, accessToken):
-            self.steps.accept(DonworryStep.userInfoIsRequired(provider: provider, accessToken: accessToken))
+        case let .userInfoIsRequired(provider, token):
+            self.steps.accept(DonworryStep.userInfoIsRequired(provider: provider, token: token))
             
+            // TODO: 삭제하기
         case .home:
             let homeViewController = HomeViewController()
             homeViewController.reactor = HomeReactor()
             self.navigationController?.setViewControllers([homeViewController], animated: true)
             
-        default:
-            break
-        }
-    }
-}
-
-extension LoginViewController {
-    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        switch motion {
-        case .motionShake:
-            let viewcontroller = TestViewController()
-            self.present(viewcontroller, animated: true)
         default:
             break
         }
@@ -180,34 +173,9 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            
-            // Create an account in your system.
-            let userIdentifier = appleIDCredential.user
-            let fullName = appleIDCredential.fullName
-            let email = appleIDCredential.email
-            
-            if let authorizationCode = appleIDCredential.authorizationCode,
-               let identityToken = appleIDCredential.identityToken,
-               let authString = String(data: authorizationCode, encoding: .utf8),
-               let tokenString = String(data: identityToken, encoding: .utf8) {
-                print("authorizationCode: \(authorizationCode)")
-                print("identityToken: \(identityToken)")
-                print("authString: \(authString)")
-                print("tokenString: \(tokenString)")
-                
-            }
-            print("useridentifier: \(userIdentifier)")
-            print("fullName: \(fullName)")
-            print("email: \(email)")
-            
-        case let passwordCredential as ASPasswordCredential:
-            
-            // Sign in using an existing iCloud Keychain credential.
-            let username = passwordCredential.user
-            let password = passwordCredential.password
-            
-            print("username: \(username)")
-            print("password: \(password)")
+            guard let identityToken = appleIDCredential.identityToken else { return }
+            let tokenString = String(decoding: identityToken, as: UTF8.self)
+            reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString))
             
         default:
             break
@@ -215,6 +183,21 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print("로그인 실패")
+        print(error.localizedDescription)
     }
 }
+
+// TODO: 삭제하기
+/*
+extension LoginViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        switch motion {
+        case .motionShake:
+            let viewcontroller = TestViewController()
+            self.present(viewcontroller, animated: true)
+        default:
+            break
+        }
+    }
+}
+*/

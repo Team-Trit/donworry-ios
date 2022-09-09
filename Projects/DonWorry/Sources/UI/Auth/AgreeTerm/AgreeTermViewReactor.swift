@@ -17,7 +17,6 @@ final class AgreeTermViewReactor: Reactor {
         "(필수) 돈워리의 개인정보 제 3자 제공 동의",
         "(선택) 이벤트 알림 수신 동의"
     ]
-    // User Info
     private var checkedTerms: [String] = .init(repeating: "", count: 5)
     private var user: SignUpUserModel
     

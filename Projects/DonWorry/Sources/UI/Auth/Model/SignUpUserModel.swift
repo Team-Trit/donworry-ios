@@ -23,5 +23,5 @@ struct SignUpUserModel {
     var bankNumber: String
     var bankHolder: String
     var isAgreeMarketing: Bool
-    var accessToken: String
+    var token: String
 }

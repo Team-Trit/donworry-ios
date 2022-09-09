@@ -6,23 +6,15 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import DesignSystem
 import Models
 import ReactorKit
-import RxCocoa
-
-enum TextFieldType {
-    case nickname
-    case accountHolder
-    case accountNumber
-}
-
-protocol EnterUserInfoViewDelegate: AnyObject {
-    func saveBank(_ selectedBank: String)
-}
 
 final class EnterUserInfoViewReactor: Reactor {
-    private let disposeBag = DisposeBag()
+    enum TextFieldType {
+        case nickname
+        case accountHolder
+        case accountNumber
+    }
     private var user = SignUpUserModel(provider: .none,
                                      nickname: "",
                                      email: "",
@@ -30,7 +22,7 @@ final class EnterUserInfoViewReactor: Reactor {
                                      bankNumber: "",
                                      bankHolder: "",
                                      isAgreeMarketing: false,
-                                     accessToken: "")
+                                     token: "")
     
     enum Action {
         case backButtonPressed
@@ -53,13 +45,13 @@ final class EnterUserInfoViewReactor: Reactor {
         var accountHolder: String
         var accountNumber: String
         var bank: String
-        var isNextButtonAvailable: Bool
+        @Pulse var isNextButtonAvailable: Bool
         @Pulse var step: DonworryStep?
     }
     
     let initialState: State
     
-    init(provider: LoginProvider, accessToken: String) {
+    init(provider: LoginProvider, token: String) {
         self.initialState = State(
             nickname: "",
             accountHolder: "",
@@ -68,7 +60,7 @@ final class EnterUserInfoViewReactor: Reactor {
             isNextButtonAvailable: false
         )
         self.user.provider = provider
-        self.user.accessToken = accessToken
+        self.user.token = token
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

@@ -40,8 +40,15 @@ final class ConfirmTermViewReactor: Reactor {
         case .confirmButtonPressed:
             switch user.provider {
             case .APPLE:
-                // TODO: Apple API 호출
-                return .empty()
+                return userService.registerUserWithApple(provider: user.provider.rawValue,
+                                                         nickname: user.nickname,
+                                                         email: user.email,
+                                                         bank: user.bank,
+                                                         bankNumber: user.bankNumber,
+                                                         bankHolder: user.bankHolder,
+                                                         isAgreeMarketing: user.isAgreeMarketing,
+                                                         identityToken: user.token)
+                .map { _ in .completeLogin }
                 
             case .GOOGLE:
                 // TODO: Google API 호출
@@ -55,7 +62,7 @@ final class ConfirmTermViewReactor: Reactor {
                                                          bankNumber: user.bankNumber,
                                                          bankHolder: user.bankHolder,
                                                          isAgreeMarketing: user.isAgreeMarketing,
-                                                         accessToken: user.accessToken)
+                                                         accessToken: user.token)
                 .map { _ in .completeLogin }
                 
             default:

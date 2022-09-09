@@ -13,12 +13,12 @@ enum DonworryStep: Step {
     case none
     case popViewController
     
-    // Temporary
+    // TODO: 삭제하기
     case home
     
     // Login Flow
     case loginIsRequired
-    case userInfoIsRequired(provider: LoginProvider, accessToken: String)
+    case userInfoIsRequired(provider: LoginProvider, token: String)
     case bankSelectIsRequired(delegate: EnterUserInfoViewDelegate)
     case bankSelectIsComplete
     case agreeTermIsRequired(newUser: SignUpUserModel)

@@ -143,7 +143,6 @@ extension AgreeTermViewController: UITableViewDataSource {
         let index = indexPath.row
         cell.titleLabel.text = reactor?.dataSource[index]
         
-        // Reactor-Cell Bind
         cell.checkButton.rx.tap
             .map { Reactor.Action.checkButtonPressed(index) }
             .bind(to: reactor!.action)

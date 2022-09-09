@@ -6,18 +6,20 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import ReactorKit
 import Models
+import ReactorKit
 
 final class LoginViewReactor: Reactor {
+    // TODO: 삭제하기
     private let testUserService: TestUserService
     private let userService: UserService
-    private let disposeBag = DisposeBag()
     
     enum Action {
         case appleLoginButtonPressed
         case googleLoginButtonPressed
+        case proceedWithAppleToken(identityToken: String)
         case kakaoLoginButtonPressed
+        // TODO: 삭제하기
         case didTapTestUserButton
     }
     
@@ -47,6 +49,9 @@ final class LoginViewReactor: Reactor {
         case .appleLoginButtonPressed:
             return .just(Mutation.performAppleLogin)
             
+        case .proceedWithAppleToken(let identityToken):
+            return .just(.routeTo(DonworryStep.userInfoIsRequired(provider: .APPLE, token: identityToken)))
+            
         case .googleLoginButtonPressed:
             // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
 //            self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: AccessToken))
@@ -55,9 +60,10 @@ final class LoginViewReactor: Reactor {
         case .kakaoLoginButtonPressed:
             return userService.loginWithKakao()
                 .map { oauthToken in
-                    return .routeTo(DonworryStep.userInfoIsRequired(provider: .KAKAO, accessToken: oauthToken.accessToken))
+                    return .routeTo(DonworryStep.userInfoIsRequired(provider: .KAKAO, token: oauthToken.accessToken))
                 }
             
+            // TODO: 삭제하기
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
             return testUserService.signInWithoutUserID()
