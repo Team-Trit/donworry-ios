@@ -15,6 +15,26 @@ import RxKakaoSDKAuth
 import RxKakaoSDKCommon
 import RxKakaoSDKUser
 
+protocol UserRepository {
+    func postUser(provider: String,
+                  nickname: String,
+                  email: String,
+                  bank: String,
+                  bankNumber: String,
+                  bankHolder: String,
+                  isAgreeMarketing: Bool,
+                  accessToken: String) -> Observable<(Models.User, AuthenticationToken)>
+    func patchUser(nickname: String?,
+                   imgURL: String?,
+                   bank: String?,
+                   holder: String?,
+                   accountNumber: String?,
+                   isAgreeMarketing: Bool?) -> Observable<Models.User>
+    func kakaoLogin() -> Observable<OAuthToken>
+    func kakaoLogout()
+    func kakaoUnlink()
+}
+
 protocol UserService {
     func signUp(provider: String,
                 nickname: String,

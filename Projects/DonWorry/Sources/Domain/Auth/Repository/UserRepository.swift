@@ -16,26 +16,6 @@ import RxKakaoSDKCommon
 import RxKakaoSDKUser
 import RxSwift
 
-protocol UserRepository {
-    func postUser(provider: String,
-                  nickname: String,
-                  email: String,
-                  bank: String,
-                  bankNumber: String,
-                  bankHolder: String,
-                  isAgreeMarketing: Bool,
-                  accessToken: String) -> Observable<(Models.User, AuthenticationToken)>
-    func patchUser(nickname: String?,
-                   imgURL: String?,
-                   bank: String?,
-                   holder: String?,
-                   accountNumber: String?,
-                   isAgreeMarketing: Bool?) -> Observable<Models.User>
-    func kakaoLogin() -> Observable<OAuthToken>
-    func kakaoLogout()
-    func kakaoUnlink()
-}
-
 final class UserRepositoryImpl: UserRepository {
     private let network: NetworkServable
     private let disposeBag = DisposeBag()
