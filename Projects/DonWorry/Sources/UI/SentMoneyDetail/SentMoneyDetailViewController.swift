@@ -94,13 +94,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     }
 
     @objc private func copyTap() {
-        
-    }
-    
-    @objc func showSheet() {
-        let vc = FullSheetSentDetailViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        present(vc, animated: true)
+        UIPasteboard.general.string = String((reactor?.currentState.currentStatus?.account.number)!)
     }
 }
 
