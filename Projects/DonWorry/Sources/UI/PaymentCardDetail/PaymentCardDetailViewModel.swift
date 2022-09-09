@@ -17,8 +17,6 @@ class PaymentCardDetailViewModel:BaseViewModel {
     
     typealias cardResponse = PaymentCardModels.FetchCard.Response
     var cancellable = Set<AnyCancellable>()
-    //TODO: payer 가져오기
-    let payer: User = User.dummyUser1
     @Published var paymentCard: cardResponse.PaymentCard = .init(id: -1, totalAmount: 0, users: [], imgUrls: [])
     
     var paymentUseCase: PaymentCardService = PaymentCardServiceImpl()
