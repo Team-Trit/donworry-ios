@@ -17,6 +17,27 @@ public struct SendingMoneyInfoViewModel {
     let myAmount: Int
 }
 
+public struct SendingMoneyProgressInfoViewModel {
+    let name: String
+    let myAmount: Int
+    let totalAmount: Int
+    
+}
+
+let myMoneyInfo: [SendingMoneyInfoViewModel] = [
+    SendingMoneyInfoViewModel(name: "우디네당구장", date: "05/25", totalAmount: 184000, totalUers: 4, myAmount: 44000),
+    SendingMoneyInfoViewModel(name: "우디네당구장", date: "05/25", totalAmount: 152000, totalUers: 2, myAmount: 76000),
+    SendingMoneyInfoViewModel(name: "안녕하세요", date: "03/45", totalAmount: 123000, totalUers: 5, myAmount: 12000),
+    SendingMoneyInfoViewModel(name: "졸려죽겟다", date: "03/12", totalAmount: 39000, totalUers: 3, myAmount: 13000)
+]
+
+let myMoneyDetailInfo: [SendingMoneyProgressInfoViewModel] = [
+    SendingMoneyProgressInfoViewModel(name: "유쓰", myAmount: 20000, totalAmount: 120000),
+    SendingMoneyProgressInfoViewModel(name: "애셔", myAmount: 100000, totalAmount: 120000),
+    SendingMoneyProgressInfoViewModel(name: "찰리", myAmount: 1000, totalAmount: 10000),
+    SendingMoneyProgressInfoViewModel(name: "gg", myAmount: 2140, totalAmount: 2345)
+]
+
 class SentMoneyTableViewCell: UITableViewCell {
 
 
@@ -29,7 +50,6 @@ class SentMoneyTableViewCell: UITableViewCell {
         smallRoundRec.translatesAutoresizingMaskIntoConstraints = false
         smallRoundRec.backgroundColor = .designSystem(.grayF6F6F6)
         smallRoundRec.roundCorners(10)
-        smallRoundRec.addShadow()
         return smallRoundRec
     }()
     
@@ -86,7 +106,7 @@ class SentMoneyTableViewCell: UITableViewCell {
             smallRoundRectangle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
         ])
         smallRoundRectangle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 27).isActive = true
         smallRoundRectangle.widthAnchor.constraint(equalToConstant: 43).isActive = true
         smallRoundRectangle.heightAnchor.constraint(equalToConstant: 43).isActive = true
         
@@ -106,11 +126,11 @@ class SentMoneyTableViewCell: UITableViewCell {
         
         contentView.addSubview(dividedAmountDetail)
         dividedAmountDetail.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
-        dividedAmountDetail.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        dividedAmountDetail.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
         
         contentView.addSubview(dividedAmount)
         dividedAmount.topAnchor.constraint(equalTo: dividedAmountDetail.bottomAnchor, constant: 5).isActive = true
-        dividedAmount.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        dividedAmount.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
         
         
     }

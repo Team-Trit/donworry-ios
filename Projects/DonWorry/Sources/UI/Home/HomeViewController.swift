@@ -240,8 +240,8 @@ extension HomeViewController {
             spaceNameViewController.reactor = SpaceNameReactor(type: .create)
             self.navigationController?.pushViewController(spaceNameViewController, animated: true)
         case .joinSpace:
-            let joinSpaceViewController = JoinSpaceViewController()
-            joinSpaceViewController.reactor = JoinSpaceReactor()
+            let joinSpaceViewController = SheetViewController()
+//            joinSpaceViewController.reactor = JoinSpaceReactor()
             self.present(joinSpaceViewController, animated: true)
         case .recievedMoneyDetail(let spaceID):
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
