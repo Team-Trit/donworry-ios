@@ -30,6 +30,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
     private let userName: UILabel = {
         let userName = UILabel()
         userName.translatesAutoresizingMaskIntoConstraints = false
+        userName.textAlignment = .left
         userName.font = UIFont.systemFont(ofSize: 15, weight: .regular)
         return userName
     }()
@@ -61,12 +62,12 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
         contentView.addSubview(userName)
         userName.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 12).isActive = true
-        userName.widthAnchor.constraint(equalToConstant: 39).isActive = true
+        userName.widthAnchor.constraint(equalToConstant: 100).isActive = true
         
         contentView.addSubview(recievedMoney)
         recievedMoney.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         recievedMoney.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
-        recievedMoney.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        recievedMoney.widthAnchor.constraint(equalToConstant: 120).isActive = true
         
     }
     
