@@ -9,14 +9,6 @@
 import UIKit
 import DesignSystem
 
-public struct SendingMoneyInfoViewModel {
-    let name: String
-    let date: String
-    let totalAmount: Int
-    let totalUers: Int
-    let myAmount: Int
-}
-
 class SentMoneyTableViewCell: UITableViewCell {
 
 
@@ -29,7 +21,6 @@ class SentMoneyTableViewCell: UITableViewCell {
         smallRoundRec.translatesAutoresizingMaskIntoConstraints = false
         smallRoundRec.backgroundColor = .designSystem(.grayF6F6F6)
         smallRoundRec.roundCorners(10)
-        smallRoundRec.addShadow()
         return smallRoundRec
     }()
     
@@ -86,7 +77,7 @@ class SentMoneyTableViewCell: UITableViewCell {
             smallRoundRectangle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
         ])
         smallRoundRectangle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 27).isActive = true
         smallRoundRectangle.widthAnchor.constraint(equalToConstant: 43).isActive = true
         smallRoundRectangle.heightAnchor.constraint(equalToConstant: 43).isActive = true
         
@@ -106,11 +97,11 @@ class SentMoneyTableViewCell: UITableViewCell {
         
         contentView.addSubview(dividedAmountDetail)
         dividedAmountDetail.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
-        dividedAmountDetail.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        dividedAmountDetail.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
         
         contentView.addSubview(dividedAmount)
         dividedAmount.topAnchor.constraint(equalTo: dividedAmountDetail.bottomAnchor, constant: 5).isActive = true
-        dividedAmount.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        dividedAmount.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
         
         
     }
