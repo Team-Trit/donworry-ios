@@ -49,8 +49,10 @@ enum PaymentCardModels {
             }
         }
     }
-    
-    enum PostCard {
+
+    // MARK: 정산내역 (카드) 생성하기
+
+    enum CreateCard {
         struct Request {
             var spaceID: Int
             var categoryID: Int
@@ -61,7 +63,11 @@ enum PaymentCardModels {
             var totalAmount: Int
             var bgColor: String
             var paymentDate: String
-            var images: [UIImage]
+            var imageURLs: [String]
+
+            static var initialValue: Request = .init(
+                spaceID: -1, categoryID: -1, bank: "", number: "", holder: "",
+                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [])
         }
 
         struct Response {
@@ -85,24 +91,14 @@ enum PaymentCardModels {
     }
     
     
-    enum PostCardImage {
+    enum UploadImage {
         
         struct Request {
-            let images: [UIImage]
+            let image: UIImage
         }
         
         struct Response {
-            let id, spaceID, categoryID, takerID: Int
-            let name: String
-            let totalAmount: Int
-            let bgColor, paymentDate: String
-            let account: Account
-            let imgUrls: [String]
-            
-            struct Account: Codable {
-                let bank, number, holder: String
-                let userID: Int
-            }
+            let imageURL: String
         }
     }
     

@@ -145,19 +145,19 @@ extension PaymentCardAmountEditViewController {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardDeco:
-            let deco = PaymentCardDecoViewController()
-            let card = reactor.currentState.paymentCard
-            let amount  = convertAmount(reactor.currentState.amount)
-            deco.reactor = PaymentCardDecoReactor(space: reactor.currentState.space,
-                                                  paymentCard: PaymentCardModels.PostCard.Request(spaceID: reactor.currentState.space.id, categoryID: card.categoryID, bank: card.bank, number: card.number, holder: card.holder, name: card.name, totalAmount: Int(amount) , bgColor: card.bgColor, paymentDate: card.paymentDate, images: []))
-            
-            self.navigationController?.pushViewController(deco, animated: true)
+            self.navigationController?.pushViewController(paymentCardDecoViewController(), animated: true)
         case .paymentCardList:
             NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
     }
-    
-    
+
+    private func paymentCardDecoViewController() -> UIViewController {
+        let paymentCardDecoViewController = PaymentCardDecoViewController()
+        let newPaymentCard = reactor!.currentState.paymentCard
+        paymentCardDecoViewController.reactor =  PaymentCardDecoReactor(paymentCard: newPaymentCard)
+        return paymentCardDecoViewController
+    }
+
     func convertAmount(_ amount: String) -> Int {
         let amount = amount.components(separatedBy: [","]).joined()
         return Int(amount) ?? 0

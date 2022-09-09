@@ -15,19 +15,18 @@ enum PaymentCardNameEditStep {
     case paymentCardIconEdit
 }
 
-enum PaymentCardNameEditViewType {
-    case create //default
-    case update
-}
-
 final class PaymentCardNameEditViewReactor: Reactor {
-    
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
+
+    enum PaymentCardNameEditViewType {
+        case create //default
+        case update
+    }
 
     enum Action {
         case didTapBackButton
-        case didTapNextButton(PaymentCardNameEditViewType)
-        case fetchCardName(String?)
+        case didTapNextButton
+        case fetchCardName(String)
     }
 
     enum Mutation {
@@ -36,45 +35,43 @@ final class PaymentCardNameEditViewReactor: Reactor {
     }
 
     struct State {
-        var space: Space
-        var paymentCard: PaymentCardModels.PostCard.Request
+        var type: PaymentCardNameEditViewType
+        var paymentCard: PaymentCardModels.CreateCard.Request
         @Pulse var step: PaymentCardNameEditStep?
     }
 
     let initialState: State
 
     init(
-        space: Space,
-        paymentCard: PaymentCardModels.PostCard.Request
+        type: PaymentCardNameEditViewType,
+        paymentCard: PaymentCardModels.CreateCard.Request
     ){
-        self.initialState = .init(space: space, paymentCard: paymentCard)
+        self.initialState = .init(type: type, paymentCard: paymentCard)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
-         switch action {
-             case .didTapBackButton:
-                 return .just(.routeTo(.pop))
-                 
-             case .didTapNextButton(let type):
-                 let step: PaymentCardNameEditStep = type == .create ? .paymentCardIconEdit : .pop
-                 
-                 return .just(.routeTo(step))
-                 
-             case .fetchCardName(let newName):
-                 guard let newName = newName else { return .empty() }
-                 return .just(Mutation.updateCardName(newName))
-         
-         }
+        switch action {
+        case .didTapBackButton:
+            return .just(.routeTo(.pop))
+
+        case .didTapNextButton:
+            let step: PaymentCardNameEditStep = (currentState.type == .create) ? .paymentCardIconEdit : .pop
+            return .just(.routeTo(step))
+
+        case .fetchCardName(let newName):
+            return .just(Mutation.updateCardName(newName))
+
+        }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-         switch mutation {
-             case .routeTo(let step):
-                 newState.step = step
-             case .updateCardName(let newName):
-                 newState.paymentCard.name = newName
-         }
+        switch mutation {
+        case .routeTo(let step):
+            newState.step = step
+        case .updateCardName(let newName):
+            newState.paymentCard.name = newName
+        }
         return newState
     }
 }

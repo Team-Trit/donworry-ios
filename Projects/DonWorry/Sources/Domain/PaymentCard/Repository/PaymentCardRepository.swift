@@ -11,9 +11,10 @@ import DonWorryExtensions
 import DonWorryNetworking
 import RxSwift
 
-enum PaymentCardError: Error {
-    case parsingError
-    case noUser
+protocol PaymentCardRepository {
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
+    func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func uploadImage(request: PaymentCardModels.UploadImage.Request) -> Observable<PaymentCardModels.UploadImage.Response>
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -42,11 +43,13 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                     return str
             }.asObservable()
     }
-    
+
+    // SpaceDTO에서 Space도메인으로 변환해줍니다.
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
 
+    // PaymentCardDTO에서 PaymentCard 도메인으로 변환해줍니다.
     private func convertToPaymentCard(_ dto: DTO.GetPaymentCardList.PaymentCard) -> PaymentCardModels.FetchCardList.Response.PaymentCard {
         return .init(
             id: dto.id,
@@ -64,6 +67,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         )
     }
 
+    // PaymentCardUserDTO에서 PaymentCardUser 도메인으로 변환해줍니다.
     private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(
             id: dto.id,
@@ -71,22 +75,28 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             imgURL: dto.imgURL
         )
     }
-    
-    
-    private func convertToPostPaymentCard(spaceId: Int, paymentCard: PaymentCard) -> PostPaymentCardAPI.Request {
-        return .init(
-            spaceID: spaceId,
-            categoryID: 0,
-            bank: paymentCard.bankAccount?.bank ?? "",
-            number: paymentCard.bankAccount?.accountNumber ?? "",
-            holder: paymentCard.bankAccount?.accountHolderName ?? "",
-            name: paymentCard.name,
-            totalAmount: paymentCard.totalAmount,
-            position: 0,
-            bgColor: paymentCard.backgroundColor,
-            paymentDate: paymentCard.date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss")
-        )
+
+    func uploadImage(request: PaymentCardModels.UploadImage.Request) -> Observable<PaymentCardModels.UploadImage.Response> {
+        guard let imageData = request.image.pngData() else { return .error(PaymentCardError.parsingError)}
+        return network.request(UploadImageAPI(request: .init(imageData: imageData)))
+            .compactMap { response in
+                    .init(imageURL: response.imgUrl)
+            }.asObservable()
     }
+
+//    private func convertToPostPaymentCard(spaceId: Int, paymentCard: PaymentCard) -> PostPaymentCardAPI.Request {
+//        return .init(
+//            spaceID: spaceId,
+//            categoryID: 0,
+//            bank: paymentCard.bankAccount?.bank ?? "",
+//            number: paymentCard.bankAccount?.accountNumber ?? "",
+//            holder: paymentCard.bankAccount?.accountHolderName ?? "",
+//            name: paymentCard.name,
+//            totalAmount: paymentCard.totalAmount,
+//            bgColor: paymentCard.backgroundColor,
+//            paymentDate: paymentCard.date.getDateToString(format: "yyyy-MM-dd'T'HH:mm:ss")
+//        )
+//    }
     
     
 }

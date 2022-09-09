@@ -30,7 +30,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
                                number: UserServiceImpl().fetchLocalUser()?.bankAccount.accountNumber ?? "000000-00000",
                                images: [])
     
-    lazy var paymentCard = PaymentCardView()
+    lazy var paymentCardView = PaymentCardView()
     
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     
@@ -65,7 +65,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
         return $0
     }(UIStackView())
     
-    private lazy var cardIcon: UIImageView = {
+    private lazy var cardIconImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(named: "debit-card")
         $0.contentMode = .scaleAspectFit
@@ -123,17 +123,17 @@ final class PaymentCardDecoViewController: BaseViewController, View {
     
     func render(reactor: PaymentCardDecoReactor) {
         
-        reactor.state.map { "\($0.space.title)" }
+        reactor.state.map { "\($0.paymentCard.name)" }
             .bind(to: (navigationBar.titleLabel?.rx.text)!)
             .disposed(by: disposeBag)
         
         reactor.state.map{ $0.paymentCard.name }
-            .bind(to: paymentCard.nameLabel.rx.text)
+            .bind(to: paymentCardView.nameLabel.rx.text)
             .disposed(by: disposeBag)
         
         reactor.state
             .map{ "\($0.paymentCard.totalAmount.formatted())"}
-            .bind(to: paymentCard.totalAmountLabel.rx.text)
+            .bind(to: paymentCardView.totalAmountLabel.rx.text)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.paymentCard.categoryID }
@@ -141,7 +141,7 @@ final class PaymentCardDecoViewController: BaseViewController, View {
             .map {
                 UIImage(.init(rawValue: icons[$0].iconName) ?? .ic_cake)
             }
-            .bind(to: paymentCard.icon.rx.image)
+            .bind(to: paymentCardView.icon.rx.image)
             .disposed(by: disposeBag)
         
         
@@ -183,7 +183,7 @@ extension PaymentCardDecoViewController {
         tableView.isScrollEnabled = false
         tableView.paymentCardDecoTableViewDelegate = self
 //        tableView.vcDelegate = self
-        paymentCard.dateLabel.text = cardVM.payDate.getDateToString(format: "MM/dd")
+        paymentCardView.dateLabel.text = cardVM.payDate.getDateToString(format: "MM/dd")
         
     }
     
@@ -191,9 +191,9 @@ extension PaymentCardDecoViewController {
         self.view.addSubviews(self.navigationBar, self.scrollView, self.completeButton)
         self.scrollView.addSubview(self.stackView)
         
-        self.stackView.addArrangedSubviews(self.paymentCard, self.headerView, self.tableView, self.footerView)
+        self.stackView.addArrangedSubviews(self.paymentCardView, self.headerView, self.tableView, self.footerView)
         self.stackView.setCustomSpacing(0, after: headerView)
-        self.headerView.addArrangedSubviews(self.cardIcon, self.titleLabel)
+        self.headerView.addArrangedSubviews(self.cardIconImageView, self.titleLabel)
         
         self.navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -214,7 +214,7 @@ extension PaymentCardDecoViewController {
             make.height.equalTo(55)
             make.width.equalTo(340)
         }
-        self.cardIcon.snp.makeConstraints { make in
+        self.cardIconImageView.snp.makeConstraints { make in
             make.width.equalTo(30)
             make.leading.equalToSuperview().offset(20)
         }
@@ -261,9 +261,9 @@ extension PaymentCardDecoViewController: PHPickerViewControllerDelegate{
 extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
     func updateCardColor(with color: CardColor) {
-        paymentCard.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
-        paymentCard.cardSideView.backgroundColor = UIColor(hex:color.rawValue)
-        paymentCard.dateLabel.textColor = UIColor(hex:color.rawValue)
+        paymentCardView.backgroundColor = UIColor(hex:color.rawValue)?.withAlphaComponent(0.72)
+        paymentCardView.cardSideView.backgroundColor = UIColor(hex:color.rawValue)
+        paymentCardView.dateLabel.textColor = UIColor(hex:color.rawValue)
         cardVM.cardColor = color
     }
     
@@ -278,7 +278,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
         let formmater = DateFormatter()
         formmater.dateFormat = "MM/dd"
         formmater.locale = Locale(identifier: "ko_KR")
-        paymentCard.dateLabel.text = formmater.string(from: date)
+        paymentCardView.dateLabel.text = formmater.string(from: date)
         cardVM.payDate = date
     }
     
@@ -292,10 +292,10 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
     func updateHolder(holder: String) {
         if !holder.isEmpty {
-            paymentCard.accountHodlerNameLabel.text = "(\(holder))"
+            paymentCardView.accountHodlerNameLabel.text = "(\(holder))"
             cardVM.holder = holder
         } else {
-            paymentCard.accountHodlerNameLabel.text = "(예금주명)"
+            paymentCardView.accountHodlerNameLabel.text = "(예금주명)"
             cardVM.holder = ""
         }
     }
@@ -303,10 +303,10 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
     
     func updateAccountNumber(number: String) {
         if !number.isEmpty {
-            paymentCard.accountNumberLabel.text = "\(number)"
+            paymentCardView.accountNumberLabel.text = "\(number)"
             cardVM.number = number
         } else {
-            paymentCard.accountNumberLabel.text = "000000-00000"
+            paymentCardView.accountNumberLabel.text = "000000-00000"
             cardVM.number = ""
         }
     }

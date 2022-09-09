@@ -17,22 +17,11 @@ import SnapKit
 
 
 final class PaymentCardNameEditViewController: BaseViewController, View {
-
-    // MARK: - Init
-
     typealias Reactor = PaymentCardNameEditViewReactor
-    
-    var type: PaymentCardNameEditViewType = .create
-
-    convenience init(type: PaymentCardNameEditViewType) {
-        self.init()
-        self.type = type
-    }
 
     // MARK: - Views
     private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
-        $0.text = setTitleLabelText(type: type)
         $0.numberOfLines = 2
         $0.setLineSpacing(spacing: 10.0)
         $0.font = .designSystem(weight: .heavy, size: ._25)
@@ -61,7 +50,7 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     }
     
     func dispatch(to reactor: Reactor) {
-        self.nextButton.rx.tap.map { .didTapNextButton(self.type) }
+        self.nextButton.rx.tap.map { .didTapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -70,16 +59,21 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
             .disposed(by: disposeBag)
         
         self.paymentNameLabel.textField.rx.text
-            .map {
-                .fetchCardName($0)
-            }
+            .compactMap { $0 }
+            .map { .fetchCardName($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
     }
     
     func render(reactor: Reactor) {
-        
+
+        reactor.state.map { $0.type }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.titleLabel.text = self?.setTitleLabelText(type: $0)
+            }).disposed(by: disposeBag)
+
         reactor.state.map{ $0.paymentCard.name }
             .bind(to: paymentNameLabel.textField.rx.text)
             .disposed(by: disposeBag)
@@ -103,8 +97,7 @@ extension PaymentCardNameEditViewController {
         case .paymentCardIconEdit:
             let paymentCardIconEditViewController = PaymentCardIconEditViewController()
             paymentCardIconEditViewController.reactor =
-            PaymentCardIconEditViewReactor(space: reactor.currentState.space,
-                                           paymentCard: reactor.currentState.paymentCard)
+            PaymentCardIconEditViewReactor(paymentCard: reactor.currentState.paymentCard)
             self.navigationController?.pushViewController(paymentCardIconEditViewController, animated: true)
         }
     }
@@ -140,9 +133,8 @@ extension PaymentCardNameEditViewController {
 
 }
 
-// MARK: - Method
 extension PaymentCardNameEditViewController {
-    private func setTitleLabelText(type: PaymentCardNameEditViewType) -> String {
+    private func setTitleLabelText(type: Reactor.PaymentCardNameEditViewType) -> String {
         switch type {
         case .create:
             return "정산내역을\n추가해볼까요?"
@@ -151,7 +143,7 @@ extension PaymentCardNameEditViewController {
         }
     }
 
-    private func setPlaceholderText(type: PaymentCardNameEditViewType)  -> String {
+    private func setPlaceholderText(type: Reactor.PaymentCardNameEditViewType)  -> String {
         switch type {
         case .create:
             return "정산하고자 하는 항목을 입력하세요"
