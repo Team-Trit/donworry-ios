@@ -65,7 +65,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
         contentView.addSubview(recievedMoney)
         recievedMoney.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         recievedMoney.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
-        recievedMoney.widthAnchor.constraint(equalToConstant: 61).isActive = true
+        recievedMoney.widthAnchor.constraint(equalToConstant: 160).isActive = true
         
     }
     
