@@ -14,13 +14,14 @@ public struct UploadImageAPI: ServiceAPI {
     public var request: Request
     public var path: String = "/s3/single"
     public var method: Method { .post }
-    public var task: Task { .requestData(request.imageData) }
+    public var task: Task { .requestCompositeData(bodyData: request.imageData, urlParameters: [:]) }
     public init(request: Request) {
         self.request = request
     }
 
     public var headers: [String : String]? {
-        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")",
+                "Content-Type": "image/png",]
     }
 }
 

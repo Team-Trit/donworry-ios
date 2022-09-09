@@ -136,7 +136,6 @@ extension FilePickerCell: UICollectionViewDelegate, UICollectionViewDataSource {
         if imageArray.count < 3 && indexPath.row == 0 {
             filePickerCellCollectionViewDelegate?.selectPhoto()
         }
-
     }
     
 }

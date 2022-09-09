@@ -377,8 +377,7 @@ extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
         dismiss(animated: true)
         var images = [UIImage]()
         for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
-                error in
+            result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
                 if let image = object as? UIImage {
                     images.append(image)
                 }

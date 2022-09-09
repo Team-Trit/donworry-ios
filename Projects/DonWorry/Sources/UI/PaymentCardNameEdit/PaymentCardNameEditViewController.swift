@@ -39,8 +39,8 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         setUI()
+        setNotification()
     }
 
     // MARK: - Binding
@@ -60,13 +60,16 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
         
         self.paymentNameLabel.textField.rx.text
             .compactMap { $0 }
-            .map { .fetchCardName($0) }
+            .map { .typeCardName($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
     }
     
     func render(reactor: Reactor) {
+
+        self.paymentNameLabel.textField.rx.text.map { !($0?.isEmpty ?? false) }
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
 
         reactor.state.map { $0.type }
             .observe(on: MainScheduler.instance)
@@ -85,8 +88,6 @@ final class PaymentCardNameEditViewController: BaseViewController, View {
                 self?.move(to: step, reactor: reactor)
             }).disposed(by: disposeBag)
     }
-    
-
 }
 
 extension PaymentCardNameEditViewController {
@@ -125,11 +126,58 @@ extension PaymentCardNameEditViewController {
             $0.leading.trailing.equalToSuperview().inset(25)
         }
 
-        nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(25)
-            $0.bottom.equalToSuperview().inset(50)
+        nextButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(25)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide)
         }
     }
+
+    private func setNotification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    /// 배경 터치시  포커싱 해제
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.paymentNameLabel.textField.resignFirstResponder()
+    }
+
+    /// 키보드 Show 시에 위치 조정
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.nextButton.snp.updateConstraints { make in
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight - 15)
+                }
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    /// 키보드 Hide 시에 위치 조정
+    @objc func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 1) {
+            self.nextButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+
 
 }
 

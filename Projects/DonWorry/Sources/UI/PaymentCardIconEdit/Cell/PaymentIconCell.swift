@@ -10,7 +10,13 @@ import UIKit
 import SnapKit
 import DesignSystem
 
-class PaymentIconCell: UICollectionViewCell {
+struct PaymentIconCellViewModel {
+    var id: Int
+    var imageName: String
+    var imageURL: String
+}
+
+final class PaymentIconCell: UICollectionViewCell {
     
     let imageView : UIImageView = {
         let imageView = UIImageView()
@@ -20,9 +26,10 @@ class PaymentIconCell: UICollectionViewCell {
     
     override var isSelected: Bool {
         didSet{
+            print(isSelected)
             if isSelected {
                 UIView.animate(withDuration: 0.1) {
-                    self.contentView.backgroundColor = .designSystem(.grayC5C5C5)
+
                 }
             }
             else {
@@ -32,7 +39,9 @@ class PaymentIconCell: UICollectionViewCell {
             }
         }
     }
-    
+
+    var viewModel: PaymentIconCellViewModel?
+
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.addSubview(imageView)
@@ -41,13 +50,18 @@ class PaymentIconCell: UICollectionViewCell {
         }
     }
     
-    func configure(with icon : String) {
+    func configure(with viewModel: PaymentIconCellViewModel) {
+        self.viewModel = viewModel
         self.backgroundColor = .designSystem(.grayF6F6F6)
         self.layer.cornerRadius = 15
         self.clipsToBounds = true
-        
-        self.imageView.image = .init(Asset(rawValue: icon) ?? .ic_cake)
-               
+        self.imageView.image = UIImage(assetName: viewModel.imageName)
     }
-    
+
+    func setBackgroundColor(isSelected: Bool) {
+        let color: UIColor? = isSelected ? .designSystem(.grayC5C5C5) : .designSystem(.grayF6F6F6)
+        UIView.animate(withDuration: 0.1) {
+            self.contentView.backgroundColor = color
+        }
+    }
 }
