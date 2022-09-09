@@ -73,6 +73,7 @@ public extension DWButton {
             button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
+            button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.tintColor = .designSystem(.white)
             button.addGradientInDesignSystem(
                 startColor: .designSystem(.blueTopGradient)!,
@@ -117,6 +118,8 @@ public extension DWButton {
         }
         return button
     }
+
+
 }
 
 public final class DWButton: UIButton {
@@ -124,6 +127,18 @@ public final class DWButton: UIButton {
     public var title: String = "" {
         didSet {
             setTitle(title, for: .normal)
+        }
+    }
+    public override var isEnabled: Bool {
+        didSet {
+            if isEnabled {
+                self.addGradientInDesignSystem(
+                    startColor: .designSystem(.blueTopGradient)!,
+                    endColor: .designSystem(.blueBottomGradient)!
+                )
+            } else {
+                self.removeGradientInDesignSystem()
+            }
         }
     }
 }
@@ -149,5 +164,9 @@ extension DWButton {
       self.layer.cornerCurve = .continuous
       self.layer.cornerRadius = radius
       self.clipsToBounds = true
+    }
+
+    public func removeGradientInDesignSystem() {
+        self.layer.sublayers?.filter { $0 is CAGradientLayer }.forEach { $0.removeFromSuperlayer() }
     }
 }

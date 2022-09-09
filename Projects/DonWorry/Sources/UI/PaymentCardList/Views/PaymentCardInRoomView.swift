@@ -21,6 +21,7 @@ struct PaymentCardInRoomViewModel {
     var backgroundColor: String
     var date: String
     var payer: User
+    var participatedUserCount: Int
     var participatedUserList: [User]
 
     struct User: Equatable {
@@ -37,18 +38,14 @@ public class PaymentCardInRoomView: UIView {
             self.nameLabel.text = viewModel?.name
             self.totalAmountLabel.text = "\(viewModel?.totalAmount ?? "")"
             self.dateLabel.text = viewModel?.date
-            let participatedUserCount = "\(viewModel?.participatedUserList.count ?? 0)"
-            self.participatedUserCountLabel.text = "현재 \(participatedUserCount)명 참가 중 …"
+            self.participatedUserCountLabel.text = "현재 \(viewModel?.participatedUserCount ?? 0)명 참가 중 …"
             self.iconImageView.image = UIImage(assetName: viewModel?.categoryImageName ?? "")
             let backgroundColor = UIColor(hex: (viewModel?.backgroundColor ?? ""))
             self.backgroundColor = backgroundColor?.withAlphaComponent(0.72)
             self.cardSideView.backgroundColor = backgroundColor
             self.dateLabel.textColor = backgroundColor
             self.payerNameLabel.text = viewModel?.payer.nickName
-            if let urlString = viewModel?.payer.imageURL {
-                let url = URL(string: urlString)
-                payerImageView.kf.setImage(with: url)
-            }
+            payerImageView.setWhenNilImageBasicProfileImage(with: viewModel?.payer.imageURL)
 
             guard let viewModel = viewModel else {
                 return
@@ -61,7 +58,7 @@ public class PaymentCardInRoomView: UIView {
         participatedUserView.subviews.forEach { $0.removeFromSuperview() }
         let imageViews = users.prefix(4).map { (user: PaymentCardInRoomViewModel.User) -> UIImageView in
             let imageView = UIImageView()
-            imageView.kf.setImage(with: URL(string: user.imageURL ?? ""))
+            imageView.setWhenNilImageBasicProfileImage(with: user.imageURL)
             imageView.contentMode = .scaleAspectFill
             return imageView
         }
