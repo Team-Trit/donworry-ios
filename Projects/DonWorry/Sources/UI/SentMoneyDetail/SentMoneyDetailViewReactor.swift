@@ -16,10 +16,12 @@ final class SentMoneyDetailViewReactor : Reactor {
 
     enum Action {
         case viewDidLoad
+        case didTapSendButtton
     }
 
     enum Mutation {
         case setup(Response)
+        case updateIsSent(Bool)
     }
 
     struct State {
@@ -27,6 +29,7 @@ final class SentMoneyDetailViewReactor : Reactor {
         var paymentID: Int
         var currentStatus: Response?
         var cards: [SendingMoneyInfoViewModel] = []
+        var isSent: Bool = false
     }
 
     let initialState: State
@@ -34,16 +37,22 @@ final class SentMoneyDetailViewReactor : Reactor {
     init(
         spaceID: Int,
         paymentID: Int,
-        getGiverPaymentUseCase: GetGiverPaymentUseCase = GetGiverPaymentUseCaseImpl()
+        getGiverPaymentUseCase: GetGiverPaymentUseCase = GetGiverPaymentUseCaseImpl(),
+        completePaymentUseCase: CompletePaymentUseCase = CompletePaymentUseCaseImpl()
     ) {
         self.initialState = .init(spaceID: spaceID, paymentID: paymentID)
         self.getGiverPaymentUseCase = getGiverPaymentUseCase
+        self.completePaymentUseCase = completePaymentUseCase
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
          switch action {
          case .viewDidLoad:
-             return requestGivierPayment().map { .setup($0) }
+             let setup = requestGivierPayment()
+             return setup
+         case .didTapSendButtton:
+             let sendMoney = requestSendMoney()
+             return sendMoney
          }
     }
 
@@ -53,14 +62,20 @@ final class SentMoneyDetailViewReactor : Reactor {
          case .setup(let response):
              newState.currentStatus = response
              newState.cards = response.cards.map { formatGiveMoneyInfoViewModel(from: $0) }
+             newState.isSent = response.isCompleted
+         case .updateIsSent(let isSent):
+             newState.isSent = isSent
          }
         return newState
     }
 
-    private func requestGivierPayment() -> Observable<Response> {
-        getGiverPaymentUseCase.fetchGiverPayment(
-            request: .init(spaceID: currentState.spaceID, paymentID: currentState.paymentID)
-        )
+    private func requestSendMoney() -> Observable<Mutation> {
+        completePaymentUseCase.completePayment(request: .init(paymentID: currentState.paymentID)).map { _ in .updateIsSent(true) }
+
+    }
+
+    private func requestGivierPayment() -> Observable<Mutation> {
+        getGiverPaymentUseCase.fetchGiverPayment(request: .init(spaceID: currentState.spaceID, paymentID: currentState.paymentID)).map { .setup($0) }
     }
 
     private func formatGiveMoneyInfoViewModel(from entity: Card) -> SendingMoneyInfoViewModel {
@@ -82,4 +97,5 @@ final class SentMoneyDetailViewReactor : Reactor {
 
 
     private let getGiverPaymentUseCase: GetGiverPaymentUseCase
+    private let completePaymentUseCase: CompletePaymentUseCase
 }

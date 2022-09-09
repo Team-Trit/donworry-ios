@@ -63,6 +63,14 @@ final class SentMoneyDetailViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        rightButtomButton.rx.tap.map { .didTapSendButtton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { !$0.isSent }
+            .bind(to: rightButtomButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
         reactor.state.map { $0.currentStatus }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
