@@ -26,7 +26,7 @@ final class PaymentCardListReactor: Reactor {
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
 
     enum Action {
-        case setup
+        case viewWillAppear
         case didTapBackButton
         case didTapPaymentCardDetail
         case didTapOptionButton
@@ -64,7 +64,7 @@ final class PaymentCardListReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .setup:
+        case .viewWillAppear:
             let paymentCardListInformation = requestPaymentCardListInformation()
             return paymentCardListInformation
         case .didTapBackButton:

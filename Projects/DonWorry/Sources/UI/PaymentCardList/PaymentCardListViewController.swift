@@ -123,7 +123,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 
     private func dispatch(to reactor: Reactor) {
-        self.rx.viewDidLoad.map { .setup }
+        self.rx.viewWillAppear.map { _ in .viewWillAppear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -133,6 +133,13 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         self.navigationBar.rightItem?.rx.tap.map { .didTapOptionButton }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.spaceIDCopyButton.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                DWToastFactory.show(message: "정산이 시작 “4분 30초” 경과", subMessage: "정산 1등이에요!", type: .success)
+            })
             .disposed(by: disposeBag)
 
         self.collectionView.rx.setDelegate(self)

@@ -42,9 +42,9 @@ final class ConfirmTermViewController: BaseViewController, View {
         return v
     }()
     private let maxDimmedAlpha: CGFloat = 0.6
-    private let defaultContainerHeight: CGFloat = 400
+    private let defaultContainerHeight: CGFloat = 800
     private let dismissibleHeight: CGFloat = 300
-    private var currentContainerHeight: CGFloat = 400
+    private var currentContainerHeight: CGFloat = 800
     private var containerViewHeightConstraint: NSLayoutConstraint?
     private var containerViewBottomConstraint: NSLayoutConstraint?
     private var confirmButtonBottomConstraint: NSLayoutConstraint?
