@@ -15,13 +15,12 @@ import DesignSystem
 import DonWorryExtensions
 
 final class SentMoneyDetailViewController: BaseViewController, View {
+    
     typealias Reactor = SentMoneyDetailViewReactor
     private var statusView: SentMoneyDetailStatusView = {
         let status = SentMoneyDetailStatusView()
         return status
     }()
-
-
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
@@ -31,9 +30,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
         return accontInfo
     }()
-
-
-
 
     lazy var buttonStackView: UIStackView = {
         let v = UIStackView()
@@ -75,18 +71,17 @@ final class SentMoneyDetailViewController: BaseViewController, View {
                     payment: status?.amount ?? 0,
                     totalAmount: status?.spaceTotalAmount ?? 0
                 )
-//                self?.tableView.reloadData()
+                //self?.tableView.reloadData()
             }).disposed(by: disposeBag)
     }
 
-
-
     @objc private func copyTap() {
+        
     }
+    
     @objc func showSheet() {
         let vc = FullSheetSentDetailViewController()
-
-        vc.modalPresentationStyle = .formSheet
+        vc.modalPresentationStyle = .overFullScreen
         present(vc, animated: true)
     }
 }

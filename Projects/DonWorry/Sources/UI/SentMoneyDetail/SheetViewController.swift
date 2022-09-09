@@ -26,8 +26,6 @@ class SheetViewController: UIViewController {
         sheetShowButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         sheetShowButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         sheetShowButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-
-        // Do any additional setup after loading the view.
     }
     
     @objc func sheetShow() {
@@ -35,25 +33,9 @@ class SheetViewController: UIViewController {
             let sheet = SentMoneyDetailViewController()
             if let presentationController = sheet.sheetPresentationController {
                 presentationController.detents = [.medium()]
-                // grabber 속성 추가
                 presentationController.prefersGrabberVisible = true
             }
             present(sheet, animated: true)
-        } else {
-            // Fallback on earlier versions
         }
-        
-        
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
