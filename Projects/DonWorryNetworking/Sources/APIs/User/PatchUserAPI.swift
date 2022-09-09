@@ -28,29 +28,47 @@ public struct PatchUserAPI: ServiceAPI {
 
 extension PatchUserAPI {
     public struct Request: Encodable {
-        public let nickname, imgURL: String?
+        public let nickname: String?
+        public let imgUrl: String?
         public let account: Account?
         public let isAgreeMarketing: Bool?
+        
         public struct Account: Codable {
             public let id: Int?
             public let bank, number, holder: String?
-            public let userID: Int?
+            public let userId: Int?
         }
         
-        public init(
-            nickname: String?,
-            imgURL: String?,
-            id: Int?,
-            bank: String?,
-            number: String?,
-            holder: String?,
-            userID: Int?,
-            isAgreeMarketing: Bool?
-        ) {
+        public init() {
+            self.nickname = nil
+            self.imgUrl = nil
+            self.account = nil
+            self.isAgreeMarketing = nil
+        }
+        public init(nickname: String) {
             self.nickname = nickname
-            self.imgURL = imgURL
-            self.account = Account(id: id, bank: bank, number: number, holder: holder, userID: userID)
+            self.imgUrl = nil
+            self.account = nil
+            self.isAgreeMarketing = nil
+        }
+        public init(imgUrl: String) {
+            self.imgUrl = imgUrl
+            self.nickname = nil
+            self.account = nil
+            self.isAgreeMarketing = nil
+        }
+        public init(bank: String, number: String, holder: String) {
+            let account = Account(id: nil, bank: bank, number: number, holder: holder, userId: nil)
+            self.account = account
+            self.nickname = nil
+            self.imgUrl = nil
+            self.isAgreeMarketing = nil
+        }
+        public init(isAgreeMarketing: Bool) {
             self.isAgreeMarketing = isAgreeMarketing
+            self.nickname = nil
+            self.imgUrl = nil
+            self.account = nil
         }
     }
 }

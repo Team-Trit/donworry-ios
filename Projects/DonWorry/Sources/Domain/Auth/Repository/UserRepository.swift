@@ -16,26 +16,6 @@ import RxKakaoSDKCommon
 import RxKakaoSDKUser
 import RxSwift
 
-protocol UserRepository {
-    func postUser(provider: String,
-                  nickname: String,
-                  email: String,
-                  bank: String,
-                  bankNumber: String,
-                  bankHolder: String,
-                  isAgreeMarketing: Bool,
-                  accessToken: String) -> Observable<(Models.User, AuthenticationToken)>
-    func patchUser(nickname: String?,
-                   imgURL: String?,
-                   bank: String?,
-                   holder: String?,
-                   accountNumber: String?,
-                   isAgreeMarketing: Bool?) -> Observable<Models.User>
-    func kakaoLogin() -> Observable<OAuthToken>
-    func kakaoLogout()
-    func kakaoUnlink()
-}
-
 final class UserRepositoryImpl: UserRepository {
     private let network: NetworkServable
     private let disposeBag = DisposeBag()
@@ -44,6 +24,7 @@ final class UserRepositoryImpl: UserRepository {
         self.network = network
     }
     
+    // 카카오 기반 회원가입 API 호출
     func postUser(provider: String,
                   nickname: String,
                   email: String,
@@ -69,6 +50,7 @@ final class UserRepositoryImpl: UserRepository {
             .asObservable()
     }
     
+    // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
                    imgURL: String?,
                    bank: String?,
@@ -87,6 +69,7 @@ final class UserRepositoryImpl: UserRepository {
             }.asObservable()
     }
     
+    // 카카오 소셜 로그인
     func kakaoLogin() -> Observable<OAuthToken> {
         return Observable.create { result in
             if (UserApi.isKakaoTalkLoginAvailable()) {
@@ -143,8 +126,7 @@ extension UserRepository {
         let bankAccount = BankAccount(bank: dto.account.bank,
                                       accountHolderName: dto.account.holder,
                                       accountNumber: dto.account.number)
-        // TODO: Patch User API 반환 타입 수정되면 image url 설정해주기
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_user")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_image")
     }
     
     fileprivate func createUserRequest(provider: String,
@@ -171,6 +153,16 @@ extension UserRepository {
                                       holder: String?,
                                       accountNumber: String?,
                                       isAgreeMarketing: Bool?) -> PatchUserAPI.Request {
-        return .init(nickname: nickname, imgURL: imgURL, id: nil, bank: bank, number: accountNumber, holder: holder, userID: nil, isAgreeMarketing: isAgreeMarketing)
+        if let nickname = nickname {
+            return .init(nickname: nickname)
+        } else if let imgURL = imgURL {
+            return .init(imgUrl: imgURL)
+        } else if let bank = bank, let accountNumber = accountNumber, let holder = holder {
+            return .init(bank: bank, number: accountNumber, holder: holder)
+        } else if let isAgreeMarketing = isAgreeMarketing {
+            return .init(isAgreeMarketing: isAgreeMarketing)
+        } else {
+            return .init()
+        }
     }
 }

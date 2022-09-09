@@ -13,17 +13,17 @@ extension DTO {
         public let id: Int
         public let nickname: String
         public let isAgreeMarketing: Bool
-        public let email, tokenType, accessToken, refreshToken: String
-        public let account: Account
-        
+        public let email: String
+        public let imgUrl, tokenType, accessToken, refreshToken: String?
+        public let account: Account       
         public struct Account: Codable {
             public let id: Int
             public let bank, number, holder: String
-            public let userID: Int?
+            public let userId: Int
 
             enum CodingKeys: String, CodingKey {
                 case id, bank, number, holder
-                case userID = "userId"
+                case userId = "userId"
             }
         }
     }
