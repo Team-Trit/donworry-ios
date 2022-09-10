@@ -12,7 +12,7 @@ import Models
 
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func joinPaymentCardList(ids:[Int64]) -> Observable<String>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
     func deletePaymentCardList(cardId: Int) -> Observable<String>
     func putEditPaymentCard(id: Int, totalAmount: Int, name: String) -> Observable<PaymentCardModels.PutCard.Response>
@@ -20,7 +20,7 @@ protocol PaymentCardRepository {
 
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func joinPaymentCardList(ids:[Int64]) -> Observable<String>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
     func DeletePaymentCardList(cardId: Int) -> Observable<String>
     func putEditPaymentCard(id: Int, totalAmount: Int, name: String) -> Observable<PaymentCardModels.PutCard.Response>
@@ -52,6 +52,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
         response: PaymentCardModels.FetchCardList.Response
     ) -> PaymentCardModels.FetchCardList.Response {
         guard let userAccount = userAccountRepository.fetchLocalUserAccount() else { return response }
+        
         return .init(
             isAllPaymentCompleted: response.isAllPaymentCompleted,
             space: response.space,
@@ -72,7 +73,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
                     )
             })
     }
-    func joinPaymentCardList(ids: [Int]) -> Observable<String> {
+    func joinPaymentCardList(ids: [Int64]) -> Observable<String> {
         paymentCardRepository.joinPaymentCardList(ids: ids)
     }
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {

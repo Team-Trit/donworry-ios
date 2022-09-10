@@ -17,7 +17,7 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
     
     typealias Space = PaymentCardModels.FetchCardList.Response
     var paymentUseCase: PaymentCardServiceImpl = PaymentCardServiceImpl()
-    
+    private let userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
     init(spaceID: Int) {
         super.init()
         paymentUseCase.fetchPaymentCardList(spaceID: spaceID)
@@ -68,7 +68,15 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
     }
     
     func checkAttendance() {
-        paymentUseCase.joinPaymentCardList(ids: Array(checkedIDs))
+        
+        guard let userAccount = userAccountRepository.fetchLocalUserAccount() else { return }
+//        print("ca221", paymentCards.count)
+//        paymentCards.forEach { card in
+//            print("ca22", card.isUserParticipatedIn)
+//        }
+//        print("ca222",Array(checkedIDs))
+        let int64s = checkedIDs.map{Int64($0)}
+        paymentUseCase.joinPaymentCardList(ids: Array(int64s))
             .subscribe(onNext: { str in
                 print(str)
             }).disposed(by: disposeBag)

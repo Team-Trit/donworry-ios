@@ -71,7 +71,7 @@ final class LoginViewReactor: Reactor, Stepper {
             
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
-            return testUserService.signIn(1)
+            return testUserService.signIn(4)
                 .map { _ in .routeTo(.home) }
         }
     }

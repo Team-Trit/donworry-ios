@@ -69,7 +69,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
    
     func toggleAttendance() {
         self.isAttended.toggle()
-        paymentUseCase.joinPaymentCardList(ids: [paymentCard.id])
+        paymentUseCase.joinPaymentCardList(ids: [Int64(paymentCard.id)])
             .subscribe(onNext: { str in
                 print(str)
             }).disposed(by: disposeBag)

@@ -35,8 +35,10 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
-    func joinPaymentCardList(ids: [Int]) -> Observable<String> {
-        network.request(PostJoinPaymentCardAPI(request: .init(cardIds: ids)))
+    func joinPaymentCardList(ids: [Int64]) -> Observable<String> {
+//        let idStrings = ids.map{String($0)}
+//        print("ids", idStrings)
+        return network.request(PostJoinPaymentCardAPI(request: .init(cardIds: ids)))
             .compactMap { _ in
                     return "suc"
             }.asObservable()

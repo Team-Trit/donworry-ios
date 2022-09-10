@@ -7,32 +7,28 @@
 //
 
 import Foundation
-import Models
+import Moya
 
 public struct PostJoinPaymentCardAPI: ServiceAPI {
-    
-    public typealias Response = DTO.Empty
+    public typealias Response = DTO.PostJoinPaymentCard
     public var request: Request
-    public var path: String = "/cards/join"
-    public var method: Method { .post }
+    public init(request: Request) {
+        self.request = request
+    }
+    public var path: String { return "/cards/join" }
+    public var method: Method = .post
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    
     public var headers: [String : String]? {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
-    }
-    
-    public init(request: Request) {
-        self.request = request
     }
 }
 
 extension PostJoinPaymentCardAPI {
-
     public struct Request: Encodable {
-        public let cardIds: [Int]
-        public init(cardIds: [Int]) {
+        public let cardIds: [Int64]
+        public init(cardIds: [Int64]) {
             self.cardIds = cardIds
         }
     }
