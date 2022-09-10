@@ -81,9 +81,9 @@ class PaymentCardDetailViewModel:BaseViewModel {
                 print(str)
             }).disposed(by: disposeBag)
         //MARK: 추후 삭제될 코드입니다.
-//        paymentUseCase.putEditPaymentCard(id: paymentCard.id, totalAmount: 300, name: "300")
+//        paymentUseCase.putEditPaymentCardAmount(id: paymentCard.id, totalAmount: 2323)
 //            .subscribe(onNext: { str in
-//                print(str)
-//            }).disposed(by: disposeBag)
+//                print("suc")
+//           }).disposed(by: disposeBag)
     }
 }

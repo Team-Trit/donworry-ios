@@ -57,10 +57,10 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
-    func putEditPaymentCard(id: Int, totalAmount: Int, name: String) -> Observable<PaymentCardModels.PutCard.Response> {
-        network.request(PutEditPaymentCardAPI(request: .init(id: id, totalAmount: totalAmount, name: name)))
+    func putEditPaymentCard(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response> {
+        network.request(PutEditPaymentCardAPI(request: .init(id: id, totalAmount: totalAmount)))
             .compactMap { _ in
-                return .init(card: .init(id: id, totalAmount: totalAmount, name: name))
+                return .init(card: .init(id: id, totalAmount: totalAmount))
             }.asObservable()
     }
     

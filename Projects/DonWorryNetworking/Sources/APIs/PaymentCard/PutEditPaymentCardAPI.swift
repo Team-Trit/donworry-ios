@@ -28,16 +28,13 @@ extension PutEditPaymentCardAPI {
     public struct Request: Codable {
         public let id: Int
         public let totalAmount: Int
-        public let name: String
         
         public init(
             id: Int,
-            totalAmount: Int,
-            name: String
+            totalAmount: Int
         ) {
             self.id = id
             self.totalAmount = totalAmount
-            self.name = name
         }
     }
 }

@@ -77,7 +77,6 @@ enum PaymentCardModels {
             public let card: PaymentCard
             struct PaymentCard: Codable {
                 public let id, totalAmount: Int
-                public let name: String
             }
         }
     }
