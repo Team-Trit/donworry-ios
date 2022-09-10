@@ -16,6 +16,7 @@ enum PaymentCardDecoStep {
     case pop
     case paymentCardListView
     case completePaymentCardDeco
+    case selectBankView
 }
 
 struct CardViewModel {
@@ -34,12 +35,19 @@ final class PaymentCardDecoReactor: Reactor {
     enum Action {
         case didTapBackButton
         case didTapCloseButton
+        case presentBankSheet
+        case updateBank(String)
+        case updateHolder(String)
+        case updateAccountNumber(String)
         case deleteImage(String)
         case addImage(UIImage)
         case didTapCompleteButton(CardViewModel)
     }
 
     enum Mutation {
+        case updateBank(String)
+        case updateHolder(String)
+        case updateAccountNumber(String)
         case routeTo(PaymentCardDecoStep)
         case updateImageURLs(String)
     }
@@ -72,6 +80,22 @@ final class PaymentCardDecoReactor: Reactor {
             
         case .didTapCloseButton:
             return .just(.routeTo(.paymentCardListView))
+            
+        case .presentBankSheet:
+            return .just(.routeTo(.selectBankView))
+            
+        case .updateBank(let bank):
+            // TODO: Call update bank API
+            return .just(.updateBank(bank))
+            
+        case .updateHolder(let holder):
+            // TODO: Call update holder API
+            return .just(.updateHolder(holder))
+            
+        case .updateAccountNumber(let number):
+            // TODO: Call update account number API
+            return .just(.updateAccountNumber(number))
+            
         case .deleteImage(let imageURL):
             return .just(.updateImageURLs(imageURL))
         case .addImage(let image):
@@ -93,6 +117,15 @@ final class PaymentCardDecoReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
+        case .updateBank(let bank):
+            newState.paymentCard.bank = bank
+            
+        case .updateHolder(let holder):
+            newState.paymentCard.holder = holder
+            
+        case .updateAccountNumber(let number):
+            newState.paymentCard.number = number
+            
         case .routeTo(let step):
             newState.step = step
         case .updateImageURLs(let imageURL):
@@ -107,4 +140,11 @@ final class PaymentCardDecoReactor: Reactor {
 
     private let paymentCardService: PaymentCardService
     private let uploadImageUseCase: UploadImageUseCase
+}
+
+// MARK: - CardDecoViewDelegate
+extension PaymentCardDecoReactor: CardDecoViewDelegate {
+    func saveBank(_ selectedBank: String) {
+        self.action.onNext(.updateBank(selectedBank))
+    }
 }

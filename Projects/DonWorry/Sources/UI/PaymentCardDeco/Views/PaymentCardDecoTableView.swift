@@ -24,8 +24,6 @@ protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateCardColor(with color: CardColor)
     func updatePayDate(with date : Date)
     func showPhotoPicker()
-    func updateHolder(holder: String)
-    func updateAccountNumber(number: String)
 }
 
 protocol PhotoUpdateDelegate: AnyObject {
@@ -33,6 +31,7 @@ protocol PhotoUpdateDelegate: AnyObject {
 }
 
 class PaymentCardDecoTableView: UITableView {
+    var vcReactor: PaymentCardDecoReactor?
     
     private var cardDecoItems: [CardDecoItem] = [
         CardDecoItem(title: "배경 선택"),
@@ -216,24 +215,28 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             case 2: // 계좌번호
                 let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
                 cell.configure(isHidden: expandableItem.isHidden)
-
-                cell.accountInputField.holderTextField.textField.rx.text
-                                .orEmpty
-                                .distinctUntilChanged()
-                                .subscribe(onNext: { text in
-                                    self.paymentCardDecoTableViewDelegate?.updateHolder(holder: text)
-                                })
-                                .disposed(by: cell.disposeBag)
             
-                cell.accountInputField.accountTextField.textField.rx.text
-                                  .orEmpty
-                                  .distinctUntilChanged()
-                                  .subscribe(onNext: { text in
-                                      self.paymentCardDecoTableViewDelegate?
-                                          .updateAccountNumber(number: text)
-                                   })
-                                  .disposed(by: cell.disposeBag)
-                                    
+            
+                cell.vcReacter = vcReactor
+            
+            cell.accountInputField.chooseBankButton.rx.tap
+                .map { PaymentCardDecoReactor.Action.presentBankSheet }
+                .bind(to: cell.vcReacter!.action)
+                .disposed(by: cell.disposeBag)
+            
+            cell.accountInputField.holderTextField.textField.rx.text
+                .orEmpty
+                .distinctUntilChanged()
+                .map { PaymentCardDecoReactor.Action.updateHolder($0) }
+                .bind(to: cell.vcReacter!.action)
+                .disposed(by: cell.disposeBag)
+            
+            cell.accountInputField.accountTextField.textField.rx.text
+                .orEmpty
+                .distinctUntilChanged()
+                .map { PaymentCardDecoReactor.Action.updateAccountNumber($0) }
+                .bind(to: cell.vcReacter!.action)
+                .disposed(by: cell.disposeBag)
             
                 return cell
             

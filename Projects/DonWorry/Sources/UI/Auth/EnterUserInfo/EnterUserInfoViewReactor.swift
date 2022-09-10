@@ -6,26 +6,23 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import DesignSystem
+import Models
 import ReactorKit
-import RxCocoa
-import RxFlow
 
-enum TextFieldType {
-    case nickname
-    case accountHolder
-    case accountNumber
-}
-
-final class EnterUserInfoViewReactor: Reactor, Stepper {
-    let steps = PublishRelay<Step>()
-    private let disposeBag = DisposeBag()
-    
-    private let accessToken: String
-    private var nickname = ""
-    private var bank = ""
-    private var holder = ""
-    private var number = ""
+final class EnterUserInfoViewReactor: Reactor {
+    enum TextFieldType {
+        case nickname
+        case accountHolder
+        case accountNumber
+    }
+    private var user = SignUpUserModel(provider: .none,
+                                     nickname: "",
+                                     email: "",
+                                     bank: "",
+                                     bankNumber: "",
+                                     bankHolder: "",
+                                     isAgreeMarketing: false,
+                                     token: "")
     
     enum Action {
         case backButtonPressed
@@ -40,7 +37,7 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
     enum Mutation {
         case updateSubject(type: TextFieldType, _ value: String)
         case updateBank(selectedBank: String)
-        case navigateToNextVC
+        case routeTo(step: DonworryStep)
     }
     
     struct State {
@@ -48,12 +45,13 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         var accountHolder: String
         var accountNumber: String
         var bank: String
-        var isNextButtonAvailable: Bool
+        @Pulse var isNextButtonAvailable: Bool
+        @Pulse var step: DonworryStep?
     }
     
     let initialState: State
     
-    init(accessToken: String) {
+    init(provider: LoginProvider, token: String) {
         self.initialState = State(
             nickname: "",
             accountHolder: "",
@@ -61,34 +59,35 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
             bank: "은행선택",
             isNextButtonAvailable: false
         )
-        self.accessToken = accessToken
+        self.user.provider = provider
+        self.user.token = token
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-            self.steps.accept(DonworryStep.popViewController)
-            return .empty()
+            return .just(Mutation.routeTo(step: .popViewController))
             
         case .nicknameFieldUpdated(let nickname):
+            self.user.nickname = nickname
             return .just(Mutation.updateSubject(type: .nickname, nickname))
             
         case .accountHolderFieldUpdated(let holder):
+            self.user.bankHolder = holder
             return .just(Mutation.updateSubject(type: .accountHolder, holder))
             
         case .accountNumberFieldUpdated(let number):
+            self.user.bankNumber = number
             return .just(Mutation.updateSubject(type: .accountNumber, number))
             
         case .bankSelectButtonPressed:
-            self.steps.accept(DonworryStep.bankSelectIsRequired(delegate: self))
-            return .empty()
+            return .just(Mutation.routeTo(step: .bankSelectIsRequired(delegate: self)))
             
         case .bankSelected(let bank):
             return .just(Mutation.updateBank(selectedBank: bank))
             
         case .nextButtonPressed:
-            self.steps.accept(DonworryStep.agreeTermIsRequired(accessToken: accessToken, nickname: nickname, bank: bank, holder: holder, number: number))
-            return .just(Mutation.navigateToNextVC)
+            return .just(Mutation.routeTo(step: .agreeTermIsRequired(newUser: user)))
         }
     }
     
@@ -99,26 +98,26 @@ final class EnterUserInfoViewReactor: Reactor, Stepper {
         case let .updateSubject(type, value):
             switch type {
             case .nickname:
-                nickname = value
+                self.user.nickname = value
                 newState.nickname = value
                 
             case .accountHolder:
-                holder = value
+                self.user.bankHolder = value
                 newState.accountHolder = value
                 
             case .accountNumber:
-                number = value
+                self.user.bankNumber = value
                 newState.accountNumber = value
             }
             
         case .updateBank(let bank):
-            
-            self.bank = bank
+            self.user.bank = bank
             newState.bank = bank
             
-        case .navigateToNextVC:
-            break
+        case .routeTo(let step):
+            newState.step = step
         }
+        
         newState.isNextButtonAvailable = checkNextButtonValidation(newState)
         
         return newState

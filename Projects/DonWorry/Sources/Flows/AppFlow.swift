@@ -21,15 +21,12 @@ final class AppFlow: Flow {
         self.rootWindow = window
     }
     
-    
     func navigate(to step: Step) -> FlowContributors {
         guard let step = step as? DonworryStep else { return .none }
         
         switch step {
         case .loginIsRequired:
             return navigateToLoginScreen()
-        case .homeIsRequired:
-            return navigateToHomeScreen()
         default:
             return .none
         }
@@ -46,15 +43,6 @@ extension AppFlow {
         let nextStep = OneStepper(withSingleStep: DonworryStep.loginIsRequired)
         return .one(flowContributor: .contribute(withNextPresentable: loginFlow, withNextStepper: nextStep))
     }
-    
-    private func navigateToHomeScreen() -> FlowContributors {
-        // MARK: HomeFlow부터는 RxFlow 사용 안함
-        let homeViewController = HomeViewController()
-        let homeReactor = HomeReactor()
-        homeViewController.reactor = homeReactor
-        self.rootWindow.rootViewController = homeViewController
-        return .none
-    }
 }
 
 // MARK: - AppStepper
@@ -62,9 +50,5 @@ final class AppStepper: Stepper {
     let steps = PublishRelay<Step>()
     var initialStep: Step {
         return DonworryStep.loginIsRequired
-    }
-    
-    init() {
-        
     }
 }

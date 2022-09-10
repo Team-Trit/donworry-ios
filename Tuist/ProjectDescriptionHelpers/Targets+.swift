@@ -15,6 +15,7 @@ extension Target {
             infoPlist: .file(path: "SupportingFiles/\(name)-Info.plist"),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            entitlements: "SupportingFiles/\(name).entitlements",
             dependencies: dependencies
         )
     }

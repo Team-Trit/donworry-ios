@@ -7,10 +7,13 @@
 //
 
 import UIKit
+
 import DesignSystem
+import ReactorKit
 import RxSwift
 
 class AccountInputCell: UITableViewCell {
+    var vcReacter: PaymentCardDecoReactor?
     
     let disposeBag = DisposeBag()
     
@@ -31,17 +34,6 @@ class AccountInputCell: UITableViewCell {
         self.containerStackView.layer.cornerRadius = 10
         self.containerStackView.layer.masksToBounds = true
         layout()
-        
-        /* 뷰띄우기
-        accountInputField.chooseBankButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
-        
-        
-        let vc = SelectBankViewController()
-        let reactor = SelectBankViewReactor()
-        vc.reactor = reactor
-        self.navigationController.present(vc)
-        
-        */
     }
 
 }

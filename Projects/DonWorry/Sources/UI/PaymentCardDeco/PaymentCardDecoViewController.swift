@@ -23,6 +23,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     
     typealias Reactor = PaymentCardDecoReactor
     
+    // MARK: cardVM이 화면에 보여주기 위해서 데이터를 가지고 있는 친구라면 bank, holder, number는 bind처리 해놨기 때문에 이 3친구는 필요 없어요! (from charlie)
     var cardVM = CardViewModel(cardColor: .pink,
                                payDate: Date(),
                                bank: UserServiceImpl().fetchLocalUser()?.bankAccount.bank ?? "은행명" ,
@@ -34,8 +35,12 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     
     private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
 
-    private lazy var tableView = PaymentCardDecoTableView()
-
+    private lazy var tableView: PaymentCardDecoTableView = {
+        let v = PaymentCardDecoTableView()
+        v.vcReactor = self.reactor
+        return v
+    }()
+    
     private let imagePicker = UIImagePickerController()
 
     private lazy var scrollView: UIScrollView = {
@@ -138,6 +143,35 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
             .bind(to: paymentCardView.totalAmountLabel.rx.text)
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.paymentCard.bank }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: "")
+            .drive(paymentCardView.bankLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.paymentCard.bank }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: "")
+            .drive(onNext: { [weak self] bank in
+                guard let cell = self?.tableView.cellForRow(at: IndexPath(item: 2, section: 0)) as? AccountInputCell else { return }
+                cell.accountInputField.chooseBankButton.setTitle(bank, for: .normal)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.paymentCard.holder }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: "")
+            .map { $0.isEmpty ? "(예금주명)" : "(\($0))" }
+            .drive(paymentCardView.accountHodlerNameLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.paymentCard.number }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: "")
+            .map { $0.isEmpty ? "000000-00000" : $0 }
+            .drive(paymentCardView.accountNumberLabel.rx.text)
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.paymentCard.viewModel.categoryIconName }
             .distinctUntilChanged()
             .map { UIImage(assetName: $0) }
@@ -170,6 +204,11 @@ extension PaymentCardDecoViewController {
         case .completePaymentCardDeco:
             NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
             
+        case .selectBankView:
+            let vc = SelectBankViewController()
+            let reactor = SelectBankViewReactor(cardDecoViewDelegate: self.reactor!, parentView: .paymentCardDeco)
+            vc.reactor = reactor
+            self.navigationController?.present(vc, animated: true)
         }
     }
 }
@@ -313,26 +352,4 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
             })
         }
     }
-
-    func updateHolder(holder: String) {
-        if !holder.isEmpty {
-            paymentCardView.accountHodlerNameLabel.text = "(\(holder))"
-            cardVM.holder = holder
-        } else {
-            paymentCardView.accountHodlerNameLabel.text = "(예금주명)"
-            cardVM.holder = ""
-        }
-    }
-    
-    
-    func updateAccountNumber(number: String) {
-        if !number.isEmpty {
-            paymentCardView.accountNumberLabel.text = "\(number)"
-            cardVM.number = number
-        } else {
-            paymentCardView.accountNumberLabel.text = "000000-00000"
-            cardVM.number = ""
-        }
-    }
-
 }
