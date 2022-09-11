@@ -50,11 +50,13 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
-    func deletePaymentCardList(cardId: Int) -> Observable<String> {
-        network.request(DeletePaymentCardAPI(cardId: cardId))
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.DeleteCard.Empty>  {
+         network.request(DeletePaymentCardAPI(cardId: cardId))
             .compactMap { _ in
-                    return "suc"
-            }.asObservable()
+                return .init()
+            }
+            .asObservable()
+            
     }
     
     func putEditPaymentCard(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response> {

@@ -80,5 +80,9 @@ enum PaymentCardModels {
             }
         }
     }
-
+    
+    enum DeleteCard {
+        public struct Empty: Decodable { }
+    }
+    
 }

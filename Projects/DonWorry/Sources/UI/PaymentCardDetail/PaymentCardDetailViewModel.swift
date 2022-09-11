@@ -77,9 +77,8 @@ class PaymentCardDetailViewModel:BaseViewModel {
     
     func deletePaymentCard() {
         paymentUseCase.DeletePaymentCardList(cardId: paymentCard.id)
-            .subscribe(onNext: { str in
-                print(str)
-            }).disposed(by: disposeBag)
+            .subscribe()
+            .disposed(by: disposeBag)
         //MARK: 추후 삭제될 코드입니다.
 //        paymentUseCase.putEditPaymentCardAmount(id: paymentCard.id, totalAmount: 2323)
 //            .subscribe(onNext: { str in
