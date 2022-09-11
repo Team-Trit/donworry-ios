@@ -240,7 +240,7 @@ extension PaymentCardDecoViewController {
         }
         self.tableView.snp.makeConstraints { make in
             make.width.equalTo(340)
-            let height: CGFloat = (48 + 15) * 4 + 5
+            let height: CGFloat = (48 + 15) * 3 + 5 // 3 : cell 개수
             make.height.equalTo(height)
         }
         self.footerView.snp.makeConstraints { make in

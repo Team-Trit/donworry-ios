@@ -38,7 +38,7 @@ class PaymentCardDecoTableView: UITableView {
     var cardDecoItems: [CardDecoItem] = [
         CardDecoItem(title: "배경 선택"),
         CardDecoItem(title: "날짜 선택"),
-        CardDecoItem(title: "계좌번호 입력 (선택)"),
+//        CardDecoItem(title: "계좌번호 입력 (선택)"),
         CardDecoItem(title: "파일 추가 (선택)"),
     ]
     private var selectedIndex: Int = -1
@@ -87,7 +87,7 @@ extension PaymentCardDecoTableView {
         self.register(UINib(nibName: "FilePickerCell", bundle: nil), forCellReuseIdentifier: "FilePickerCell")
         self.register(UINib(nibName: "ColorPickerCell", bundle: nil), forCellReuseIdentifier: "ColorPickerCell")
         self.register(UINib(nibName: "PayDatePickerCell", bundle: nil), forCellReuseIdentifier: "PayDatePickerCell")
-        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
+//        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
         
         // 상단여백제거
         self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
@@ -150,9 +150,9 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         } else {
             switch indexPath.row {
             case 0: return 180
-            case 1: return 400
-            case 2: return 200
-            case 3: return 200
+            case 1: return 360 // 400 : 계좌번호 필드 있을 경우
+            case 2: return 180 // 200 : 계좌번호 필드 있을 경우
+//            case 2: return 200 계좌번호 입력 필드 임시 삭제
             default:
                 return 300
             }
@@ -165,7 +165,7 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         let cellSpacing: CGFloat = 15
         let cellHeightArea: CGFloat = cellHeight + cellSpacing
         
-        var height: CGFloat = cellHeightArea * 4 + 5
+        var height: CGFloat = cellHeightArea * 3 + 5 // 3 : cell 개수
 
         if selectedIndex == indexPath.row {
             if selectedIndex > -1 {
@@ -186,7 +186,7 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         case 0: height += 180 - cellHeightArea
         case 1: height += 400 - cellHeightArea
         case 2: height += 200 - cellHeightArea
-        case 3: height += 200 - cellHeightArea
+//        case 2: height += 200 - cellHeightArea : 계좌번호 입력 필드 임시 삭제
         default: break
         }
         paymentCardDecoTableViewDelegate?.updateTableViewHeight(to: height)
@@ -220,6 +220,7 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
             cell.payDatePickerCellDelegate = self
             return cell
             
+        /* MARK:  계좌번호 입력 필드 임시 삭제
         case 2: // 계좌번호
             let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
             cell.configure(isHidden: expandableItem.isHidden)
@@ -243,8 +244,9 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
 
             
             return cell
+         */
             
-        case 3: // 파일추가
+        case 2: // 파일추가
             let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
             cell.configure(isHidden: expandableItem.isHidden)
             cell.filePickerCellCollectionViewDelegate = self
