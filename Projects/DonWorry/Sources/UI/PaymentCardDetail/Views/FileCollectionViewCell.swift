@@ -31,7 +31,7 @@ class FileCollectionViewCell: UICollectionViewCell {
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIImageView())
-    lazy var deleteCircle: UIButton = {
+    lazy var deleteButton: UIButton = {
         
         $0.setImage(UIImage(.delete_mark), for: .normal)
         $0.layer.cornerRadius = 10
@@ -58,8 +58,8 @@ class FileCollectionViewCell: UICollectionViewCell {
             $0.edges.equalTo(self.contentView)
         }
         
-        self.contentView.addSubview(deleteCircle)
-        deleteCircle.snp.makeConstraints {
+        self.contentView.addSubview(deleteButton)
+        deleteButton.snp.makeConstraints {
             $0.width.height.equalTo(20)
             $0.top.equalTo(container.snp.top).inset(8)
             $0.trailing.equalTo(container.snp.trailing).inset(8)

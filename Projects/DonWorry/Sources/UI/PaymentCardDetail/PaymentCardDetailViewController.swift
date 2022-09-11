@@ -336,7 +336,7 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
             cell.FileCollectionViewCellDelegate = self
             cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
-            cell.deleteCircle.isHidden = true
+            cell.deleteButton.isHidden = true
             return cell
 //            }
         default: return UICollectionViewCell()

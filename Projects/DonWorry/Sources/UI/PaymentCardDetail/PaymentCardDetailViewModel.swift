@@ -18,9 +18,8 @@ class PaymentCardDetailViewModel:BaseViewModel {
     typealias cardResponse = PaymentCardModels.FetchCard.Response
     var cancellable = Set<AnyCancellable>()
     @Published var paymentCard: cardResponse.PaymentCard = .init(id: -1, totalAmount: 0, users: [], imgUrls: [])
-    
     var paymentUseCase: PaymentCardService = PaymentCardServiceImpl()
-    var userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
+    var userService: UserService = UserServiceImpl()
     
     init(cardID: Int, cardName: String) {
         self.paymentCardName = cardName
@@ -48,7 +47,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
     }
     
     var isAdmin: Bool {
-        guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else { return false }
+        guard let userID = userService.fetchLocalUser()?.id else { return false }
         return userID == paymentCard.users.filter{$0.isTaker}.first?.id
     }
     
