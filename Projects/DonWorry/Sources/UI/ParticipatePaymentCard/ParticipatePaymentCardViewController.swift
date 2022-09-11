@@ -18,9 +18,9 @@ import RxCocoa
 import RxSwift
 
 // UINavigationController로 감싼 후 들어와야 합니다..!
-final class ParticipatePaymentCardViewController: BaseViewController, View {
+final class ParticipatePaymentCardViewController: BaseViewController {
     
-    let viewModel: ParticipatePaymentCardViewModel
+    private let viewModel: ParticipatePaymentCardViewModel
     
     init(viewModel: ParticipatePaymentCardViewModel) {
         self.viewModel = viewModel
@@ -33,14 +33,14 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     
     private var cancelBag = Set<AnyCancellable>()
     
-    fileprivate var numberOfselectedCardsLabel: UILabel = {
+    private var numberOfselectedCardsLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._17)
         label.textColor = .designSystem(.mainBlue)
         return label
     }()
     
-    fileprivate var cancleSelectButton: UIButton = {
+    private var cancleSelectButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("선택해제", for: .normal)
         button.tintColor = .designSystem(.black)
@@ -50,7 +50,7 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         return button
     }()
     
-    fileprivate var cancelButton: UIButton = {
+    private var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("취소", for: .normal)
         button.tintColor = .black
@@ -59,15 +59,16 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
         return button
     }()
     
-    fileprivate let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+    private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let view = UICollectionViewFlowLayout()
         view.minimumLineSpacing = Constants.collectionViewMinLineSpacing
         view.headerReferenceSize = .init(width: 100, height: 38)
+        view.footerReferenceSize = .init(width: 100, height: 74)
         view.scrollDirection = .vertical
         return view
       }()
     
-    fileprivate lazy var participateCollectionView: UICollectionView = {
+    private lazy var participateCollectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
         view.register(ParticipateCollectionViewCell.self, forCellWithReuseIdentifier: ParticipateCollectionViewCell.cellID)
@@ -120,10 +121,6 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
                 self?.participateCollectionView.reloadData()
             }
             .store(in: &cancelBag)
-    }
-    
-    func bind(reactor: ParticipatePaymentCardViewReactor) {
-        //binding here
     }
 
 }
@@ -205,6 +202,7 @@ extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: Constants.collectionViewWidth, height: Constants.collectionViewHeight)
     }
+   
 }
 
 extension ParticipatePaymentCardViewController: CellCheckPress {

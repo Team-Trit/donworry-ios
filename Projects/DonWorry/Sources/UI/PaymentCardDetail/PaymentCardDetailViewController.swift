@@ -14,39 +14,46 @@ import RxSwift
 import DesignSystem
 import Models
 import PhotosUI
+import Combine
 
-// MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
-
-var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
-
-final class PaymentCardDetailViewController: BaseViewController, View {
+final class PaymentCardDetailViewController: BaseViewController {
     
-    let viewModel = PaymentCardDetailViewModel()
+    private let viewModel: PaymentCardDetailViewModel
+    private var cancelBag = Set<AnyCancellable>()
+    
+    init(viewModel: PaymentCardDetailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
-    fileprivate let priceBigContainerView: UIView = {
+    private let priceLabelOuterContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let priceSmallContainerView: UIView = {
+    private let priceLabelInnerContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .designSystem(.grayF6F6F6)
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let attendacneBigContainerView: UIView = {
+    private let attendacneContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let staticPriceLabel: UILabel = {
+    private let staticPriceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.text = "결제금액"
@@ -54,14 +61,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
-    fileprivate let priceLabel: UILabel = {
+    private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.textColor = .black
         return label
     }()
     
-    lazy fileprivate var editButton: UIButton = {
+    lazy private var editButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 16)
         button.setHeight(height: 22)
@@ -72,7 +79,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return button
     }()
     
-    fileprivate let attendanceLabel: UILabel = {
+    private let attendanceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.textColor = .black
@@ -95,7 +102,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return view
     }()
     
-    fileprivate let staticPictureLabel: UILabel = {
+    private let staticPictureLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.text = "첨부 사진"
@@ -103,7 +110,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
-    fileprivate let fileBigContainerView: UIView = {
+    private let filesContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
@@ -136,7 +143,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     }(UIButton())
     
     @objc private func editPrice() {
-        print("edit")
+        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
+        navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
     
     @objc private func didTapBottomButton() {
@@ -148,8 +156,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
             
             let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
-                //TODO: 삭제구현
-                print("삭제")
+                self.viewModel.deletePaymentCard()
+                self.navigationController?.popViewController(animated: true)
             })
             let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
             
@@ -181,6 +189,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
         priceLabel.text = viewModel.totalAmountString
         if viewModel.isAdmin {
+            editButton.isHidden = false
             bottomButton.setTitle("삭제하기", for: .normal)
             bottomButton.backgroundColor = .designSystem(.redTopGradient)
         } else {
@@ -194,22 +203,27 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             }
         }
     }
-    
-    func bind(reactor: PaymentCardDetailViewReactor) {
-        //binding here
-    }
-    
+
 }
 
 //MARK: Layout
 extension PaymentCardDetailViewController {
     private func bind() {
-
+        
         navigationBar.leftItem.rx.tap
             .bind {
                 self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
+        
+        viewModel.$paymentCard
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.fileCollectionView.reloadData()
+                self?.attendanceCollectionView.reloadData()
+                self?.attributes()
+            }
+            .store(in: &cancelBag)
     }
     
     private func layout() {
@@ -232,37 +246,37 @@ extension PaymentCardDetailViewController {
         totalBottomView.addSubview(spacingView)
         spacingView.anchor(top: navigationBar.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
         spacingView.backgroundColor = .designSystem(.white)
-        totalBottomView.addSubview(priceBigContainerView)
-        priceBigContainerView.anchor(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(priceLabelOuterContainerView)
+        priceLabelOuterContainerView.anchor(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
         
-        priceBigContainerView.addSubview(staticPriceLabel)
-        staticPriceLabel.anchor(top: priceBigContainerView.topAnchor, left: priceBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        priceLabelOuterContainerView.addSubview(staticPriceLabel)
+        staticPriceLabel.anchor(top: priceLabelOuterContainerView.topAnchor, left: priceLabelOuterContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        priceBigContainerView.addSubview(priceSmallContainerView)
-        priceSmallContainerView.anchor(top: staticPriceLabel.bottomAnchor, left: priceBigContainerView.leftAnchor, bottom: priceBigContainerView.bottomAnchor, right: priceBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
+        priceLabelOuterContainerView.addSubview(priceLabelInnerContainerView)
+        priceLabelInnerContainerView.anchor(top: staticPriceLabel.bottomAnchor, left: priceLabelOuterContainerView.leftAnchor, bottom: priceLabelOuterContainerView.bottomAnchor, right: priceLabelOuterContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
         
         let PriceHstack = UIStackView(arrangedSubviews: [priceLabel, editButton])
-        priceSmallContainerView.addSubview(PriceHstack)
-        PriceHstack.anchor(top: priceSmallContainerView.topAnchor, left: priceSmallContainerView.leftAnchor, bottom: priceSmallContainerView.bottomAnchor,right: priceSmallContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
-        PriceHstack.centerY(inView: priceSmallContainerView)
+        priceLabelInnerContainerView.addSubview(PriceHstack)
+        PriceHstack.anchor(top: priceLabelInnerContainerView.topAnchor, left: priceLabelInnerContainerView.leftAnchor, bottom: priceLabelInnerContainerView.bottomAnchor,right: priceLabelInnerContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
+        PriceHstack.centerY(inView: priceLabelInnerContainerView)
         
-        totalBottomView.addSubview(attendacneBigContainerView)
-        attendacneBigContainerView.anchor(top: priceBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(attendacneContainerView)
+        attendacneContainerView.anchor(top: priceLabelOuterContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
-        attendacneBigContainerView.addSubview(attendanceLabel)
-        attendanceLabel.anchor(top: attendacneBigContainerView.topAnchor, left: attendacneBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        attendacneContainerView.addSubview(attendanceLabel)
+        attendanceLabel.anchor(top: attendacneContainerView.topAnchor, left: attendacneContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        attendacneBigContainerView.addSubview(attendanceCollectionView)
-        attendanceCollectionView.anchor(top: attendanceLabel.bottomAnchor, left: attendacneBigContainerView.leftAnchor, bottom: attendacneBigContainerView.bottomAnchor, right: attendacneBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
+        attendacneContainerView.addSubview(attendanceCollectionView)
+        attendanceCollectionView.anchor(top: attendanceLabel.bottomAnchor, left: attendacneContainerView.leftAnchor, bottom: attendacneContainerView.bottomAnchor, right: attendacneContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
         
-        totalBottomView.addSubview(fileBigContainerView)
-        fileBigContainerView.anchor(top: attendacneBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(filesContainerView)
+        filesContainerView.anchor(top: attendacneContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
-        fileBigContainerView.addSubview(staticPictureLabel)
-        staticPictureLabel.anchor(top: fileBigContainerView.topAnchor, left: fileBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        filesContainerView.addSubview(staticPictureLabel)
+        staticPictureLabel.anchor(top: filesContainerView.topAnchor, left: filesContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        fileBigContainerView.addSubview(fileCollectionView)
-        fileCollectionView.anchor(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
+        filesContainerView.addSubview(fileCollectionView)
+        fileCollectionView.anchor(top: staticPictureLabel.bottomAnchor, left: filesContainerView.leftAnchor, bottom: filesContainerView.bottomAnchor, right: filesContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
         
         totalBottomView.addSubview(bottomButton)
         bottomButton.anchor(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
@@ -277,13 +291,16 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         case attendanceCollectionView:
             return viewModel.numOfUsers
         case fileCollectionView:
-            if cameraImageArray.count == 0 {
-                return viewModel.numOfFilesWhenNoImages
-            } else if cameraImageArray.count == 3 {
-                return 3
-            } else {
-                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
-            }
+            return viewModel.imageUrlStrings.count
+            //MARK: 추후 사진 수정시 이용됩니다
+//            return cameraImageArray.count
+//            if cameraImageArray.count == 0 {
+//                return viewModel.numOfFilesWhenNoImages
+//            } else if cameraImageArray.count == 3 {
+//                return 3
+//            } else {
+//                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
+//            }
         default:
             return 0
         }
@@ -296,32 +313,33 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             cell.user = viewModel.userCollectionViewAt(indexPath.row)
             return cell
         case fileCollectionView:
-            if viewModel.isAdmin {
-                if cameraImageArray.count == 3 {
-                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                    cell.FileCollectionViewCellDelegate = self
-                    cell.container.image = cameraImageArray[indexPath.row]
-                    cell.deleteCircle.tag = indexPath.row
-                    return cell
-                } else {
-                    if indexPath.row == 0 {
-                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
-                        return cell
-                    } else {
-                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                        cell.FileCollectionViewCellDelegate = self
-                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
-                        cell.deleteCircle.tag = (indexPath.row - 1)
-                        return cell
-                    }
-                }
-            } else {
-                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-                cell.FileCollectionViewCellDelegate = self
-                cell.container.image = cameraImageArray[(indexPath.row)]
-                cell.deleteCircle.isHidden = true
-                return cell
-            }
+            //MARK: 추후 사진 수정시 이용됩니다
+//            if viewModel.isAdmin {
+//                if cameraImageArray.count == 3 {
+//                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+//                    cell.FileCollectionViewCellDelegate = self
+//                    cell.container.image = cameraImageArray[indexPath.row]
+//                    cell.deleteCircle.tag = indexPath.row
+//                    return cell
+//                } else {
+//                    if indexPath.row == 0 {
+//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
+//                        return cell
+//                    } else {
+//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+//                        cell.FileCollectionViewCellDelegate = self
+//                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
+//                        cell.deleteCircle.tag = (indexPath.row - 1)
+//                        return cell
+//                    }
+//                }
+//            } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
+            cell.FileCollectionViewCellDelegate = self
+            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            cell.deleteButton.isHidden = true
+            return cell
+//            }
         default: return UICollectionViewCell()
         }
     }
@@ -329,13 +347,18 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
         case attendanceCollectionView:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
+            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
+            //MARK: 추후 사진 수정시 이용됩니다
         case fileCollectionView:
-            guard viewModel.isAdmin else { return }
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
-            if cameraImageArray.count < 3 && indexPath.row == 0 {
-                showPhotoPicker()
-            }
+//            guard viewModel.isAdmin else { return }
+            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+            let detailImageViewController = DetailImageViewController()
+            detailImageViewController.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            present(detailImageViewController, animated: true)
+            //MARK: 추후 사진 수정시 이용됩니다
+//            if cameraImageArray.count < 3 && indexPath.row == 0 {
+//                showPhotoPicker()
+//            }
         default:
             break
         }
@@ -363,38 +386,40 @@ extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
     }
 }
 
-extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
-    
-    func showPhotoPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 3
-        let phPickerVC = PHPickerViewController(configuration: config)
-        phPickerVC.delegate = self
-        self.present(phPickerVC, animated: true)
-    }
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        dismiss(animated: true)
-        var images = [UIImage]()
-        for result in results {
-            result.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
-                if let image = object as? UIImage {
-                    images.append(image)
-                }
-                for image in images {
-                    if cameraImageArray.count == 3 {
-                        cameraImageArray[0] = image
-                    }
-                    else {
-                        cameraImageArray += [image]
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.fileCollectionView.reloadData()
-                }
-                
-            }
-        }
-    }
-}
+//MARK: 추후 사진 수정시 이용됩니다
+//extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
+//
+//    func showPhotoPicker() {
+//        var config = PHPickerConfiguration()
+//        config.selectionLimit = 3
+//        let phPickerVC = PHPickerViewController(configuration: config)
+//        phPickerVC.delegate = self
+//        self.present(phPickerVC, animated: true)
+//    }
+//    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+//        dismiss(animated: true)
+//        var images = [UIImage]()
+//        for result in results {
+//            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
+//                error in
+//                if let image = object as? UIImage {
+//                    images.append(image)
+//                }
+//                for image in images {
+//                    if cameraImageArray.count == 3 {
+//                        cameraImageArray[0] = image
+//                    }
+//                    else {
+//                        cameraImageArray += [image]
+//                    }
+//                }
+//                DispatchQueue.main.async {
+//                    self.fileCollectionView.reloadData()
+//                }
+//
+//            }
+//        }
+//    }
+//}
+
 

@@ -15,11 +15,35 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+enum paymentAmountEditType {
+    case create
+    case update
+}
+
 final class PaymentCardAmountEditViewController: BaseViewController, View {
     // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
-    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
+    private var editType: paymentAmountEditType = .create
+//    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
+    
+    private lazy var navigationBar: DWNavigationBar = {
+        if editType == .update {
+            return .init(title: "")
+        } else {
+            return .init(title: "", rightButtonImageName: "xmark")
+        }
+    }()
+    
+    init(editType: paymentAmountEditType = .create) {
+        super.init(nibName: nil, bundle: nil)
+        self.editType = editType
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -59,8 +83,12 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     }()
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
-        v.title = "다음"
-        v.isEnabled = false
+        if editType == .update {
+            v.title = "수정 완료"
+        } else {
+            v.title = "다음"
+            v.isEnabled = false
+        }
         return v
     }()
     
@@ -160,6 +188,25 @@ extension PaymentCardAmountEditViewController {
 // MARK: - Layout
 extension PaymentCardAmountEditViewController {
 
+    private func bindBackButton() {
+        navigationBar.leftItem.rx.tap
+            .bind {
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        if editType == .update { return }
+        navigationBar.rightItem!.rx.tap
+            .bind {
+                guard let controllers = self.navigationController?.viewControllers else { return }
+                for vc in controllers {
+                    if vc is PaymentCardListViewController {
+                        self.navigationController?.popToViewController(vc as! PaymentCardListViewController, animated: true)
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+    
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         

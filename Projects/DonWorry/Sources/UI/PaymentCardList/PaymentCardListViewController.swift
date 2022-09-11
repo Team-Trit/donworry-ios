@@ -153,6 +153,22 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.checkParticipatedButton.rx.tap.map { .didTapPaymentCardDetail }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.collectionView.rx.itemSelected
+                    .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
+                    .subscribe(onNext: { [weak self] cell in
+                        guard let id = cell.viewModel?.id else { return }
+                        let viewModel = PaymentCardDetailViewModel(cardID: id, cardName: cell.viewModel?.name ?? "")
+                        let cardDetail = PaymentCardDetailViewController(viewModel: viewModel)
+                        self?.navigationController?.pushViewController(cardDetail, animated: true)
+                    }).disposed(by: disposeBag)
+        
+        self.collectionView.rx.itemSelected
+            .compactMap { [weak self] in
+                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
+            }.map { _ in .didTapAddPaymentCard }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
         self.startPaymentAlgorithmButton.rx.tap
             .map { .didTapStartPaymentAlgorithmButton }
@@ -267,7 +283,6 @@ extension PaymentCardListViewController {
             
             guard let id = reactor?.currentState.space.id else { return }
             let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
-            participatePaymentCardViewController.reactor = ParticipatePaymentCardViewReactor()
             let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
             nav.modalPresentationStyle = .overFullScreen
             present(nav, animated: true)

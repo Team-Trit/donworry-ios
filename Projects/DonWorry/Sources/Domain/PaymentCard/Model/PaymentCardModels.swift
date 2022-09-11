@@ -1,14 +1,13 @@
+////
+////  PaymentCardModels.swift
+////  DonWorry
+////
+////  Created by Woody on 2022/09/04.
+////  Copyright © 2022 Tr-iT. All rights reserved.
+////
 //
-//  PaymentCardModels.swift
-//  DonWorry
+//import Foundation
 //
-//  Created by Woody on 2022/09/04.
-//  Copyright © 2022 Tr-iT. All rights reserved.
-//
-
-import Foundation
-import UIKit
-
 enum PaymentCardModels {
 
     enum FetchCardList {
@@ -97,6 +96,42 @@ enum PaymentCardModels {
     
     enum Empty {
         struct Response {}
+    }
+    
+    enum FetchCard {
+        struct Response {
+            public let card: PaymentCard
+            struct PaymentCard: Codable {
+                public let id, totalAmount: Int
+                public let users: [User]
+                public let imgUrls: [String]
+            }
+            
+            struct User: Codable {
+                public let id: Int
+                public let isTaker: Bool
+                public let nickname: String
+               public let imgURL: String?
+
+                enum CodingKeys: String, CodingKey {
+                    case id, isTaker, nickname
+                    case imgURL = "imgUrl"
+                }
+            }
+        }
+    }
+    
+    enum PutCard {
+        struct Response {
+            public let card: PaymentCard
+            struct PaymentCard: Codable {
+                public let id, totalAmount: Int
+            }
+        }
+    }
+    
+    enum DeleteCard {
+        public struct Empty: Decodable { }
     }
     
 }

@@ -19,8 +19,13 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
             guard let user = user else {
                 return
             }
-            if let urlString = URL(string: user.image) {
-                userImageView.kf.setImage(with: urlString)
+            
+            if user.image == "" || user.image == nil {
+                userImageView.backgroundColor = .designSystem(Pallete.grayF6F6F6)
+                userImageView.image = UIImage(.ic_basic_profile_image)
+            } else {
+                let url = URL(string: user.image)
+                userImageView.kf.setImage(with: url)
             }
             userNicknameLabel.text = user.nickName
         }

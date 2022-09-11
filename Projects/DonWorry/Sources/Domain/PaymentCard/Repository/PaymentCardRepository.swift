@@ -10,11 +10,15 @@ import Foundation
 import DonWorryExtensions
 import DonWorryNetworking
 import RxSwift
+import Models
 
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+    func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.DeleteCard.Empty>
+    func putEditPaymentCard(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response>
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -39,8 +43,32 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
     
     func joinPaymentCardList(ids: [Int]) -> Observable<String> {
         network.request(PostJoinPaymentCardAPI(request: .init(cardIds: ids)))
-            .compactMap { str in
-                    return str
+            .compactMap { _ in
+                    return "suc"
+            }.asObservable()
+    }
+    
+    func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
+        network.request(GetPaymentCardAPI(cardId: cardId))
+            .compactMap { [weak self] response in
+                guard let self = self else { throw PaymentCardError.parsingError }
+                return .init(card: self.convertToPaymentCard(response))
+            }.asObservable()
+    }
+    
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.DeleteCard.Empty>  {
+         network.request(DeletePaymentCardAPI(cardId: cardId))
+            .compactMap { _ in
+                return .init()
+            }
+            .asObservable()
+            
+    }
+    
+    func putEditPaymentCard(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response> {
+        network.request(PutEditPaymentCardAPI(request: .init(id: id, totalAmount: totalAmount)))
+            .compactMap { _ in
+                return .init(card: .init(id: id, totalAmount: totalAmount))
             }.asObservable()
     }
 
@@ -71,7 +99,11 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             isUserParticipatedIn: false
         )
     }
-
+    
+    private func convertToPaymentCard(_ dto: DTO.GetPaymentCard.PaymentCard) -> PaymentCardModels.FetchCard.Response.PaymentCard {
+        return .init(id: dto.id, totalAmount: dto.totalAmount, users: dto.users.map{.init(id: $0.id, isTaker: $0.isTaker, nickname: $0.nickname, imgURL: $0.imgURL)}, imgUrls: dto.imgUrls)
+    }
+    
     // PaymentCardUserDTO에서 PaymentCardUser 도메인으로 변환해줍니다.
     private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(

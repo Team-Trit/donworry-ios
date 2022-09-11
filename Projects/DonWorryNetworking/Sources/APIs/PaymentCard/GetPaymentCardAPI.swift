@@ -1,27 +1,25 @@
 //
-//  DeletePaymentCardListAPI.swift
+//  GetPaymentCardAPI.swift
 //  DonWorryNetworking
 //
-//  Created by Chanhee Jeong on 2022/08/31.
+//  Created by Hankyu Lee on 2022/09/07.
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
 import Foundation
 
-// query = userId
-public struct DeletePaymentCardAPI: ServiceAPI {
-    
-    public typealias Response = DTO.Empty
+public struct GetPaymentCardAPI: ServiceAPI {
+    public typealias Response = DTO.GetPaymentCard.PaymentCard
     public var cardId: Int
-    public var path: String { return "/cards/\(cardId)" }
-    public var method: Method { .delete }
-    public var task: Task { .requestPlain }
-    
     public init(cardId: Int) {
         self.cardId = cardId
     }
+    public var path: String { "/cards/\(cardId)" }
+    public var method: Method { .get }
+    public var task: Task { .requestPlain }
     public var headers: [String : String]? {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
     }
-    
 }
+
+
