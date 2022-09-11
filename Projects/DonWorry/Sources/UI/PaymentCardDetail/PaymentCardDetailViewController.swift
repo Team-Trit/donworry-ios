@@ -182,6 +182,7 @@ final class PaymentCardDetailViewController: BaseViewController {
         super.viewDidLoad()
         attributes()
         layout()
+        bind()
     }
     
     private func attributes() {
@@ -202,8 +203,7 @@ final class PaymentCardDetailViewController: BaseViewController {
             }
         }
     }
-    func bind(reactor: PaymentCardDetailViewReactor) {
-    }
+
 }
 
 //MARK: Layout

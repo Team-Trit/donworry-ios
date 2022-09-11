@@ -27,6 +27,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
         paymentUseCase.fetchPaymentCard(cardId: cardID)
             .subscribe(onNext: { [weak self] response in
                 self?.paymentCard = response.card
+                
             }).disposed(by: disposeBag)
     }
     
