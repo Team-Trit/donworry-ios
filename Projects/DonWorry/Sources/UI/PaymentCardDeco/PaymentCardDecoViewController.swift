@@ -145,7 +145,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
             }).disposed(by: disposeBag)
 
         reactor.state
-            .map{ "\($0.paymentCard.totalAmount.formatted())"}
+            .map{ "\($0.paymentCard.totalAmount.formatted())원"}
             .bind(to: paymentCardView.totalAmountLabel.rx.text)
             .disposed(by: disposeBag)
         
@@ -167,6 +167,11 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
             .subscribe(onNext: { [weak self] in
                 self?.paymentCardView.setBankAccount($0)
             }).disposed(by: disposeBag)
+        
+        reactor.state.map { $0.userInfo }
+            .observe(on: MainScheduler.instance)
+            .bind(to: self.paymentCardView.rx.viewModel)
+            .disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)

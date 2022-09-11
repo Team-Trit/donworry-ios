@@ -20,4 +20,15 @@ extension UIImageView {
             self.image = UIImage(.ic_basic_profile_image)
         }
     }
+    
+    func setBasicProfileImageWhenEmpty(with urlString: String?) {
+        if let urlString = urlString, urlString.isEmpty == false {
+            let url = URL(string: urlString)
+            self.kf.setImage(with: url)
+        } else {
+            self.backgroundColor = .designSystem(Pallete.grayF6F6F6)
+            self.image = UIImage(.ic_basic_profile_image)
+        }
+    }
+    
 }

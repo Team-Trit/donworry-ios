@@ -35,6 +35,7 @@ final class PaymentCardDecoReactor: Reactor {
 
     enum Mutation {
         case updateBankAccount(BankAccount)
+        case updateUserInfo(User)
         case routeTo(PaymentCardDecoStep)
         case updateImageURLs(String)
         case updatePaymentCardColor(CardColor)
@@ -47,6 +48,7 @@ final class PaymentCardDecoReactor: Reactor {
         var selectedColor: CardColor = .pink
         var selectedDate: Date = Date()
         var bankAccount: BankAccount
+        var userInfo: PaymentCardUserViewModel?
         @Pulse var step: PaymentCardDecoStep?
     }
 
@@ -71,10 +73,13 @@ final class PaymentCardDecoReactor: Reactor {
             let getUserAccount = getUserAccountUseCase.getUserAccount()
                 .compactMap { $0 }
                 .map { Mutation.updateBankAccount($0.bankAccount)}
+            let getUserInfo = getUserAccountUseCase.getUserAccount()
+                .compactMap { $0 }
+                .map { Mutation.updateUserInfo($0)}
             let initailDate = Observable.just(Mutation.updatePaymentCardDate(Date()))
             let bgColor = Observable.just(Mutation.updatePaymentCardColor(.pink))
             let initialImage = Observable.just(Mutation.updateImageURLs(""))
-            return .concat([getUserAccount, initailDate, bgColor, initialImage])
+            return .concat([getUserAccount, getUserInfo, initailDate, bgColor, initialImage])
         case .didTapBackButton:
             return .just(.routeTo(.pop))
         case .didTapCloseButton:
@@ -102,6 +107,8 @@ final class PaymentCardDecoReactor: Reactor {
             newState.paymentCard.bank = bankAccount.bank
             newState.paymentCard.holder = bankAccount.accountHolderName
             newState.paymentCard.accountNumber = bankAccount.accountNumber
+        case .updateUserInfo(let user):
+            newState.userInfo = .init(imageURL: user.image, nickName: user.nickName)
         case .routeTo(let step):
             newState.step = step
         case .updatePaymentCardDate(let date):

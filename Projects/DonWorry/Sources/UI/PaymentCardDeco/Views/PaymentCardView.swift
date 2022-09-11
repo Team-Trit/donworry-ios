@@ -11,6 +11,7 @@ import UIKit
 import DesignSystem
 import DonWorryExtensions
 import Models
+import Kingfisher
 
 struct PaymentCardViewModel {
     public var id: String
@@ -26,6 +27,11 @@ struct PaymentCardViewModel {
 
 }
 
+struct PaymentCardUserViewModel {
+    var imageURL: String?
+    var nickName: String
+}
+
 public class PaymentCardView: UIView {
 
     func setColor(by color: CardColor) {
@@ -38,6 +44,13 @@ public class PaymentCardView: UIView {
         self.bankLabel.text = bankAccount.bank
         self.accountNumberLabel.text = bankAccount.accountNumber
         self.accountHodlerNameLabel.text = bankAccount.accountHolderName
+    }
+    
+    var viewModel: PaymentCardUserViewModel? {
+        didSet {
+            self.userNameLabel.text = "13213sdjaksd"
+            userImageView.setBasicProfileImageWhenEmpty(with: viewModel?.imageURL)
+        }
     }
     
     // MARK: - Constructors
@@ -127,7 +140,6 @@ public class PaymentCardView: UIView {
         $0.textAlignment = .center
         $0.layer.cornerRadius = 11
         $0.layer.masksToBounds = true
-        
         return $0
     }(UILabel())
     
@@ -155,6 +167,7 @@ public class PaymentCardView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "정산자"
         $0.numberOfLines = 1
+        $0.adjustsFontSizeToFitWidth = true
         $0.font = .designSystem(weight: .heavy, size: ._15)
         $0.textAlignment = .left
         $0.textColor = .white
@@ -229,7 +242,8 @@ public class PaymentCardView: UIView {
             
             userStackView.centerXAnchor.constraint(equalTo: cardSideView.centerXAnchor),
             userStackView.topAnchor.constraint(equalTo: topAnchor, constant: 20),
-            
+            userStackView.leadingAnchor.constraint(equalTo: cardSideView.leadingAnchor, constant: 6),
+            userStackView.trailingAnchor.constraint(equalTo: cardSideView.trailingAnchor, constant: -6)
         ])
         
         userStackView.addArrangedSubviews(userImageView, userNameLabel)
