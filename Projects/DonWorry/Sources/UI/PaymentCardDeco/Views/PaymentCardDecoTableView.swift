@@ -11,8 +11,8 @@ import UIKit
 struct CardDecoItem {
     let title: String
     var isHidden = true
-   
-    init(title: String, isHidden: Bool = true){
+
+    init(title: String, isHidden: Bool = true) {
         self.title = title
         self.isHidden = isHidden
     }
@@ -24,6 +24,9 @@ protocol PaymentCardDecoTableViewDelegate: AnyObject {
     func updateCardColor(with color: CardColor)
     func updatePayDate(with date : Date)
     func showPhotoPicker()
+    func deleteImage(imageURL: String)
+    func updateHolder(holder: String)
+    func updateAccountNumber(number: String)
 }
 
 protocol PhotoUpdateDelegate: AnyObject {
@@ -32,17 +35,20 @@ protocol PhotoUpdateDelegate: AnyObject {
 
 class PaymentCardDecoTableView: UITableView {
     
-    private var cardDecoItems: [CardDecoItem] = [
+    var cardDecoItems: [CardDecoItem] = [
         CardDecoItem(title: "배경 선택"),
         CardDecoItem(title: "날짜 선택"),
-        CardDecoItem(title: "계좌번호 입력 (선택)"),
+//        CardDecoItem(title: "계좌번호 입력 (선택)"),
         CardDecoItem(title: "파일 추가 (선택)"),
     ]
     private var selectedIndex: Int = -1
-    
+
     weak var paymentCardDecoTableViewDelegate: PaymentCardDecoTableViewDelegate?
     weak var photoUpdateDelegate: PhotoUpdateDelegate?
-    
+
+    var selectedColor: CardColor?
+    var filePickerCellViewModel: FilePickerCellViewModel?
+
     // MARK: - Constructors
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: .zero, style: .insetGrouped)
@@ -81,7 +87,7 @@ extension PaymentCardDecoTableView {
         self.register(UINib(nibName: "FilePickerCell", bundle: nil), forCellReuseIdentifier: "FilePickerCell")
         self.register(UINib(nibName: "ColorPickerCell", bundle: nil), forCellReuseIdentifier: "ColorPickerCell")
         self.register(UINib(nibName: "PayDatePickerCell", bundle: nil), forCellReuseIdentifier: "PayDatePickerCell")
-        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
+//        self.register(UINib(nibName: "AccountInputCell", bundle: nil), forCellReuseIdentifier: "AccountInputCell")
         
         // 상단여백제거
         self.tableHeaderView = UIView(frame: CGRect(x: 0.0,
@@ -112,7 +118,7 @@ extension PaymentCardDecoTableView {
 
 
 /* Cell Delegate 구현 */
-extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate, PayDatePickerCellDelegate{
+extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorPickerCellDelegate, PayDatePickerCellDelegate {
     
     // ColorPickerCellDelegate
     func updateCardColor(with color : CardColor) {
@@ -128,6 +134,10 @@ extension PaymentCardDecoTableView: FilePickerCellCollectionViewDelegate, ColorP
     func selectPhoto(){
         paymentCardDecoTableViewDelegate?.showPhotoPicker()
     }
+
+    func deletePhoto(imageURL: String) {
+        paymentCardDecoTableViewDelegate?.deleteImage(imageURL: imageURL)
+    }
     
 }
 
@@ -140,9 +150,9 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         } else {
             switch indexPath.row {
             case 0: return 180
-            case 1: return 400
-            case 2: return 200
-            case 3: return 200
+            case 1: return 360 // 400 : 계좌번호 필드 있을 경우
+            case 2: return 180 // 200 : 계좌번호 필드 있을 경우
+//            case 2: return 200 계좌번호 입력 필드 임시 삭제
             default:
                 return 300
             }
@@ -155,7 +165,7 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
         let cellSpacing: CGFloat = 15
         let cellHeightArea: CGFloat = cellHeight + cellSpacing
         
-        var height: CGFloat = cellHeightArea * 4 + 5
+        var height: CGFloat = cellHeightArea * 3 + 5 // 3 : cell 개수
 
         if selectedIndex == indexPath.row {
             if selectedIndex > -1 {
@@ -167,21 +177,19 @@ extension PaymentCardDecoTableView : UITableViewDelegate {
             if selectedIndex > -1 {
                 cardDecoItems[selectedIndex].isHidden = !(cardDecoItems[selectedIndex].isHidden)
             }
-                
+
             selectedIndex = indexPath.row
             cardDecoItems[selectedIndex].isHidden = !(cardDecoItems[selectedIndex].isHidden)
         }
 
         switch selectedIndex {
-            case 0: height += 180 - cellHeightArea
-            case 1: height += 400 - cellHeightArea
-            case 2: height += 200 - cellHeightArea
-            case 3: height += 200 - cellHeightArea
-            default: break
+        case 0: height += 180 - cellHeightArea
+        case 1: height += 400 - cellHeightArea
+        case 2: height += 200 - cellHeightArea
+//        case 2: height += 200 - cellHeightArea : 계좌번호 입력 필드 임시 삭제
+        default: break
         }
-        
         paymentCardDecoTableViewDelegate?.updateTableViewHeight(to: height)
-        
     }
     
 }
@@ -195,39 +203,57 @@ extension PaymentCardDecoTableView : UITableViewDataSource {
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let expandableItem = self.cardDecoItems[indexPath.row]
-            
+
         switch indexPath.row {
-            case 0: // 배경선택
-                let cell = tableView.dequeueReusableCell(withIdentifier: "ColorPickerCell", for: indexPath) as! ColorPickerCell
-                cell.configure(isHidden: expandableItem.isHidden)
-                cell.colorPickerCellDelegate = self
-                return cell
+        case 0: // 배경선택
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ColorPickerCell", for: indexPath) as! ColorPickerCell
+            cell.configure(isHidden: expandableItem.isHidden)
+            cell.colorPickerCellDelegate = self
+            cell.selectedColor = selectedColor
+            return cell
             
-            case 1: // 날짜선택
-                let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
-                cell.configure(isHidden: expandableItem.isHidden)
-                cell.payDatePickerCellDelegate = self
-                return cell
+        case 1: // 날짜선택
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PayDatePickerCell", for: indexPath) as! PayDatePickerCell
+            cell.configure(isHidden: expandableItem.isHidden)
+            cell.payDatePickerCellDelegate = self
+            return cell
             
-            case 2: // 계좌번호
-                let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
-                cell.configure(isHidden: expandableItem.isHidden)
-                return cell
-            
-            case 3: // 파일추가
-                let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
-                cell.configure(isHidden: expandableItem.isHidden)
-                cell.filePickerCellCollectionViewDelegate = self
-                self.photoUpdateDelegate = cell
-            
-                return cell
+        /* MARK:  계좌번호 입력 필드 임시 삭제
+        case 2: // 계좌번호
+            let cell = tableView.dequeueReusableCell(withIdentifier: "AccountInputCell", for: indexPath) as! AccountInputCell
+            cell.configure(isHidden: expandableItem.isHidden)
 
-            default:
-                return UITableViewCell()
+            cell.accountInputField.holderTextField.textField.rx.text
+                .orEmpty
+                .distinctUntilChanged()
+                .subscribe(onNext: { text in
+                    self.paymentCardDecoTableViewDelegate?.updateHolder(holder: text)
+                })
+                .disposed(by: cell.disposeBag)
+            
+            cell.accountInputField.accountTextField.textField.rx.text
+                .orEmpty
+                .distinctUntilChanged()
+                .subscribe(onNext: { text in
+                    self.paymentCardDecoTableViewDelegate?
+                        .updateAccountNumber(number: text)
+                })
+                .disposed(by: cell.disposeBag)
+
+            
+            return cell
+         */
+            
+        case 2: // 파일추가
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FilePickerCell", for: indexPath) as! FilePickerCell
+            cell.configure(isHidden: expandableItem.isHidden)
+            cell.filePickerCellCollectionViewDelegate = self
+            cell.viewModel = filePickerCellViewModel
+            return cell
+        default:
+            return UITableViewCell()
         }
-
     }
-
 }

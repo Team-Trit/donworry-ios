@@ -10,12 +10,6 @@ import Foundation
 import Models
 import DonWorryLocalStorage
 
-protocol UserAccountRepository {
-    func fetchLocalUserAccount() -> User?
-    func saveLocalUserAccount(_ user: User) -> Bool
-    func deleteLocalUserAccount() -> Bool
-}
-
 final class UserAccountRepositoryImpl: UserAccountRepository {
     private let localStorage: LocalStorage
 

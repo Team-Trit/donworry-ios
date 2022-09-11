@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+
 import Foundation
 import Models
 
@@ -18,7 +19,9 @@ public struct PostPaymentCardAPI: ServiceAPI {
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    
+    public var headers: [String : String]? {
+        return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
+    }
     public init(request: Request) {
         self.request = request
     }
@@ -30,15 +33,16 @@ extension PostPaymentCardAPI {
     public struct Request: Encodable {
         public let spaceID, categoryID: Int
         public let bank, number, holder, name: String
-        public let totalAmount, position: Int
+        public let totalAmount: Int
         public let bgColor, paymentDate: String
+        public let imgUrls: [String]
 
-        enum CodingKeys: String, CodingKey {
+        public enum CodingKeys: String, CodingKey {
             case spaceID = "spaceId"
             case categoryID = "categoryId"
-            case bank, number, holder, name, totalAmount, position, bgColor, paymentDate
+            case bank, number, holder, name, totalAmount, bgColor, paymentDate
+            case imgUrls
         }
-        
         
         public init(
             spaceID: Int,
@@ -48,9 +52,9 @@ extension PostPaymentCardAPI {
             holder: String,
             name: String,
             totalAmount: Int,
-            position: Int,
             bgColor: String,
-            paymentDate: String
+            paymentDate: String,
+            imgUrls: [String]
         ) {
             self.spaceID = spaceID
             self.categoryID = categoryID
@@ -59,11 +63,9 @@ extension PostPaymentCardAPI {
             self.holder = holder
             self.name = name
             self.totalAmount = totalAmount
-            self.position = position
             self.bgColor = bgColor
             self.paymentDate = paymentDate
+            self.imgUrls = imgUrls
         }
-        
-        
     }
 }

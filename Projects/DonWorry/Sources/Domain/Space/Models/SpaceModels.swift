@@ -118,10 +118,40 @@ enum SpaceModels {
         }
     }
 
-    // MARK: 성공했는데 응답이 아무것도 없을 때
+    // MARK: 정산 알고리즘 시작
+
+    enum StartPaymentAlogrithm {
+        struct Request {
+            let id: Int
+            let status: Status
+
+            enum Status: String {
+                case open
+                case progress
+                case close
+
+                var uppercase: String {
+                    return self.rawValue.uppercased()
+                }
+
+                static func getSelf(_ status: String) -> Status {
+                    if status == "OPEN" {
+                        return .open
+                    } else if status == "CLOSE" {
+                        return .close
+                    } else {
+                        return .progress
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    // MARK: 성공했는데 응답이 없어도 되는 경우
 
     enum Empty {
         struct Response {}
     }
-
 }

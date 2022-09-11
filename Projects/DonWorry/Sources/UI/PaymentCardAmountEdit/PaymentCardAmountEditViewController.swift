@@ -87,9 +87,11 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
             v.title = "수정 완료"
         } else {
             v.title = "다음"
+            v.isEnabled = false
         }
         return v
     }()
+    
     private lazy var numberPadCollectionView: NumberPadCollectionView = {
         let v = NumberPadCollectionView()
         v.dataSource = self
@@ -98,9 +100,7 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.reactor = PaymentCardAmountEditReactor()
         setUI()
-        bindBackButton()
     }
     
     func bind(reactor: Reactor) {
@@ -121,16 +121,26 @@ extension PaymentCardAmountEditViewController {
             .map { Reactor.Action.numberPadPressed(pressedItem: self.padItems[$0.row]) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.navigationBar.rightItem?.rx.tap.map { .didTapCloseButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
     private func render(_ reactor: Reactor) {
-        reactor.state.map { $0.iconName }
+
+        reactor.state.map { $0.paymentCard.viewModel.categoryIconName }
             .distinctUntilChanged()
-            .map { UIImage(.init(rawValue: $0)!) }
+            .map { UIImage(assetName: $0) }
             .bind(to: iconImageView.rx.image)
             .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.paymentTitle }
+
+        reactor.state.map { $0.paymentCard.name }
             .distinctUntilChanged()
             .bind(to: paymentTitleLabel.rx.text)
             .disposed(by: disposeBag)
@@ -139,38 +149,45 @@ extension PaymentCardAmountEditViewController {
             .distinctUntilChanged()
             .bind(to: amountLabel.rx.text)
             .disposed(by: disposeBag)
-
-        // TODO: 화면연결을위해 주석처리했어요
-        /*
-        reactor.state.map { $0.amount != "0" }
+        
+        reactor.state.map { $0.isButtonEnabled }
             .distinctUntilChanged()
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
-        */
 
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext:{ [weak self] step in
-                self?.move(to: step)
+                self?.move(to: step, reactor: reactor)
             }).disposed(by: disposeBag)
     }
 }
 
 extension PaymentCardAmountEditViewController {
-    func move(to step: PaymentCardAmountEditStep) {
+    
+    func move(to step: PaymentCardAmountEditStep, reactor: Reactor) {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .paymentCardDeco:
-            let deco = PaymentCardDecoViewController()
-            self.navigationController?.pushViewController(deco, animated: true)
+            self.navigationController?.pushViewController(paymentCardDecoViewController(), animated: true)
+        case .paymentCardList:
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
+    }
+
+    private func paymentCardDecoViewController() -> UIViewController {
+        let paymentCardDecoViewController = PaymentCardDecoViewController()
+        let newPaymentCard = reactor!.currentState.paymentCard
+        paymentCardDecoViewController.reactor =  PaymentCardDecoReactor(paymentCard: newPaymentCard)
+        return paymentCardDecoViewController
     }
 }
 
 // MARK: - Layout
 extension PaymentCardAmountEditViewController {
+
     private func bindBackButton() {
         navigationBar.leftItem.rx.tap
             .bind {
@@ -239,6 +256,7 @@ extension PaymentCardAmountEditViewController {
             make.top.equalTo(nextButton.snp.bottom).offset(20)
             make.leading.trailing.bottom.equalToSuperview()
         }
+        
     }
 }
 

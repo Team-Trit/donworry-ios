@@ -62,10 +62,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                     at: .centeredHorizontally, animated: false
                 )
             })
-            .map { .didSelectSpace(at: $0.item) }
-            .bind(to: reactor.action)
+                .map { .didSelectSpace(at: $0.item) }
+                .bind(to: reactor.action)
 
-            .disposed(by: disposeBag)
+                .disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in
@@ -236,11 +236,13 @@ extension HomeViewController {
         case .recievedMoneyDetail(let spaceID):
             let recieveMoneyDetailViewController = RecievedMoneyDetailViewController()
             recieveMoneyDetailViewController.reactor = ReceivedMoneyDetailReactor(spaceID: spaceID)
+            recieveMoneyDetailViewController.modalPresentationStyle = .overFullScreen
             self.present(recieveMoneyDetailViewController, animated: true)
         case .sentMoneyDetail(let spaceID, let paymentID):
-            let sentMoneyDetailViewController = SentMoneyDetailViewController()
-            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
-            self.present(sentMoneyDetailViewController, animated: true)
+            guard let viewController = sheetSentMoneyDetailViewController(spaceID: spaceID, paymentID: paymentID) else {
+                return
+            }
+            self.present(viewController, animated: true)
         case .alert:
             let alertViewController = AlertViewViewController()
             self.navigationController?.pushViewController(alertViewController, animated: true)
@@ -263,6 +265,19 @@ extension HomeViewController {
         }
     }
 
+    @objc func sheetSentMoneyDetailViewController(spaceID: Int, paymentID: Int) -> UIViewController? {
+        if #available(iOS 15.0, *) {
+            let sentMoneyDetailViewController = SentMoneyDetailViewController()
+            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
+            if let presentationController = sentMoneyDetailViewController.sheetPresentationController {
+                presentationController.detents = [.medium()]
+                presentationController.prefersGrabberVisible = true
+            }
+            return sentMoneyDetailViewController
+        }
+        return nil
+    }
+
     private func confirmLeaveAlertController() -> UIAlertController {
         let alert = UIAlertController(title: "정산방을 나가실건가요?", message: nil, preferredStyle: .alert)
         let leave = UIAlertAction(title: "나갈래요", style: .default) { _ in
@@ -274,13 +289,13 @@ extension HomeViewController {
         alert.addAction(cancel)
         return alert
     }
+
     private func cantLeaveAlertController() -> UIAlertController {
         let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
         let cancel = UIAlertAction(title: "정산할게요...", style: .cancel)
         alert.addAction(cancel)
         return alert
     }
-
 }
 
 // MARK: UICollectionViewDataSource

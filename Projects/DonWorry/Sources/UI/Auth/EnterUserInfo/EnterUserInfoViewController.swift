@@ -16,7 +16,8 @@ import RxCocoa
 import RxFlow
 import RxSwift
 
-final class EnterUserInfoViewController: BaseViewController, View {
+final class EnterUserInfoViewController: BaseViewController, View, Stepper {
+    let steps = PublishRelay<Step>()
     private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
@@ -25,7 +26,7 @@ final class EnterUserInfoViewController: BaseViewController, View {
         return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
-    private lazy var accountStackView = AccountStackView()
+    lazy var accountStackView = AccountStackView()
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
@@ -126,14 +127,41 @@ extension EnterUserInfoViewController {
     }
 
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        reactor.state.map { $0.isNextButtonAvailable }
+        reactor.state.map { $0.bank }
+            .asDriver(onErrorJustReturn: "은행선택")
+            .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isNextButtonAvailable)
             .asDriver(onErrorJustReturn: false)
             .drive(self.nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.bank }
-            .asDriver(onErrorJustReturn: "은행검색")
-            .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: DonworryStep.none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                self?.route(to: $0)
+            }
             .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension EnterUserInfoViewController {
+    private func route(to step: DonworryStep) {
+        switch step {
+        case .popViewController:
+            self.steps.accept(DonworryStep.popViewController)
+            
+        case .bankSelectIsRequired(let delegate):
+            self.steps.accept(DonworryStep.bankSelectIsRequired(delegate: delegate))
+            
+        case .agreeTermIsRequired(let newUser):
+            self.steps.accept(DonworryStep.agreeTermIsRequired(newUser: newUser))
+            
+        default:
+            break
+        }
     }
 }

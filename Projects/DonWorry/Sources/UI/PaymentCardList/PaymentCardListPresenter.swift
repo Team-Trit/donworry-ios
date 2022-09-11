@@ -34,7 +34,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
             id: paymentCard.id,
             name: paymentCard.name,
             totalAmount: convertTotalAmountToString(paymentCard.totalAmount),
-            number: paymentCard.spaceJoinUserCount,
+            participatedUserCount: paymentCard.cardJoinUserCount,
             categoryImageName: paymentCard.category.name,
             payer: .init(
                 id: paymentCard.taker.id,

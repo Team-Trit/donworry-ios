@@ -40,14 +40,16 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var spaceIDCopyButton: UIButton = {
         let v = UIButton(type: .system)
         v.setImage(.init(.btn_copy), for: .normal)
-        
+        v.addTarget(self, action: #selector(copySpaceID), for: .touchUpInside)
         return v
     }()
     lazy var startPaymentAlgorithmButton: UIButton = {
         let v = UIButton(type: .system)
         v.setTitle("정산 시작", for: .normal)
         v.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
-        v.setTitleColor(UIColor.designSystem(.mainBlue), for: .normal)
+        v.setTitleColor(.designSystem(.mainBlue), for: .normal)
+        v.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
+        v.setTitleColor(.designSystem(.white), for: .disabled)
         v.backgroundColor = .designSystem(.lightBlue)
         return v
     }()
@@ -107,6 +109,11 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 
     @objc
+    private func copySpaceID() {
+        UIPasteboard.general.string = reactor?.currentState.space.shareID
+    }
+    
+    @objc
     private func popToSelf() {
         self.navigationController?.popToViewController(self, animated: true)
 
@@ -118,7 +125,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 
     private func dispatch(to reactor: Reactor) {
-        self.rx.viewDidLoad.map { .setup }
+        self.rx.viewWillAppear.map { _ in .viewWillAppear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -128,6 +135,13 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         self.navigationBar.rightItem?.rx.tap.map { .didTapOptionButton }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.spaceIDCopyButton.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                DWToastFactory.show(message: "정산이 시작 “4분 30초” 경과", subMessage: "정산 1등이에요!", type: .success)
+            })
             .disposed(by: disposeBag)
 
         self.collectionView.rx.setDelegate(self)
@@ -156,13 +170,26 @@ final class PaymentCardListViewController: BaseViewController, View {
                 createCard.reactor = PaymentCardNameEditViewReactor()
                 self?.navigationController?.pushViewController(createCard, animated: true)
 
-            }).disposed(by: disposeBag)
+        self.startPaymentAlgorithmButton.rx.tap
+            .map { .didTapStartPaymentAlgorithmButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.collectionView.rx.itemSelected
+            .compactMap { [weak self] in
+                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
+            }.map { _ in .didTapAddPaymentCard }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
 
     private func render(reactor: Reactor) {
-        reactor.state.map { $0.space.title }
-            .bind(to: navigationBar.titleLabel!.rx.text)
-            .disposed(by: disposeBag)
+        reactor.state.map { ($0.space, $0.isUserAdmin) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (space, isUserAdmin) in
+                self?.navigationBar.titleLabel?.text = space.title
+                self?.startPaymentAlgorithmButton.isEnabled = space.status == "OPEN" && isUserAdmin
+            }).disposed(by: disposeBag)
 
         reactor.state.map { $0.space.shareID }
             .map { "정산방 ID : \($0)" }
@@ -175,12 +202,25 @@ final class PaymentCardListViewController: BaseViewController, View {
                 self?.collectionView.reloadData()
             }).disposed(by: disposeBag)
 
+        // MARK: Pulse
+
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: PaymentCardListStep.none)
             .compactMap { $0 }
             .drive(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$error)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 as? PaymentCardListViewError }
+            .subscribe(onNext: { [weak self] error in
+                self?.showErrorToast(error)
+            }).disposed(by: disposeBag)
+    }
+
+    private func showErrorToast(_ error: PaymentCardListViewError) {
+        DWToastFactory.show(message: error.message, type: .error, duration: 3, completion: nil)
     }
 }
 
@@ -253,21 +293,26 @@ extension PaymentCardListViewController {
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
-        case .cantLeaveAlert:
-            self.present(cantLeaveAlertController(), animated: true)
+        case .addPaymentCard:
+            self.navigationController?.pushViewController(createPaymentCard(), animated: true)
         case .none:
             break
 
         }
     }
 
-    private func cantLeaveAlertController() -> UIAlertController {
-        let alert = UIAlertController(title: "정산을 완료되기 전까지 못 나가요 💸", message: nil, preferredStyle: .alert)
-        let cancel = UIAlertAction(title: "정산하러갈게요.", style: .cancel)
-        alert.addAction(cancel)
-        return alert
+    private func createPaymentCard() -> UIViewController {
+        let createCard = PaymentCardNameEditViewController()
+        let space = reactor!.currentState.space
+        var newPaymentCard = PaymentCardModels.CreateCard.Request.initialValue
+        newPaymentCard.spaceID = space.id
+        newPaymentCard.viewModel.spaceName = space.title
+        createCard.reactor = PaymentCardNameEditViewReactor(
+            type: .create, paymentCard: newPaymentCard
+        )
+        return createCard
     }
-
+    
     private func optionAlertController() -> UIAlertController {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in

@@ -8,9 +8,8 @@
 
 import ReactorKit
 import RxCocoa
-import RxFlow
 
-final class AgreeTermViewReactor: Reactor, Stepper {
+final class AgreeTermViewReactor: Reactor {
     let dataSource: [String] = [
         "전체동의",
         "(필수) 돈워리 회원가입 및 이용약관 동의",
@@ -18,16 +17,8 @@ final class AgreeTermViewReactor: Reactor, Stepper {
         "(필수) 돈워리의 개인정보 제 3자 제공 동의",
         "(선택) 이벤트 알림 수신 동의"
     ]
-    // User Info
-    private let accessToken: String
-    private let nickname: String
-    private let bank: String
-    private let holder: String
-    private let number: String
-    private var isAgreeMarketing = false
     private var checkedTerms: [String] = .init(repeating: "", count: 5)
-    
-    let steps = PublishRelay<Step>()
+    private var user: SignUpUserModel
     
     enum Action {
         case backButtonPressed
@@ -37,44 +28,34 @@ final class AgreeTermViewReactor: Reactor, Stepper {
     
     enum Mutation {
         case toggleCheck(_ index: Int)
+        case routeTo(step: DonworryStep)
     }
     
     struct State {
         var isChecked: [Bool]
+        @Pulse var step: DonworryStep?
     }
     
     let initialState: State
     
-    init(accessToken: String, nickname: String, bank: String, holder: String, number: String) {
+    init(newUser: SignUpUserModel) {
+        self.user = newUser
         self.initialState = State(
             isChecked: [false, false, false, false, false]
         )
-        self.accessToken = accessToken
-        self.nickname = nickname
-        self.bank = bank
-        self.holder = holder
-        self.number = number
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-            self.steps.accept(DonworryStep.popViewController)
-            return .empty()
+            return .just(Mutation.routeTo(step: .popViewController))
             
         case let .checkButtonPressed(index):
             return .just(Mutation.toggleCheck(index))
             
         case .doneButtonPressed:
             let checked = checkedTerms.filter { $0 != "" }
-            self.steps.accept(DonworryStep.confirmTermIsRequired(checkedTerms: checked,
-                                                                 accessToken: accessToken,
-                                                                 nickname: nickname,
-                                                                 bank: bank,
-                                                                 holder: holder,
-                                                                 number: number,
-                                                                 isAgreeMarketing: isAgreeMarketing))
-            return .empty()
+            return .just(Mutation.routeTo(step: .confirmTermIsRequired(checkedTerms: checked, newUser: user)))
         }
     }
     
@@ -108,7 +89,10 @@ final class AgreeTermViewReactor: Reactor, Stepper {
                     self.checkedTerms[i] = ""
                 }
             }
-            self.isAgreeMarketing = newState.isChecked[4]
+            self.user.isAgreeMarketing = newState.isChecked[4]
+            
+        case .routeTo(let step):
+            newState.step = step
         }
         
         return newState

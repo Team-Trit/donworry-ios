@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 protocol ColorPickerCellDelegate: AnyObject {
     func updateCardColor(with color : CardColor)
 }
@@ -16,8 +15,9 @@ protocol ColorPickerCellDelegate: AnyObject {
 class ColorPickerCell: UITableViewCell {
     
     private var colors: [CardColor] = [.yellow, .purple, .brown, .red, .skyblue,
-                                   .green, .pink, .navy, .blue, .black]
-    
+                                       .green, .pink, .navy, .blue, .black]
+    var selectedColor: CardColor? = .pink
+
     weak var colorPickerCellDelegate: ColorPickerCellDelegate?
     
     @IBOutlet weak var containerStackView: UIStackView!
@@ -28,7 +28,7 @@ class ColorPickerCell: UITableViewCell {
             bottomView.isHidden = true
         }
     }
-    
+
     private lazy var colorCollectionView: UICollectionView = {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
         cv.isScrollEnabled = false
@@ -56,6 +56,8 @@ extension ColorPickerCell {
         colorCollectionView.dataSource = self
         colorCollectionView.backgroundColor = .designSystem(.white2)
         colorCollectionView.register(ColorCircleCell.self, forCellWithReuseIdentifier: "ColorCircleCell")
+        colorCollectionView.allowsSelection = true
+        colorCollectionView.allowsMultipleSelection = false
 
         colorCollectionView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(10)
@@ -97,14 +99,17 @@ extension ColorPickerCell: UICollectionViewDelegate, UICollectionViewDataSource 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColorCircleCell", for: indexPath) as? ColorCircleCell else { return UICollectionViewCell() }
-        if (indexPath.row == 6) {
+        let color = colors[indexPath.row]
+        cell.configure(with: color)
+        if (color == selectedColor) {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-         }
-        cell.configure(with: colors[indexPath.row])
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCircleCell else { return }
+        cell.isSelected = true
         colorPickerCellDelegate?.updateCardColor(with: colors[indexPath.row])
     }
     

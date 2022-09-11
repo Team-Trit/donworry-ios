@@ -64,6 +64,7 @@ public enum Asset: String {
     case bankSC         // SC제일은행
     case delete_mark
     case check_gradient_image
+    case default_profile_image
     case ic_basic_profile_image
     case ic_billcard_check
     case ic_billcard_ing

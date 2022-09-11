@@ -8,8 +8,16 @@
 
 import UIKit
 import DesignSystem
+import RxSwift
+
+protocol AccountInputCellDelegate {
+    func holderTextFieldDidChanged()
+    func accountTextFieldDidChanged()
+}
 
 class AccountInputCell: UITableViewCell {
+    
+    let disposeBag = DisposeBag()
     
     @IBOutlet weak var containerStackView: UIStackView!
     @IBOutlet weak var topTitleLabel: UILabel!
@@ -29,6 +37,19 @@ class AccountInputCell: UITableViewCell {
         self.containerStackView.layer.masksToBounds = true
         layout()
         
+        /* 뷰띄우기
+        accountInputField.chooseBankButton.addTarget(self, action: #selector(backButtonPressed(_:)), for: .touchUpInside)
+        
+        
+        let vc = SelectBankViewController()
+        let reactor = SelectBankViewReactor()
+        vc.reactor = reactor
+        self.navigationController.present(vc)
+        
+        */
+        self.accountInputField.chooseBankButton.rx.tap
+            .subscribe(onNext: {
+            }).disposed(by: disposeBag)
     }
 
 }

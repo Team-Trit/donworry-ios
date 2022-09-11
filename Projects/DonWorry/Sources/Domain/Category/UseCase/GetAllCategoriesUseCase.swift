@@ -15,11 +15,12 @@ protocol CategoryRepository {
 
 protocol GetAllCategoriesUseCase {
     func getAllCategories() -> Observable<CategoryModels.FetchAll.Response>
+    func findCategoryImageName(by id: Int) -> Observable<String>
 }
 
 final class GetAllCategoriesUseCaseImpl: GetAllCategoriesUseCase {
     private let categoryRepository: CategoryRepository
-    let categories: PublishSubject<CategoryModels.FetchAll.Response>
+    var categories: CategoryModels.FetchAll.Response
     init(categoryRepository: CategoryRepository = CategoryRepositoryImpl()) {
         self.categoryRepository = categoryRepository
         self.categories = .init()
@@ -28,7 +29,18 @@ final class GetAllCategoriesUseCaseImpl: GetAllCategoriesUseCase {
     func getAllCategories() -> Observable<CategoryModels.FetchAll.Response> {
         categoryRepository.getAllCategories()
             .do(onNext: { [weak self] in
-                self?.categories.onNext($0)
+                self?.categories = $0
             })
+    }
+
+    func findCategoryImageName(by id: Int) -> Observable<String> {
+        if let firstIndex = categories.firstIndex(where: { id == $0.id} ) {
+            return .just(categories[firstIndex].name)
+        }
+        return .error(CategoryError.undefined)
+    }
+
+    enum CategoryError: Error {
+        case undefined
     }
 }

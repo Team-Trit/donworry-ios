@@ -13,10 +13,12 @@ import DesignSystem
 import Models
 import ReactorKit
 import RxCocoa
+import RxFlow
 import RxSwift
 import SnapKit
 
-final class SelectBankViewController: BaseViewController, View {
+final class SelectBankViewController: BaseViewController, View, Stepper {
+    let steps = PublishRelay<Step>()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "은행선택"
@@ -38,7 +40,7 @@ final class SelectBankViewController: BaseViewController, View {
         self.hideKeyboardWhenTappedAround()
         setUI()
     }
-    
+        
     func bind(reactor: SelectBankViewReactor) {
         dispatch(to: reactor)
         render(reactor)
@@ -107,5 +109,33 @@ extension SelectBankViewController {
         reactor.state.map { $0.snapshot }
             .bind(onNext: { self.bankCollectionView.diffableDataSouce.apply($0, animatingDifferences: true) })
             .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$step)
+            .asDriver(onErrorJustReturn: .none)
+            .compactMap { $0 }
+            .drive { [weak self] in
+                self?.route(to: $0)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Route
+extension SelectBankViewController {
+    private func route(to step: SelectBankStep) {
+        switch step {
+            
+        case .bankSelectIsComplete:
+            self.steps.accept(DonworryStep.bankSelectIsComplete)
+            
+        case .dismissToPaymentCardDeco:
+            self.dismiss(animated: true)
+
+        case .dismissToProfileAccountEdit:
+            self.dismiss(animated: true)
+            
+        default:
+            break
+        }
     }
 }

@@ -13,34 +13,11 @@ import RxCocoa
 import RxSwift
 import DesignSystem
 
-
 final class PaymentCardIconEditViewController: BaseViewController, View {
-
-    private struct Catogory {
-        let iconName: String
-    }
-    private var selectedIcon: String = ""
-    private let icons: [Catogory] = [Catogory(iconName: "ic_chicken"),
-                                     Catogory(iconName: "ic_cup"),
-                                     Catogory(iconName: "ic_wine"),
-                                     Catogory(iconName: "ic_shopping_cart"),
-                                     Catogory(iconName: "ic_video"),
-                                     Catogory(iconName: "ic_spoon_knife"),
-                                     Catogory(iconName: "ic_cake"),
-                                     Catogory(iconName: "ic_gas_station"),
-                                     Catogory(iconName: "ic_icecream")]
+    typealias Reactor = PaymentCardIconEditViewReactor
 
     // MARK: - Views
-    private lazy var navigationBar: DWNavigationBar = {
-        // TODO: nav bar title 설정해주기
-        let v = DWNavigationBar()
-        v.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        return v
-    }()
+    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
 
     private lazy var titleLabel: UILabel = {
         $0.text = "정산내역 아이콘을\n선택해주세요"
@@ -49,8 +26,13 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
         $0.font = .designSystem(weight: .heavy, size: ._25)
         return $0
     }(UILabel())
-
-    private lazy var nextButton = DWButton.create(.xlarge50)
+    
+    private lazy var nextButton: DWButton = {
+        let v = DWButton.create(.xlarge50)
+        v.title = "다음"
+        v.isEnabled = false
+        return v
+    }()
 
     private lazy var iconCollectionView: UICollectionView = {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
@@ -61,65 +43,120 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         setUI()
     }
 
     // MARK: - Binding
-    func bind(reactor: PaymentCardIconEditViewReactor) {
-        nextButton.rx.tap.map { .didTapNextButton }
+    func bind(reactor: Reactor) {
+        self.render(reactor: reactor)
+        self.dispatch(to: reactor)
+    }
+    
+    func dispatch(to reactor: Reactor) {
+        self.rx.viewDidLoad.map { .viewDidLoad }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+
+        self.nextButton.rx.tap.map { .didTapNextButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.navigationBar.rightItem?.rx.tap.map { .didTapCloseButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        self.iconCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+
+        self.iconCollectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
+
+        self.iconCollectionView.rx.itemSelected
+            .compactMap { [weak self] in
+                self?.iconCollectionView.cellForItem(at: $0) as? PaymentIconCell
+            }.compactMap { $0.viewModel?.id }
+            .map { .didTapIconCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+    }
+    
+    func render(reactor: Reactor) {
+        
+        reactor.state.map{ $0.paymentCard.name }
+            .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isNextButtonEnabled }
+            .distinctUntilChanged()
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.categoryCellViewModel }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.iconCollectionView.reloadData()
+            }).disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
-            .subscribe(onNext:{ [weak self] step in
+            .subscribe(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
     }
-
+    
+    
 }
 
 extension PaymentCardIconEditViewController {
     func move(to step: PaymentCardIconEditStep) {
         switch step {
         case .pop:
-            self.navigationController?.popViewController(animated: true)
+            navigationController?.popViewController(animated: true)
         case .paymentCardAmountEdit:
-            let amount = PaymentCardAmountEditViewController()
-            amount.reactor = PaymentCardAmountEditReactor()
-            self.navigationController?.pushViewController(amount, animated: true)
+            navigationController?.pushViewController(paymentCardAmountEditViewController(), animated: true)
+        case .paymentCardList:
+            NotificationCenter.default.post(name: .init("popToPaymentCardList"), object: nil, userInfo: nil)
         }
+    }
+
+    private func paymentCardAmountEditViewController() -> UIViewController {
+        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController()
+        let newPaymentCard = reactor!.currentState.paymentCard
+        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(paymentCard: newPaymentCard)
+        return paymentCardAmountEditViewController
     }
 }
 
 // MARK: - setUI
 
 extension PaymentCardIconEditViewController {
-
+    
     private func setUI() {
-        nextButton.title = "다음"
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(navigationBar, titleLabel, nextButton, iconCollectionView)
-
+        
         navigationBar.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
         }
-
+        
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(50)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-
+        
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(25)
+            $0.bottom.equalToSuperview().inset(50)
         }
-
-        iconCollectionView.delegate = self
-        iconCollectionView.dataSource = self
         iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
-
+        
         iconCollectionView.snp.makeConstraints {
             $0.width.equalTo(300)
             $0.top.equalTo(titleLabel.snp.bottom).offset(57.5)
@@ -133,40 +170,35 @@ extension PaymentCardIconEditViewController {
 // MARK: - CollectionView
 
 extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-
+    
     private func createCollecionViewLayout() -> UICollectionViewCompositionalLayout{
-
+        
         let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(102), heightDimension: .absolute(102))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
+        
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(102))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 3)
         group.interItemSpacing = .fixed(16)
-
+        
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = CGFloat(16)
-
+        
         let layout = UICollectionViewCompositionalLayout(section: section)
-
+        
         return layout
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return reactor?.currentState.categoryCellViewModel.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell else { return UICollectionViewCell() }
-        cell.configure(with: icons[indexPath.row].iconName)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PaymentIconCell", for: indexPath) as? PaymentIconCell,
+              let reactor = reactor else { return UICollectionViewCell() }
+        let viewModel = reactor.currentState.categoryCellViewModel[indexPath.item]
+        cell.configure(with: viewModel)
+        let isSelected = viewModel.id == reactor.currentState.paymentCard.categoryID
+        cell.setBackgroundColor(isSelected: isSelected)
         return cell
     }
-
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-        // TODO: 선택된 셀 다루기
-        selectedIcon = icons[indexPath.row].iconName
-        print("선택된 셀 : \(selectedIcon)")
-    }
-
 }

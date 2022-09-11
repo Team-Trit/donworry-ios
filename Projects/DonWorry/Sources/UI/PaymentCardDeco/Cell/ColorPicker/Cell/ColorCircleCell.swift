@@ -31,22 +31,19 @@ class ColorCircleCell: UICollectionViewCell {
         return $0
     }(UIView())
     
-    
     lazy var innerColorView: UIView = {
         $0.layer.cornerRadius = 12
         return $0
     }(UIView())
-    
+
     override var isSelected: Bool {
-        didSet{
-            UIView.animate(withDuration: 0.01) {
-                if self.isSelected {
-                    self.innerColorView.layer.borderColor = UIColor.white.cgColor
-                    self.innerColorView.layer.borderWidth = 2
-                }
-                else {
-                    self.innerColorView.layer.borderWidth = 0
-                }
+        didSet {
+            if isSelected {
+                self.innerColorView.layer.borderColor = UIColor.white.cgColor
+                self.innerColorView.layer.borderWidth = 2
+            }
+            else {
+                self.innerColorView.layer.borderWidth = 0
             }
         }
     }

@@ -11,17 +11,34 @@ import UIKit
 import Models
 import ReactorKit
 import RxCocoa
-import RxFlow
 
 protocol EnterUserInfoViewDelegate: AnyObject {
     func saveBank(_ selectedBank: String)
 }
 
-final class SelectBankViewReactor: Reactor, Stepper {
-    private let banks = Bank.allCases.map { $0.rawValue }
-    weak var delegate: EnterUserInfoViewDelegate?
+enum SelectBankStep {
+    case none
     
-    let steps = PublishRelay<Step>()
+    case bankSelectIsComplete
+    
+    case dismissToPaymentCardDeco
+    case dismissToProfileAccountEdit
+}
+
+final class SelectBankViewReactor: Reactor {
+    weak var userInfoViewDelegate: EnterUserInfoViewDelegate?
+    /* For Avery
+     weak var cardDecoViewDelegate: CardDecoViewDelegate?
+     */
+    weak var accountEditViewDelegate: AccountEditViewDelegate?
+    let parentView: ParentView
+    private let banks = Bank.allCases.map { $0.rawValue }
+    
+    enum ParentView {
+        case enterUserInfo
+        case paymentCardDeco
+        case profileAccountEdit
+    }
     
     enum Action {
         case dismissButtonPressed
@@ -31,54 +48,95 @@ final class SelectBankViewReactor: Reactor, Stepper {
     
     enum Mutation {
         case performQuery(filteredBankList: [String])
+        case routeTo(step: SelectBankStep)
     }
     
     struct State {
         var snapshot: NSDiffableDataSourceSnapshot<Section, String>
+        @Pulse var step: SelectBankStep
     }
     
     let initialState: State
     
-    init(delegate: EnterUserInfoViewDelegate) {
+    init(parentView: ParentView) {
         var initialSnapshot = NSDiffableDataSourceSnapshot<Section, String>()
         initialSnapshot.appendSections([.main])
         initialSnapshot.appendItems(banks)
+        
         self.initialState = State(
-            snapshot: initialSnapshot
+            snapshot: initialSnapshot,
+            step: .none
         )
-        self.delegate = delegate
+        self.parentView = parentView
+    }
+    
+    convenience init(userInfoViewDelegate: EnterUserInfoViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.userInfoViewDelegate = userInfoViewDelegate
+    }
+    
+    /* For Avery
+    convenience init(cardDecoViewDelegate: CardDecoViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.cardDecoViewDelegate: cardDecoViewDelegate
+    }
+     */
+    
+    convenience init(accountEditViewDelegate: AccountEditViewDelegate, parentView: ParentView) {
+        self.init(parentView: parentView)
+        self.accountEditViewDelegate = accountEditViewDelegate
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .dismissButtonPressed:
-            self.steps.accept(DonworryStep.bankSelectIsComplete)
-            return .empty()
+            switch parentView {
+            case .enterUserInfo:
+                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
+                
+            case .paymentCardDeco:
+                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                
+            case .profileAccountEdit:
+                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+            }
             
         case let .searchTextChanged(filter):
             let filteredBankList = performQuery(with: filter)
             return .just(Mutation.performQuery(filteredBankList: filteredBankList))
             
         case let .selectBank(selectedBank):
-            self.delegate?.saveBank(selectedBank.koreanName)
-            
-            self.steps.accept(DonworryStep.bankSelectIsComplete)
-            return .empty()
+            switch parentView {
+            case .enterUserInfo:
+                userInfoViewDelegate?.saveBank(selectedBank.koreanName)
+                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
+                
+            case .paymentCardDeco:
+                // TODO: Delegate Method Call
+                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                
+            case .profileAccountEdit:
+                self.accountEditViewDelegate?.saveBank(selectedBank: selectedBank.koreanName)
+                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+            }
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
-        var state = state
+        var newState = state
         
         switch mutation {
             
         case let .performQuery(filteredBankList):
-            state.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
-            state.snapshot.appendSections([.main])
-            state.snapshot.appendItems(filteredBankList)
+            newState.snapshot = NSDiffableDataSourceSnapshot<Section, String>()
+            newState.snapshot.appendSections([.main])
+            newState.snapshot.appendItems(filteredBankList)
+            
+        case .routeTo(let step):
+            newState.step = step
         }
         
-        return state
+        return newState
     }
 }
 

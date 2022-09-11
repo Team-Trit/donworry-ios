@@ -10,28 +10,40 @@ import Foundation
 
 extension DTO {
     public struct PostPaymentCard: Codable {
-        public let id, spaceID, categoryID, takerID: Int
-        public let bank, number, holder, name: String
+        public let id, spaceID, takerID: Int
+        public let name: String
         public let totalAmount: Int
-        public let status: PaymentCardStatus
-        public let position: Int
         public let bgColor, paymentDate: String
+        public let category: Category
+        public let account: Account
 
         public enum CodingKeys: String, CodingKey {
             case id
             case spaceID = "spaceId"
-            case categoryID = "categoryId"
             case takerID = "takerId"
-            case bank, number, holder, name, totalAmount, position, bgColor, paymentDate, status
+            case name, totalAmount, bgColor, paymentDate, category, account
         }
         
-        public enum PaymentCardStatus: Codable {
-            case OPEN
-            case PROGRESS
-            case CLOSE
-            case DELETE
-            case STOP
+        public struct Category: Codable {
+            public let id: Int
+            public let name, imgURL: String
+
+            public enum CodingKeys: String, CodingKey {
+                case id, name
+                case imgURL = "imgUrl"
+            }
         }
+        
+        public struct Account: Codable {
+            public let bank, number, holder: String
+            public let userID: Int?
+
+            public enum CodingKeys: String, CodingKey {
+                case bank, number, holder
+                case userID = "userId"
+            }
+        }
+        
     }
 
 }

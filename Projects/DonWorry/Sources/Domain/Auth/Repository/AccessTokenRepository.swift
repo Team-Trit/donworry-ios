@@ -9,12 +9,6 @@
 import Foundation
 import DonWorryLocalStorage
 
-protocol AccessTokenRepository {
-    func fetchAccessToken() -> AccessToken?
-    func saveAccessToken(_ accessToken: AccessToken) -> Bool
-    func deleteAccessToken() -> Bool
-}
-
 final class AccessTokenRepositoryImpl: AccessTokenRepository {
     private let localStorage: LocalStorage
     

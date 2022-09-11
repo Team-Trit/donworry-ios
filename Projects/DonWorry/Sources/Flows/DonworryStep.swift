@@ -10,14 +10,17 @@ import RxFlow
 
 enum DonworryStep: Step {
     // Global
+    case none
     case popViewController
+    
+    // TODO: 삭제하기
+    case home
     
     // Login Flow
     case loginIsRequired
-    case userInfoIsRequired(accessToken: String)
-    case bankSelectIsRequired(delegate: EnterUserInfoViewReactor)
+    case userInfoIsRequired(provider: LoginProvider, token: String)
+    case bankSelectIsRequired(delegate: EnterUserInfoViewDelegate)
     case bankSelectIsComplete
-    case agreeTermIsRequired(accessToken: String, nickname: String, bank: String, holder: String, number: String)
-    case confirmTermIsRequired(checkedTerms: [String], accessToken: String, nickname: String, bank: String, holder: String, number: String, isAgreeMarketing: Bool)
-    case homeIsRequired
+    case agreeTermIsRequired(newUser: SignUpUserModel)
+    case confirmTermIsRequired(checkedTerms: [String], newUser: SignUpUserModel)
 }

@@ -85,6 +85,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
             self.amountLabel.text = viewModel?.amount
             profileImageView.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
             if (viewModel?.isCompleted ?? false) { self.addCompleteView() }
+            else { self.removeCompleteView() }
         }
     }
 

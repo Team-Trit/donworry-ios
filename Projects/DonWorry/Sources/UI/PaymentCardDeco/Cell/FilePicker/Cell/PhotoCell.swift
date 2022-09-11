@@ -8,15 +8,23 @@
 
 import UIKit
 import DesignSystem
-
+import Kingfisher
 
 protocol PhotoCellDelegate: AnyObject {
-    func deletePhoto()
+    func deletePhoto(imageURL: String)
 }
 
 class PhotoCell: UICollectionViewCell {
     
     weak var photoCellDelegate: PhotoCellDelegate?
+    var viewModel: String? {
+        didSet {
+            guard let viewModel = viewModel else { return }
+            if let url = URL(string: viewModel) {
+                container.kf.setImage(with: url)
+            }
+        }
+    }
 
     lazy var container: UIImageView = {
         $0.contentMode = .scaleAspectFill
@@ -33,10 +41,11 @@ class PhotoCell: UICollectionViewCell {
     }(UIButton())
 
     @objc private func deletePhoto(_ sender: UIButton) {
-        if !imageArray.isEmpty {
-            imageArray.remove(at: tag)
-            photoCellDelegate?.deletePhoto()
+        guard let viewModel = viewModel else {
+            return
         }
+
+        photoCellDelegate?.deletePhoto(imageURL: viewModel)
     }
     
     override init(frame: CGRect) {
