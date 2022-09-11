@@ -56,7 +56,7 @@ final class HomeHeaderView: UIView {
     var viewModel: HomeHeaderViewModel? {
         didSet {
             self.titleLabel.text = "\(viewModel?.nickName ?? "")님 안녕하세요"
-            profileButton.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
+            profileButton.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.imageURL)
         }
     }
 

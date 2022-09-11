@@ -83,7 +83,7 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         didSet {
             self.nickNameLabel.text = viewModel?.nickName
             self.amountLabel.text = viewModel?.amount
-            profileImageView.setWhenNilImageBasicProfileImage(with: viewModel?.imageURL)
+            profileImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.imageURL)
             if (viewModel?.isCompleted ?? false) { self.addCompleteView() }
             else { self.removeCompleteView() }
         }

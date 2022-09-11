@@ -11,9 +11,8 @@ import Kingfisher
 import DesignSystem
 
 extension UIButton {
-    func setWhenNilImageBasicProfileImage(with urlString: String?) {
-        if let urlString = urlString,
-           !urlString.isEmpty {
+    func setBasicProfileImageWhenNilAndEmpty(with urlString: String?) {
+        if let urlString = urlString, urlString.isEmpty == false {
             let url = URL(string: urlString)
             self.kf.setImage(with: url, for: .normal)
         } else {
