@@ -16,25 +16,25 @@ extension DTO {
         
         public let id, senderID, receiverID: Int
         public let type, title, message: String
-        public let data: DataClass
-        public let isRead: Bool
+//        public let data: DataClass
+//        public let isRead: Bool
         public let createdDate: String
 
         enum CodingKeys: String, CodingKey {
             case id
             case senderID = "senderId"
             case receiverID = "receiverId"
-            case type, title, message, data, isRead, createdDate
+            case type, title, message, createdDate
         }
 
 
-        public struct DataClass: Codable {
-            public let additionalProp1, additionalProp2, additionalProp3: AdditionalProp
-        }
-
-
-        public struct AdditionalProp: Codable {
-        }
+//        public struct DataClass: Codable {
+//            public let additionalProp1, additionalProp2, additionalProp3: AdditionalProp
+//        }
+//
+//
+//        public struct AdditionalProp: Codable {
+//        }
         
         // typealias는 지워도 괜찮음
         // typealias getAlertDTO = [GetAlertsDTO]

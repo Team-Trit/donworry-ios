@@ -33,11 +33,21 @@ final class AlarmRepositoryImpl: AlarmRepository {
     private func convertToAlarm(_ dto: [DTO.GetAlarmsDTO]) -> [AlertMessageInfomations] {
         var array: [AlertMessageInfomations] = []
         dto.forEach { element in
-            let item = AlertMessageInfomations(recievedDate: element.createdDate, senderName: element.title, spaceName: element.message, messageType: .hurriedAlert, isCompleted: element.isRead)
+            let item = AlertMessageInfomations(recievedDate: element.createdDate, senderName: element.title, spaceName: element.message, messageType: changeType(from: element.type))
             array.append(item)
         }
-        
         return array
+    }
+    
+    private func changeType(from serverType: String) -> AlertType {
+        if serverType == "PAYMENT_START" {
+            return .startAlert
+        } else if serverType == "PAYMENT_END" {
+            return .completedAlert
+        } else if serverType == "PAYMENT_PUSH" {
+            return .hurriedAlert
+        }
+        return .hurriedAlert
     }
 }
 
