@@ -162,13 +162,13 @@ final class PaymentCardListViewController: BaseViewController, View {
                         let cardDetail = PaymentCardDetailViewController(viewModel: viewModel)
                         self?.navigationController?.pushViewController(cardDetail, animated: true)
                     }).disposed(by: disposeBag)
+        
         self.collectionView.rx.itemSelected
-            .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell }
-            .subscribe(onNext: { [weak self] cell in
-                // TODO: 화면전환
-                let createCard = PaymentCardNameEditViewController(type: .create)
-                createCard.reactor = PaymentCardNameEditViewReactor()
-                self?.navigationController?.pushViewController(createCard, animated: true)
+            .compactMap { [weak self] in
+                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
+            }.map { _ in .didTapAddPaymentCard }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
         self.startPaymentAlgorithmButton.rx.tap
             .map { .didTapStartPaymentAlgorithmButton }
