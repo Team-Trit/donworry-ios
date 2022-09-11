@@ -30,11 +30,13 @@ public enum Pallete: String {
     case grayF9F9F9
     case grayF5F4F4
     case gray4B4A4A
+    case blueToast
+    case redToast
 
     var hexString: String {
         switch self {
         case .mainBlue:
-            return "#1C6BFFFF"
+            return "#E4EBFAFF"
         case .lightBlue:
             return "#A4C6FFFF"
         case .gray818181:
@@ -75,6 +77,10 @@ public enum Pallete: String {
             return "#F5F4F4FF"
         case .gray4B4A4A:
             return "#4B4A4AFF"
+        case .blueToast:
+            return "#1C6BFFFF"
+        case .redToast:
+            return "#FF5F5FFF"
         }
     
     }

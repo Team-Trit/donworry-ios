@@ -19,20 +19,20 @@ final class DWToastFactory {
         var color: UIColor? {
             switch self {
             case .error:
-                return .designSystem(Pallete.redFF0B0B)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.redToast)?.withAlphaComponent(0.15)
             case .success:
-                return .designSystem(Pallete.lightBlue)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.blueToast)?.withAlphaComponent(0.15)
             case .information:
-                return .designSystem(Pallete.white)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.grayC5C5C5)?.withAlphaComponent(0.15)
             }
         }
 
         var messageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.white)
+                return .designSystem(.gray818181)
             case .success:
-                return .designSystem(.lightBlue)
+                return .designSystem(.gray818181)
             case .information:
                 return .designSystem(.gray818181)
             }
@@ -40,9 +40,9 @@ final class DWToastFactory {
         var subTitleMessageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.white)
+                return .designSystem(.black)
             case .success:
-                return .designSystem(.white)
+                return .designSystem(.black)
             case .information:
                 return .designSystem(.black)
             }
@@ -92,7 +92,6 @@ final class DWToastFactory {
                 animations: {
                     toastView.alpha = 1
                     toastView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0).translatedBy(x: 0, y: 50)
-                    
                 },
                 completion: { _ in completion?() }
             )
@@ -112,7 +111,6 @@ final class DWToastFactory {
                 }
             )
         }
-
         
     }
 
