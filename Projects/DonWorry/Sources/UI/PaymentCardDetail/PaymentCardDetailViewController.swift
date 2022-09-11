@@ -220,6 +220,7 @@ extension PaymentCardDetailViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.fileCollectionView.reloadData()
+                self?.attendanceCollectionView.reloadData()
                 self?.attributes()
             }
             .store(in: &cancelBag)
