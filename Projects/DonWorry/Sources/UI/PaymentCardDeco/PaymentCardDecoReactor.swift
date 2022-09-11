@@ -123,8 +123,8 @@ final class PaymentCardDecoReactor: Reactor {
                     newState.imageURLs.append(imageURL)
                 }
             }
+            newState.paymentCard.imageURLs = newState.imageURLs
         }
-        print(newState)
         return newState
     }
 
