@@ -16,13 +16,9 @@ import Models
 import PhotosUI
 import Combine
 
-// MARK: - 도메인 로직 생기고 교체 합니다. || am sorry
-
-//var cameraImageArray = [UIImage(.ic_cake), UIImage(.ic_chicken)]
-
 final class PaymentCardDetailViewController: BaseViewController, View {
     
-    let viewModel: PaymentCardDetailViewModel
+    private let viewModel: PaymentCardDetailViewModel
     private var cancelBag = Set<AnyCancellable>()
     
     init(viewModel: PaymentCardDetailViewModel) {
@@ -36,28 +32,28 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
-    fileprivate let priceBigContainerView: UIView = {
+    private let priceBigContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let priceSmallContainerView: UIView = {
+    private let priceSmallContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .designSystem(.grayF6F6F6)
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let attendacneBigContainerView: UIView = {
+    private let attendacneBigContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
         return view
     }()
     
-    fileprivate let staticPriceLabel: UILabel = {
+    private let staticPriceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.text = "결제금액"
@@ -65,14 +61,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
-    fileprivate let priceLabel: UILabel = {
+    private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.textColor = .black
         return label
     }()
     
-    lazy fileprivate var editButton: UIButton = {
+    lazy private var editButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 16)
         button.setHeight(height: 22)
@@ -83,7 +79,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return button
     }()
     
-    fileprivate let attendanceLabel: UILabel = {
+    private let attendanceLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.textColor = .black
@@ -106,7 +102,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return view
     }()
     
-    fileprivate let staticPictureLabel: UILabel = {
+    private let staticPictureLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
         label.text = "첨부 사진"
@@ -114,7 +110,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return label
     }()
     
-    fileprivate let fileBigContainerView: UIView = {
+    private let fileBigContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
