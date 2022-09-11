@@ -12,7 +12,7 @@ import Models
 import DonWorryNetworking
 
 final class AlarmRepositoryImpl: AlarmRepository {
-    
+
     
     // 이건 그냥 가져와서 쓰면됨
     private let network: NetworkServable
@@ -48,6 +48,18 @@ final class AlarmRepositoryImpl: AlarmRepository {
             return .hurriedAlert
         }
         return .hurriedAlert
+    }
+    
+    func removeAlarms() -> Observable<AlarmModels.Empty> {
+        let api = RemoveAlarmsAPI()
+        return network.request(api)
+            .compactMap { [weak self] in
+                self?.convertToRemoveAlarm($0) as? AlarmModels.Empty
+            }.asObservable()
+    }
+    
+    private func convertToRemoveAlarm(_ dto: DTO.Empty) -> AlarmModels.Empty {
+        return AlarmModels.Empty()
     }
 }
 

@@ -24,6 +24,7 @@ final class AlertViewViewModel: BaseViewModel {
 //        AlertMessageInfomations(recievedDate: "28일 토요일", senderName: "우디", spaceName: "우디생파", messageType: .completedAlert),
 //        AlertMessageInfomations(recievedDate: "24일 화요일", senderName: "에이버리", spaceName: "버리생파", messageType: .hurriedAlert)
 //    ]
+    
     private var alarmService: AlarmService = AlarmServiceImpl() //AlarmService프로토콜을 따르는
     
     func chunkedMessages(messages: [AlertMessageInfomations]) -> [[AlertMessageInfomations]] {
@@ -54,4 +55,16 @@ final class AlertViewViewModel: BaseViewModel {
             .disposed(by: disposeBag)
         return chunkedMessages(messages: alarms.sorted(by: {$0.recievedDate > $1.recievedDate}))
     }
+    
+    func removeAll() {
+        var alarms: [AlertMessageInfomations] = []
+        alarmService.removeAlarms()
+            .asDriver(onErrorJustReturn: AlarmModels.Empty())
+            .drive(onNext: { _ in
+                print("ㅎㅎㅎㅎㅎㅎㅎ")
+            })
+            .disposed(by: disposeBag)
+            
+    }
+    
 }

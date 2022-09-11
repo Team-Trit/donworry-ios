@@ -64,11 +64,18 @@ extension AlertViewViewController {
         }
         
         tableView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
+        navigationBar.rightItem?.addTarget(self, action: #selector(removeAll), for: .touchUpInside)
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 25).isActive = true
     }
+    
+    @objc private func removeAll() {
+        print("모든 알람을 지웁니다")
+        viewModel.removeAll()
+    }
+    
 }
 
 extension AlertViewViewController: UITableViewDataSource, UITableViewDelegate {
