@@ -16,6 +16,7 @@ enum PaymentCardListStep {
     case paymentCardDetail
     case actionSheet
     case nameEdit
+    case addPaymentCard
 }
 
 final class PaymentCardListReactor: Reactor {
@@ -31,6 +32,7 @@ final class PaymentCardListReactor: Reactor {
         case didTapBackButton
         case didTapPaymentCardDetail
         case didTapOptionButton
+        case didTapAddPaymentCard
         case routeToNameEdit
         case didTapLeaveButton
     }
@@ -88,6 +90,8 @@ final class PaymentCardListReactor: Reactor {
         case .didTapLeaveButton:
             let leaveAct = requestLeaveSpace()
             return leaveAct
+        case .didTapAddPaymentCard:
+            return .just(.routeTo(.addPaymentCard))
         }
     }
 

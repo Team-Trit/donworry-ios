@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import Models
+import Moya
+
 
 public struct PostJoinPaymentCardAPI: ServiceAPI {
     

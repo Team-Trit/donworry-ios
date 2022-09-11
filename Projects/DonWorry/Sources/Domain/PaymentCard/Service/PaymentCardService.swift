@@ -10,14 +10,10 @@ import Foundation
 import RxSwift
 import Models
 
-protocol PaymentCardRepository {
-    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinPaymentCardList(ids:[Int]) -> Observable<String>
-}
-
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
 }
 
 final class PaymentCardServiceImpl: PaymentCardService {
@@ -38,6 +34,10 @@ final class PaymentCardServiceImpl: PaymentCardService {
             .compactMap { [weak self] in
                 self?.compareUserIsParticipatedInPaymentCard(response: $0)
             }
+    }
+
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        paymentCardRepository.createCard(request: request)
     }
 
     // 유저가 정산 카드에 참여했는지 안했는지 판단해주는 메소드

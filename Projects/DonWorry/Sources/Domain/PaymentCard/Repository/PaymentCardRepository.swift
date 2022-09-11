@@ -6,12 +6,15 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Foundation
+import DonWorryExtensions
 import DonWorryNetworking
 import RxSwift
 
-enum PaymentCardError: Error {
-    case parsingError
-    case noUser
+protocol PaymentCardRepository {
+    func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
+    func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
 }
 
 final class PaymentCardRepositoryImpl: PaymentCardRepository {
@@ -40,11 +43,18 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                     return str
             }.asObservable()
     }
-    
+
+    func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        network.request(PostPaymentCardAPI(request: createPostPaymentCardReqeust(paymentCard: request)))
+            .compactMap { _ in .init() }.asObservable()
+    }
+
+    // SpaceDTO에서 Space도메인으로 변환해줍니다.
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
 
+    // PaymentCardDTO에서 PaymentCard 도메인으로 변환해줍니다.
     private func convertToPaymentCard(_ dto: DTO.GetPaymentCardList.PaymentCard) -> PaymentCardModels.FetchCardList.Response.PaymentCard {
         return .init(
             id: dto.id,
@@ -62,11 +72,19 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         )
     }
 
+    // PaymentCardUserDTO에서 PaymentCardUser 도메인으로 변환해줍니다.
     private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(
             id: dto.id,
             nickname: dto.nickname,
             imgURL: dto.imgURL
         )
+    }
+
+
+    private func createPostPaymentCardReqeust(paymentCard: PaymentCardModels.CreateCard.Request) -> PostPaymentCardAPI.Request {
+        return  .init(
+            spaceID: paymentCard.spaceID, categoryID: paymentCard.categoryID, bank: paymentCard.bank, number: paymentCard.accountNumber, holder: paymentCard.holder, name: paymentCard.name, totalAmount: paymentCard.totalAmount, bgColor: paymentCard.bgColor, paymentDate: paymentCard.paymentDate, imgUrls: paymentCard.imageURLs)
+
     }
 }

@@ -11,6 +11,7 @@ import UIKit
 import DesignSystem
 import DonWorryExtensions
 import Models
+import Kingfisher
 
 struct PaymentCardViewModel {
     public var id: String
@@ -26,7 +27,31 @@ struct PaymentCardViewModel {
 
 }
 
+struct PaymentCardUserViewModel {
+    var imageURL: String?
+    var nickName: String
+}
+
 public class PaymentCardView: UIView {
+
+    func setColor(by color: CardColor) {
+        self.backgroundColor = UIColor(hex: color.rawValue)?.withAlphaComponent(0.72)
+        self.cardSideView.backgroundColor = UIColor(hex: color.rawValue)
+        self.dateLabel.textColor = UIColor(hex: color.rawValue)
+    }
+
+    func setBankAccount(_ bankAccount: BankAccount) {
+        self.bankLabel.text = bankAccount.bank
+        self.accountNumberLabel.text = bankAccount.accountNumber
+        self.accountHodlerNameLabel.text = bankAccount.accountHolderName
+    }
+    
+    var viewModel: PaymentCardUserViewModel? {
+        didSet {
+            self.userNameLabel.text = "13213sdjaksd"
+            userImageView.setBasicProfileImageWhenEmpty(with: viewModel?.imageURL)
+        }
+    }
     
     // MARK: - Constructors
 
@@ -39,24 +64,7 @@ public class PaymentCardView: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - 카드정산날짜포메팅함수
-    
-    fileprivate func formatPayDate(s: String) -> (String, String) {
-        if s.count > 5 {
-            return ("", "MM/YY")
-        }
-        var num = Array(s)
-        if s.count <= 4 {
-            num.append(contentsOf: Array("MM/YY")[s.count ... 4])
-        }
-        var s1 = String(num).replacingOccurrences(of: "Y", with: "").replacingOccurrences(of: "M", with: "")
-        if s.count < 3 {
-            s1 = s1.replacingOccurrences(of: "/", with: "")
-        }
-        return (s1, String(num).replacingOccurrences(of: s1, with: ""))
-    }
-    
+
     //MARK: - Views
     
     lazy var nameLabel: UILabel = {
@@ -77,7 +85,6 @@ public class PaymentCardView: UIView {
     }(UIStackView())
 
     lazy var icon: UIImageView = {
-        $0.image = UIImage(named: "chicken")
         $0.contentMode = .scaleAspectFit
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -85,24 +92,16 @@ public class PaymentCardView: UIView {
     
     lazy var totalAmountLabel: UILabel = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.text = "130,000원"
+        $0.text = "0원"
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .heavy, size: ._20)
         $0.textAlignment = .left
         $0.textColor = .white
         return $0
     }(UILabel())
-    
+
     lazy var bankLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "은행명", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "은행명"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .bold, size: ._13)
@@ -112,15 +111,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var accountNumberLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "000-000-000000", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "000-000-000000"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .regular, size: ._13)
@@ -130,15 +121,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var accountHodlerNameLabel: UILabel = { // 예금주
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "(예금주)", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "(예금주)"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .regular, size: ._13)
@@ -148,15 +131,7 @@ public class PaymentCardView: UIView {
     }(UILabel())
     
     lazy var dateLabel: UILabel = {
-        let name = NSMutableAttributedString(string: "", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.white,
-        ])
-        let placeholder = NSMutableAttributedString(string: "00/00", attributes: [
-            NSAttributedString.Key.foregroundColor: UIColor.gray,
-        ])
-        name.append(placeholder)
-        $0.attributedText = name
-        
+        $0.text = "00/00"
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.numberOfLines = 1
         $0.font = .designSystem(weight: .bold, size: ._9)
@@ -180,8 +155,6 @@ public class PaymentCardView: UIView {
     lazy var userImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.image = UIImage(named: "profile-sample")
-//        $0.layer.borderColor = UIColor.designSystem(.white)?.cgColor
-//        $0.layer.borderWidth = 1
         $0.contentMode = .scaleAspectFill
         $0.frame.size.width = 30
         $0.frame.size.height = 30
@@ -194,6 +167,7 @@ public class PaymentCardView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.text = "정산자"
         $0.numberOfLines = 1
+        $0.adjustsFontSizeToFitWidth = true
         $0.font = .designSystem(weight: .heavy, size: ._15)
         $0.textAlignment = .left
         $0.textColor = .white
@@ -208,101 +182,11 @@ public class PaymentCardView: UIView {
         $0.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         return $0
     }(UIView())
-    
-    
-    // MARK: - Store Properties
-    
-    fileprivate var bank: String! {
-        didSet {
-            if bank == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "은행명", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                bankLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: bank, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            bankLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var accountNumber: String! {
-        didSet {
-            if accountNumber == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "000-000-000000", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                accountNumberLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: accountNumber, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            accountNumberLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var accountHolderName: String! {
-        didSet {
-            if accountHolderName == "" {
-                let name = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "(예금주)", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                name.append(placeholder)
-                accountHodlerNameLabel.attributedText = name
-                return
-            }
-            let name = NSMutableAttributedString(string: accountHolderName, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            accountHodlerNameLabel.attributedText = name
-        }
-    }
-    
-    fileprivate var payDate: String! {
-        didSet {
-            if payDate == "" {
-                let nums = NSMutableAttributedString(string: "", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.white,
-                ])
-                let placeholder = NSMutableAttributedString(string: "MM/YY", attributes: [
-                    NSAttributedString.Key.foregroundColor: UIColor.gray,
-                ])
-                nums.append(placeholder)
-                dateLabel.attributedText = nums
-            }
-            let formatedStr = formatPayDate(s: payDate)
-            let nums = NSMutableAttributedString(string: formatedStr.0, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-            ])
-            let placeholder = NSMutableAttributedString(string: formatedStr.1, attributes: [
-                NSAttributedString.Key.foregroundColor: UIColor.gray,
-            ])
-            nums.append(placeholder)
-            dateLabel.attributedText = nums
-        }
-    }
-    
-    
+
     //MARK: - attributes
     
     func attributes() {
-        backgroundColor = UIColor(hex: "#FF5454B8") // op: 72
         layer.cornerRadius = 20
-        
     }
     
     //MARK: - layout
@@ -358,7 +242,8 @@ public class PaymentCardView: UIView {
             
             userStackView.centerXAnchor.constraint(equalTo: cardSideView.centerXAnchor),
             userStackView.topAnchor.constraint(equalTo: topAnchor, constant: 20),
-            
+            userStackView.leadingAnchor.constraint(equalTo: cardSideView.leadingAnchor, constant: 6),
+            userStackView.trailingAnchor.constraint(equalTo: cardSideView.trailingAnchor, constant: -6)
         ])
         
         userStackView.addArrangedSubviews(userImageView, userNameLabel)
@@ -366,8 +251,6 @@ public class PaymentCardView: UIView {
             userImageView.widthAnchor.constraint(equalToConstant: 30),
             userImageView.heightAnchor.constraint(equalToConstant: 30),
         ])
-        
     }
-    
     
 }

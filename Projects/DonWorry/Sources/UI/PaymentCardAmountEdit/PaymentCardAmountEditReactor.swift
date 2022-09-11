@@ -11,13 +11,17 @@ import ReactorKit
 enum PaymentCardAmountEditStep {
     case pop
     case paymentCardDeco
+    case paymentCardList
 }
 
 final class PaymentCardAmountEditReactor: Reactor {
-    // TODO: RxFlow, Service 추가
+    typealias Space = PaymentCardModels.FetchCardList.Response.Space
+
     enum Action {
         case numberPadPressed(pressedItem: String)
         case nextButtonPressed
+        case didTapBackButton
+        case didTapCloseButton
     }
     
     enum Mutation {
@@ -26,25 +30,31 @@ final class PaymentCardAmountEditReactor: Reactor {
     }
     
     struct State {
-        let iconName: String
-        let paymentTitle: String
+        var paymentCard: PaymentCardModels.CreateCard.Request
         var amount: String
-
+        var isButtonEnabled: Bool = false
         @Pulse var step: PaymentCardAmountEditStep?
     }
     
     let initialState: State
     
-    init() {
-        self.initialState = State(iconName: "ic_calculation_3d", paymentTitle: "승창승창", amount: "0")
+    init(
+        paymentCard: PaymentCardModels.CreateCard.Request
+    ){
+        self.initialState = State(paymentCard: paymentCard, amount: "0")
     }
+    
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .numberPadPressed(pressedItem):
-            return .just(.updateAmount(with: pressedItem))
-        case .nextButtonPressed:
-            return .just(.routeTo(.paymentCardDeco))
+            case let .numberPadPressed(pressedItem):
+                return .just(.updateAmount(with: pressedItem))
+            case .nextButtonPressed:
+                return .just(.routeTo(.paymentCardDeco))
+            case .didTapBackButton:
+                return .just(.routeTo(.pop))
+            case .didTapCloseButton:
+                return .just(.routeTo(.paymentCardList))
         }
     }
     
@@ -52,18 +62,35 @@ final class PaymentCardAmountEditReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case let .updateAmount(with):
-            newState.amount = setNewAmount(state.amount, with: with)
+        case let .updateAmount(amount):
+            newState.amount = setNewAmount(state.amount, with: amount)
+            if newState.amount != "0" {
+                newState.isButtonEnabled = true
+                newState.paymentCard.totalAmount = convertAmount(newState.amount)
+            } else {
+                newState.isButtonEnabled = false
+            }
         case .routeTo(let step):
             newState.step = step
         }
-        
         return newState
+    }
+
+    func convertAmount(_ amount: String) -> Int {
+        let amount = amount.components(separatedBy: [","]).joined()
+        return Int(amount) ?? 0
     }
 }
 
 // MARK: - Helper
 extension PaymentCardAmountEditReactor {
+  
+    // TODO: 해당 뷰 담당자와 논의 후 나중에 교체예정
+//    private func convertAmount(amount: String) -> Int {
+//        let amount = amount.components(separatedBy: [","]).joined()
+//        return Int(amount) ?? 0
+//    }
+    
     private func setNewAmount(_ amount: String, with: String) -> String {
         var amount = amount.components(separatedBy: [","]).joined()
         

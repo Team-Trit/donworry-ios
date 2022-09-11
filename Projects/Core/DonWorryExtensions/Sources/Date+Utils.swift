@@ -22,4 +22,20 @@ extension Date {
         formatter.timeZone = TimeZone(identifier: TimeZone.current.identifier)!
         return formatter.string(from: self)
     }
+    
+    public func getDateToString(format: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        formatter.timeZone = TimeZone(identifier: TimeZone.current.identifier)!
+        return formatter.string(from: self)
+    }
+    
+    public func modifyDateForNetworking() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        formatter.timeZone = TimeZone(identifier: TimeZone.current.identifier)!
+        let str = formatter.string(from: self)
+        return "\(str).100Z"
+    }
+    
 }

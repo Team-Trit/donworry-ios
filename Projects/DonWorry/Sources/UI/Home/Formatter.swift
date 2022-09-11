@@ -26,4 +26,8 @@ struct Formatter {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter
     }()
+
+    static func addTimeZone(dateString: String) -> String {
+        return dateString + ".100Z"
+    }
 }

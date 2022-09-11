@@ -15,45 +15,63 @@ enum PaymentCardNameEditStep {
     case paymentCardIconEdit
 }
 
-enum PaymentCardNameEditViewType {
-    case create //default
-    case update
-}
-
 final class PaymentCardNameEditViewReactor: Reactor {
+    typealias Space = PaymentCardModels.FetchCardList.Response.Space
+
+    enum PaymentCardNameEditViewType {
+        case create //default
+        case update
+    }
 
     enum Action {
-        case didTapNextButton(PaymentCardNameEditViewType)
+        case didTapBackButton
+        case didTapNextButton
+        case typeCardName(String)
     }
 
     enum Mutation {
         case routeTo(PaymentCardNameEditStep)
+        case updateCardName(String)
     }
 
     struct State {
+        var type: PaymentCardNameEditViewType
+        var paymentCard: PaymentCardModels.CreateCard.Request
         @Pulse var step: PaymentCardNameEditStep?
     }
 
     let initialState: State
 
-    init() {
-        self.initialState = .init()
+    init(
+        type: PaymentCardNameEditViewType,
+        paymentCard: PaymentCardModels.CreateCard.Request
+    ){
+        self.initialState = .init(type: type, paymentCard: paymentCard)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
-         switch action {
-         case .didTapNextButton(let type):
-             let step: PaymentCardNameEditStep = type == .create ? .paymentCardIconEdit : .pop
-             return .just(.routeTo(step))
-         }
+        switch action {
+        case .didTapBackButton:
+            return .just(.routeTo(.pop))
+
+        case .didTapNextButton:
+            let step: PaymentCardNameEditStep = (currentState.type == .create) ? .paymentCardIconEdit : .pop
+            return .just(.routeTo(step))
+
+        case .typeCardName(let newName):
+            return .just(Mutation.updateCardName(newName))
+
+        }
     }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-         switch mutation {
-         case .routeTo(let step):
-             newState.step = step
-         }
+        switch mutation {
+        case .routeTo(let step):
+            newState.step = step
+        case .updateCardName(let newName):
+            newState.paymentCard.name = newName
+        }
         return newState
     }
 }

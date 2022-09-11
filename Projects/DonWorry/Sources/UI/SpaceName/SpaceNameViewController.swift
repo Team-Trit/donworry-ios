@@ -34,7 +34,7 @@ final class SpaceNameViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        setNotifiaction()
+        setNotification()
     }
 
     // MARK: - Binding
@@ -78,7 +78,7 @@ final class SpaceNameViewController: BaseViewController, View {
             }).disposed(by: disposeBag)
     }
 
-    private func setNotifiaction() {
+    private func setNotification() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
@@ -145,9 +145,9 @@ extension SpaceNameViewController {
             $0.top.equalTo(titleLabel.snp.bottom).offset(45)
             $0.leading.trailing.equalToSuperview().inset(25)
         }
-        nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(25)
-            $0.bottom.equalTo(self.view.safeAreaLayoutGuide)
+        nextButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(25)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide)
         }
     }
 }
