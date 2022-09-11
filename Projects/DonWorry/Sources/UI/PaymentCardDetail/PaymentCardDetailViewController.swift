@@ -32,21 +32,21 @@ final class PaymentCardDetailViewController: BaseViewController {
     
     private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
-    private let priceBigContainerView: UIView = {
+    private let priceLabelOuterContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
         return view
     }()
     
-    private let priceSmallContainerView: UIView = {
+    private let priceLabelInnerContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .designSystem(.grayF6F6F6)
         view.layer.cornerRadius = 15
         return view
     }()
     
-    private let attendacneBigContainerView: UIView = {
+    private let attendacneContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
@@ -110,7 +110,7 @@ final class PaymentCardDetailViewController: BaseViewController {
         return label
     }()
     
-    private let fileBigContainerView: UIView = {
+    private let filesContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 15
@@ -245,37 +245,37 @@ extension PaymentCardDetailViewController {
         totalBottomView.addSubview(spacingView)
         spacingView.anchor(top: navigationBar.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 5)
         spacingView.backgroundColor = .designSystem(.white)
-        totalBottomView.addSubview(priceBigContainerView)
-        priceBigContainerView.anchor(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(priceLabelOuterContainerView)
+        priceLabelOuterContainerView.anchor(top: spacingView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 19, paddingLeft: 25, paddingRight: 25)
         
-        priceBigContainerView.addSubview(staticPriceLabel)
-        staticPriceLabel.anchor(top: priceBigContainerView.topAnchor, left: priceBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        priceLabelOuterContainerView.addSubview(staticPriceLabel)
+        staticPriceLabel.anchor(top: priceLabelOuterContainerView.topAnchor, left: priceLabelOuterContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        priceBigContainerView.addSubview(priceSmallContainerView)
-        priceSmallContainerView.anchor(top: staticPriceLabel.bottomAnchor, left: priceBigContainerView.leftAnchor, bottom: priceBigContainerView.bottomAnchor, right: priceBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
+        priceLabelOuterContainerView.addSubview(priceLabelInnerContainerView)
+        priceLabelInnerContainerView.anchor(top: staticPriceLabel.bottomAnchor, left: priceLabelOuterContainerView.leftAnchor, bottom: priceLabelOuterContainerView.bottomAnchor, right: priceLabelOuterContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 15, paddingRight: 15)
         
         let PriceHstack = UIStackView(arrangedSubviews: [priceLabel, editButton])
-        priceSmallContainerView.addSubview(PriceHstack)
-        PriceHstack.anchor(top: priceSmallContainerView.topAnchor, left: priceSmallContainerView.leftAnchor, bottom: priceSmallContainerView.bottomAnchor,right: priceSmallContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
-        PriceHstack.centerY(inView: priceSmallContainerView)
+        priceLabelInnerContainerView.addSubview(PriceHstack)
+        PriceHstack.anchor(top: priceLabelInnerContainerView.topAnchor, left: priceLabelInnerContainerView.leftAnchor, bottom: priceLabelInnerContainerView.bottomAnchor,right: priceLabelInnerContainerView.rightAnchor, paddingTop: 14, paddingLeft: 18, paddingBottom: 14, paddingRight: 18)
+        PriceHstack.centerY(inView: priceLabelInnerContainerView)
         
-        totalBottomView.addSubview(attendacneBigContainerView)
-        attendacneBigContainerView.anchor(top: priceBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(attendacneContainerView)
+        attendacneContainerView.anchor(top: priceLabelOuterContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
-        attendacneBigContainerView.addSubview(attendanceLabel)
-        attendanceLabel.anchor(top: attendacneBigContainerView.topAnchor, left: attendacneBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        attendacneContainerView.addSubview(attendanceLabel)
+        attendanceLabel.anchor(top: attendacneContainerView.topAnchor, left: attendacneContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        attendacneBigContainerView.addSubview(attendanceCollectionView)
-        attendanceCollectionView.anchor(top: attendanceLabel.bottomAnchor, left: attendacneBigContainerView.leftAnchor, bottom: attendacneBigContainerView.bottomAnchor, right: attendacneBigContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
+        attendacneContainerView.addSubview(attendanceCollectionView)
+        attendanceCollectionView.anchor(top: attendanceLabel.bottomAnchor, left: attendacneContainerView.leftAnchor, bottom: attendacneContainerView.bottomAnchor, right: attendacneContainerView.rightAnchor, paddingTop: 15, paddingLeft: 15, paddingBottom: 20, paddingRight: 0, height: 75)
         
-        totalBottomView.addSubview(fileBigContainerView)
-        fileBigContainerView.anchor(top: attendacneBigContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
+        totalBottomView.addSubview(filesContainerView)
+        filesContainerView.anchor(top: attendacneContainerView.bottomAnchor, left: totalBottomView.leftAnchor, right: totalBottomView.rightAnchor, paddingTop: 15, paddingLeft: 25, paddingRight: 25)
         
-        fileBigContainerView.addSubview(staticPictureLabel)
-        staticPictureLabel.anchor(top: fileBigContainerView.topAnchor, left: fileBigContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
+        filesContainerView.addSubview(staticPictureLabel)
+        staticPictureLabel.anchor(top: filesContainerView.topAnchor, left: filesContainerView.leftAnchor, paddingTop: 15, paddingLeft: 13)
         
-        fileBigContainerView.addSubview(fileCollectionView)
-        fileCollectionView.anchor(top: staticPictureLabel.bottomAnchor, left: fileBigContainerView.leftAnchor, bottom: fileBigContainerView.bottomAnchor, right: fileBigContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
+        filesContainerView.addSubview(fileCollectionView)
+        fileCollectionView.anchor(top: staticPictureLabel.bottomAnchor, left: filesContainerView.leftAnchor, bottom: filesContainerView.bottomAnchor, right: filesContainerView.rightAnchor, paddingTop: 20, paddingLeft: 15, paddingBottom: 20, paddingRight: 15, height: 84)
         
         totalBottomView.addSubview(bottomButton)
         bottomButton.anchor(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
