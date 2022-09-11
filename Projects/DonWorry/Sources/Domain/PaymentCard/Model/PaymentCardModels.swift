@@ -1,17 +1,17 @@
+////
+////  PaymentCardModels.swift
+////  DonWorry
+////
+////  Created by Woody on 2022/09/04.
+////  Copyright © 2022 Tr-iT. All rights reserved.
+////
 //
-//  PaymentCardModels.swift
-//  DonWorry
+//import Foundation
 //
-//  Created by Woody on 2022/09/04.
-//  Copyright © 2022 Tr-iT. All rights reserved.
-//
-
-import Foundation
-
 enum PaymentCardModels {
 
     enum FetchCardList {
-        
+
         struct Response {
             public let isAllPaymentCompleted: Bool
             public let space: Space
@@ -47,6 +47,55 @@ enum PaymentCardModels {
                 }
             }
         }
+    }
+
+    // MARK: 정산내역 (카드) 생성하기
+
+    enum CreateCard {
+        struct Request {
+            var spaceID: Int
+            var categoryID: Int
+            var bank: String
+            var accountNumber: String
+            var holder: String
+            var name: String
+            var totalAmount: Int
+            var bgColor: String
+            var paymentDate: String
+            var imageURLs: [String]
+            var viewModel: ViewModel
+            struct ViewModel {
+                var categoryIconName: String
+                var spaceName: String
+            }
+
+            static var initialValue: Request = .init(
+                spaceID: -1, categoryID: -1, bank: "", accountNumber: "", holder: "",
+                name: "", totalAmount: 0, bgColor: "#", paymentDate: "", imageURLs: [], viewModel: .init(categoryIconName: "", spaceName: ""))
+        }
+
+        struct Response {
+            let id, spaceID, takerID: Int
+            let name: String
+            let totalAmount: Int
+            let bgColor, paymentDate: String
+            let category: Category
+            let account: Account
+            
+            struct Account: Codable {
+                let bank, number, holder: String
+                let userID: Int
+            }
+
+            struct Category: Codable {
+                let id: Int?
+                let name, imgURL: String
+            }
+        }
+    }
+    
+    enum Empty {
+        struct Response {}
     }
     
     enum FetchCard {
@@ -86,3 +135,4 @@ enum PaymentCardModels {
     }
     
 }
+
