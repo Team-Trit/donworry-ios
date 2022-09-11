@@ -18,7 +18,7 @@ import RxCocoa
 import RxSwift
 
 // UINavigationController로 감싼 후 들어와야 합니다..!
-final class ParticipatePaymentCardViewController: BaseViewController, View {
+final class ParticipatePaymentCardViewController: BaseViewController {
     
     private let viewModel: ParticipatePaymentCardViewModel
     
@@ -120,10 +120,6 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
                 self?.participateCollectionView.reloadData()
             }
             .store(in: &cancelBag)
-    }
-    
-    func bind(reactor: ParticipatePaymentCardViewReactor) {
-        //binding here
     }
 
 }

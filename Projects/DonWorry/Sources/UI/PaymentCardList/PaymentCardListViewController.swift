@@ -146,7 +146,6 @@ final class PaymentCardListViewController: BaseViewController, View {
                         guard let id = cell.viewModel?.id else { return }
                         let viewModel = PaymentCardDetailViewModel(cardID: id, cardName: cell.viewModel?.name ?? "")
                         let cardDetail = PaymentCardDetailViewController(viewModel: viewModel)
-                        cardDetail.reactor = PaymentCardDetailViewReactor()
                         self?.navigationController?.pushViewController(cardDetail, animated: true)
                     }).disposed(by: disposeBag)
         self.collectionView.rx.itemSelected
@@ -244,7 +243,6 @@ extension PaymentCardListViewController {
             
             guard let id = reactor?.currentState.space.id else { return }
             let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
-            participatePaymentCardViewController.reactor = ParticipatePaymentCardViewReactor()
             let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
             nav.modalPresentationStyle = .overFullScreen
             present(nav, animated: true)

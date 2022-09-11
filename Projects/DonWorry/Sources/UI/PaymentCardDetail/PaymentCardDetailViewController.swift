@@ -16,7 +16,7 @@ import Models
 import PhotosUI
 import Combine
 
-final class PaymentCardDetailViewController: BaseViewController, View {
+final class PaymentCardDetailViewController: BaseViewController {
     
     private let viewModel: PaymentCardDetailViewModel
     private var cancelBag = Set<AnyCancellable>()
@@ -182,7 +182,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         super.viewDidLoad()
         attributes()
         layout()
-        bind()
     }
     
     private func attributes() {
