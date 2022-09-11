@@ -63,6 +63,7 @@ final class ParticipatePaymentCardViewController: BaseViewController {
         let view = UICollectionViewFlowLayout()
         view.minimumLineSpacing = Constants.collectionViewMinLineSpacing
         view.headerReferenceSize = .init(width: 100, height: 38)
+        view.footerReferenceSize = .init(width: 100, height: 74)
         view.scrollDirection = .vertical
         return view
       }()
@@ -201,6 +202,7 @@ extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: Constants.collectionViewWidth, height: Constants.collectionViewHeight)
     }
+   
 }
 
 extension ParticipatePaymentCardViewController: CellCheckPress {
