@@ -25,17 +25,19 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
     private var editType: paymentAmountEditType = .create
-    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
+//    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     
+    private lazy var navigationBar: DWNavigationBar = {
+        if editType == .update {
+            return .init(title: "")
+        } else {
+            return .init(title: "", rightButtonImageName: "xmark")
+        }
+    }()
     
     init(editType: paymentAmountEditType = .create) {
         super.init(nibName: nil, bundle: nil)
-        if editType == .update {
-            self.editType = .update
-            navigationBar = .init(title: "")
-            nextButton.title = "수정 완료"
-        }
-        
+        self.editType = editType
     }
     
     required init?(coder: NSCoder) {
@@ -81,7 +83,11 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     }()
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
-        v.title = "다음"
+        if editType == .update {
+            v.title = "수정 완료"
+        } else {
+            v.title = "다음"
+        }
         return v
     }()
     private lazy var numberPadCollectionView: NumberPadCollectionView = {
