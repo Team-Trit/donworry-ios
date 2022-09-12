@@ -9,6 +9,11 @@
 import UIKit
 import DesignSystem
 
+struct DetailProgressCellViewModel {
+    let name: String
+    let myAmount: Int
+    let totalAmount: Int
+}
 class DetailProgressTableViewCell: UITableViewCell {
     
     static let identifier: String = "DetailProgressTableViewCell"
@@ -83,7 +88,7 @@ class DetailProgressTableViewCell: UITableViewCell {
         
     }
     
-    func configure(myData: SendingMoneyProgressInfoViewModel) {
+    func configure(myData: DetailProgressCellViewModel) {
         takerName.text = myData.name + "님께"
         myAmount.attributedText = makeAtrributedString(money: myData.myAmount, fontSize: 20, wonColor: .black)
         progressView.setProgress(Float(myData.myAmount)/Float(myData.totalAmount), animated: false)

@@ -47,9 +47,6 @@ class SentMoneyDetailStatusView: UIView {
         return questionView
     }()
     
-    
-    
-    
     private let leftSmallTitle: UILabel = {
         let leftSmallTitle = UILabel()
         leftSmallTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -84,13 +81,12 @@ class SentMoneyDetailStatusView: UIView {
         totalAmount.textColor = .designSystem(.mainBlue)
         totalAmount.font = UIFont.systemFont(ofSize: 20, weight: .heavy)
         totalAmount.layer.opacity = 0.2
-        totalAmount.attributedText = makeAtrributedString(money: 120000, fontSize: 18, wonColor: .black)
         return totalAmount
     }()
     
     private let progressView: UIProgressView = {
         let progressView = UIProgressView(progressViewStyle: .bar)
-        progressView.progress = 0
+        progressView.progress = 1
         progressView.translatesAutoresizingMaskIntoConstraints = false
         progressView.trackTintColor = .designSystem(.grayF6F6F6)
         progressView.progressTintColor = .designSystem(.mainBlue)
@@ -161,7 +157,11 @@ class SentMoneyDetailStatusView: UIView {
 
     func configure(recievedUser: String?, payment: Int, totalAmount: Int) {
         titleLabel.text = recievedUser
-        paymentAmountLabel.attributedText = makeAtrributedString(money: payment, fontSize: 20, wonColor: .black)
+        paymentAmountLabel.attributedText = makeAtrributedString(money: payment, fontSize: 20, wonColor: .black
+        )
+        totalAmountLabel.attributedText = makeAtrributedString(
+            money: totalAmount, fontSize: 18, wonColor: .black
+        )
         progressView.setProgress(Float(payment)/Float(totalAmount), animated: true)
     }
 }
