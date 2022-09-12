@@ -8,6 +8,10 @@
 
 import ReactorKit
 
+enum ConfirmTermStep {
+    case none
+}
+
 final class ConfirmTermViewReactor: Reactor {
     let checkedTerms: [String]
     private var user: SignUpUserModel
@@ -19,16 +23,16 @@ final class ConfirmTermViewReactor: Reactor {
     
     enum Mutation {
         case completeLogin
-        case routeTo(step: DonworryStep)
+        case routeTo(step: ConfirmTermStep)
     }
     
     struct State {
-        @Pulse var step: DonworryStep?
+        @Pulse var step: ConfirmTermStep?
     }
     
     let initialState: State
     
-    init(checkedTerms: [String], newUser: SignUpUserModel, userService: UserService) {
+    init(checkedTerms: [String], newUser: SignUpUserModel, userService: UserService = UserServiceImpl()) {
         self.checkedTerms = checkedTerms
         self.user = newUser
         self.userService = userService

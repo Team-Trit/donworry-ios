@@ -9,6 +9,13 @@
 import Models
 import ReactorKit
 
+enum EnterUserInfoStep {
+    case none
+    case pop
+    case selectBank(delegate: EnterUserInfoViewDelegate)
+    case agreeTerm(newUser: SignUpUserModel)
+}
+
 final class EnterUserInfoViewReactor: Reactor {
     enum TextFieldType {
         case nickname
@@ -37,7 +44,7 @@ final class EnterUserInfoViewReactor: Reactor {
     enum Mutation {
         case updateSubject(type: TextFieldType, _ value: String)
         case updateBank(selectedBank: String)
-        case routeTo(step: DonworryStep)
+        case routeTo(step: EnterUserInfoStep)
     }
     
     struct State {
@@ -46,7 +53,7 @@ final class EnterUserInfoViewReactor: Reactor {
         var accountNumber: String
         var bank: String
         @Pulse var isNextButtonAvailable: Bool
-        @Pulse var step: DonworryStep?
+        @Pulse var step: EnterUserInfoStep?
     }
     
     let initialState: State
@@ -66,7 +73,7 @@ final class EnterUserInfoViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-            return .just(Mutation.routeTo(step: .popViewController))
+            return .just(.routeTo(step: .pop))
             
         case .nicknameFieldUpdated(let nickname):
             self.user.nickname = nickname
@@ -81,13 +88,13 @@ final class EnterUserInfoViewReactor: Reactor {
             return .just(Mutation.updateSubject(type: .accountNumber, number))
             
         case .bankSelectButtonPressed:
-            return .just(Mutation.routeTo(step: .bankSelectIsRequired(delegate: self)))
+            return .just(.routeTo(step: .selectBank(delegate: self)))
             
         case .bankSelected(let bank):
             return .just(Mutation.updateBank(selectedBank: bank))
             
         case .nextButtonPressed:
-            return .just(Mutation.routeTo(step: .agreeTermIsRequired(newUser: user)))
+            return .just(.routeTo(step: .agreeTerm(newUser: user)))
         }
     }
     

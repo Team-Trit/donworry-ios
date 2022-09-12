@@ -9,6 +9,12 @@
 import ReactorKit
 import RxCocoa
 
+enum AgreeTermStep {
+    case none
+    case pop
+    case confirmTerm(checkedTerms: [String], newUser: SignUpUserModel)
+}
+
 final class AgreeTermViewReactor: Reactor {
     let dataSource: [String] = [
         "전체동의",
@@ -28,12 +34,12 @@ final class AgreeTermViewReactor: Reactor {
     
     enum Mutation {
         case toggleCheck(_ index: Int)
-        case routeTo(step: DonworryStep)
+        case routeTo(step: AgreeTermStep)
     }
     
     struct State {
         var isChecked: [Bool]
-        @Pulse var step: DonworryStep?
+        @Pulse var step: AgreeTermStep?
     }
     
     let initialState: State
@@ -48,14 +54,14 @@ final class AgreeTermViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonPressed:
-            return .just(Mutation.routeTo(step: .popViewController))
+            return .just(.routeTo(step: .pop))
             
         case let .checkButtonPressed(index):
             return .just(Mutation.toggleCheck(index))
             
         case .doneButtonPressed:
             let checked = checkedTerms.filter { $0 != "" }
-            return .just(Mutation.routeTo(step: .confirmTermIsRequired(checkedTerms: checked, newUser: user)))
+            return .just(.routeTo(step: .confirmTerm(checkedTerms: checked, newUser: user)))
         }
     }
     

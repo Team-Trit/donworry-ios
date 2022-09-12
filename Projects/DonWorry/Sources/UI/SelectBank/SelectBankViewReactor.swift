@@ -18,11 +18,7 @@ protocol EnterUserInfoViewDelegate: AnyObject {
 
 enum SelectBankStep {
     case none
-    
-    case bankSelectIsComplete
-    
-    case dismissToPaymentCardDeco
-    case dismissToProfileAccountEdit
+    case dismiss
 }
 
 final class SelectBankViewReactor: Reactor {
@@ -92,13 +88,13 @@ final class SelectBankViewReactor: Reactor {
         case .dismissButtonPressed:
             switch parentView {
             case .enterUserInfo:
-                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
+                return .just(Mutation.routeTo(step: .dismiss))
                 
             case .paymentCardDeco:
-                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                return .just(Mutation.routeTo(step: .dismiss))
                 
             case .profileAccountEdit:
-                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+                return .just(Mutation.routeTo(step: .dismiss))
             }
             
         case let .searchTextChanged(filter):
@@ -109,15 +105,15 @@ final class SelectBankViewReactor: Reactor {
             switch parentView {
             case .enterUserInfo:
                 userInfoViewDelegate?.saveBank(selectedBank.koreanName)
-                return .just(Mutation.routeTo(step: .bankSelectIsComplete))
+                return .just(Mutation.routeTo(step: .dismiss))
                 
             case .paymentCardDeco:
                 // TODO: Delegate Method Call
-                return .just(Mutation.routeTo(step: .dismissToPaymentCardDeco))
+                return .just(Mutation.routeTo(step: .dismiss))
                 
             case .profileAccountEdit:
                 self.accountEditViewDelegate?.saveBank(selectedBank: selectedBank.koreanName)
-                return .just(Mutation.routeTo(step: .dismissToProfileAccountEdit))
+                return .just(Mutation.routeTo(step: .dismiss))
             }
         }
     }

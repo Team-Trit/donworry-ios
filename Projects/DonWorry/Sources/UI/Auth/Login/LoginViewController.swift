@@ -13,12 +13,10 @@ import BaseArchitecture
 import DesignSystem
 import ReactorKit
 import RxCocoa
-import RxFlow
 import RxSwift
 import SnapKit
 
-final class LoginViewController: BaseViewController, View, Stepper {
-    let steps = PublishRelay<Step>()
+final class LoginViewController: BaseViewController, View {
     private lazy var labelStackView = LabelStackView()
     
     // TODO: 삭제하기
@@ -34,11 +32,13 @@ final class LoginViewController: BaseViewController, View, Stepper {
         v.setBackgroundImage(.init(.apple_login_button), for: .normal)
         return v
     }()
+    /*
     private lazy var googleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.google_login_button), for: .normal)
         return v
     }()
+     */
     private lazy var kakaoLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.kakao_login_button), for: .normal)
@@ -60,7 +60,7 @@ final class LoginViewController: BaseViewController, View, Stepper {
 // MARK: - Layout
 extension LoginViewController {
     private func setUI() {
-        view.addSubviews(backgroundView, labelStackView, appleLoginButton, googleLoginButton, kakaoLoginButton)
+        view.addSubviews(backgroundView, labelStackView, appleLoginButton, kakaoLoginButton)
         
         backgroundView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
@@ -73,16 +73,18 @@ extension LoginViewController {
         
         appleLoginButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(200)
+            make.centerY.equalToSuperview().offset(270)
         }
         
+        /*
         googleLoginButton.snp.makeConstraints { make in
             make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
+         */
         
         kakaoLoginButton.snp.makeConstraints { make in
-            make.top.equalTo(googleLoginButton.snp.bottom).offset(10)
+            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
         
@@ -108,10 +110,12 @@ extension LoginViewController {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        /*
         googleLoginButton.rx.tap
             .map { Reactor.Action.googleLoginButtonPressed }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+         */
         
         kakaoLoginButton.rx.tap
             .map { Reactor.Action.kakaoLoginButtonPressed }
@@ -147,10 +151,12 @@ extension LoginViewController {
 
 // MARK: - Route
 extension LoginViewController {
-    private func route(to step: DonworryStep) {
+    private func route(to step: LoginStep) {
         switch step {
-        case let .userInfoIsRequired(provider, token):
-            self.steps.accept(DonworryStep.userInfoIsRequired(provider: provider, token: token))
+        case let .enterUserInfo(provider, token):
+            let vc = EnterUserInfoViewController()
+            vc.reactor = EnterUserInfoViewReactor(provider: provider, token: token)
+            self.navigationController?.pushViewController(vc, animated: true)
             
             // TODO: 삭제하기
         case .home:
@@ -176,7 +182,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             guard let identityToken = appleIDCredential.identityToken else { return }
             let tokenString = String(decoding: identityToken, as: UTF8.self)
             reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString))
-            
+
         default:
             break
         }

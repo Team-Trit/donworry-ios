@@ -9,6 +9,14 @@
 import Models
 import ReactorKit
 
+enum LoginStep {
+    // TODO: 삭제하기
+    case home
+    
+    case none
+    case enterUserInfo(provider: LoginProvider, token: String)
+}
+
 final class LoginViewReactor: Reactor {
     // TODO: 삭제하기
     private let testUserService: TestUserService
@@ -16,7 +24,7 @@ final class LoginViewReactor: Reactor {
     
     enum Action {
         case appleLoginButtonPressed
-        case googleLoginButtonPressed
+//        case googleLoginButtonPressed
         case proceedWithAppleToken(identityToken: String)
         case kakaoLoginButtonPressed
         // TODO: 삭제하기
@@ -25,12 +33,12 @@ final class LoginViewReactor: Reactor {
     
     enum Mutation {
         case performAppleLogin
-        case routeTo(DonworryStep)
+        case routeTo(LoginStep)
     }
     
     struct State {
         @Pulse var appleLoginTrigger: Void?
-        @Pulse var step: DonworryStep?
+        @Pulse var step: LoginStep?
     }
     
     let initialState: State
@@ -50,17 +58,18 @@ final class LoginViewReactor: Reactor {
             return .just(Mutation.performAppleLogin)
             
         case .proceedWithAppleToken(let identityToken):
-            return .just(.routeTo(DonworryStep.userInfoIsRequired(provider: .APPLE, token: identityToken)))
+            return .just(.routeTo(.enterUserInfo(provider: .APPLE, token: identityToken)))
             
+        /*
         case .googleLoginButtonPressed:
             // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
-//            self.steps.accept(DonworryStep.userInfoIsRequired(accessToken: AccessToken))
             return .empty()
+        */
             
         case .kakaoLoginButtonPressed:
             return userService.loginWithKakao()
                 .map { oauthToken in
-                    return .routeTo(DonworryStep.userInfoIsRequired(provider: .KAKAO, token: oauthToken.accessToken))
+                    return .routeTo(.enterUserInfo(provider: .KAKAO, token: oauthToken.accessToken))
                 }
             
             // TODO: 삭제하기
