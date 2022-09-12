@@ -45,7 +45,7 @@ public class PaymentCardInRoomView: UIView {
             self.cardSideView.backgroundColor = backgroundColor
             self.dateLabel.textColor = backgroundColor
             self.payerNameLabel.text = viewModel?.payer.nickName
-            payerImageView.setWhenNilImageBasicProfileImage(with: viewModel?.payer.imageURL)
+            payerImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.payer.imageURL)
 
             guard let viewModel = viewModel else {
                 return
@@ -58,7 +58,7 @@ public class PaymentCardInRoomView: UIView {
         participatedUserView.subviews.forEach { $0.removeFromSuperview() }
         let imageViews = users.prefix(4).map { (user: PaymentCardInRoomViewModel.User) -> UIImageView in
             let imageView = UIImageView()
-            imageView.setWhenNilImageBasicProfileImage(with: user.imageURL)
+            imageView.setBasicProfileImageWhenNilAndEmpty(with: user.imageURL)
             imageView.contentMode = .scaleAspectFill
             return imageView
         }

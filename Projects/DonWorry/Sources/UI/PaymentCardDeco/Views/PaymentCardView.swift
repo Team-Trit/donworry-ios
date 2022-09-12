@@ -48,8 +48,8 @@ public class PaymentCardView: UIView {
     
     var viewModel: PaymentCardUserViewModel? {
         didSet {
-            self.userNameLabel.text = "13213sdjaksd"
-            userImageView.setBasicProfileImageWhenEmpty(with: viewModel?.imageURL)
+            self.userNameLabel.text = viewModel?.nickName
+            userImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.imageURL)
         }
     }
     

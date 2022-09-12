@@ -145,14 +145,14 @@ extension UserRepository {
     }
     
     fileprivate func convertToUser(userDTO dto: DTO.PostUser) -> Models.User {
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "default_profile_image")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "")
     }
     
     fileprivate func convertToUser(patchUserDTO dto: DTO.PatchUser) -> Models.User {
         let bankAccount = BankAccount(bank: dto.account.bank,
                                       accountHolderName: dto.account.holder,
                                       accountNumber: dto.account.number)
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "default_profile_image")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "")
     }
     
     fileprivate func createKakaoUserRequest(provider: String,

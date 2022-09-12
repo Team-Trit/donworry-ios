@@ -266,9 +266,9 @@ extension ProfileViewController: UITableViewDataSource {
                 
                 reactor?.state.map { $0.imageURL }
                     .distinctUntilChanged()
-                    .asDriver(onErrorJustReturn: "default_profile_image")
+                    .asDriver(onErrorJustReturn: "")
                     .drive(onNext: { imgURL in
-                        if imgURL != "default_profile_image", let url = URL(string: imgURL) {
+                        if imgURL != "", let url = URL(string: imgURL) {
                             cell.profileImageView.kf.setImage(with: url)
                         } else {
                             cell.profileImageView.image = UIImage(.default_profile_image)
