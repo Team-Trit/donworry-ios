@@ -18,7 +18,7 @@ import Combine
 
 final class PaymentCardDetailViewController: BaseViewController {
     
-    private let viewModel: PaymentCardDetailViewModel
+    private var viewModel: PaymentCardDetailViewModel
     private var cancelBag = Set<AnyCancellable>()
     
     init(viewModel: PaymentCardDetailViewModel) {
@@ -144,6 +144,8 @@ final class PaymentCardDetailViewController: BaseViewController {
     
     @objc private func editPrice() {
         let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
+        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(title: viewModel.paymentCardName, updateCard: viewModel.paymentCard)
+                                                                                   
         navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
     
@@ -183,6 +185,11 @@ final class PaymentCardDetailViewController: BaseViewController {
         attributes()
         layout()
         bind()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.updatePaymentCard()
     }
     
     private func attributes() {

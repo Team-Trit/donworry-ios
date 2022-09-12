@@ -21,11 +21,9 @@ enum paymentAmountEditType {
 }
 
 final class PaymentCardAmountEditViewController: BaseViewController, View {
-    // TODO: 수정 시 VC 재사용
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
     private var editType: paymentAmountEditType = .create
-//    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     
     private lazy var navigationBar: DWNavigationBar = {
         if editType == .update {
@@ -113,7 +111,9 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
 extension PaymentCardAmountEditViewController {
     private func dispatch(to reactor: Reactor) {
         nextButton.rx.tap
-            .map { Reactor.Action.nextButtonPressed }
+            .map { [weak self] in
+                self?.editType == .create ? Reactor.Action.nextButtonPressed : Reactor.Action.doneButtonPressed
+            }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -133,17 +133,23 @@ extension PaymentCardAmountEditViewController {
     }
     
     private func render(_ reactor: Reactor) {
-
-        reactor.state.map { $0.paymentCard.viewModel.categoryIconName }
-            .distinctUntilChanged()
-            .map { UIImage(assetName: $0) }
-            .bind(to: iconImageView.rx.image)
-            .disposed(by: disposeBag)
-
-        reactor.state.map { $0.paymentCard.name }
-            .distinctUntilChanged()
-            .bind(to: paymentTitleLabel.rx.text)
-            .disposed(by: disposeBag)
+        if editType == .create {
+            reactor.state.map { $0.paymentCard!.viewModel.categoryIconName }
+                .distinctUntilChanged()
+                .map { UIImage(assetName: $0) }
+                .bind(to: iconImageView.rx.image)
+                .disposed(by: disposeBag)
+            
+            reactor.state.map { $0.paymentCard!.name }
+                .distinctUntilChanged()
+                .bind(to: paymentTitleLabel.rx.text)
+                .disposed(by: disposeBag)
+        } else {
+            reactor.state.map { $0.cardTitle }
+                .distinctUntilChanged()
+                .bind(to: paymentTitleLabel.rx.text)
+                .disposed(by: disposeBag)
+        }
         
         reactor.state.map { $0.amount }
             .distinctUntilChanged()
@@ -180,63 +186,47 @@ extension PaymentCardAmountEditViewController {
     private func paymentCardDecoViewController() -> UIViewController {
         let paymentCardDecoViewController = PaymentCardDecoViewController()
         let newPaymentCard = reactor!.currentState.paymentCard
-        paymentCardDecoViewController.reactor =  PaymentCardDecoReactor(paymentCard: newPaymentCard)
+        paymentCardDecoViewController.reactor =  PaymentCardDecoReactor(paymentCard: newPaymentCard!)
         return paymentCardDecoViewController
     }
 }
 
 // MARK: - Layout
 extension PaymentCardAmountEditViewController {
-
-    private func bindBackButton() {
-        navigationBar.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        if editType == .update { return }
-        navigationBar.rightItem!.rx.tap
-            .bind {
-                guard let controllers = self.navigationController?.viewControllers else { return }
-                for vc in controllers {
-                    if vc is PaymentCardListViewController {
-                        self.navigationController?.popToViewController(vc as! PaymentCardListViewController, animated: true)
-                    }
-                }
-            }
-            .disposed(by: disposeBag)
-    }
-    
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
         
-        view.addSubviews(navigationBar, imageBackgroundView, iconImageView, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
+        if editType == .create {
+            view.addSubviews(imageBackgroundView, iconImageView)
+            
+            imageBackgroundView.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(50)
+                make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
+                make.width.height.equalTo(37)
+            }
+            
+            iconImageView.snp.makeConstraints { make in
+                make.center.equalTo(imageBackgroundView.snp.center)
+                make.width.height.equalTo(30)
+            }
+        }
+        
+        view.addSubviews(navigationBar, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
         
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
         
-        imageBackgroundView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(50)
-            make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
-            make.width.height.equalTo(37)
-        }
-        
-        iconImageView.snp.makeConstraints { make in
-            make.center.equalTo(imageBackgroundView.snp.center)
-            make.width.height.equalTo(30)
-        }
-        
         paymentTitleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(15)
-            make.centerY.equalTo(imageBackgroundView.snp.centerY)
+            make.leading.equalToSuperview().offset(60)
+            make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
             make.top.equalToSuperview().offset(134)
         }
         
         amountLabel.snp.makeConstraints { make in
             make.bottom.equalTo(nextButton.snp.top).offset(-100)
-            make.top.equalTo(paymentTitleLabel.snp.bottom).offset(30)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(130)
             make.trailing.equalTo(wonLabel.snp.leading).offset(-6)
             make.width.equalTo(230)
         }

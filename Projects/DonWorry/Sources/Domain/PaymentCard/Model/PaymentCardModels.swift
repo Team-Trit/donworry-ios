@@ -100,9 +100,9 @@ enum PaymentCardModels {
     
     enum FetchCard {
         struct Response {
-            public let card: PaymentCard
+            public var card: PaymentCard
             struct PaymentCard: Codable {
-                public let id, totalAmount: Int
+                public var id, totalAmount: Int
                 public let users: [User]
                 public let imgUrls: [String]
             }

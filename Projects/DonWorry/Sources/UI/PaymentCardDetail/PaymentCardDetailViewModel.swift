@@ -12,6 +12,8 @@ import Combine
 import BaseArchitecture
 import Models
 import UIKit
+import RxCocoa
+import RxSwift
 
 class PaymentCardDetailViewModel:BaseViewModel {
     
@@ -26,8 +28,7 @@ class PaymentCardDetailViewModel:BaseViewModel {
         super.init()
         paymentUseCase.fetchPaymentCard(cardId: cardID)
             .subscribe(onNext: { [weak self] response in
-                self?.paymentCard = response.card
-                
+                self?.paymentCard = response.card   
             }).disposed(by: disposeBag)
     }
     
@@ -84,5 +85,12 @@ class PaymentCardDetailViewModel:BaseViewModel {
 //            .subscribe(onNext: { str in
 //                print("suc")
 //           }).disposed(by: disposeBag)
+    }
+    
+    func updatePaymentCard() {
+        paymentUseCase.fetchPaymentCard(cardId: self.paymentCard.id)
+            .subscribe(onNext: { [weak self] response in
+                self?.paymentCard = response.card
+            }).disposed(by: disposeBag)
     }
 }
