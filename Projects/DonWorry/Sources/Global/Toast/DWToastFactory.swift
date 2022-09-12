@@ -19,20 +19,20 @@ final class DWToastFactory {
         var color: UIColor? {
             switch self {
             case .error:
-                return .designSystem(Pallete.redFF0B0B)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.redToast)?.withAlphaComponent(0.15)
             case .success:
-                return .designSystem(Pallete.lightBlue)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.blueToast)?.withAlphaComponent(0.15)
             case .information:
-                return .designSystem(Pallete.white)?.withAlphaComponent(0.8)
+                return .designSystem(Pallete.grayC5C5C5)?.withAlphaComponent(0.15)
             }
         }
 
         var messageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.white)
+                return .designSystem(.gray818181)
             case .success:
-                return .designSystem(.lightBlue)
+                return .designSystem(.gray818181)
             case .information:
                 return .designSystem(.gray818181)
             }
@@ -40,19 +40,20 @@ final class DWToastFactory {
         var subTitleMessageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.white)
+                return .designSystem(.black)
             case .success:
-                return .designSystem(.white)
+                return .designSystem(.black)
             case .information:
                 return .designSystem(.black)
             }
         }
     }
-    static func show(
+    
+    static func show (
         message: String,
         subMessage: String? = nil,
         type: ToastType = .information,
-        duration: TimeInterval = 3,
+        duration: TimeInterval = 1.25,
         completion: (() -> Void)? = nil
     ) {
         guard let window = UIWindow.current else { return }
@@ -63,14 +64,18 @@ final class DWToastFactory {
 
         let toastView = DWToastView(message: message, subTitle: subMessage, backgroundColor: type.color, messageColor: type.messageColor, subTitleColor: type.subTitleMessageColor)
         window.addSubview(toastView)
-
-        var topConstaint: Constraint?
+        
         toastView.snp.makeConstraints {
-            topConstaint = $0.top.equalTo(window.safeAreaLayoutGuide).offset(-100).constraint
             $0.centerX.equalToSuperview()
         }
+        
+        toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: -100)
+        
+        
         window.layoutSubviews()
         self.feedbackGenerator.notificationOccurred(.success)
+        
+        
         slideUp(completion: {
             DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                 slideDown(completion: {
@@ -78,15 +83,15 @@ final class DWToastFactory {
                 })
             }
         })
+        
 
         func slideUp(completion: (() -> Void)? = nil) {
             toastView.alpha = 0
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.5,
                 animations: {
                     toastView.alpha = 1
-                    topConstaint?.update(offset: 12)
-                    window.layoutIfNeeded()
+                    toastView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0).translatedBy(x: 0, y: 50)
                 },
                 completion: { _ in completion?() }
             )
@@ -95,11 +100,10 @@ final class DWToastFactory {
         func slideDown(completion: (() -> Void)? = nil) {
             toastView.alpha = 1
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.5,
                 animations: {
                     toastView.alpha = 0
-                    topConstaint?.update(offset: -100)
-                    window.layoutIfNeeded()
+                    toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: -100)
                 },
                 completion: { _ in
                     toastView.removeFromSuperview()
@@ -107,6 +111,7 @@ final class DWToastFactory {
                 }
             )
         }
+        
     }
 
     private static let feedbackGenerator = UINotificationFeedbackGenerator()
