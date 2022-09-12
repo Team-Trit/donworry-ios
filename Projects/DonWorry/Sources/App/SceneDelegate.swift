@@ -3,14 +3,12 @@ import UIKit
 import DesignSystem
 import DonWorryLocalStorage
 import KakaoSDKAuth
-import RxFlow
 import RxKakaoSDKAuth
 import RxSwift
 import Models
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    var coordinator = FlowCoordinator()
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private let userService: UserService = UserServiceImpl()
     private let disposeBag = DisposeBag()
@@ -31,8 +29,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     navigationController.setNavigationBarHidden(true, animated: false)
                     window.rootViewController = navigationController
                 } else {
-                    let appFlow = AppFlow(with: window)
-                    self.coordinator.coordinate(flow: appFlow, with: AppStepper())
+                    let rootViewController = LoginViewController()
+                    rootViewController.reactor = LoginViewReactor()
+                    let navigationController = UINavigationController(rootViewController: rootViewController)
+                    navigationController.setNavigationBarHidden(true, animated: false)
+                    window.rootViewController = navigationController
                 }
             })
             .disposed(by: disposeBag)

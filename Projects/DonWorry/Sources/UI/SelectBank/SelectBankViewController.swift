@@ -13,12 +13,10 @@ import DesignSystem
 import Models
 import ReactorKit
 import RxCocoa
-import RxFlow
 import RxSwift
 import SnapKit
 
-final class SelectBankViewController: BaseViewController, View, Stepper {
-    let steps = PublishRelay<Step>()
+final class SelectBankViewController: BaseViewController, View {
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.text = "은행선택"
@@ -124,14 +122,7 @@ extension SelectBankViewController {
 extension SelectBankViewController {
     private func route(to step: SelectBankStep) {
         switch step {
-            
-        case .bankSelectIsComplete:
-            self.steps.accept(DonworryStep.bankSelectIsComplete)
-            
-        case .dismissToPaymentCardDeco:
-            self.dismiss(animated: true)
-
-        case .dismissToProfileAccountEdit:
+        case .dismiss:
             self.dismiss(animated: true)
             
         default:

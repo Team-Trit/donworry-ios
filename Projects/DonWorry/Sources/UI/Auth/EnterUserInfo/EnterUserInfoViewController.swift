@@ -13,11 +13,16 @@ import DesignSystem
 import Models
 import ReactorKit
 import RxCocoa
-import RxFlow
 import RxSwift
 
-final class EnterUserInfoViewController: BaseViewController, View, Stepper {
-    let steps = PublishRelay<Step>()
+import KakaoSDKAuth
+import KakaoSDKUser
+import KakaoSDKCommon
+import RxKakaoSDKUser
+import RxKakaoSDKAuth
+import RxKakaoSDKCommon
+
+final class EnterUserInfoViewController: BaseViewController, View{
     private lazy var navigationBar = DWNavigationBar()
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
@@ -38,6 +43,14 @@ final class EnterUserInfoViewController: BaseViewController, View, Stepper {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
+        
+        UserApi.shared.rx.accessTokenInfo()
+            .subscribe(onSuccess: { info in
+                print("✨앱 아이디 : \(info.appId)")
+                print("✨액세스 토큰 만료시간 : \(info.expiresIn)")
+                print("✨사용자 아이디 : \(info.id)")
+            })
+            .disposed(by: disposeBag)
     }
     
     func bind(reactor: EnterUserInfoViewReactor) {
@@ -138,7 +151,7 @@ extension EnterUserInfoViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: DonworryStep.none)
+            .asDriver(onErrorJustReturn: EnterUserInfoStep.none)
             .compactMap { $0 }
             .drive { [weak self] in
                 self?.route(to: $0)
@@ -149,16 +162,20 @@ extension EnterUserInfoViewController {
 
 // MARK: - Route
 extension EnterUserInfoViewController {
-    private func route(to step: DonworryStep) {
+    private func route(to step: EnterUserInfoStep) {
         switch step {
-        case .popViewController:
-            self.steps.accept(DonworryStep.popViewController)
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
             
-        case .bankSelectIsRequired(let delegate):
-            self.steps.accept(DonworryStep.bankSelectIsRequired(delegate: delegate))
+        case .selectBank(let delegate):
+            let vc = SelectBankViewController()
+            vc.reactor = SelectBankViewReactor(userInfoViewDelegate: delegate, parentView: .enterUserInfo)
+            self.present(vc, animated: true)
             
-        case .agreeTermIsRequired(let newUser):
-            self.steps.accept(DonworryStep.agreeTermIsRequired(newUser: newUser))
+        case .agreeTerm(let newUser):
+            let vc = AgreeTermViewController()
+            vc.reactor = AgreeTermViewReactor(newUser: newUser)
+            self.navigationController?.pushViewController(vc, animated: true)
             
         default:
             break

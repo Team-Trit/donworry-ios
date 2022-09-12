@@ -12,13 +12,11 @@ import BaseArchitecture
 import DesignSystem
 import ReactorKit
 import RxCocoa
-import RxFlow
 import RxSwift
 import SnapKit
 
-final class AgreeTermViewController: BaseViewController, View, Stepper {
+final class AgreeTermViewController: BaseViewController, View {
     typealias Reactor = AgreeTermViewReactor
-    let steps = PublishRelay<Step>()
     private lazy var navigationBar = DWNavigationBar(title: "돈워리 이용약관")
     private lazy var descriptionLabel: UILabel = {
         let v = UILabel()
@@ -107,7 +105,7 @@ extension AgreeTermViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: DonworryStep.none)
+            .asDriver(onErrorJustReturn: AgreeTermStep.none)
             .compactMap { $0 }
             .drive { [weak self] in
                 self?.route(to: $0)
@@ -118,13 +116,16 @@ extension AgreeTermViewController {
 
 // MARK: - Route
 extension AgreeTermViewController {
-    private func route(to step: DonworryStep) {
+    private func route(to step: AgreeTermStep) {
         switch step {
-        case .popViewController:
-            self.steps.accept(DonworryStep.popViewController)
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
             
-        case let .confirmTermIsRequired(checkedTerms, newUser):
-            self.steps.accept(DonworryStep.confirmTermIsRequired(checkedTerms: checkedTerms, newUser: newUser))
+        case let .confirmTerm(checkedTerms, newUser):
+            let vc = ConfirmTermViewController()
+            vc.reactor = ConfirmTermViewReactor(checkedTerms: checkedTerms, newUser: newUser)
+            vc.modalPresentationStyle = .overCurrentContext
+            self.present(vc, animated: false)
             
         default:
             break
