@@ -61,13 +61,13 @@ final class PaymentCardListReactor: Reactor {
     let initialState: State
     
     init(
-        spaceID: Int, adminID: Int,
+        spaceID: Int, adminID: Int, status: String,
         spaceService: SpaceService = SpaceServiceImpl(),
         judgeSpaceAdminUseCase: JudgeSpaceAdminUseCase = JudgeSpaceAdminUseCaseImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
         paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
     ) {
-        self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: "", shareID: ""))
+        self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: status, shareID: ""))
         self.spaceService = spaceService
         self.judgeSpaceAdminUseCase = judgeSpaceAdminUseCase
         self.paymentCardService = paymentCardService

@@ -70,6 +70,7 @@ enum SpaceModels {
         struct Response {
             let id: Int
             let adminID: Int
+            let status: String
             let title, shareID: String
         }
     }
@@ -84,6 +85,7 @@ enum SpaceModels {
         struct Response {
             let id: Int
             let adminID: Int
+            let status: String
             let title, shareID: String
         }
     }
@@ -98,6 +100,7 @@ enum SpaceModels {
         struct Response {
             let id: Int
             let adminID: Int
+            let status: String
             let title, shareID: String
         }
     }

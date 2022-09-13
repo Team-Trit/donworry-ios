@@ -35,14 +35,14 @@ final class SpaceRepositoryImpl: SpaceRepository {
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {
         network.request(PostSpaceAPI(request: .init(title: title)))
             .compactMap { response -> SpaceModels.CreateSpace.Response in
-                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+                    .init(id: response.id, adminID: response.adminID, status: response.status, title: response.title, shareID: response.shareID)
             }.asObservable()
     }
 
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response> {
         network.request(PostSpaceJoinAPI(request: .init(shareId: shareID)))
             .compactMap { response -> SpaceModels.JoinSpace.Response in
-                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+                    .init(id: response.id, adminID: response.adminID, status: response.status, title: response.title, shareID: response.shareID)
             }.catch { [weak self] in
                 return .error(self?.judgeJoinSpaceError($0) ?? .undefined)
             }.asObservable().asSingle()
@@ -51,7 +51,7 @@ final class SpaceRepositoryImpl: SpaceRepository {
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response> {
         network.request(PatchSpaceTitleAPI(request: .init(id: id, title: name)))
             .compactMap { response -> SpaceModels.EditSpaceTitle.Response in
-                    .init(id: response.id, adminID: response.adminID, title: response.title, shareID: response.shareID)
+                    .init(id: response.id, adminID: response.adminID, status: response.status, title: response.title, shareID: response.shareID)
             }.asObservable()
     }
 

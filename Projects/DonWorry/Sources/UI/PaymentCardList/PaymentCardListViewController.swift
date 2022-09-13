@@ -365,7 +365,13 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return (reactor?.currentState.paymentCardListViewModel.count ?? 0) + 1
+        guard let currentState = reactor?.currentState else { return 0 }
+        if currentState.space.status == "PROGRESS" {
+            return currentState.paymentCardListViewModel.count
+        } else {
+            return currentState.paymentCardListViewModel.count + 1
+        }
+
     }
 
     func collectionView(
