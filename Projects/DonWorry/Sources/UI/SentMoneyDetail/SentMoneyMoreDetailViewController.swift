@@ -9,7 +9,12 @@
 import UIKit
 import DesignSystem
 
-class FullSheetSentDetailViewController: UIViewController, UITableViewDelegate {
+struct SentMoneyMoreDetailViewModel {
+    var totalAmount: Int
+    var sentMoneyList: [SentMoneyCellViewModel]
+    var myMoneyDetailInfoList: [DetailProgressCellViewModel]
+}
+class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
     
     private let mainTitle: UILabel = {
         let title = UILabel()
@@ -61,14 +66,15 @@ class FullSheetSentDetailViewController: UIViewController, UITableViewDelegate {
         return tableView
     }()
     
-    private let closeButton: DWButton = {
+    private lazy  var closeButton: DWButton = {
         let cloasedButton = DWButton.create(.xlarge50)
         cloasedButton.translatesAutoresizingMaskIntoConstraints = false
         cloasedButton.title = "닫기"
         cloasedButton.addTarget(self, action: #selector(dismissSheet), for: .touchUpInside)
         return cloasedButton
     }()
-    
+
+    var viewModel: SentMoneyMoreDetailViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,32 +112,33 @@ class FullSheetSentDetailViewController: UIViewController, UITableViewDelegate {
     }
 }
 
-extension FullSheetSentDetailViewController: UITableViewDataSource {
+extension SentMoneyMoreDetailViewController: UITableViewDataSource {
     func tableView( _ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return myMoneyInfo.count + myMoneyDetailInfo.count + 1
+        return (viewModel?.sentMoneyList.count ?? 0) + (viewModel?.myMoneyDetailInfoList.count ?? 0) + 1
     }
 
     func tableView( _ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel = viewModel else { return .init() }
 
-        if indexPath.row < myMoneyInfo.count {
+        if indexPath.row < viewModel.sentMoneyList.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: SentMoneyTableViewCell.identifier, for: indexPath) as! SentMoneyTableViewCell
-            cell.configure(icon: "flame.fill", myPayment: myMoneyInfo[indexPath.row])
+            cell.configure(icon: "flame.fill", myPayment: viewModel.sentMoneyList[indexPath.row])
             return cell
         }
         
-        if indexPath.row == myMoneyInfo.count {
+        if indexPath.row == viewModel.sentMoneyList.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: TotalAmountTableViewCell.identifier, for: indexPath) as! TotalAmountTableViewCell
-            cell.configure(totalAmount: 120000)
+            cell.configure(totalAmount: viewModel.totalAmount)
             return cell
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: DetailProgressTableViewCell.identifier, for: indexPath) as! DetailProgressTableViewCell
-        cell.configure(myData: myMoneyDetailInfo[indexPath.row - myMoneyInfo.count - 1])
+        cell.configure(myData: viewModel.myMoneyDetailInfoList[indexPath.row - viewModel.sentMoneyList.count - 1])
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row < myMoneyInfo.count {
+        if indexPath.row < (viewModel?.sentMoneyList.count ?? 0 ){
             return 70
         }
         return 120

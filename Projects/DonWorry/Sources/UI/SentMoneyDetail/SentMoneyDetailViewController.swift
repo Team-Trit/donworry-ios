@@ -15,8 +15,8 @@ import DesignSystem
 import DonWorryExtensions
 
 final class SentMoneyDetailViewController: BaseViewController, View {
-    
     typealias Reactor = SentMoneyDetailViewReactor
+    
     private var statusView: SentMoneyDetailStatusView = {
         let status = SentMoneyDetailStatusView()
         return status
@@ -40,7 +40,6 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     lazy var leftButtomButton: DWButton = {
         let v = DWButton.create(.mediumBlue)
         v.title = "상세내역 보기"
-        v.addTarget(self, action: #selector(showSheet), for: .touchUpInside)
         return v
     }()
 
@@ -58,6 +57,10 @@ final class SentMoneyDetailViewController: BaseViewController, View {
 
     func bind(reactor: Reactor) {
         rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        leftButtomButton.rx.tap.map { .didTapMoreDetailButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -90,16 +93,18 @@ final class SentMoneyDetailViewController: BaseViewController, View {
             .subscribe(onNext: { _ in
                 DWToastFactory.show(message: "정산 완료 알림을 보냈어요!")
             }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
+
     }
 
     @objc private func copyTap() {
         UIPasteboard.general.string = String((reactor?.currentState.currentStatus?.account.number)!)
-    }
-    
-    @objc func showSheet() {
-        let vc = FullSheetSentDetailViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        self.present(vc, animated: true)
     }
 }
 
@@ -142,5 +147,23 @@ extension SentMoneyDetailViewController {
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
         )
+    }
+}
+
+extension SentMoneyDetailViewController {
+    func move(to step: SentMoneyDetailStep) {
+        switch step {
+        case .moreDetail:
+            guard let reactor = reactor else { return }
+
+            let vc = SentMoneyMoreDetailViewController()
+            vc.viewModel = .init(
+                totalAmount: reactor.currentState.totalAmount,
+                sentMoneyList: reactor.currentState.cards,
+                myMoneyDetailInfoList: reactor.currentState.payments
+            )
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true)
+        }
     }
 }
