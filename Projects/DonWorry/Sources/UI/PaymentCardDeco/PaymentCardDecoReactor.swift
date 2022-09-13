@@ -91,7 +91,7 @@ final class PaymentCardDecoReactor: Reactor {
         case .deleteImage(let imageURL):
             return .just(.updateImageURLs(imageURL))
         case .addImage(let image):
-            return uploadImageUseCase.uploadCard(request: .init(image: image))
+            return uploadImageUseCase.uploadCard(request: .init(image: image, type: "card"))
                 .map { .updateImageURLs($0.imageURL) }
         case .didTapCompleteButton:
             let createCard = reqeustCreateCard()

@@ -16,6 +16,7 @@ enum ImageModels {
 
         struct Request {
             let image: UIImage
+            let type: String
         }
 
         struct Response {
