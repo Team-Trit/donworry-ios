@@ -17,21 +17,9 @@ import ReactorKit
 import RxCocoa
 import RxSwift
 
-final class ParticipatePaymentCardViewController: BaseViewController {
-    
-    private let viewModel: ParticipatePaymentCardViewModel
-    
-    init(viewModel: ParticipatePaymentCardViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private var cancelBag = Set<AnyCancellable>()
-    
+final class ParticipatePaymentCardViewController: BaseViewController, View {
+    typealias Reactor = ParticipatePaymentCardViewReactor
+
     private var numberOfselectedCardsLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._17)
@@ -57,17 +45,13 @@ final class ParticipatePaymentCardViewController: BaseViewController {
         button.setTitleColor(.black, for: .normal)
         return button
     }()
-    
-    private let collectionViewFlowLayout: UICollectionViewFlowLayout = {
-        let view = UICollectionViewFlowLayout()
-        view.minimumLineSpacing = Constants.collectionViewMinLineSpacing
-        view.headerReferenceSize = .init(width: 100, height: 38)
-        view.footerReferenceSize = .init(width: 100, height: 74)
-        view.scrollDirection = .vertical
-        return view
-      }()
-    
+
     private lazy var participateCollectionView: UICollectionView = {
+        let collectionViewFlowLayout = UICollectionViewFlowLayout()
+        collectionViewFlowLayout.minimumLineSpacing = Constants.collectionViewMinLineSpacing
+        collectionViewFlowLayout.headerReferenceSize = .init(width: 100, height: 38)
+        collectionViewFlowLayout.footerReferenceSize = .init(width: 100, height: 74)
+        collectionViewFlowLayout.scrollDirection = .vertical
         let view = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
         view.showsHorizontalScrollIndicator = false
         view.register(ParticipateCollectionViewCell.self, forCellWithReuseIdentifier: ParticipateCollectionViewCell.cellID)
@@ -77,53 +61,78 @@ final class ParticipatePaymentCardViewController: BaseViewController {
     private lazy var selectAllButton: UIButton = {
         let bt = DWButton.create(.halfMainBlue)
         bt.setTitle("모두 선택", for: .normal)
-        bt.addTarget(self, action: #selector(selectAllCard), for: .touchUpInside)
         return bt
     }()
     
     private lazy var checkAttendanceButton: UIButton = {
         let bt = DWButton.create(.halfLightBlue)
-        bt.setTitle("참석 확인", for: .normal)//AppleSDGothicNeo?
-        bt.addTarget(self, action: #selector(checkAttendance), for: .touchUpInside)
+        bt.setTitle("참석 확인", for: .normal)
         return bt
     }()
-    
-    @objc private func selectAllCard() {
-        viewModel.checkAll()
-    }
-    
-    @objc private func checkAttendance() {
-        viewModel.checkAttendance()
-        dismiss(animated: true)
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        combineBind()
         attributes()
         layout()
         configNavigationBar()
     }
-    
-    private func combineBind() {
-        viewModel.$checkedIDs
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.numberOfselectedCardsLabel.text = "\($0.count)"
-                self?.participateCollectionView.reloadData()
-            }
-            .store(in: &cancelBag)
-        
-        viewModel.$paymentCards
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.participateCollectionView.reloadData()
-            }
-            .store(in: &cancelBag)
-    }
 
+    func bind(reactor: ParticipatePaymentCardViewReactor) {
+        checkAttendanceButton.rx.tap.map { .didTapAttendanceButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        selectAllButton.rx.tap.map { .didTapSelectAllButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        cancleSelectButton.rx.tap.map { .didTapCancelSelectButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        cancelButton.rx.tap.map { .didTapCancelButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.cardList.filter { $0.isSelected }}
+            .map { "\($0.count)"}
+            .bind(to: numberOfselectedCardsLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.cardList }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.participateCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { toast in
+                DWToastFactory.show(message: toast, type: .error)
+            }).disposed(by: disposeBag)
+
+    }
 }
 
+// MARK: Routing
+
+extension ParticipatePaymentCardViewController {
+
+    func move(to step: ParticipatePaymentCardStep) {
+        switch step {
+        case .dismiss:
+            self.dismiss(animated: true)
+        }
+    }
+}
 // MARK: setUI
 
 extension ParticipatePaymentCardViewController {
@@ -131,13 +140,10 @@ extension ParticipatePaymentCardViewController {
     private func configNavigationBar() {
         
         navigationItem.title = "참석확인"
-        numberOfselectedCardsLabel.text = "\(viewModel.numOfCheckedCards)"
-        
         let cancelEmptyView = UIView()
         cancelEmptyView.setWidth(width: 4)
         
         let cancelButtonContainer = UIStackView(arrangedSubviews: [cancelEmptyView, cancelButton])
-        cancelButton.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
         cancelButtonContainer.spacing = Constants.betweenNumberAndLabel
         let leftBarbutton = UIBarButtonItem(customView: cancelButtonContainer)
         navigationItem.leftBarButtonItem = leftBarbutton
@@ -146,7 +152,6 @@ extension ParticipatePaymentCardViewController {
         selectEmptyView.setWidth(width: 4)
         
         let selectRelatedContainer = UIStackView(arrangedSubviews: [numberOfselectedCardsLabel, cancleSelectButton, selectEmptyView])
-        cancleSelectButton.addTarget(self, action: #selector(cancelSelection), for: .touchUpInside)
         selectRelatedContainer.spacing = Constants.betweenNumberAndLabel
         
         let rightBarbutton = UIBarButtonItem(customView: selectRelatedContainer)
@@ -174,26 +179,17 @@ extension ParticipatePaymentCardViewController {
     }
 }
 
-extension ParticipatePaymentCardViewController {
-    @objc fileprivate func dismissView() {
-        dismiss(animated: true)
-    }
-    
-    @objc fileprivate func cancelSelection() {
-        viewModel.resetCheck()
-    }
-}
-
 extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numOfPaymentCards
+        guard let reactor = reactor else { return 0 }
+        return reactor.currentState.cardList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cardList = reactor?.currentState.cardList else { return .init() }
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ParticipateCollectionViewCell.cellID, for: indexPath) as? ParticipateCollectionViewCell else { return UICollectionViewCell() }
-        cell.paymentCard = viewModel.paymentCardAt(indexPath.row)
-        cell.isChecked =  viewModel.isCheckedAt(indexPath.row)
+        cell.viewModel = cardList[indexPath.row]
         cell.delegate = self
         return cell
     }
@@ -201,12 +197,17 @@ extension ParticipatePaymentCardViewController: UICollectionViewDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: Constants.collectionViewWidth, height: Constants.collectionViewHeight)
     }
-   
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ParticipateCollectionViewCell,
+              let viewModel = cell.viewModel else { return }
+        reactor?.action.onNext(.selectCard(viewModel))
+    }
 }
 
-extension ParticipatePaymentCardViewController: CellCheckPress {
-    func toggleCheckAt(_ id: Int) {
-        viewModel.checkCardAt(id)
+extension ParticipatePaymentCardViewController: ParticipateCellDelegate {
+    func toggleCheckAt(_ viewModel: ParticipateCellViewModel) {
+        reactor?.action.onNext(.selectCard(viewModel))
     }
 }
 

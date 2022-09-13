@@ -12,10 +12,11 @@ import Models
 
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinCard(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+//    func joinCards(request: PaymentCardModels.JoinCard)
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
-    func DeletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response>
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response>
     func putEditPaymentCardAmount(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response>
 
 }
@@ -70,13 +71,13 @@ final class PaymentCardServiceImpl: PaymentCardService {
                     )
             })
     }
-    func joinCard(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
-        paymentCardRepository.joinCard(request: request)
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        paymentCardRepository.joinCards(request: request)
     }
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
         paymentCardRepository.fetchPaymentCard(cardId: cardId)
     }
-    func DeletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response> {
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response> {
         paymentCardRepository.deletePaymentCardList(cardId: cardId)
     }
     func putEditPaymentCardAmount(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response> {

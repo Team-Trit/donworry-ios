@@ -14,7 +14,8 @@ import Models
 
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinCard(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+//    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
     func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response>
@@ -41,7 +42,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
 
-    func joinCard(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
         network.request(
             PostJoinPaymentCardAPI(
                 request:  .init(
@@ -53,6 +54,10 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         .compactMap { _ in .init() }.asObservable()
     }
 
+//    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+//
+//    }
+//
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
         network.request(GetPaymentCardAPI(cardId: cardId))
             .compactMap { [weak self] response in
@@ -99,7 +104,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder),
             taker: .init(id: dto.taker.id, nickname: dto.taker.nickname, imgURL: dto.taker.imgURL),
             givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) },
-            isUserParticipatedIn: false
+            isUserParticipatedIn: dto.isUserJoin
         )
     }
     

@@ -143,4 +143,10 @@ enum PaymentCardModels {
             let selectedCardIds: [Int]
         }
     }
+
+    enum JoinOneCard {
+        struct Request {
+            let cardID: Int
+        }
+    }
 }

@@ -297,14 +297,32 @@ extension PaymentCardListViewController {
         case .addPaymentCard:
             self.navigationController?.pushViewController(createPaymentCard(), animated: true)
         case .participate:
-            guard let id = reactor?.currentState.space.id else { return }
-            let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
-            let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            present(nav, animated: true)
+            let participateViewController = createParticipateViewController()
+            participateViewController.modalPresentationStyle = .fullScreen
+            self.present(participateViewController, animated: true)
         case .none:
             break
         }
+    }
+
+    private func createParticipateViewController() -> UINavigationController {
+        guard let currentState = reactor?.currentState else { return .init() }
+        let participateViewController = ParticipatePaymentCardViewController()
+        participateViewController.reactor = ParticipatePaymentCardViewReactor(
+            participatedCards: currentState.paymentCardListViewModel.map {
+                .init(id: $0.id,
+                      isSelected: $0.isUserParticipated,
+                      name: $0.name,
+                      categoryName: $0.categoryImageName,
+                      amount: $0.totalAmount,
+                      payer: .init(id: $0.payer.id, imgURL: $0.payer.imageURL, name: $0.payer.nickName),
+                      date: $0.dateString,
+                      bgColor: $0.backgroundColor
+                )
+            }
+        )
+        let navigationController = UINavigationController(rootViewController: participateViewController)
+        return navigationController
     }
 
     private func createPaymentCard() -> UIViewController {

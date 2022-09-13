@@ -26,7 +26,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
     func formatSection(
         from paymentCardList: [PaymentCardModels.FetchCardList.Response.PaymentCard]
     ) -> [PaymentCardCellViewModel] {
-        return paymentCardList.map { convert($0) }
+        return paymentCardList.compactMap { [weak self] in self?.convert($0) }
     }
 
     private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response.PaymentCard) -> PaymentCardCellViewModel {

@@ -8,48 +8,64 @@ import UIKit
 
 import DesignSystem
 import DonWorryExtensions
-import Models
 
+struct ParticipateCellViewModel: Equatable {
+    let id: Int
+    var isSelected: Bool
+    let name: String
+    let categoryName: String
+    let amount: String
+    let payer: ParticipateCellUser
+    let date: String
+    let bgColor: String
+
+    static func == (lhs: ParticipateCellViewModel, rhs: ParticipateCellViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    struct ParticipateCellUser {
+        let id: Int
+        let imgURL: String?
+        let name: String
+    }
+}
+
+protocol ParticipateCellDelegate: AnyObject {
+    func toggleCheckAt(_ viewModel: ParticipateCellViewModel)
+}
 
 class ParticipateCollectionViewCell: UICollectionViewCell {
-    
-    typealias Space = PaymentCardModels.FetchCardList.Response
     static let cellID = "ParticipateCollectionViewCellID"
     fileprivate lazy var boundsWidth = contentView.bounds.width
-    weak var delegate: CellCheckPress?
-    
-    var isChecked: Bool = false {
-        willSet {
-            checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
-        }
-    }
-    
-    var paymentCard: Space.PaymentCard? {
+    weak var delegate: ParticipateCellDelegate?
+
+    var viewModel: ParticipateCellViewModel? {
         didSet {
-            guard let paymentCard = paymentCard else {
-                return
-            }
-            
-            cardNameLabel.text = paymentCard.name
+            cardNameLabel.text = viewModel?.name
 
             let numberFormatter = NumberFormatter()
             numberFormatter.numberStyle = .decimal
-            let totalString = numberFormatter.string(from: NSNumber(value: paymentCard.totalAmount)) ?? ""
-            
-            totalPriceLabel.text = "총 \(totalString)원"
-            if let url = URL(string: paymentCard.taker.imgURL ?? "") {
-                userImageView.kf.setImage(with: url)
+            if let viewModel = viewModel {
+                totalPriceLabel.text = "\(viewModel.amount)"
+            } else {
+                totalPriceLabel.text = "총 0원"
             }
-            iconImageView.image =  UIImage(assetName: paymentCard.category.name)
-            userNickNameLabel.text = paymentCard.taker.nickname
-            iconImageView.image =  UIImage(assetName: paymentCard.category.name)
-            let bgColor = paymentCard.bgColor
-            dateLabel.text = dateFormatting(paymentCard.paymentDate)
-            dateLabel.textColor = UIColor(hex: bgColor)
-            
+            userImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.payer.imgURL)
+            iconImageView.image =  UIImage(assetName: viewModel?.categoryName ?? "")
+            userNickNameLabel.text = viewModel?.payer.name
+
+            let bgColor = viewModel?.bgColor ?? ""
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
-            dateLabelContainer.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
+
+            dateLabel.text = dateFormatting(viewModel?.date ?? "")
+            dateLabel.textColor = UIColor(hex: bgColor)
+            isChecked = viewModel?.isSelected ?? false
+        }
+    }
+    var isChecked: Bool = false {
+        willSet {
+            checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
         }
     }
 
@@ -60,7 +76,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         return "00/00"
     }
     
-    fileprivate var checkButton: UIButton = {
+    fileprivate lazy var checkButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 42)
         button.setHeight(height: 42)
@@ -147,6 +163,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._13)
         label.textColor = .white
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -155,7 +172,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         view.roundCorners(11)
         view.setWidth(width: 40)
         view.setHeight(height: 24)
-        view.backgroundColor = .black
+        view.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         return view
     }()
     
@@ -170,10 +187,10 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setUI()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
+}
     
     fileprivate func setUI() {
         let hstack = UIStackView(arrangedSubviews: [checkButton, wrappedCardTotalView])
@@ -225,14 +242,9 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
     }
     
     @objc fileprivate func toggleCheck() {
-        guard let paymentCard = paymentCard else {
+        guard let viewModel = viewModel else {
             return
         }
-        delegate?.toggleCheckAt(paymentCard.id)
+        delegate?.toggleCheckAt(viewModel)
     }
 }
-
-protocol CellCheckPress: AnyObject {
-    func toggleCheckAt(_ id: Int)
-}
-

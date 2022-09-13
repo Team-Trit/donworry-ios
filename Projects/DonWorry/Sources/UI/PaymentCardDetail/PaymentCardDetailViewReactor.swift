@@ -106,13 +106,12 @@ final class PaymentCardDetailViewReactor: Reactor {
     }
 
     private func requestParticipate() -> Observable<Mutation> {
-        // TODO: API 요청한 상태
-        return paymentCardService.DeletePaymentCardList(cardId: currentState.cardID)
+        return paymentCardService.deletePaymentCardList(cardId: currentState.cardID)
             .map { _ in .routeTo(.pop) }
     }
 
     private func requestDelete() -> Observable<Mutation> {
-        return paymentCardService.DeletePaymentCardList(cardId: currentState.cardID)
+        return paymentCardService.deletePaymentCardList(cardId: currentState.cardID)
             .map { _ in .routeTo(.pop) }
     }
 

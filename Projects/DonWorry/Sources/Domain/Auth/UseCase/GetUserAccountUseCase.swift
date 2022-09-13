@@ -12,6 +12,8 @@ import RxSwift
 
 protocol GetUserAccountUseCase {
     func getUserAccount() -> Observable<User?>
+    func compareIsUser(id: Int) -> Observable<Void>
+    func compareIsUserList(ids: [Int]) -> Observable<Void>
 }
 
 final class GetUserAccountUseCaseImpl: GetUserAccountUseCase {
@@ -22,7 +24,28 @@ final class GetUserAccountUseCaseImpl: GetUserAccountUseCase {
     ) {
         self.userAccountRepository = userAccountRepository
     }
+
     func getUserAccount() -> Observable<User?> {
         .just(userAccountRepository.fetchLocalUserAccount())
+    }
+
+    func compareIsUser(id: Int) -> Observable<Void> {
+        guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else {
+            return .error(UserError.isNotMe)
+        }
+        if userID != id {
+            return .just(())
+        }
+        return .error(UserError.isNotMe)
+    }
+
+    func compareIsUserList(ids: [Int]) -> Observable<Void> {
+        guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else {
+            return .error(UserError.isNotMe)
+        }
+        if ids.contains(userID) == false {
+            return .just(())
+        }
+        return .error(UserError.isNotMe)
     }
 }

@@ -25,7 +25,6 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
     typealias Reactor = PaymentCardAmountEditReactor
     private let padItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "00", "0", "delete.left.fill"]
     private var editType: paymentAmountEditType = .create
-//    private lazy var navigationBar = DWNavigationBar(title: "", rightButtonImageName: "xmark")
     
     private lazy var navigationBar: DWNavigationBar = {
         if editType == .update {

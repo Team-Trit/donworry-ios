@@ -60,6 +60,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     lazy private var editButton: UIButton = {
         let button = UIButton()
+        button.isHidden = true
         button.setWidth(width: 16)
         button.setHeight(height: 22)
         button.contentMode = .scaleAspectFit
@@ -182,7 +183,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         reactor.state.map { $0.isCardAdmin }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isCardAdmin in
-                self?.editButton.isHidden = !isCardAdmin
                 self?.buttonType = isCardAdmin ? .delete : .participate
             }).disposed(by: disposeBag)
 
