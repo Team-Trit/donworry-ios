@@ -27,11 +27,14 @@ final class LoginViewReactor: Reactor {
 //        case googleLoginButtonPressed
         case proceedWithAppleToken(identityToken: String)
         case kakaoLoginButtonPressed
+        case login(String, LoginProvider)
         // TODO: 삭제하기
         case didTapTestUserButton
     }
     
     enum Mutation {
+        case login
+        case loginError
         case performAppleLogin
         case routeTo(LoginStep)
     }
@@ -67,10 +70,32 @@ final class LoginViewReactor: Reactor {
         */
             
         case .kakaoLoginButtonPressed:
-            return userService.loginWithKakao()
+            return userService.kakaoLogin()
                 .map { oauthToken in
-                    return .routeTo(.enterUserInfo(provider: .KAKAO, token: oauthToken.accessToken))
+                    self.action.onNext(.login(oauthToken.accessToken, .KAKAO))
+                    return .login
+//                    return .routeTo(.enterUserInfo(provider: .KAKAO, token: oauthToken.accessToken))
                 }
+            
+        case let .login(token, provider):
+            switch provider {
+            case .APPLE:
+//                userService.login
+                break
+                
+//            case .GOOGLE:
+                
+                
+            case .KAKAO:
+                let loginWithKakao = loginWithKakao()
+                userService.loginWithKakao(accessToken: token)
+                    .catch { error in
+                        // 401에러이면 회원가입으로
+                        return .just()
+                    }
+            default:
+                break
+            }
             
             // TODO: 삭제하기
         case .didTapTestUserButton:
@@ -80,10 +105,20 @@ final class LoginViewReactor: Reactor {
         }
     }
     
+    func loginWithKakao() {
+        
+    }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
+        case .login:
+            break
+            
+        case .loginError:
+            break
+            
         case .performAppleLogin:
             newState.appleLoginTrigger = ()
             

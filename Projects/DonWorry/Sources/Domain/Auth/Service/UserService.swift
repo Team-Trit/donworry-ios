@@ -36,6 +36,9 @@ protocol UserRepository {
                   isAgreeMarketing: Bool,
                   identityToken: String) -> Observable<(Models.User, AuthenticationToken)>
     
+    func loginWithKakao(accessToken: String) -> Observable<Models.User>
+    func loginWithApple(identityToken: String) -> Observable<Models.User>
+    
     // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
                    imgURL: String?,
@@ -43,7 +46,6 @@ protocol UserRepository {
                    holder: String?,
                    accountNumber: String?,
                    isAgreeMarketing: Bool?) -> Observable<Models.User>
-    
     
     func kakaoLogin() -> Observable<OAuthToken>
     func kakaoLogout()
@@ -97,16 +99,23 @@ protocol UserService {
                     accountNumber: String?,
                     isAgreeMarketing: Bool?) -> Observable<Models.User>     // 유저 정보 수정 유즈케이스
     
+//    func loginWithApple(identityToken: String) -> Observable<Models.User>
+    func loginWithKakao(accessToken: String) -> Observable<Models.User>
+    
     func saveLocalUser(user: Models.User) -> Bool       // 로컬에 유저 정보 저장 유즈케이스
     func fetchLocalUser() -> Models.User?               // 로컬 유저 fetch 유즈케이스
     func fetchLocalToken() -> AccessToken?              // 로컬 토큰 fetch 유즈케이스
     func deleteLocalUser()                              // 로컬 유저, 토큰 삭제 유즈케이스
     
-    func loginWithKakao() -> Observable<OAuthToken>
+    func kakaoLogin() -> Observable<OAuthToken>
     func unlinkKakao()
 }
 
 final class UserServiceImpl: UserService {
+    enum UserError: Error {
+        case undefined
+        case noUserInServer
+    }
     private let userRepository: UserRepository
     private let userAccountRepository: UserAccountRepository
     private let accessTokenRepository: AccessTokenRepository
@@ -172,6 +181,23 @@ final class UserServiceImpl: UserService {
         }
     }
     
+    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
+        userRepository.loginWithKakao(accessToken: accessToken)
+        //        로그인 APi 호출 후 401에러면 회원가입으로, 200이면 홈으로.
+//        userRepository.kakaoLogin()
+//            .flatMap { oauthToken in
+//                self.userRepository.loginWithKakao(accessToken: accessToken)
+//                    .catch { error in
+//                        // EnterUserInfo로 이동
+//                        return .just(.dummyUser1)
+//                    }
+//            }
+    }
+
+    func loginWithApple(identityToken: String) -> Observable<Models.User> {
+        userRepository.loginWithApple(identityToken: identityToken)
+    }
+    
     func updateUser(nickname: String?,
                     imgURL: String?,
                     bank: String?,
@@ -207,7 +233,7 @@ final class UserServiceImpl: UserService {
         _ = accessTokenRepository.deleteAccessToken()
     }
     
-    func loginWithKakao() -> Observable<OAuthToken> {
+    func kakaoLogin() -> Observable<OAuthToken> {
         return userRepository.kakaoLogin()
     }
     

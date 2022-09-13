@@ -76,6 +76,38 @@ final class UserRepositoryImpl: UserRepository {
             .asObservable()
     }
     
+    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
+        let api = KakaoLoginAPI(accessToken: accessToken)
+        return network.request(api)
+            .compactMap { [weak self] in
+                self?.convertToUser(userDTO: $0) as? Models.User
+            }.catch { [weak self] in
+                return .error(self?.judgeUserError($0) ?? .undefined)
+            }
+            .asObservable()
+    }
+    
+    private func judgeUserError(_ error: Error) -> UserError {
+        guard let error = error as? NetworkError else { return .undefined }
+        switch error {
+        case .httpStatus(let status):
+            print("🔥status : \(status)")
+            if status == 401 { return .notUserInServer }
+        default:
+            break
+        }
+        return .undefined
+    }
+    
+    func loginWithApple(identityToken: String) -> Observable<Models.User> {
+        let api = AppleLoginAPI(identityToken: identityToken)
+        return network.request(api)
+            .compactMap { [weak self] in
+                self?.convertToUser(userDTO: $0) as? Models.User
+            }
+            .asObservable()
+    }
+    
     // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
                    imgURL: String?,
