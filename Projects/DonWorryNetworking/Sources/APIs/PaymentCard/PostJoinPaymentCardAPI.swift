@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 
-
 public struct PostJoinPaymentCardAPI: ServiceAPI {
     
     public typealias Response = DTO.Empty

@@ -106,7 +106,7 @@ final class PaymentCardDetailViewReactor: Reactor {
     }
 
     private func requestParticipate() -> Observable<Mutation> {
-        return paymentCardService.deletePaymentCardList(cardId: currentState.cardID)
+        return paymentCardService.joinOneCard(request: .init(cardID: currentState.cardID))
             .map { _ in .routeTo(.pop) }
     }
 

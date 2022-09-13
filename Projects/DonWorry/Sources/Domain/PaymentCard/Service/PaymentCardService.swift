@@ -13,7 +13,7 @@ import Models
 protocol PaymentCardService {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
     func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
-//    func joinCards(request: PaymentCardModels.JoinCard)
+    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
     func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response>
@@ -71,6 +71,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
                     )
             })
     }
+
     func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
         paymentCardRepository.joinCards(request: request)
     }
@@ -82,5 +83,8 @@ final class PaymentCardServiceImpl: PaymentCardService {
     }
     func putEditPaymentCardAmount(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response> {
         paymentCardRepository.putEditPaymentCard(id: id, totalAmount: totalAmount)
+    }
+    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        paymentCardRepository.joinOneCard(request: request)
     }
 }
