@@ -16,7 +16,7 @@ protocol FileCollectionViewCellDelegate: AnyObject {
 
 class FileCollectionViewCell: UICollectionViewCell {
     
-    weak var FileCollectionViewCellDelegate: FileCollectionViewCellDelegate?
+//    weak var FileCollectionViewCellDelegate: FileCollectionViewCellDelegate?
     
     var imageUrl: String? {
         didSet {

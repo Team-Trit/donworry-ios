@@ -68,10 +68,10 @@ final class ParticipatePaymentCardViewModel: BaseViewModel {
     }
     
     func checkAttendance() {
-        paymentUseCase.joinPaymentCardList(ids: Array(checkedIDs))
-            .subscribe(onNext: { str in
-                print(str)
-            }).disposed(by: disposeBag)
+//        paymentUseCase.joinPaymentCardList(ids: Array(checkedIDs))
+//            .subscribe(onNext: { str in
+//                print(str)
+//            }).disposed(by: disposeBag)
     }
     
 }

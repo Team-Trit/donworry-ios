@@ -185,7 +185,8 @@ extension JoinSpaceViewController {
                     object: nil,
                     userInfo: [
                         "joinSpace.spaceID": space.id,
-                        "joinSpace.adminID": space.adminID
+                        "joinSpace.adminID": space.adminID,
+                        "joinSpace.status": space.status
                     ]
                 )
             }
