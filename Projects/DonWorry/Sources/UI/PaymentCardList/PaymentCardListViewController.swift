@@ -140,7 +140,8 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.spaceIDCopyButton.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                DWToastFactory.show(message: "정산이 시작 “4분 30초” 경과", subMessage: "정산 1등이에요!", type: .success)
+                UIPasteboard.general.string = String((reactor.currentState.space.shareID))
+                DWToastFactory.show(message: "복사되었어요!")
             })
             .disposed(by: disposeBag)
 
@@ -150,18 +151,15 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.collectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
-        self.checkParticipatedButton.rx.tap.map { .didTapPaymentCardDetail }
+        self.checkParticipatedButton.rx.tap.map { .didTapParticipatedButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
                     .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
-                    .subscribe(onNext: { [weak self] cell in
-                        guard let id = cell.viewModel?.id else { return }
-                        let viewModel = PaymentCardDetailViewModel(cardID: id, cardName: cell.viewModel?.name ?? "")
-                        let cardDetail = PaymentCardDetailViewController(viewModel: viewModel)
-                        self?.navigationController?.pushViewController(cardDetail, animated: true)
-                    }).disposed(by: disposeBag)
+                    .map { .didTapPaymentCard($0.viewModel!) }
+                    .bind(to: reactor.action)
+                    .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
             .compactMap { [weak self] in
@@ -279,14 +277,17 @@ extension PaymentCardListViewController {
         switch step {
         case .pop:
             self.navigationController?.popToRootViewController(animated: true)
-        case .paymentCardDetail:
-            
-            guard let id = reactor?.currentState.space.id else { return }
-            let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
-            let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
-            nav.modalPresentationStyle = .overFullScreen
-            present(nav, animated: true)
-            
+        case .paymentCardDetail(let card, let isCardAdmin):
+            let detailViewController = PaymentCardDetailViewController()
+            detailViewController.reactor = PaymentCardDetailViewReactor(
+                cardID: card.id,
+                cardName: card.name,
+                isCardAdmin: isCardAdmin,
+                participatedUsers: card.participatedUserList.map {
+                    .init(id: $0.id, name: $0.nickName, imgURL: $0.imageURL)
+                }
+            )
+            self.navigationController?.pushViewController(detailViewController, animated: true)
         case .actionSheet:
             self.present(optionAlertController(), animated: true)
         case .nameEdit:
@@ -295,9 +296,14 @@ extension PaymentCardListViewController {
             self.navigationController?.pushViewController(editRoomNameViewController, animated: true)
         case .addPaymentCard:
             self.navigationController?.pushViewController(createPaymentCard(), animated: true)
+        case .participate:
+            guard let id = reactor?.currentState.space.id else { return }
+            let participatePaymentCardViewController = ParticipatePaymentCardViewController(viewModel: ParticipatePaymentCardViewModel(spaceID: id))
+            let nav = UINavigationController(rootViewController: participatePaymentCardViewController)
+            nav.modalPresentationStyle = .overFullScreen
+            present(nav, animated: true)
         case .none:
             break
-
         }
     }
 

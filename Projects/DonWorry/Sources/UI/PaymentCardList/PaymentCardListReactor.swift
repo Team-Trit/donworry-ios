@@ -11,12 +11,15 @@ import ReactorKit
 import RxSwift
 
 enum PaymentCardListStep {
+    typealias IsCardAdmin = Bool
+
     case pop
-    case none
-    case paymentCardDetail
+    case paymentCardDetail(PaymentCardCellViewModel, IsCardAdmin)
     case actionSheet
     case nameEdit
     case addPaymentCard
+    case participate
+    case none
 }
 
 final class PaymentCardListReactor: Reactor {
@@ -30,7 +33,8 @@ final class PaymentCardListReactor: Reactor {
         case viewWillAppear
         case didTapStartPaymentAlgorithmButton
         case didTapBackButton
-        case didTapPaymentCardDetail
+        case didTapParticipatedButton
+        case didTapPaymentCard(PaymentCardCellViewModel)
         case didTapOptionButton
         case didTapAddPaymentCard
         case routeToNameEdit
@@ -73,7 +77,7 @@ final class PaymentCardListReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            let isUserAdmin = requestIsUserAdmin()
+            let isUserAdmin = requestIsUserSpaceAdmin()
             let paymentCardListInformation = requestPaymentCardListInformation()
 
             return .concat([isUserAdmin, paymentCardListInformation])
@@ -81,8 +85,9 @@ final class PaymentCardListReactor: Reactor {
             return requestStartPaymentAlgorithm()
         case .didTapBackButton:
             return .just(.routeTo(.pop))
-        case .didTapPaymentCardDetail:
-            return .just(.routeTo(.paymentCardDetail))
+        case .didTapPaymentCard(let card):
+            let detailCard = requestIsUserCardAdmin(card: card)
+            return detailCard
         case .didTapOptionButton:
             return .just(.routeTo(.actionSheet))
         case .routeToNameEdit:
@@ -92,6 +97,8 @@ final class PaymentCardListReactor: Reactor {
             return leaveAct
         case .didTapAddPaymentCard:
             return .just(.routeTo(.addPaymentCard))
+        case .didTapParticipatedButton:
+            return .just(.routeTo(.participate))
         }
     }
 
@@ -123,10 +130,15 @@ final class PaymentCardListReactor: Reactor {
         let space = currentState.space
         return spaceService.startPaymentAlogrithm(request: .init(id: space.id, status: .progress)).map { _ in .routeTo(.pop) }
     }
-    private func requestIsUserAdmin() -> Observable<Mutation> {
+
+    private func requestIsUserSpaceAdmin() -> Observable<Mutation> {
         judgeSpaceAdminUseCase.judgeUserIsSpaceAdmin(spaceAdminID: currentState.space.adminID).map { .initializeIsUserAdmin($0) }
     }
 
+    private func requestIsUserCardAdmin(card: PaymentCardCellViewModel) -> Observable<Mutation> {
+        judgeSpaceAdminUseCase.judgeUserIsCardAdmin(cardAdminID: card.payer.id)
+            .map { .routeTo(.paymentCardDetail(card, $0)) }
+    }
     private func requestPaymentCardListInformation() -> Observable<Mutation> {
         paymentCardService.fetchPaymentCardList(spaceID: currentState.space.id)
             .map { .initializeState($0)  }

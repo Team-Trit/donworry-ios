@@ -32,10 +32,14 @@ public struct PostJoinPaymentCardAPI: ServiceAPI {
 extension PostJoinPaymentCardAPI {
 
     public struct Request: Encodable {
-        public let cardIds: [Int]
-        public init(cardIds: [Int]) {
-            self.cardIds = cardIds
-        }
+        public let currentCardIds: [Int]
+        public let selectedCardIds: [Int]
+        public init(
+            currentCardIds: [Int],
+            selectedCardIds: [Int]
+        ) {
+                self.currentCardIds = currentCardIds
+                self.selectedCardIds = selectedCardIds
+            }
     }
 }
-

@@ -10,18 +10,24 @@ import Foundation
 import ReactorKit
 import RxSwift
 
+enum ParticipatePaymentCardStep {
+    case dismiss
+}
+
 final class ParticipatePaymentCardViewReactor: Reactor {
 
     enum Action {
-        // actiom cases
+        case selectCard
+        case didTapParticipateButton
     }
 
     enum Mutation {
-        // mutation cases
+        case routeTo(ParticipatePaymentCardStep)
     }
 
     struct State {
-        //state
+
+        @Pulse var step: ParticipatePaymentCardStep?
     }
 
     let initialState: State = State()
@@ -30,10 +36,10 @@ final class ParticipatePaymentCardViewReactor: Reactor {
         // init state initialState = State(...)
     }
 
-    func mutate(action: Action) -> Observable<Mutation> {
-        // switch action {
-        // }
-    }
+//    func mutate(action: Action) -> Observable<Mutation> {
+//        // switch action {
+//        // }
+//    }
 
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state

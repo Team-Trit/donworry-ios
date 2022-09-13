@@ -11,6 +11,8 @@ import RxSwift
 
 protocol JudgeSpaceAdminUseCase {
     func judgeUserIsSpaceAdmin(spaceAdminID: Int) -> Observable<Bool>
+    func judgeUserIsCardAdmin(cardAdminID: Int) -> Observable<Bool>
+    
 }
 
 final class JudgeSpaceAdminUseCaseImpl: JudgeSpaceAdminUseCase {
@@ -28,5 +30,12 @@ final class JudgeSpaceAdminUseCaseImpl: JudgeSpaceAdminUseCase {
             return .just(false)
         }
         return .just(userAccount.id == spaceAdminID)
+    }
+
+    func judgeUserIsCardAdmin(cardAdminID: Int) -> Observable<Bool> {
+        guard let userAccount = userAccountRepository.fetchLocalUserAccount() else {
+            return .just(false)
+        }
+        return .just(userAccount.id == cardAdminID)
     }
 }
