@@ -11,6 +11,7 @@ import DesignSystem
 import SnapKit
 
 final class DWToastFactory {
+
     enum ToastType {
         case error
         case success
@@ -56,6 +57,12 @@ final class DWToastFactory {
         duration: TimeInterval = 1.25,
         completion: (() -> Void)? = nil
     ) {
+        
+        var toastArea = 50
+        if !UIDevice.current.hasNotch {
+            toastArea = 20
+        }
+        
         guard let window = UIWindow.current else { return }
 
         window.subviews
@@ -69,7 +76,7 @@ final class DWToastFactory {
             $0.centerX.equalToSuperview()
         }
         
-        toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: -100)
+        toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: CGFloat(-toastArea*2))
         
         
         window.layoutSubviews()
@@ -91,7 +98,7 @@ final class DWToastFactory {
                 withDuration: 0.5,
                 animations: {
                     toastView.alpha = 1
-                    toastView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0).translatedBy(x: 0, y: 50)
+                    toastView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0).translatedBy(x: 0, y: CGFloat(toastArea))
                 },
                 completion: { _ in completion?() }
             )
@@ -103,7 +110,7 @@ final class DWToastFactory {
                 withDuration: 0.5,
                 animations: {
                     toastView.alpha = 0
-                    toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: -100)
+                    toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: CGFloat(-toastArea*2))
                 },
                 completion: { _ in
                     toastView.removeFromSuperview()
@@ -122,5 +129,18 @@ extension UIWindow {
     public static var current: UIWindow? {
         UIApplication.shared.windows.first(where: \.isKeyWindow)
     }
+    
 
+}
+
+extension UIDevice {
+    var hasNotch: Bool {
+        if #available(iOS 11.0, *) {
+            let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+            return bottom > 0
+        } else {
+            // Fallback on earlier versions
+            return false
+        }
+    }
 }
