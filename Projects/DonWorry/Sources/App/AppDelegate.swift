@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 import DonWorryLocalStorage
 import KakaoSDKCommon

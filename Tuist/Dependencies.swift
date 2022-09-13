@@ -19,7 +19,8 @@ let dependencies = Dependencies(
         .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .exact("6.5.0")),
         .remote(url: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.2.1")),
         .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMajor(from: "3.0.0")),
-        .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .upToNextMajor(from: "2.11.1"))
+        .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .upToNextMajor(from: "2.11.1")),
+        .remote(url: "https://github.com/firebase/firebase-ios-sdk", requirement: .upToNextMajor(from: "8.14.0"))
     ],
     platforms: [.iOS]
 )
