@@ -218,10 +218,13 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         iconImageView.centerX(inView: imageContainerView)
         
         cardLeftView.addSubview(imageContainerView)
-        imageContainerView.anchor(top: cardNameLabel.bottomAnchor, left: cardLeftView.leftAnchor, paddingTop: 11, paddingLeft: 18)
+        imageContainerView.anchor(left: cardLeftView.leftAnchor, paddingLeft: 18)
+        imageContainerView.centerY(inView: contentView)
         
         cardLeftView.addSubview(totalPriceLabel)
-        totalPriceLabel.anchor(top: cardNameLabel.bottomAnchor, left: imageContainerView.rightAnchor, right: cardLeftView.rightAnchor, paddingTop: 14, paddingLeft: 6, paddingRight: 8)
+        
+        totalPriceLabel.centerY(inView: contentView)
+        totalPriceLabel.anchor(left: imageContainerView.rightAnchor, right: cardLeftView.rightAnchor, paddingLeft: 6, paddingRight: 8)
         
         cardRightView.addSubview(userImageView)
         userImageView.centerX(inView: cardRightView)
@@ -236,7 +239,8 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         dateLabel.centerY(inView: dateLabelContainer)
         
         cardRightView.addSubview(dateLabelContainer)
-        dateLabelContainer.anchor(top: userNickNameLabel.bottomAnchor, paddingTop: 18)
+//        dateLabelContainer.anchor(top: userNickNameLabel.bottomAnchor, paddingTop: 18)
+        dateLabelContainer.anchor(bottom: cardRightView.bottomAnchor, paddingBottom: 24)
         dateLabelContainer.centerX(inView: userImageView)
     }
     
