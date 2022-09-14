@@ -11,6 +11,7 @@ import RxSwift
 
 protocol UploadImageUseCase {
     func uploadCard(request: ImageModels.UploadImage.Request) -> Observable<ImageModels.UploadImage.Response>
+    func uploadProfileImage(request: ImageModels.UploadImage.Request) -> Observable<ImageModels.UploadImage.Response>
 }
 
 final class UploadImageUseCaseImpl: UploadImageUseCase {
@@ -21,6 +22,10 @@ final class UploadImageUseCaseImpl: UploadImageUseCase {
     }
     
     func uploadCard(request: ImageModels.UploadImage.Request) -> Observable<ImageModels.UploadImage.Response> {
+        imageRepository.uploadImage(request: request)
+    }
+    
+    func uploadProfileImage(request: ImageModels.UploadImage.Request) -> Observable<ImageModels.UploadImage.Response> {
         imageRepository.uploadImage(request: request)
     }
 }

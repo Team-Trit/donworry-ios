@@ -173,13 +173,13 @@ extension ProfileViewController {
                     
                 case .notDetermined:
                     AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                            guard let self = self else { return }
-                                if granted {
-                                    DispatchQueue.main.async {
-                                        self.present(imgPickerController, animated: true)
-                                    }
-                                }
+                        guard let self = self else { return }
+                        if granted {
+                            DispatchQueue.main.async {
+                                self.present(imgPickerController, animated: true)
                             }
+                        }
+                    }
                     
                 case .denied, .restricted:
                     let alert = UIAlertController(title: nil, message: "카메라 촬영 권한이 없습니다.\n카메라 권한을 허용해주세요.", preferredStyle: .alert)
@@ -362,13 +362,17 @@ extension ProfileViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         let selectedPhoto = results.first?.itemProvider
-        selectedPhoto?.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier, completionHandler: { url, error in
-            if let error = error {
-                print(error.localizedDescription)
+        
+        if let selectedPhoto = selectedPhoto,
+           selectedPhoto.canLoadObject(ofClass: UIImage.self) {
+            selectedPhoto.loadObject(ofClass: UIImage.self) { image, error in
+                if let error = error {
+                    return
+                } else {
+                    self.reactor?.action.onNext(.updateProfileImage(image: image as? UIImage))
+                }
             }
-            guard let imgURL = url?.absoluteString else { return }
-            self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
-        })
+        }
     }
 }
 

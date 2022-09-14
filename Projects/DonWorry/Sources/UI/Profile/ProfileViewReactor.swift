@@ -21,13 +21,14 @@ enum ProfileStep {
 final class ProfileViewReactor: Reactor {
     private let userService: UserService
     private let getUserUseCase: GetUserAccountUseCase
-
+    private let uploadImageUseCase: UploadImageUseCase
+    
     private var user: User
     enum Action {
         case viewWillAppear
         case pressBackButton
         case pressUpdateProfileImageButton
-        case updateProfileImage(imgURL: String)
+        case updateProfileImage(image: UIImage)
         case pressUpdateNickNameButton
         case pressUpdateAccountButton
         case pressNoticeButton
@@ -60,7 +61,8 @@ final class ProfileViewReactor: Reactor {
     
     init(
         userService: UserService = UserServiceImpl(),
-        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
+        uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl()
     ) {
         self.userService = userService
         self.getUserUseCase = getUserUseCase
@@ -86,7 +88,14 @@ final class ProfileViewReactor: Reactor {
         case .pressUpdateProfileImageButton:
             return .just(.routeTo(step: .profileImageSheet))
             
-        case .updateProfileImage(let imgURL):
+        case .updateProfileImage(let image):
+            uploadImageUseCase.uploadProfileImage(request: .init(image: image, type: "profile"))
+                .subscribe(onNext: { url in
+                    
+                })
+            
+            
+            
             return userService.updateUser(nickname: nil,
                                    imgURL: imgURL,
                                    bank: nil,
