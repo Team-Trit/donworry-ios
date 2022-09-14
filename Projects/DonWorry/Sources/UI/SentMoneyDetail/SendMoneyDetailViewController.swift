@@ -121,8 +121,6 @@ extension SendMoneyDetailViewController {
         view.addSubview(statusView)
         view.addSubview(accountInfo)
         view.addSubview(self.buttonStackView)
-//        buttonStackView.addArrangedSubview(self.leftButtomButton)
-//        buttonStackView.addArrangedSubview(self.rightButtomButton)
         view.addSubviews(leftButtomButton, rightButtomButton)
 
         statusView.snp.makeConstraints { make in
@@ -135,10 +133,7 @@ extension SendMoneyDetailViewController {
             make.leading.trailing.equalToSuperview().inset(25)
             make.height.equalTo(90)
         }
-//        buttonStackView.snp.makeConstraints { make in
-//            make.leading.trailing.equalToSuperview().inset(25)
-//            make.bottom.equalTo(view.safeAreaLayoutGuide)
-//        }
+
         leftButtomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
         leftButtomButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         leftButtomButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width * 0.57).isActive = true
