@@ -83,6 +83,9 @@ final class PaymentCardDetailViewReactor: Reactor {
          case .updateViewModel(let response):
              newState.amount = response.card.totalAmount
              newState.imgURLs = response.card.imgUrls
+             newState.isParticipated = response.card.users.contains(where: { user in
+                 user.id == UserServiceImpl().fetchLocalUser()?.id
+             })
              newState.participatedUsers = response.card.users.map {
                  .init(id: $0.id, name: $0.nickname, imgURL: $0.imgURL)
              }
@@ -105,6 +108,10 @@ final class PaymentCardDetailViewReactor: Reactor {
         }
     }
 
+    private func judgeIsParticipated() -> Bool {
+        return currentState.isParticipated ?? true
+    }
+    
     private func requestParticipate() -> Observable<Mutation> {
         return paymentCardService.joinOneCard(request: .init(cardID: currentState.cardID))
             .map { _ in .routeTo(.pop) }

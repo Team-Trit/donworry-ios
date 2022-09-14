@@ -186,6 +186,12 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 self?.buttonType = isCardAdmin ? .delete : .participate
             }).disposed(by: disposeBag)
 
+        reactor.state.map { $0.isParticipated }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isParticipated in
+                self?.bottomButton.isEnabled = !(isParticipated ?? true)
+            }).disposed(by: disposeBag)
+        
         reactor.state.map { $0.cardName }
             .bind(to: navigationBar.titleLabel!.rx.text)
             .disposed(by: disposeBag)
@@ -365,7 +371,7 @@ extension PaymentCardDetailViewController {
             case .delete:
                 return "삭제하기"
             case .participate:
-                return "정산하기"
+                return "참석 확인"
             }
         }
 
