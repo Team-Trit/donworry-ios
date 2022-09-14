@@ -66,7 +66,6 @@ public extension DWButton {
                 endColor: .designSystem(.blueBottomGradient)!
             )
             button.snp.makeConstraints { make in
-                make.width.equalTo(222)
                 make.height.equalTo(58)
             }
         case .smallBlue:
@@ -80,7 +79,6 @@ public extension DWButton {
                 endColor: .designSystem(.blueBottomGradient)!
             )
             button.snp.makeConstraints { make in
-                make.width.equalTo(106)
                 make.height.equalTo(58)
             }
         case .halfMainBlue:

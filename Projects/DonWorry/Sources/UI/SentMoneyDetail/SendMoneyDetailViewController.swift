@@ -121,8 +121,9 @@ extension SendMoneyDetailViewController {
         view.addSubview(statusView)
         view.addSubview(accountInfo)
         view.addSubview(self.buttonStackView)
-        buttonStackView.addArrangedSubview(self.leftButtomButton)
-        buttonStackView.addArrangedSubview(self.rightButtomButton)
+//        buttonStackView.addArrangedSubview(self.leftButtomButton)
+//        buttonStackView.addArrangedSubview(self.rightButtomButton)
+        view.addSubviews(leftButtomButton, rightButtomButton)
 
         statusView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(50)
@@ -134,11 +135,18 @@ extension SendMoneyDetailViewController {
             make.leading.trailing.equalToSuperview().inset(25)
             make.height.equalTo(90)
         }
-        buttonStackView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(25)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
-
+//        buttonStackView.snp.makeConstraints { make in
+//            make.leading.trailing.equalToSuperview().inset(25)
+//            make.bottom.equalTo(view.safeAreaLayoutGuide)
+//        }
+        leftButtomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        leftButtomButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        leftButtomButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width * 0.57).isActive = true
+        
+        rightButtomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        rightButtomButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25).isActive = true
+        rightButtomButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width * 0.264).isActive = true
+        
         leftButtomButton.addGradient(
             startColor: .designSystem(.blueTopGradient)!,
             endColor: .designSystem(.blueBottomGradient)!
