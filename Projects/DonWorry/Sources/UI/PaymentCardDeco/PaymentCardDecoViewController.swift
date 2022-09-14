@@ -63,7 +63,7 @@ final class PaymentCardDecoViewController: BaseViewController, View, UINavigatio
     
     private lazy var cardIconImageView: UIImageView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.image = UIImage(named: "debit-card")
+        $0.image = UIImage(.ic_debit_card)
         $0.contentMode = .scaleAspectFit
         return $0
     }(UIImageView())

@@ -30,7 +30,7 @@ final class JoinSpaceViewController: BaseViewController, View {
     private lazy var imageView: UIImageView = {
         let v = UIImageView()
         v.translatesAutoresizingMaskIntoConstraints = false
-        v.image = UIImage(named: "cash_and_coins")
+        v.image = UIImage(.ic_cash_coin)
         v.contentMode = .scaleAspectFit
         return v
     }()
