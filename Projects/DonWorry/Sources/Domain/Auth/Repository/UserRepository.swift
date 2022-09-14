@@ -11,10 +11,10 @@ import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
 import Models
+import RxSwift
 import RxKakaoSDKAuth
 import RxKakaoSDKCommon
 import RxKakaoSDKUser
-import RxSwift
 
 final class UserRepositoryImpl: UserRepository {
     private let network: NetworkServable
@@ -76,34 +76,26 @@ final class UserRepositoryImpl: UserRepository {
             .asObservable()
     }
     
-    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
-        let api = KakaoLoginAPI(accessToken: accessToken)
-        return network.request(api)
-            .compactMap { [weak self] in
-                self?.convertToUser(userDTO: $0) as? Models.User
-            }.catch { [weak self] in
-                return .error(self?.judgeUserError($0) ?? .undefined)
-            }
-            .asObservable()
-    }
-    
-    private func judgeUserError(_ error: Error) -> UserError {
-        guard let error = error as? NetworkError else { return .undefined }
-        switch error {
-        case .httpStatus(let status):
-            print("🔥status : \(status)")
-            if status == 401 { return .notUserInServer }
-        default:
-            break
-        }
-        return .undefined
-    }
-    
     func loginWithApple(identityToken: String) -> Observable<Models.User> {
         let api = AppleLoginAPI(identityToken: identityToken)
         return network.request(api)
             .compactMap { [weak self] in
                 self?.convertToUser(userDTO: $0) as? Models.User
+            }
+            .catch { [weak self] in
+                return .error(self?.judgeUserError($0) ?? .undefined)
+            }
+            .asObservable()
+    }
+    
+    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
+        let api = KakaoLoginAPI(accessToken: accessToken)
+        return network.request(api)
+            .compactMap { [weak self] in
+                self?.convertToUser(userDTO: $0) as? Models.User
+            }
+            .catch { [weak self] in
+                return .error(self?.judgeUserError($0) ?? .undefined)
             }
             .asObservable()
     }
@@ -127,7 +119,6 @@ final class UserRepositoryImpl: UserRepository {
             }.asObservable()
     }
     
-    // 카카오 소셜 로그인
     func kakaoLogin() -> Observable<OAuthToken> {
         return Observable.create { result in
             if (UserApi.isKakaoTalkLoginAvailable()) {
@@ -240,5 +231,16 @@ extension UserRepository {
         } else {
             return .init()
         }
+    }
+    
+    fileprivate func judgeUserError(_ error: Error) -> UserError {
+        guard let error = error as? NetworkError else { return .undefined }
+        switch error {
+        case .httpStatus(let status):
+            if status == 401 { return .notUserInServer }
+        default:
+            break
+        }
+        return .undefined
     }
 }

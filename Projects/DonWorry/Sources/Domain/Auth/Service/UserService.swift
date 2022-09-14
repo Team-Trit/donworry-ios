@@ -36,8 +36,8 @@ protocol UserRepository {
                   isAgreeMarketing: Bool,
                   identityToken: String) -> Observable<(Models.User, AuthenticationToken)>
     
-    func loginWithKakao(accessToken: String) -> Observable<Models.User>
     func loginWithApple(identityToken: String) -> Observable<Models.User>
+    func loginWithKakao(accessToken: String) -> Observable<Models.User>
     
     // 유저 정보 수정 API 호출
     func patchUser(nickname: String?,
@@ -47,6 +47,7 @@ protocol UserRepository {
                    accountNumber: String?,
                    isAgreeMarketing: Bool?) -> Observable<Models.User>
     
+    // 카카오 API
     func kakaoLogin() -> Observable<OAuthToken>
     func kakaoLogout()
     func kakaoUnlink()
@@ -99,7 +100,7 @@ protocol UserService {
                     accountNumber: String?,
                     isAgreeMarketing: Bool?) -> Observable<Models.User>     // 유저 정보 수정 유즈케이스
     
-//    func loginWithApple(identityToken: String) -> Observable<Models.User>
+    func loginWithApple(identityToken: String) -> Observable<Models.User>
     func loginWithKakao(accessToken: String) -> Observable<Models.User>
     
     func saveLocalUser(user: Models.User) -> Bool       // 로컬에 유저 정보 저장 유즈케이스
@@ -181,21 +182,12 @@ final class UserServiceImpl: UserService {
         }
     }
     
-    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
-        userRepository.loginWithKakao(accessToken: accessToken)
-        //        로그인 APi 호출 후 401에러면 회원가입으로, 200이면 홈으로.
-//        userRepository.kakaoLogin()
-//            .flatMap { oauthToken in
-//                self.userRepository.loginWithKakao(accessToken: accessToken)
-//                    .catch { error in
-//                        // EnterUserInfo로 이동
-//                        return .just(.dummyUser1)
-//                    }
-//            }
-    }
-
     func loginWithApple(identityToken: String) -> Observable<Models.User> {
         userRepository.loginWithApple(identityToken: identityToken)
+    }
+    
+    func loginWithKakao(accessToken: String) -> Observable<Models.User> {
+        userRepository.loginWithKakao(accessToken: accessToken)
     }
     
     func updateUser(nickname: String?,
