@@ -14,6 +14,7 @@ import RxSwift
 import DesignSystem
 import DonWorryExtensions
 import RxDataSources
+import FirebaseDynamicLinks
 
 final class PaymentCardListViewController: BaseViewController, View {
     typealias Reactor = PaymentCardListReactor
@@ -82,6 +83,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
         v.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
         v.imageEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
+        v.addTarget(self, action: #selector(shareSpace), for: .touchUpInside)
         return v
     }()
     lazy var checkParticipatedButton: DWButton = {
@@ -107,10 +109,70 @@ final class PaymentCardListViewController: BaseViewController, View {
     func setNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(popToSelf), name: .init("popToPaymentCardList"), object: nil)
     }
+    
+    // MARK: ShareSheet
+    func showShareSheet(url: URL) {
+        let promoText = "돈워리에서 정산할래요?" // 🔀 TEXT 변경필요
+        let activityVC = UIActivityViewController(activityItems: [promoText, url], applicationActivities: nil)
+        present(activityVC, animated: true)
+    }
 
     @objc
     private func copySpaceID() {
         UIPasteboard.general.string = reactor?.currentState.space.shareID
+    }
+    
+    // MARK: 공유하기
+    @objc
+    private func shareSpace() {
+        
+        // 1. URL Link 생성하기
+        let spaceID = reactor?.currentState.space.shareID
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "www.don-worry.com"
+        components.path =  "/space"
+        
+        let spaceShareQueryItem = URLQueryItem(name: "id", value: spaceID)
+        components.queryItems = [spaceShareQueryItem]
+        
+        guard let linkParmater = components.url else { return }
+        
+        // 2. Full DynamicLink 생성하기
+        guard let shareLink = DynamicLinkComponents.init(link: linkParmater, domainURIPrefix: "https://donworry.page.link") else {
+            print("Full Dynamic Link Components 를 생성할 수 없습니다.")
+            return
+        }
+        
+        // iOS 관련설정
+        // - App Bundle ID 설정
+        if let myBundleId = Bundle.main.bundleIdentifier {
+            shareLink.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
+        }
+        // - App Store ID
+        shareLink.iOSParameters?.appStoreID = "1643097323"
+        // - 공유 개선을 위한 소셜 메타 태그
+        let spaceTitle = reactor?.currentState.space.title
+        shareLink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        shareLink.socialMetaTagParameters?.title = "돈.워리에서 정산해요" // 🔀 변경필요
+        shareLink.socialMetaTagParameters?.descriptionText = "💸\(spaceTitle!)에 참가해서 정산을 완료해보세요 " // 🔀 변경필요
+        shareLink.socialMetaTagParameters?.imageURL = URL(string: "https://user-images.githubusercontent.com/63157395/190110193-0d6f49b9-b163-4fe4-845f-d650dd088d9f.png") // 🔀 변경필요
+//        guard let fullDynamicLink = shareLink.url else { return }
+        
+        // 3. 공유용 URL로 줄이기
+        shareLink.shorten { [weak self] (url, warnings, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            if let warnings = warnings {
+                for warning in warnings {
+                    print(warning)
+                }
+            }
+            guard let url = url else { return }
+            self?.showShareSheet(url: url)
+        }
     }
     
     @objc
