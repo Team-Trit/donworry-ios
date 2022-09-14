@@ -102,12 +102,11 @@ enum PaymentCardModels {
     
     enum FetchCard {
         struct Response {
-            public let card: PaymentCard
-
+            public var card: PaymentCard
             struct PaymentCard: Codable {
-                let id, totalAmount: Int
-                let users: [User]
-                let imgUrls: [String?]
+                public var id, totalAmount: Int
+                public let users: [User]
+                public let imgUrls: [String]
             }
             
             struct User: Codable {

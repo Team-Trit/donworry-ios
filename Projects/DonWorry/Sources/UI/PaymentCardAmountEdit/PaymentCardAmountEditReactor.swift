@@ -16,10 +16,12 @@ enum PaymentCardAmountEditStep {
 
 final class PaymentCardAmountEditReactor: Reactor {
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
+    private let paymentUseCase: PaymentCardService = PaymentCardServiceImpl()
 
     enum Action {
         case numberPadPressed(pressedItem: String)
         case nextButtonPressed
+        case doneButtonPressed
         case didTapBackButton
         case didTapCloseButton
     }
@@ -30,7 +32,13 @@ final class PaymentCardAmountEditReactor: Reactor {
     }
     
     struct State {
-        var paymentCard: PaymentCardModels.CreateCard.Request
+        // create var
+        var paymentCard: PaymentCardModels.CreateCard.Request?
+        
+        // update var
+        var cardTitle: String?
+        var updateCard: PaymentCardModels.FetchCard.Response.PaymentCard?
+        
         var amount: String
         var isButtonEnabled: Bool = false
         @Pulse var step: PaymentCardAmountEditStep?
@@ -44,6 +52,13 @@ final class PaymentCardAmountEditReactor: Reactor {
         self.initialState = State(paymentCard: paymentCard, amount: "0")
     }
     
+    init(
+        title: String,
+        updateCard: PaymentCardModels.FetchCard.Response.PaymentCard
+    ) {
+        self.initialState = State(cardTitle: title, updateCard: updateCard, amount: "0")
+    }
+    
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
@@ -51,6 +66,10 @@ final class PaymentCardAmountEditReactor: Reactor {
                 return .just(.updateAmount(with: pressedItem))
             case .nextButtonPressed:
                 return .just(.routeTo(.paymentCardDeco))
+            case .doneButtonPressed:
+            return paymentUseCase.putEditPaymentCardAmount(id: currentState.updateCard!.id, totalAmount: currentState.updateCard!.totalAmount)
+                .map { _ in .routeTo(.pop) }
+            
             case .didTapBackButton:
                 return .just(.routeTo(.pop))
             case .didTapCloseButton:
@@ -66,7 +85,12 @@ final class PaymentCardAmountEditReactor: Reactor {
             newState.amount = setNewAmount(state.amount, with: amount)
             if newState.amount != "0" {
                 newState.isButtonEnabled = true
-                newState.paymentCard.totalAmount = convertAmount(newState.amount)
+                if currentState.paymentCard != nil {
+                    newState.paymentCard?.totalAmount = convertAmount(newState.amount)
+                } else {
+                    newState.updateCard?.totalAmount = convertAmount(newState.amount)
+                }
+                
             } else {
                 newState.isButtonEnabled = false
             }

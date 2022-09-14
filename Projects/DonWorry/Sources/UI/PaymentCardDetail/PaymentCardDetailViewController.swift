@@ -17,10 +17,21 @@ import PhotosUI
 import Combine
 import DonWorryExtensions
 
-final class PaymentCardDetailViewController: BaseViewController, View {
-    typealias Reactor = PaymentCardDetailViewReactor
-
-    private lazy var navigationBar = DWNavigationBar(title: "")
+final class PaymentCardDetailViewController: BaseViewController {
+    
+    private var viewModel: PaymentCardDetailViewModel
+    private var cancelBag = Set<AnyCancellable>()
+    
+    init(viewModel: PaymentCardDetailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
     
     private let priceLabelOuterContainerView: UIView = {
         let view = UIView()
@@ -135,6 +146,8 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     @objc private func editPrice() {
         let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
+        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(title: viewModel.paymentCardName, updateCard: viewModel.paymentCard)
+                                                                                   
         navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
 
@@ -165,6 +178,31 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         layout()
+        bind()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.updatePaymentCard()
+    }
+    
+    private func attributes() {
+        attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
+        priceLabel.text = viewModel.totalAmountString
+        if viewModel.isAdmin {
+            editButton.isHidden = false
+            bottomButton.setTitle("삭제하기", for: .normal)
+            bottomButton.backgroundColor = .designSystem(.redTopGradient)
+        } else {
+            editButton.isHidden = true
+            if viewModel.isAttended {
+                bottomButton.setTitle("참석 완료", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
+            } else {
+                bottomButton.setTitle("참석 확인", for: .normal)
+                bottomButton.backgroundColor = .designSystem(.mainBlue)
+            }
+        }
     }
 
     func bind(reactor: Reactor) {
