@@ -11,80 +11,53 @@ import RxSwift
 import Models
 import DonWorryNetworking
 
+// 서버에 적혀있는 언어로해도됨(이해잘안되도 상관없음)
+protocol AlarmRepository {
+    func getAlarms() -> Observable<AlarmModels.GetAlarms.Response>
+    func clearAlarms() -> Observable<AlarmModels.Empty.Response>
+}
+
 final class AlarmRepositoryImpl: AlarmRepository {
 
-    
-    // 이건 그냥 가져와서 쓰면됨
     private let network: NetworkServable
     
     init(_ network: NetworkServable = NetworkService()) {
         self.network = network
     }
     
-    func getAlarms() -> Observable<[AlertMessageInfomations]> {
-        let api = GetAlarmsAPI()
-        
-        return network.request(api)
-            .compactMap { [weak self] in
-                self?.convertToAlarm($0) as? [AlertMessageInfomations]
+    func getAlarms() -> Observable<AlarmModels.GetAlarms.Response> {
+        return network.request(GetAlarmsAPI())
+            .compactMap { [weak self] response -> AlarmModels.GetAlarms.Response in
+                response.compactMap { [weak self] in self?.convertToAlarm($0) }
             }.asObservable()
     }
-    
-    private func convertToAlarm(_ dto: [DTO.GetAlarmsDTO]) -> [AlertMessageInfomations] {
-        var array: [AlertMessageInfomations] = []
-        dto.forEach { element in
-            let item = AlertMessageInfomations(recievedDate: element.createdDate, senderName: element.title, spaceName: element.message, messageType: changeType(from: element.type))
-            array.append(item)
+
+    func clearAlarms() -> Observable<AlarmModels.Empty.Response> {
+        network.request(ClearAlarmsAPI())
+            .compactMap { _ in .init() }.asObservable()
+    }
+
+    private func convertToAlarm(_ dto: DTO.GetAlarmsDTO) -> AlarmModels.GetAlarms.Alarm {
+        return .init(
+            id: dto.id,
+            type: convertAlarmType(from: dto.createdDate),
+            title: dto.title,
+            message: dto.message,
+            createdDate: dto.createdDate
+        )
+
+    }
+
+    private func convertAlarmType(from alarmType: String) -> AlarmModels.GetAlarms.Alarm.AlarmType {
+        if alarmType == "PAYMENT_START" {
+            return .payment_start
+        } else if alarmType == "PAYMENT_END" {
+            return .payment_end
+        } else if alarmType == "PAYMENT_PUSH" {
+            return .paymnet_push
+        } else if alarmType == "SYSTEM" {
+            return .system
         }
-        return array
-    }
-    
-    private func changeType(from serverType: String) -> AlertType {
-        if serverType == "PAYMENT_START" {
-            return .startAlert
-        } else if serverType == "PAYMENT_END" {
-            return .completedAlert
-        } else if serverType == "PAYMENT_PUSH" {
-            return .hurriedAlert
-        }
-        return .hurriedAlert
-    }
-    
-    func removeAlarms() -> Observable<AlarmModels.Empty> {
-        let api = RemoveAlarmsAPI()
-        return network.request(api)
-            .compactMap { [weak self] in
-                self?.convertToRemoveAlarm($0) as? AlarmModels.Empty
-            }.asObservable()
-    }
-    
-    private func convertToRemoveAlarm(_ dto: DTO.Empty) -> AlarmModels.Empty {
-        return AlarmModels.Empty()
+        return .system
     }
 }
-
-
-// parameter가 있는 이유 -> request의 body가 있어서
-//func postUser(provider: String,
-//              nickname: String,
-//              email: String,
-//              bank: String,
-//              bankNumber: String,
-//              bankHolder: String,
-//              isAgreeMarketing: Bool,
-//              accessToken: String) -> Observable<(Models.User, AuthenticationToken)> {
-//    let api = PostUserAPI(request: createUserRequest(
-//        provider: provider,
-//        nickname: nickname,
-//        email: email,
-//        bank: bank,
-//        bankNumber: bankNumber,
-//        bankHolder: bankHolder,
-//        isAgreeMarketing: isAgreeMarketing
-//    ),accessToken: accessToken)
-//
-//    return network.request(api)
-//        .compactMap { [ weak self] in
-//            (self?.convertToUser($0), self?.convertToToken($0)) as? (Models.User, AuthenticationToken)
-//        }.asObservable()
-//}

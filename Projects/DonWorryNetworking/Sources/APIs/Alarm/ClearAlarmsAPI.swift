@@ -9,7 +9,7 @@
 import Foundation
 import Moya
 
-public struct RemoveAlarmsAPI: ServiceAPI {
+public struct ClearAlarmsAPI: ServiceAPI {
     public typealias Response = DTO.Empty
     public init() {}
     public var path: String { "/alarms/clear" }

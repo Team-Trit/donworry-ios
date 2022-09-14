@@ -14,7 +14,7 @@ enum SentMoneyDetailStep {
     case moreDetail
 }
 
-final class SentMoneyDetailViewReactor : Reactor {
+final class SendMoneyDetailViewReactor : Reactor {
     typealias Response = PaymentModels.FetchGiverPayment.Response
     typealias Card = Response.Card
     typealias Payment = Response.Payment

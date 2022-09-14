@@ -14,11 +14,11 @@ import RxSwift
 import DesignSystem
 import DonWorryExtensions
 
-final class SentMoneyDetailViewController: BaseViewController, View {
-    typealias Reactor = SentMoneyDetailViewReactor
+final class SendMoneyDetailViewController: BaseViewController, View {
+    typealias Reactor = SendMoneyDetailViewReactor
     
-    private var statusView: SentMoneyDetailStatusView = {
-        let status = SentMoneyDetailStatusView()
+    private var statusView: SendMoneyDetailStatusView = {
+        let status = SendMoneyDetailStatusView()
         return status
     }()
 
@@ -108,7 +108,7 @@ final class SentMoneyDetailViewController: BaseViewController, View {
     }
 }
 
-extension SentMoneyDetailViewController {
+extension SendMoneyDetailViewController {
 
     private func attributes() {
         self.view.backgroundColor = .white
@@ -150,7 +150,7 @@ extension SentMoneyDetailViewController {
     }
 }
 
-extension SentMoneyDetailViewController {
+extension SendMoneyDetailViewController {
     func move(to step: SentMoneyDetailStep) {
         switch step {
         case .moreDetail:
