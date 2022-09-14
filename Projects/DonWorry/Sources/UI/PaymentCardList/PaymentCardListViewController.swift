@@ -263,7 +263,7 @@ extension PaymentCardListViewController {
         self.floatingStackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(6)
-            make.leading.trailing.equalToSuperview().inset(25)
+            make.leading.trailing.equalToSuperview().inset(UIScreen.main.bounds.size.width * 0.064)
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)
