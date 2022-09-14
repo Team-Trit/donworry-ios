@@ -245,8 +245,8 @@ extension HomeViewController {
             }
             self.present(viewController, animated: true)
         case .alarm:
-            let alarm = SendMoneyDetailViewController()
-//            alarm.reactor = AlarmReactor()
+            let alarm = AlarmViewController()
+            alarm.reactor = AlarmReactor()
             self.navigationController?.pushViewController(alarm, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()

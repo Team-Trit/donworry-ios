@@ -89,7 +89,7 @@ public extension DWButton {
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
             button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
-                make.width.equalTo(162)
+                make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
                 make.height.equalTo(58)
             }
         case .halfLightBlue:
@@ -100,7 +100,7 @@ public extension DWButton {
             button.setBackgroundColor(.designSystem(.lightBlue)!, for: .normal)
             button.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
             button.snp.makeConstraints { make in
-                make.width.equalTo(162)
+                make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
                 make.height.equalTo(58)
             }
         case .xsmallGray:
