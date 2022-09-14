@@ -6,6 +6,8 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import UIKit
+
 import Models
 import ReactorKit
 
@@ -19,23 +21,19 @@ enum ProfileStep {
 }
 
 final class ProfileViewReactor: Reactor {
-    private let userService: UserService
-    private let getUserUseCase: GetUserAccountUseCase
+    private let getUserAccountUseCase: GetUserAccountUseCase
+    private let uploadImageUseCase: UploadImageUseCase
+    private let updateProfileImageUseCase: UpdateProfileImageUseCase
+    private let disposeBag: DisposeBag
 
-    private var user: User
     enum Action {
         case viewWillAppear
         case pressBackButton
         case pressUpdateProfileImageButton
-        case updateProfileImage(imgURL: String)
+        case updateProfileImage(image: UIImage?)
         case pressUpdateNickNameButton
         case pressUpdateAccountButton
-        case pressNoticeButton
-        case pressTermButton
-        case pressPushSettingButton
-        case pressInquiryButton
-        case pressQuestionButton
-        case pressBlogButton
+        case pressServiceButton(index: Int)
         case pressLogoutButton
         case pressAccountDeleteButton
         case deleteAccount
@@ -47,38 +45,31 @@ final class ProfileViewReactor: Reactor {
     }
     
     struct State {
-        var nickname: String
-        var imageURL: String
-        var bank: String
-        var accountNumber: String
-        var accountHolder: String
-        @Pulse var reload: Void?
+        var user: Models.User
         @Pulse var step: ProfileStep?
     }
     
     let initialState: State
     
     init(
-        userService: UserService = UserServiceImpl(),
-        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+        getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
+        uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
+        updateProfileImageUseCase: UpdateProfileImageUseCase = UpdateProfileImageUseCaseImpl()
     ) {
-        self.userService = userService
-        self.getUserUseCase = getUserUseCase
-        self.user = getUserUseCase.getUserAccountUnWrapped()!
+        self.getUserAccountUseCase = getUserAccountUseCase
+        self.uploadImageUseCase = uploadImageUseCase
+        self.updateProfileImageUseCase = updateProfileImageUseCase
+        disposeBag = .init()
         self.initialState = State(
-            nickname: user.nickName,
-            imageURL: user.image,
-            bank: user.bankAccount.bank,
-            accountNumber: user.bankAccount.accountNumber,
-            accountHolder: user.bankAccount.accountHolderName
+            user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: "")
         )
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            guard let currentUser = getUserUseCase.getUserAccountUnWrapped() else { return .empty() }
-            return .just(Mutation.updateUser(currentUser))
+            return getUserAccountUseCase.getUserAccount()
+                .map { .updateUser($0!) }
             
         case .pressBackButton:
             return .just(.routeTo(step: .pop))
@@ -86,43 +77,45 @@ final class ProfileViewReactor: Reactor {
         case .pressUpdateProfileImageButton:
             return .just(.routeTo(step: .profileImageSheet))
             
-        case .updateProfileImage(let imgURL):
-            return userService.updateUser(nickname: nil,
-                                   imgURL: imgURL,
-                                   bank: nil,
-                                   holder: nil,
-                                   accountNumber: nil,
-                                   isAgreeMarketing: nil)
-            .map { return .updateUser($0) }
-            
+        case .updateProfileImage(let image):
+            return uploadImageUseCase.uploadProfileImage(request: .init(image: image!, type: "profile"))
+                .map { [weak self] response in
+                    return .updateUser(User(id: self!.currentState.user.id,
+                                            nickName: self!.currentState.user.nickName,
+                                            bankAccount: BankAccount(bank: self!.currentState.user.bankAccount.bank,
+                                                                     accountHolderName: self!.currentState.user.bankAccount.accountHolderName,
+                                                                     accountNumber: self!.currentState.user.bankAccount.accountNumber),
+                                            image: response.imageURL))
+                }
+
         case .pressUpdateNickNameButton:
             return .just(Mutation.routeTo(step: .nicknameEdit))
             
         case .pressUpdateAccountButton:
             return .just(Mutation.routeTo(step: .accountEdit))
             
-        case .pressNoticeButton:
-            // TODO: 공지사항
-            return .empty()
-            
-        case .pressTermButton:
-            // TODO: 이용약관
-            return .empty()
-            
-        case .pressPushSettingButton:
-            // TODO: 알림설정
-            return .empty()
-            
-        case .pressInquiryButton:
-            // TODO: 1대1 문의
-            return .empty()
-            
-        case .pressQuestionButton:
-            // TODO: 자주 찾는 질문
-            return .empty()
-            
-        case .pressBlogButton:
-            // TODO: 블로그
+        case .pressServiceButton(let index):
+            print("✨눌렷음")
+            switch index {
+            case 2:
+                // 공지사항
+                if let url = URL(string: "https://www.notion.so/6772fa482cf74c54893350fde6b08f12") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                
+            case 3:
+                // 이용약관
+                if let url = URL(string: "https://www.notion.so/0ec63d93d3f3407e8b881575ac952533") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                
+            default:
+                break
+            }
             return .empty()
             
         case .pressLogoutButton:
@@ -142,12 +135,7 @@ final class ProfileViewReactor: Reactor {
         
         switch mutation {
         case .updateUser(let user):
-            newState.imageURL = user.image
-            newState.nickname = user.nickName
-            newState.bank = user.bankAccount.bank
-            newState.accountHolder = user.bankAccount.accountHolderName
-            newState.accountNumber = user.bankAccount.accountNumber
-            newState.reload = ()
+            newState.user = user
             
         case .routeTo(let step):
             newState.step = step

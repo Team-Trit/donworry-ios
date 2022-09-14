@@ -18,7 +18,7 @@ final class ProfileTableView: UITableView {
         self.register(ProfileTableViewUserCell.self, forCellReuseIdentifier: ProfileTableViewUserCell.identifier)
         self.register(ProfileTableViewAccountCell.self, forCellReuseIdentifier: ProfileTableViewAccountCell.identifier)
         self.register(ProfileTableViewServiceCell.self, forCellReuseIdentifier: ProfileTableViewServiceCell.identifier)
-        self.allowsSelection = false
+//        self.allowsSelection = false
         self.showsVerticalScrollIndicator = false
         self.separatorStyle = .none
         self.isScrollEnabled = false

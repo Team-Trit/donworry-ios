@@ -53,6 +53,15 @@ final class UserRepositoryImpl: UserRepository {
                 isAgreeMarketing: isAgreeMarketing
             )
         )
+
+//        PatchUserAPI(request: .init(bank: <#T##String#>, number: <#T##String#>, holder: <#T##String#>))
+//        let api = PatchUserAPI(request: patchUserRequest(nickname: nickname,
+//                                                         imgURL: imgURL,
+//                                                         bank: bank,
+//                                                         holder: holder,
+//                                                         accountNumber: accountNumber,
+//                                                         isAgreeMarketing: isAgreeMarketing))
+
         return network.request(api)
             .compactMap { [weak self] response in
                 return self?.convertToUser(patchUserDTO: response) as? Models.User

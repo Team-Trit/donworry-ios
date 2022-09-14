@@ -31,8 +31,8 @@ final class ProfileViewController: BaseViewController, View {
         .user,
         .account,
         .service("공지사항"),
-        .service("이용약관"),
-        .service("푸시설정")
+        .service("이용약관")
+//        .service("푸시설정")
     ]
     private lazy var navigationBar = DWNavigationBar()
     private lazy var profileTableView: ProfileTableView = {
@@ -41,9 +41,24 @@ final class ProfileViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
-    private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
-    private lazy var blogButtonView = ServiceButtonView(frame: .zero, type: .blog)
+    private lazy var inquiryButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .inquiry)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(inquiryButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
+    private lazy var questionButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .question)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(questionButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
+    private lazy var blogButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .blog)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(blogButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
     private lazy var accountButtonStackView = AccountButtonStackView()
     
     override func viewDidLoad() {
@@ -105,7 +120,13 @@ extension ProfileViewController {
     private func dispatch(to reactor: Reactor) {
         self.rx.viewWillAppear
             .map { _ in
-                return Reactor.Action.viewWillAppear }
+                return Reactor.Action.viewWillAppear
+            }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        profileTableView.rx.itemSelected
+            .map { Reactor.Action.pressServiceButton(index: $0.row) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -126,12 +147,11 @@ extension ProfileViewController {
     }
     
     private func render(_ reactor: Reactor) {
-        reactor.pulse(\.$reload)
-            .asDriver(onErrorJustReturn: ())
-            .compactMap { $0 }
-            .drive(onNext: { [weak self] in
+        reactor.state.map { $0.user }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] _ in
                 self?.profileTableView.reloadData()
-            })
+            }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
@@ -173,13 +193,13 @@ extension ProfileViewController {
                     
                 case .notDetermined:
                     AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                            guard let self = self else { return }
-                                if granted {
-                                    DispatchQueue.main.async {
-                                        self.present(imgPickerController, animated: true)
-                                    }
-                                }
+                        guard let self = self else { return }
+                        if granted {
+                            DispatchQueue.main.async {
+                                self.present(imgPickerController, animated: true)
                             }
+                        }
+                    }
                     
                 case .denied, .restricted:
                     let alert = UIAlertController(title: nil, message: "카메라 촬영 권한이 없습니다.\n카메라 권한을 허용해주세요.", preferredStyle: .alert)
@@ -210,14 +230,14 @@ extension ProfileViewController {
             
         case .nicknameEdit:
             let vc = NicknameEditViewController()
-            let reactor = NicknameEditViewReactor(userService: UserServiceImpl())
+            let reactor = NicknameEditViewReactor()
             vc.reactor = reactor
             self.navigationController?.pushViewController(vc, animated: true)
             
         case .accountEdit:
             let vc = AccountEditViewController()
-//            let reactor = AccountEditViewReactor()
-//            vc.reactor = reactor
+            let reactor = AccountEditViewReactor()
+            vc.reactor = reactor
             self.navigationController?.pushViewController(vc, animated: true)
             break
             
@@ -252,6 +272,7 @@ extension ProfileViewController: UITableViewDataSource {
         switch items[indexPath.row] {
         case .user:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
+                cell.selectionStyle = .none
                 cell.imagePlusButton.rx.tap
                     .map { Reactor.Action.pressUpdateProfileImageButton }
                     .bind(to: reactor!.action)
@@ -263,19 +284,15 @@ extension ProfileViewController: UITableViewDataSource {
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.imageURL }
+                reactor?.state.map { $0.user.image }
                     .distinctUntilChanged()
                     .asDriver(onErrorJustReturn: "")
                     .drive(onNext: { imgURL in
-                        if imgURL != "", let url = URL(string: imgURL) {
-                            cell.profileImageView.kf.setImage(with: url)
-                        } else {
-                            cell.profileImageView.image = UIImage(.default_profile_image)
-                        }
+                        cell.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: imgURL)
                     })
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.nickname }
+                reactor?.state.map { $0.user.nickName }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.nickNameLabel.rx.text)
                     .disposed(by: cell.disposeBag)
@@ -285,22 +302,23 @@ extension ProfileViewController: UITableViewDataSource {
             
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewAccountCell.identifier, for: indexPath) as? ProfileTableViewAccountCell {
+                cell.selectionStyle = .none
                 cell.editButton.rx.tap
                     .map { Reactor.Action.pressUpdateAccountButton }
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.bank }
+                reactor?.state.map { $0.user.bankAccount.bank }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.bankLabel.rx.text)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.accountNumber }
+                reactor?.state.map { $0.user.bankAccount.accountNumber }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.accountLabel.rx.text)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.accountHolder }
+                reactor?.state.map { $0.user.bankAccount.accountHolderName }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.holderLabel.rx.text)
                     .disposed(by: cell.disposeBag)
@@ -310,6 +328,7 @@ extension ProfileViewController: UITableViewDataSource {
             
         case .service(let title):
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewServiceCell.identifier, for: indexPath) as? ProfileTableViewServiceCell {
+                cell.selectionStyle = .none
                 cell.titleLabel.text = title
                 
                 return cell
@@ -362,13 +381,13 @@ extension ProfileViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         let selectedPhoto = results.first?.itemProvider
-        selectedPhoto?.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier, completionHandler: { url, error in
-            if let error = error {
-                print(error.localizedDescription)
+        
+        if let selectedPhoto = selectedPhoto,
+           selectedPhoto.canLoadObject(ofClass: UIImage.self) {
+            selectedPhoto.loadObject(ofClass: UIImage.self) { image, _ in
+                self.reactor?.action.onNext(.updateProfileImage(image: image as? UIImage))
             }
-            guard let imgURL = url?.absoluteString else { return }
-            self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
-        })
+        }
     }
 }
 
@@ -382,12 +401,33 @@ extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerCo
         picker.dismiss(animated: true)
         
         guard let image = info[.editedImage] as? UIImage else { return }
-        let imgName = UUID().uuidString+".jpeg"
-        let documentDirectory = NSTemporaryDirectory()
-        let localPath = documentDirectory.appending(imgName)
-        let data = image.jpegData(compressionQuality: 0.3)! as NSData
-        data.write(toFile: localPath, atomically: true)
-        let imgURL = URL.init(fileURLWithPath: localPath).absoluteString
-        self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
+        self.reactor?.action.onNext(.updateProfileImage(image: image))
+    }
+}
+
+// MARK: - Tap Gesture
+extension ProfileViewController {
+    @objc private func inquiryButtonTapped() {
+        if let url = URL(string: "https://pf.kakao.com/_LCulxj" ) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func questionButtonTapped() {
+        if let url = URL(string: "https://www.notion.so/avery-in-ada/67b500e90d0647b6878d20bc14cff750?v=7a0dfc71e1e34ff796989283d252b87f") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func blogButtonTapped() {
+        if let url = URL(string: "https://www.notion.so/tr-it/Team-Tr-iT-b531aa35a459409fa1b733e713e1fef8") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }

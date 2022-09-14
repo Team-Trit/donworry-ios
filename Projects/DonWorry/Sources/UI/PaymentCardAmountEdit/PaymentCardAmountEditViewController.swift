@@ -204,7 +204,7 @@ extension PaymentCardAmountEditViewController {
         }
         
         paymentTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(60)
+            make.leading.equalToSuperview().offset(100)
             make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
             make.top.equalToSuperview().offset(134)
         }

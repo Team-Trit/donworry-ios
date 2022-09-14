@@ -74,8 +74,9 @@ extension ProfileTableViewUserCell {
         }
         
         imagePlusButton.snp.makeConstraints { make in
-            make.trailing.equalTo(profileImageView.snp.trailing)
-            make.bottom.equalTo(profileImageView.snp.bottom)
+            make.trailing.equalTo(profileImageView.snp.trailing).offset(3)
+            make.bottom.equalTo(profileImageView.snp.bottom).offset(3)
+            make.width.height.equalTo(20)
         }
         
         nickNameLabel.snp.makeConstraints { make in

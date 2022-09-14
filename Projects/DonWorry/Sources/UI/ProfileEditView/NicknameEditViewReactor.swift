@@ -15,21 +15,24 @@ enum NicknameEditViewStep {
 }
 
 final class NicknameEditViewReactor: Reactor {
-    private let userService: UserService
-    private let getUserUseCase: GetUserAccountUseCase
-    var user: User
+    private let getUserAccountUseCase: GetUserAccountUseCase
+    private let updateNicknameUseCase: UpdateNicknameUseCase
+
     enum Action {
+        case viewDidLoad
         case pressBackButton
         case updateNickname(nickname: String)
         case pressDoneButton
     }
     
     enum Mutation {
-        case nicknameChanged(count: Int)
+        case setup(Models.User)
+        case updateNickname(nickname: String)
         case routeTo(step: NicknameEditViewStep)
     }
     
     struct State {
+        var user: Models.User
         @Pulse var isDoneButtonAvailable: Bool
         @Pulse var step: NicknameEditViewStep?
     }
@@ -37,34 +40,34 @@ final class NicknameEditViewReactor: Reactor {
     let initialState: State
 
     init(
-        userService: UserService = UserServiceImpl(),
-        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+        getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
+        updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCaseImpl()
     ) {
-        self.userService = userService
-        self.getUserUseCase = getUserUseCase
-        self.user = getUserUseCase.getUserAccountUnWrapped()!
+        self.getUserAccountUseCase = getUserAccountUseCase
+        self.updateNicknameUseCase = updateNicknameUseCase
         self.initialState = State(
+            user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: ""),
             isDoneButtonAvailable: false
         )
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .viewDidLoad:
+            return getUserAccountUseCase.getUserAccount()
+                .map { user in
+                    return .setup(user!)
+                }
+            
         case .pressBackButton:
             return .just(Mutation.routeTo(step: .pop))
             
         case .updateNickname(let nickname):
-            user.nickName = nickname
-            return .just(Mutation.nicknameChanged(count: nickname.count))
+            return .just(.updateNickname(nickname: nickname))
             
         case .pressDoneButton:
-            return userService.updateUser(nickname: user.nickName,
-                                  imgURL: nil,
-                                  bank: nil,
-                                  holder: nil,
-                                  accountNumber: nil,
-                                  isAgreeMarketing: nil)
-            .map { _ in .routeTo(step: .pop) }
+            return updateNicknameUseCase.updateNickname(nickname: currentState.user.nickName)
+                .map { _ in .routeTo(step: .pop) }
         }
     }
     
@@ -72,8 +75,12 @@ final class NicknameEditViewReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .nicknameChanged(let count):
-            newState.isDoneButtonAvailable = count == 0 ? false : true
+        case .setup(let user):
+            newState.user = user
+            
+        case .updateNickname(let nickname):
+            newState.user.nickName = nickname
+            newState.isDoneButtonAvailable = nickname.count == 0 ? false : true
             
         case .routeTo(let step):
             newState.step = step

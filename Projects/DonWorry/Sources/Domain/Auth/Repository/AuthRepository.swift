@@ -77,6 +77,7 @@ final class AuthRepositoryImpl: AuthRepository {
             }.asObservable()
     }
 
+
     private func judgeSignInError(_ error: Error, _ token: String) -> AuthError {
         guard let error = error as? NetworkError else { return .parsing }
         switch error {
