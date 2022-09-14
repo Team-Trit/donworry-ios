@@ -216,8 +216,8 @@ extension ProfileViewController {
             
         case .accountEdit:
             let vc = AccountEditViewController()
-            let reactor = AccountEditViewReactor(userService: UserServiceImpl())
-            vc.reactor = reactor
+//            let reactor = AccountEditViewReactor()
+//            vc.reactor = reactor
             self.navigationController?.pushViewController(vc, animated: true)
             break
             

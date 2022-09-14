@@ -9,34 +9,15 @@ import Models
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
-    private let userService: UserService = UserServiceImpl()
-    private let disposeBag = DisposeBag()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         Font.registerFonts()
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        
-        appDelegate?.isLoggedIn
-            .asDriver()
-            .drive(onNext: { isLoggedIn in
-                if isLoggedIn {
-                    let rootViewController = HomeViewController()
-                    rootViewController.reactor = HomeReactor()
-                    let navigationController = UINavigationController(rootViewController: rootViewController)
-                    navigationController.setNavigationBarHidden(true, animated: false)
-                    window.rootViewController = navigationController
-                } else {
-                    let rootViewController = LoginViewController()
-                    rootViewController.reactor = LoginViewReactor()
-                    let navigationController = UINavigationController(rootViewController: rootViewController)
-                    navigationController.setNavigationBarHidden(true, animated: false)
-                    window.rootViewController = navigationController
-                }
-            })
-            .disposed(by: disposeBag)
-        
+
+        let rootViewController = SplashViewController()
+        rootViewController.reactor = SplashViewReactor()
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
         self.window = window
     }

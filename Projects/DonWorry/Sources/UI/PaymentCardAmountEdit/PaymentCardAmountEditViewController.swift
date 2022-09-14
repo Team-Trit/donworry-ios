@@ -195,22 +195,7 @@ extension PaymentCardAmountEditViewController {
 extension PaymentCardAmountEditViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
-        
-        if editType == .create {
-            view.addSubviews(imageBackgroundView, iconImageView)
-            
-            imageBackgroundView.snp.makeConstraints { make in
-                make.leading.equalToSuperview().offset(50)
-                make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
-                make.width.height.equalTo(37)
-            }
-            
-            iconImageView.snp.makeConstraints { make in
-                make.center.equalTo(imageBackgroundView.snp.center)
-                make.width.height.equalTo(30)
-            }
-        }
-        
+
         view.addSubviews(navigationBar, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
         
         navigationBar.snp.makeConstraints { make in
@@ -246,7 +231,22 @@ extension PaymentCardAmountEditViewController {
             make.top.equalTo(nextButton.snp.bottom).offset(20)
             make.leading.trailing.bottom.equalToSuperview()
         }
-        
+
+        if editType == .create {
+            view.addSubviews(imageBackgroundView, iconImageView)
+
+            imageBackgroundView.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(50)
+                make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
+                make.width.height.equalTo(37)
+            }
+
+            iconImageView.snp.makeConstraints { make in
+                make.center.equalTo(imageBackgroundView.snp.center)
+                make.width.height.equalTo(30)
+            }
+        }
+
     }
 }
 

@@ -9,83 +9,58 @@
 import ReactorKit
 
 enum ConfirmTermStep {
-    case none
+    case home
 }
 
 final class ConfirmTermViewReactor: Reactor {
-    let checkedTerms: [String]
-    private var user: SignUpUserModel
-    private let userService: UserService
+    typealias SignUpModel = AuthModels.SignUp.Request
     
     enum Action {
         case confirmButtonPressed
     }
     
     enum Mutation {
-        case completeLogin
-        case routeTo(step: ConfirmTermStep)
+        case routeTo(ConfirmTermStep)
     }
     
     struct State {
+        var signUpModel: SignUpModel
+        var checkedTerms: [String]
+
         @Pulse var step: ConfirmTermStep?
     }
     
     let initialState: State
     
-    init(checkedTerms: [String], newUser: SignUpUserModel, userService: UserService = UserServiceImpl()) {
-        self.checkedTerms = checkedTerms
-        self.user = newUser
-        self.userService = userService
-        self.initialState = State()
+    init(
+        signUpModel: SignUpModel,
+        checkedTerms: [String],
+        signUpUseCase: SignUpUseCase = SignUpUseCaseImpl()
+    ) {
+        self.initialState = State(
+            signUpModel: signUpModel, checkedTerms: checkedTerms
+        )
+        self.signUpUseCase = signUpUseCase
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .confirmButtonPressed:
-            switch user.provider {
-            case .APPLE:
-                return userService.registerUserWithApple(provider: user.provider.rawValue,
-                                                         nickname: user.nickname,
-                                                         email: user.email,
-                                                         bank: user.bank,
-                                                         bankNumber: user.bankNumber,
-                                                         bankHolder: user.bankHolder,
-                                                         isAgreeMarketing: user.isAgreeMarketing,
-                                                         identityToken: user.token)
-                .map { _ in .completeLogin }
-                
-            case .GOOGLE:
-                // TODO: Google API 호출
-                return .empty()
-                
-            case .KAKAO:
-                return userService.registerUserWithKakao(provider: user.provider.rawValue,
-                                                         nickname: user.nickname,
-                                                         email: user.email,
-                                                         bank: user.bank,
-                                                         bankNumber: user.bankNumber,
-                                                         bankHolder: user.bankHolder,
-                                                         isAgreeMarketing: user.isAgreeMarketing,
-                                                         accessToken: user.token)
-                .map { _ in .completeLogin }
-                
-            default:
-                return .empty()
-            }
+            return signUpUseCase.signUp(request: currentState.signUpModel)
+                .map { _ in .routeTo(.home) }
         }
     }
-    
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        
+
         switch mutation {
-        case .completeLogin:
-            break
-            
         case .routeTo(let step):
             newState.step = step
         }
-        
+
         return newState
     }
+
+    private let signUpUseCase: SignUpUseCase
 }

@@ -11,6 +11,7 @@ import Models
 import RxSwift
 
 protocol GetUserAccountUseCase {
+    func getUserAccountUnWrapped() -> User?
     func getUserAccount() -> Observable<User?>
     func compareIsUser(id: Int) -> Observable<Void>
     func compareIsUserList(ids: [Int]) -> Observable<Void>
@@ -25,6 +26,9 @@ final class GetUserAccountUseCaseImpl: GetUserAccountUseCase {
         self.userAccountRepository = userAccountRepository
     }
 
+    func getUserAccountUnWrapped() -> User? {
+        userAccountRepository.fetchLocalUserAccount()
+    }
     func getUserAccount() -> Observable<User?> {
         .just(userAccountRepository.fetchLocalUserAccount())
     }

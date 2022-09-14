@@ -16,7 +16,7 @@ final class ConfirmTermTableViewHeader: UITableViewHeaderFooterView {
     static let identifier = "ConfirmTermTableViewHeader"
     private lazy var titleLabel: UILabel = {
         let v = UILabel()
-        v.text = "\(Date().formatted("yyyy년 M월 dd일")) 알림 수신을\n아래와 같이 설정하였습니다."
+        v.text = "\(Date().formatted("yyyy년 M월 dd일")) 아래 약관에 동의합니다."
         v.font = .designSystem(weight: .bold, size: ._18)
         v.numberOfLines = 0
         return v
@@ -38,7 +38,8 @@ extension ConfirmTermTableViewHeader {
         contentView.addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().offset(25)
+            make.top.equalToSuperview().offset(40)
+            make.leading.trailing.equalToSuperview().inset(25)
         }
     }
 }

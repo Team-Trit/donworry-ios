@@ -132,7 +132,7 @@ extension EnterUserInfoViewController {
     }
 
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        reactor.state.map { $0.bank }
+        reactor.state.map { $0.signUpModel.bank }
             .asDriver(onErrorJustReturn: "은행선택")
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
@@ -164,9 +164,9 @@ extension EnterUserInfoViewController {
             vc.reactor = SelectBankViewReactor(userInfoViewDelegate: delegate, parentView: .enterUserInfo)
             self.present(vc, animated: true)
             
-        case .agreeTerm(let newUser):
+        case .agreeTerm(let signupModel):
             let vc = AgreeTermViewController()
-            vc.reactor = AgreeTermViewReactor(newUser: newUser)
+            vc.reactor = AgreeTermViewReactor(signUpModel: signupModel)
             self.navigationController?.pushViewController(vc, animated: true)
             
         default:

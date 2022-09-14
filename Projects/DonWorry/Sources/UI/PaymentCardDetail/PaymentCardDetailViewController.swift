@@ -17,21 +17,9 @@ import PhotosUI
 import Combine
 import DonWorryExtensions
 
-final class PaymentCardDetailViewController: BaseViewController {
-    
-    private var viewModel: PaymentCardDetailViewModel
-    private var cancelBag = Set<AnyCancellable>()
-    
-    init(viewModel: PaymentCardDetailViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private lazy var navigationBar = DWNavigationBar(title: viewModel.paymentCardName)
+final class PaymentCardDetailViewController: BaseViewController, View {
+    typealias Reactor = PaymentCardDetailViewReactor
+    private lazy var navigationBar = DWNavigationBar(title: "")
     
     private let priceLabelOuterContainerView: UIView = {
         let view = UIView()
@@ -76,7 +64,6 @@ final class PaymentCardDetailViewController: BaseViewController {
         button.setHeight(height: 22)
         button.contentMode = .scaleAspectFit
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.addTarget(self, action: #selector(editPrice), for: .touchUpInside)
         button.tintColor = .designSystem(.gray757474)
         return button
     }()
@@ -143,30 +130,6 @@ final class PaymentCardDetailViewController: BaseViewController {
         $0.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
         return $0
     }(UIButton())
-    
-    @objc private func editPrice() {
-        let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
-        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(title: viewModel.paymentCardName, updateCard: viewModel.paymentCard)
-                                                                                   
-        navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
-    }
-
-        
-//        if viewModel.isAdmin {
-//            let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
-//                                            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
-//            alert.view.tintColor = .black
-//            alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
-//
-//            let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
-//                self.viewModel.deletePaymentCard()
-//                self.navigationController?.popViewController(animated: true)
-//            })
-//            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
-//
-//            alert.addAction(action)
-//            alert.addAction(cancel)
-//
 
     var buttonType: ButtonType = .participate {
         didSet {
@@ -178,31 +141,6 @@ final class PaymentCardDetailViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         layout()
-        bind()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.viewModel.updatePaymentCard()
-    }
-    
-    private func attributes() {
-        attendanceLabel.text = "참여자 : \(viewModel.numOfUsers)명"
-        priceLabel.text = viewModel.totalAmountString
-        if viewModel.isAdmin {
-            editButton.isHidden = false
-            bottomButton.setTitle("삭제하기", for: .normal)
-            bottomButton.backgroundColor = .designSystem(.redTopGradient)
-        } else {
-            editButton.isHidden = true
-            if viewModel.isAttended {
-                bottomButton.setTitle("참석 완료", for: .normal)
-                bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
-            } else {
-                bottomButton.setTitle("참석 확인", for: .normal)
-                bottomButton.backgroundColor = .designSystem(.mainBlue)
-            }
-        }
     }
 
     func bind(reactor: Reactor) {
