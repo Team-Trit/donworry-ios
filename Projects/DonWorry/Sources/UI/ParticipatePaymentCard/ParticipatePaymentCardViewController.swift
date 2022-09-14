@@ -218,7 +218,7 @@ extension ParticipatePaymentCardViewController {
         static let collectionViewTopPadding: CGFloat = 0
         static let collectionViewLeftPadding: CGFloat = 25
         static let collectionViewWidth: CGFloat = UIScreen.main.bounds.width - collectionViewLeftPadding * 2
-        static let collectionViewHeight: CGFloat = 139
+        static let collectionViewHeight: CGFloat = (collectionViewWidth - 42 - 17) * 139 / 281
     }
 }
 

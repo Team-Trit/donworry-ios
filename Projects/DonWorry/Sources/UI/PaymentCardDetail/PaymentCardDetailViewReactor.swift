@@ -40,6 +40,7 @@ final class PaymentCardDetailViewReactor: Reactor {
         var participatedUsers: [AttendanceCellViewModel]
         var amount: Int
         var isParticipated: Bool?
+        var isButtonEnabled: Bool = false
         var imgURLs: [String?]
         @Pulse var step: PaymentCardDetailStep?
     }
@@ -51,7 +52,8 @@ final class PaymentCardDetailViewReactor: Reactor {
         cardName: String,
         isCardAdmin: Bool,
         participatedUsers: [AttendanceCellViewModel],
-        paymentCardService: PaymentCardService = PaymentCardServiceImpl()
+        paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
+        userAccountService: UserAccountRepository = UserAccountRepositoryImpl()
     ) {
         self.initialState = .init(
             cardID: cardID,
@@ -62,6 +64,7 @@ final class PaymentCardDetailViewReactor: Reactor {
             imgURLs: []
         )
         self.paymentCardService = paymentCardService
+        self.userAccountService = userAccountService
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -83,9 +86,13 @@ final class PaymentCardDetailViewReactor: Reactor {
          case .updateViewModel(let response):
              newState.amount = response.card.totalAmount
              newState.imgURLs = response.card.imgUrls
+             let isParticipated = response.card.users.contains(where: { user in
+                 user.id == userAccountService.fetchLocalUserAccount()?.id
+             })
              newState.participatedUsers = response.card.users.map {
                  .init(id: $0.id, name: $0.nickname, imgURL: $0.imgURL)
              }
+             newState.isButtonEnabled = currentState.isCardAdmin || !(isParticipated )
          case .routeTo(let step):
              newState.step = step
          }
@@ -105,6 +112,10 @@ final class PaymentCardDetailViewReactor: Reactor {
         }
     }
 
+    private func judgeIsParticipated() -> Bool {
+            return currentState.isParticipated ?? true
+    }
+    
     private func requestParticipate() -> Observable<Mutation> {
         return paymentCardService.joinOneCard(request: .init(cardID: currentState.cardID))
             .map { _ in .routeTo(.pop) }
@@ -116,4 +127,5 @@ final class PaymentCardDetailViewReactor: Reactor {
     }
 
     private let paymentCardService: PaymentCardService
+    private let userAccountService: UserAccountRepository
 }

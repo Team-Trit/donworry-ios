@@ -106,6 +106,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         return view
     }()
     
+    private let noFilesLabel: UILabel = {
+        let label = UILabel()
+        label.text = "첨부 내역이 없습니다."
+        label.font = .designSystem(weight: .regular, size: ._13)
+        label.textColor = .designSystem(.gray818181)
+        return label
+    }()
+    
     private let fileCollectionViewFlowLayout: UICollectionViewFlowLayout = {
         let view = UICollectionViewFlowLayout()
         view.minimumLineSpacing = 15
@@ -155,13 +163,19 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
+        
         reactor.state.map { $0.isCardAdmin }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isCardAdmin in
                 self?.buttonType = isCardAdmin ? .delete : .participate
             }).disposed(by: disposeBag)
-
+        
+        reactor.state.map { $0.isButtonEnabled }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isButtonEnabled in
+                self?.bottomButton.isEnabled = isButtonEnabled
+            }).disposed(by: disposeBag)
+        
         reactor.state.map { $0.cardName }
             .bind(to: navigationBar.titleLabel!.rx.text)
             .disposed(by: disposeBag)
@@ -184,7 +198,10 @@ final class PaymentCardDetailViewController: BaseViewController, View {
 
         reactor.state.map { $0.imgURLs }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] in
+                if $0.count == 0 {
+                    self?.showNoFilesMent()
+                }
                 self?.fileCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
@@ -329,6 +346,12 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             return CGSize(width: 84, height: 84)
         }
     }
+    
+    private func showNoFilesMent() {
+        self.filesContainerView.addSubview(noFilesLabel)
+        self.noFilesLabel.anchor(top: filesContainerView.topAnchor, left: filesContainerView.leftAnchor, bottom: filesContainerView.bottomAnchor, right: filesContainerView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        noFilesLabel.textAlignment = .center
+    }
 }
 
 extension PaymentCardDetailViewController {
@@ -341,7 +364,7 @@ extension PaymentCardDetailViewController {
             case .delete:
                 return "삭제하기"
             case .participate:
-                return "정산하기"
+                return "참석 확인"
             }
         }
 

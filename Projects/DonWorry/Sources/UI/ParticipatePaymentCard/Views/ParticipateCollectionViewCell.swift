@@ -58,7 +58,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
 
-            dateLabel.text = dateFormatting(viewModel?.date ?? "")
+            dateLabel.text = viewModel?.date ?? ""
             dateLabel.textColor = UIColor(hex: bgColor)
             isChecked = viewModel?.isSelected ?? false
         }
@@ -67,13 +67,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         willSet {
             checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
         }
-    }
-
-    private func dateFormatting(_ dateString: String) -> String {
-        if let date = Formatter.fullDateFormatter.date(from: dateString) {
-            return Formatter.mmddDateFormatter.string(from: date)
-        }
-        return "00/00"
     }
     
     fileprivate lazy var checkButton: UIButton = {
@@ -163,7 +156,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._13)
         label.textColor = .white
-        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -219,10 +211,13 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         iconImageView.centerX(inView: imageContainerView)
         
         cardLeftView.addSubview(imageContainerView)
-        imageContainerView.anchor(top: cardNameLabel.bottomAnchor, left: cardLeftView.leftAnchor, paddingTop: 11, paddingLeft: 18)
+        imageContainerView.anchor(left: cardLeftView.leftAnchor, paddingLeft: 18)
+        imageContainerView.centerY(inView: contentView)
         
         cardLeftView.addSubview(totalPriceLabel)
-        totalPriceLabel.anchor(top: cardNameLabel.bottomAnchor, left: imageContainerView.rightAnchor, right: cardLeftView.rightAnchor, paddingTop: 14, paddingLeft: 6, paddingRight: 8)
+        
+        totalPriceLabel.centerY(inView: contentView)
+        totalPriceLabel.anchor(left: imageContainerView.rightAnchor, right: cardLeftView.rightAnchor, paddingLeft: 6, paddingRight: 8)
         
         cardRightView.addSubview(userImageView)
         userImageView.centerX(inView: cardRightView)
@@ -230,14 +225,14 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         
         cardRightView.addSubview(userNickNameLabel)
         userNickNameLabel.anchor(top: userImageView.bottomAnchor, paddingTop: 5)
-        userNickNameLabel.centerX(inView: userImageView)
+        userNickNameLabel.anchor(left: cardRightView.leftAnchor, right: cardRightView.rightAnchor, paddingLeft: 4, paddingRight: 4)
         
         dateLabelContainer.addSubview(dateLabel)
         dateLabel.centerX(inView: dateLabelContainer)
         dateLabel.centerY(inView: dateLabelContainer)
         
         cardRightView.addSubview(dateLabelContainer)
-        dateLabelContainer.anchor(top: userNickNameLabel.bottomAnchor, paddingTop: 18)
+        dateLabelContainer.anchor(bottom: cardRightView.bottomAnchor, paddingBottom: 24)
         dateLabelContainer.centerX(inView: userImageView)
     }
     
