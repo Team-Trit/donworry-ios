@@ -163,17 +163,17 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
+        
         reactor.state.map { $0.isCardAdmin }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isCardAdmin in
                 self?.buttonType = isCardAdmin ? .delete : .participate
             }).disposed(by: disposeBag)
-
-        reactor.state.map { $0.isParticipated }
+        
+        reactor.state.map { $0.isButtonEnabled }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isParticipated in
-                self?.bottomButton.isEnabled = !(isParticipated ?? true)
+            .subscribe(onNext: { [weak self] isButtonEnabled in
+                self?.bottomButton.isEnabled = isButtonEnabled
             }).disposed(by: disposeBag)
         
         reactor.state.map { $0.cardName }
