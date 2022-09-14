@@ -69,7 +69,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
                 let queryItems = components.queryItems else { return }
         for queryItem in queryItems {
-            print("🥚Parameter🥚 \(queryItem.name) : \(queryItem.value??"")")
+            print("🥚Parameter🥚 \(queryItem.name) : \(queryItem.value ?? "")")
         }
         dynamicLink.matchType
     }
