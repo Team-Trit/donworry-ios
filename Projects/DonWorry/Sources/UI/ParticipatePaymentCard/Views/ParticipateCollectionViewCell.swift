@@ -163,7 +163,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._13)
         label.textColor = .white
-        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -230,7 +229,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         
         cardRightView.addSubview(userNickNameLabel)
         userNickNameLabel.anchor(top: userImageView.bottomAnchor, paddingTop: 5)
-        userNickNameLabel.centerX(inView: userImageView)
+        userNickNameLabel.anchor(left: cardRightView.leftAnchor, right: cardRightView.rightAnchor, paddingLeft: 4, paddingRight: 4)
         
         dateLabelContainer.addSubview(dateLabel)
         dateLabel.centerX(inView: dateLabelContainer)
