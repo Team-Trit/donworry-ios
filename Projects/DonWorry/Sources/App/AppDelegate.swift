@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import FirebaseDynamicLinks
 
 import DonWorryLocalStorage
 import KakaoSDKCommon
@@ -32,6 +33,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .map { $0 && $1 }
             .bind(to: isLoggedIn)
             .disposed(by: disposeBag)
+        
+        // Firebase Configuration
+        FirebaseApp.configure()
         
         return true
     }

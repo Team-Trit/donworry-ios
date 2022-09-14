@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
-	<key>NSCameraUsageDescription</key>
-	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -34,6 +28,16 @@
 				<string>kakaoedeee91b673464dc9a3a5b65b063faaa</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle ID</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.TriT.DonWorry</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>2</string>
@@ -49,6 +53,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>프로필 및 영수증 사진 등록을 위해 카메라 접근 권한이 필요합니다</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
