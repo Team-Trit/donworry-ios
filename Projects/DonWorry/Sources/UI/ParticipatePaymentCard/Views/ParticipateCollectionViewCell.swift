@@ -58,7 +58,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
 
-            dateLabel.text = dateFormatting(viewModel?.date ?? "")
+            dateLabel.text = viewModel?.date ?? ""
             dateLabel.textColor = UIColor(hex: bgColor)
             isChecked = viewModel?.isSelected ?? false
         }
@@ -67,13 +67,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         willSet {
             checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
         }
-    }
-
-    private func dateFormatting(_ dateString: String) -> String {
-        if let date = Formatter.fullDateFormatter.date(from: dateString) {
-            return Formatter.mmddDateFormatter.string(from: date)
-        }
-        return "00/00"
     }
     
     fileprivate lazy var checkButton: UIButton = {
@@ -239,7 +232,6 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         dateLabel.centerY(inView: dateLabelContainer)
         
         cardRightView.addSubview(dateLabelContainer)
-//        dateLabelContainer.anchor(top: userNickNameLabel.bottomAnchor, paddingTop: 18)
         dateLabelContainer.anchor(bottom: cardRightView.bottomAnchor, paddingBottom: 24)
         dateLabelContainer.centerX(inView: userImageView)
     }
