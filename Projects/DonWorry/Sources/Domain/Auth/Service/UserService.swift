@@ -34,14 +34,9 @@ protocol UserService {
         accountNumber: String?,
         isAgreeMarketing: Bool?
     ) -> Observable<Models.User>     // 유저 정보 수정 유즈케이스
-
 }
 
 final class UserServiceImpl: UserService {
-    enum UserError: Error {
-        case undefined
-        case noUserInServer
-    }
     private let userRepository: UserRepository
     private let userAccountRepository: UserAccountRepository
     private let accessTokenRepository: AccessTokenRepository

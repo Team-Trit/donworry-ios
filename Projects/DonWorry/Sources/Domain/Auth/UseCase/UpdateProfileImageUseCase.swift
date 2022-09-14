@@ -15,14 +15,21 @@ protocol UpdateProfileImageUseCase {
 
 final class UpdateProfileImageUseCaseImpl: UpdateProfileImageUseCase {
     private let userRepository: UserRepository
+    private let userAccountRepository: UserAccountRepository
     
     init(
-        userRepository: UserRepository = UserRepositoryImpl()
+        userRepository: UserRepository = UserRepositoryImpl(),
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
     ) {
         self.userRepository = userRepository
+        self.userAccountRepository = userAccountRepository
     }
     
     func updateProfileImage(imgURL: String) -> Observable<Models.User> {
         userRepository.patchUser(nickname: nil, imgURL: imgURL, bank: nil, holder: nil, accountNumber: nil, isAgreeMarketing: nil)
+            .map { [weak self] user -> Models.User in
+                _ = self?.userAccountRepository.saveLocalUserAccount(user)
+                return user
+            }
     }
 }

@@ -27,7 +27,7 @@ final class NicknameEditViewController: BaseViewController, View {
     }()
     private lazy var nicknameEditField: LimitTextField = {
         let v = LimitTextField(frame: .zero, type: .nickName)
-        v.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.nickName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.nickName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
         return v
     }()
     private lazy var doneButton: DWButton = {
@@ -79,6 +79,11 @@ extension NicknameEditViewController {
 // MARK: - Bind
 extension NicknameEditViewController {
     private func dispatch(to reactor: Reactor) {
+        self.rx.viewDidLoad
+            .map { Reactor.Action.viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         navigationBar.leftItem.rx.tap
             .map { Reactor.Action.pressBackButton }
             .bind(to: reactor.action)
@@ -98,6 +103,13 @@ extension NicknameEditViewController {
     }
         
     private func render(_ reactor: Reactor) {
+        reactor.state.map { $0.user.nickName }
+            .observe(on: MainScheduler.instance)
+            .bind(onNext: { [weak self] placeholder in
+                self?.nicknameEditField.textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+            })
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$isDoneButtonAvailable)
             .asDriver(onErrorJustReturn: false)
             .drive(doneButton.rx.isEnabled)

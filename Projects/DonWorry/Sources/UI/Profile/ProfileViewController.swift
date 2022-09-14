@@ -31,8 +31,8 @@ final class ProfileViewController: BaseViewController, View {
         .user,
         .account,
         .service("공지사항"),
-        .service("이용약관"),
-        .service("푸시설정")
+        .service("이용약관")
+//        .service("푸시설정")
     ]
     private lazy var navigationBar = DWNavigationBar()
     private lazy var profileTableView: ProfileTableView = {
@@ -105,7 +105,8 @@ extension ProfileViewController {
     private func dispatch(to reactor: Reactor) {
         self.rx.viewWillAppear
             .map { _ in
-                return Reactor.Action.viewWillAppear }
+                return Reactor.Action.viewWillAppear
+            }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -126,12 +127,11 @@ extension ProfileViewController {
     }
     
     private func render(_ reactor: Reactor) {
-        reactor.pulse(\.$reload)
-            .asDriver(onErrorJustReturn: ())
-            .compactMap { $0 }
-            .drive(onNext: { [weak self] in
+        reactor.state.map { $0.user }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] _ in
                 self?.profileTableView.reloadData()
-            })
+            }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
@@ -210,14 +210,14 @@ extension ProfileViewController {
             
         case .nicknameEdit:
             let vc = NicknameEditViewController()
-            let reactor = NicknameEditViewReactor(userService: UserServiceImpl())
+            let reactor = NicknameEditViewReactor()
             vc.reactor = reactor
             self.navigationController?.pushViewController(vc, animated: true)
             
         case .accountEdit:
             let vc = AccountEditViewController()
-//            let reactor = AccountEditViewReactor()
-//            vc.reactor = reactor
+            let reactor = AccountEditViewReactor()
+            vc.reactor = reactor
             self.navigationController?.pushViewController(vc, animated: true)
             break
             
@@ -263,19 +263,15 @@ extension ProfileViewController: UITableViewDataSource {
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.imageURL }
+                reactor?.state.map { $0.user.image }
                     .distinctUntilChanged()
                     .asDriver(onErrorJustReturn: "")
                     .drive(onNext: { imgURL in
-                        if imgURL != "", let url = URL(string: imgURL) {
-                            cell.profileImageView.kf.setImage(with: url)
-                        } else {
-                            cell.profileImageView.image = UIImage(.default_profile_image)
-                        }
+                        cell.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: imgURL)
                     })
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.nickname }
+                reactor?.state.map { $0.user.nickName }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.nickNameLabel.rx.text)
                     .disposed(by: cell.disposeBag)
@@ -290,17 +286,17 @@ extension ProfileViewController: UITableViewDataSource {
                     .bind(to: reactor!.action)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.bank }
+                reactor?.state.map { $0.user.bankAccount.bank }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.bankLabel.rx.text)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.accountNumber }
+                reactor?.state.map { $0.user.bankAccount.accountNumber }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.accountLabel.rx.text)
                     .disposed(by: cell.disposeBag)
                 
-                reactor?.state.map { $0.accountHolder }
+                reactor?.state.map { $0.user.bankAccount.accountHolderName }
                     .asDriver(onErrorJustReturn: "")
                     .drive(cell.holderLabel.rx.text)
                     .disposed(by: cell.disposeBag)
@@ -365,12 +361,8 @@ extension ProfileViewController: PHPickerViewControllerDelegate {
         
         if let selectedPhoto = selectedPhoto,
            selectedPhoto.canLoadObject(ofClass: UIImage.self) {
-            selectedPhoto.loadObject(ofClass: UIImage.self) { image, error in
-                if let error = error {
-                    return
-                } else {
-                    self.reactor?.action.onNext(.updateProfileImage(image: image as? UIImage))
-                }
+            selectedPhoto.loadObject(ofClass: UIImage.self) { image, _ in
+                self.reactor?.action.onNext(.updateProfileImage(image: image as? UIImage))
             }
         }
     }
@@ -386,12 +378,6 @@ extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerCo
         picker.dismiss(animated: true)
         
         guard let image = info[.editedImage] as? UIImage else { return }
-        let imgName = UUID().uuidString+".jpeg"
-        let documentDirectory = NSTemporaryDirectory()
-        let localPath = documentDirectory.appending(imgName)
-        let data = image.jpegData(compressionQuality: 0.3)! as NSData
-        data.write(toFile: localPath, atomically: true)
-        let imgURL = URL.init(fileURLWithPath: localPath).absoluteString
-        self.reactor?.action.onNext(.updateProfileImage(imgURL: imgURL))
+        self.reactor?.action.onNext(.updateProfileImage(image: image))
     }
 }

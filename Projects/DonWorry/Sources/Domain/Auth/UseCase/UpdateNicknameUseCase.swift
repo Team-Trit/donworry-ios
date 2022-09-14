@@ -6,16 +6,30 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+import Models
 
 protocol UpdateNicknameUseCase {
-    
+    func updateNickname(nickname: String) -> Observable<Models.User>
 }
 
 final class UpdateNicknameUseCaseImpl: UpdateNicknameUseCase {
     private let userRepository: UserRepository
+    private let userAccountRepository: UserAccountRepository
     
-    init(userRepository: UserRepository = UserRepositoryImpl()) {
+    init(
+        userRepository: UserRepository = UserRepositoryImpl(),
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
+    ) {
         self.userRepository = userRepository
+        self.userAccountRepository = userAccountRepository
+    }
+    
+    func updateNickname(nickname: String) -> Observable<User> {
+        userRepository.patchUser(nickname: nickname, imgURL: nil, bank: nil, holder: nil, accountNumber: nil, isAgreeMarketing: nil)
+            .map { [weak self] user -> Models.User in
+                _ = self?.userAccountRepository.saveLocalUserAccount(user)
+                return user
+            }
     }
 }

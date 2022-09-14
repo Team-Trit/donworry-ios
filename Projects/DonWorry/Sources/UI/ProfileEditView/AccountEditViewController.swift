@@ -27,8 +27,8 @@ final class AccountEditViewController: BaseViewController, View {
     }()
     lazy var accountEditField: AccountInputField = {
         let v = AccountInputField(frame: .zero, type: .EnterUserInfo)
-        v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.bankAccount.accountHolderName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
-        v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.user.bankAccount.accountNumber)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountHolderName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountNumber)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
         return v
     }()
     private lazy var doneButton: DWButton = {
@@ -80,6 +80,11 @@ extension AccountEditViewController {
 // MARK: - Bind
 extension AccountEditViewController {
     private func dispatch(to reactor: Reactor) {
+        self.rx.viewDidLoad
+            .map { Reactor.Action.viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         navigationBar.leftItem.rx.tap
             .map { Reactor.Action.pressBackButton }
             .bind(to: reactor.action)
@@ -111,11 +116,25 @@ extension AccountEditViewController {
     }
     
     private func render(_ reactor: Reactor) {
-        reactor.state.map { $0.bank }
+        reactor.state.map { $0.user.bankAccount.bank }
             .asDriver(onErrorJustReturn: "은행선택")
-            .drive { [weak self] in
-                self?.accountEditField.chooseBankButton.setTitle($0, for: .normal)
+            .drive { [weak self] bank in
+                self?.accountEditField.chooseBankButton.setTitle(bank, for: .normal)
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.user.bankAccount.accountHolderName }
+            .observe(on: MainScheduler.instance)
+            .bind(onNext: { [weak self] placeholder in
+                self?.accountEditField.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.user.bankAccount.accountNumber }
+            .observe(on: MainScheduler.instance)
+            .bind(onNext: { [weak self] placeholder in
+                self?.accountEditField.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+            })
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isDoneButtonAvailable)

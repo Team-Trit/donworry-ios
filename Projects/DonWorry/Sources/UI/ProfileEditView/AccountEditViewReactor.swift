@@ -20,11 +20,11 @@ protocol AccountEditViewDelegate: AnyObject {
 }
 
 final class AccountEditViewReactor: Reactor {
-    private let userService: UserService
-    private let getUserUseCase: GetUserAccountUseCase
-    var user: User
+    private let getUserAccountUseCase: GetUserAccountUseCase
+    private let updateAccountUseCase: UpdateAccountUseCase
     
     enum Action {
+        case viewDidLoad
         case pressBackButton
         case selectBankButtonPressed
         case selectBank(selectedBank: String)
@@ -34,13 +34,16 @@ final class AccountEditViewReactor: Reactor {
     }
     
     enum Mutation {
+        case setup(Models.User)
         case updateBank(selectedBank: String)
+        case updateHolder(holder: String)
+        case updateNumber(number: String)
         case updateValidation
         case routeTo(step: AccountEditViewStep)
     }
     
     struct State {
-        var bank: String
+        var user: Models.User
         @Pulse var isDoneButtonAvailable: Bool
         @Pulse var step: AccountEditViewStep?
     }
@@ -48,20 +51,25 @@ final class AccountEditViewReactor: Reactor {
     let initialState: State
 
     init(
-        userService: UserService = UserServiceImpl(),
-        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+        getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
+        updateAccountUseCase: UpdateAccountUseCase = UpdateAccountUseCaseImpl()
     ) {
-        self.userService = userService
-        self.getUserUseCase = getUserUseCase
-        self.user = getUserUseCase.getUserAccountUnWrapped()!
+        self.getUserAccountUseCase = getUserAccountUseCase
+        self.updateAccountUseCase = updateAccountUseCase
         self.initialState = State(
-            bank: user.bankAccount.bank,
+            user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: ""),
             isDoneButtonAvailable: false
         )
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .viewDidLoad:
+            return getUserAccountUseCase.getUserAccount()
+                .map { user in
+                    return .setup(user!)
+                }
+            
         case .pressBackButton:
             return .just(Mutation.routeTo(step: .pop))
             
@@ -69,28 +77,31 @@ final class AccountEditViewReactor: Reactor {
             return .just(Mutation.routeTo(step: .presentSelectBankView))
             
         case .selectBank(let selectedBank):
-            self.user.bankAccount.bank = selectedBank
             return .concat([
                 .just(Mutation.updateBank(selectedBank: selectedBank)),
                 .just(Mutation.updateValidation)
             ])
             
         case .updateHolder(let holder):
-            self.user.bankAccount.accountHolderName = holder
-            return .just(Mutation.updateValidation)
+            return .concat([
+                .just(Mutation.updateHolder(holder: holder)),
+                .just(Mutation.updateValidation)
+            ])
             
         case .updateAccountNumber(let number):
-            self.user.bankAccount.accountNumber = number
-            return .just(Mutation.updateValidation)
+            return .concat([
+                .just(Mutation.updateNumber(number: number)),
+                .just(Mutation.updateValidation)
+            ])
             
         case .pressDoneButton:
-            return userService.updateUser(nickname: nil,
-                                  imgURL: nil,
-                                  bank: user.bankAccount.bank,
-                                  holder: user.bankAccount.accountHolderName,
-                                  accountNumber: user.bankAccount.accountNumber,
-                                  isAgreeMarketing: nil)
-            .map { _ in .routeTo(step: .pop) }
+            let currentUser = currentState.user
+            return updateAccountUseCase.updateAccount(
+                bank: currentUser.bankAccount.bank,
+                holder: currentUser.bankAccount.accountHolderName,
+                accountNumber: currentUser.bankAccount.accountNumber
+            )
+            .map { _ in return .routeTo(step: .pop)}
         }
     }
     
@@ -98,11 +109,20 @@ final class AccountEditViewReactor: Reactor {
         var newState = state
         
         switch mutation {
+        case .setup(let user):
+            newState.user = user
+            
         case .updateBank(let selectedBank):
-            newState.bank = selectedBank
+            newState.user.bankAccount.bank = selectedBank
+            
+        case .updateHolder(let holder):
+            newState.user.bankAccount.accountHolderName = holder
+            
+        case .updateNumber(let number):
+            newState.user.bankAccount.accountNumber = number
             
         case .updateValidation:
-            newState.isDoneButtonAvailable = checkNextButtonValidation(self.user)
+            newState.isDoneButtonAvailable = checkNextButtonValidation(self.currentState.user)
             
         case .routeTo(let step):
             newState.step = step
