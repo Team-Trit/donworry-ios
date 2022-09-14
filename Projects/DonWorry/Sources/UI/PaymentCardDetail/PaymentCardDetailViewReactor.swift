@@ -51,7 +51,8 @@ final class PaymentCardDetailViewReactor: Reactor {
         cardName: String,
         isCardAdmin: Bool,
         participatedUsers: [AttendanceCellViewModel],
-        paymentCardService: PaymentCardService = PaymentCardServiceImpl()
+        paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
+        userAccountService: UserAccountRepository = UserAccountRepositoryImpl()
     ) {
         self.initialState = .init(
             cardID: cardID,
@@ -62,6 +63,7 @@ final class PaymentCardDetailViewReactor: Reactor {
             imgURLs: []
         )
         self.paymentCardService = paymentCardService
+        self.userAccountService = userAccountService
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -84,7 +86,7 @@ final class PaymentCardDetailViewReactor: Reactor {
              newState.amount = response.card.totalAmount
              newState.imgURLs = response.card.imgUrls
              newState.isParticipated = response.card.users.contains(where: { user in
-                 user.id == UserServiceImpl().fetchLocalUser()?.id
+                 user.id == userAccountService.fetchLocalUserAccount()?.id
              })
              newState.participatedUsers = response.card.users.map {
                  .init(id: $0.id, name: $0.nickname, imgURL: $0.imgURL)
@@ -123,4 +125,5 @@ final class PaymentCardDetailViewReactor: Reactor {
     }
 
     private let paymentCardService: PaymentCardService
+    private let userAccountService: UserAccountRepository
 }
