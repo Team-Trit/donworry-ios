@@ -41,9 +41,24 @@ final class ProfileViewController: BaseViewController, View {
         v.delegate = self
         return v
     }()
-    private lazy var inquiryButtonView = ServiceButtonView(frame: .zero, type: .inquiry)
-    private lazy var questionButtonView = ServiceButtonView(frame: .zero, type: .question)
-    private lazy var blogButtonView = ServiceButtonView(frame: .zero, type: .blog)
+    private lazy var inquiryButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .inquiry)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(inquiryButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
+    private lazy var questionButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .question)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(questionButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
+    private lazy var blogButtonView: ServiceButtonView = {
+        let v = ServiceButtonView(frame: .zero, type: .blog)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(blogButtonTapped))
+        v.addGestureRecognizer(tapGesture)
+        return v
+    }()
     private lazy var accountButtonStackView = AccountButtonStackView()
     
     override func viewDidLoad() {
@@ -107,6 +122,11 @@ extension ProfileViewController {
             .map { _ in
                 return Reactor.Action.viewWillAppear
             }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        profileTableView.rx.itemSelected
+            .map { Reactor.Action.pressServiceButton(index: $0.row) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -252,6 +272,7 @@ extension ProfileViewController: UITableViewDataSource {
         switch items[indexPath.row] {
         case .user:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
+                cell.selectionStyle = .none
                 cell.imagePlusButton.rx.tap
                     .map { Reactor.Action.pressUpdateProfileImageButton }
                     .bind(to: reactor!.action)
@@ -281,6 +302,7 @@ extension ProfileViewController: UITableViewDataSource {
             
         case .account:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewAccountCell.identifier, for: indexPath) as? ProfileTableViewAccountCell {
+                cell.selectionStyle = .none
                 cell.editButton.rx.tap
                     .map { Reactor.Action.pressUpdateAccountButton }
                     .bind(to: reactor!.action)
@@ -306,6 +328,7 @@ extension ProfileViewController: UITableViewDataSource {
             
         case .service(let title):
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewServiceCell.identifier, for: indexPath) as? ProfileTableViewServiceCell {
+                cell.selectionStyle = .none
                 cell.titleLabel.text = title
                 
                 return cell
@@ -379,5 +402,32 @@ extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerCo
         
         guard let image = info[.editedImage] as? UIImage else { return }
         self.reactor?.action.onNext(.updateProfileImage(image: image))
+    }
+}
+
+// MARK: - Tap Gesture
+extension ProfileViewController {
+    @objc private func inquiryButtonTapped() {
+        if let url = URL(string: "https://pf.kakao.com/_LCulxj" ) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func questionButtonTapped() {
+        if let url = URL(string: "https://www.notion.so/avery-in-ada/67b500e90d0647b6878d20bc14cff750?v=7a0dfc71e1e34ff796989283d252b87f") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func blogButtonTapped() {
+        if let url = URL(string: "https://www.notion.so/tr-it/Team-Tr-iT-b531aa35a459409fa1b733e713e1fef8") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }

@@ -33,12 +33,7 @@ final class ProfileViewReactor: Reactor {
         case updateProfileImage(image: UIImage?)
         case pressUpdateNickNameButton
         case pressUpdateAccountButton
-        case pressNoticeButton
-        case pressTermButton
-        case pressPushSettingButton
-        case pressInquiryButton
-        case pressQuestionButton
-        case pressBlogButton
+        case pressServiceButton(index: Int)
         case pressLogoutButton
         case pressAccountDeleteButton
         case deleteAccount
@@ -99,28 +94,28 @@ final class ProfileViewReactor: Reactor {
         case .pressUpdateAccountButton:
             return .just(Mutation.routeTo(step: .accountEdit))
             
-        case .pressNoticeButton:
-            // TODO: 공지사항
-            return .empty()
-            
-        case .pressTermButton:
-            // TODO: 이용약관
-            return .empty()
-            
-        case .pressPushSettingButton:
-            // TODO: 알림설정
-            return .empty()
-            
-        case .pressInquiryButton:
-            // TODO: 1대1 문의
-            return .empty()
-            
-        case .pressQuestionButton:
-            // TODO: 자주 찾는 질문
-            return .empty()
-            
-        case .pressBlogButton:
-            // TODO: 블로그
+        case .pressServiceButton(let index):
+            print("✨눌렷음")
+            switch index {
+            case 2:
+                // 공지사항
+                if let url = URL(string: "https://www.notion.so/6772fa482cf74c54893350fde6b08f12") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                
+            case 3:
+                // 이용약관
+                if let url = URL(string: "https://www.notion.so/0ec63d93d3f3407e8b881575ac952533") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                
+            default:
+                break
+            }
             return .empty()
             
         case .pressLogoutButton:
