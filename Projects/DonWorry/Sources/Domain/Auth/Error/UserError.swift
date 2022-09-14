@@ -9,8 +9,6 @@
 import Foundation
 
 enum UserError: Error {
-    case undefined
-    case notUserInServer
     case isNotMe
 
     var message: String {

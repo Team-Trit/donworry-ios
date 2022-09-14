@@ -16,6 +16,7 @@ enum NicknameEditViewStep {
 
 final class NicknameEditViewReactor: Reactor {
     private let userService: UserService
+    private let getUserUseCase: GetUserAccountUseCase
     var user: User
     enum Action {
         case pressBackButton
@@ -34,10 +35,14 @@ final class NicknameEditViewReactor: Reactor {
     }
     
     let initialState: State
-    
-    init(userService: UserService) {
+
+    init(
+        userService: UserService = UserServiceImpl(),
+        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+    ) {
         self.userService = userService
-        self.user = userService.fetchLocalUser()!
+        self.getUserUseCase = getUserUseCase
+        self.user = getUserUseCase.getUserAccountUnWrapped()!
         self.initialState = State(
             isDoneButtonAvailable: false
         )

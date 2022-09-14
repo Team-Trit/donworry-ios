@@ -17,7 +17,7 @@ enum AlarmModels {
             let title: String
             let message: String
             let createdDate: String
-
+            
             enum AlarmType {
                 case system
                 case payment_start

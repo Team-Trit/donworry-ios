@@ -7,3 +7,29 @@
 //
 
 import Foundation
+
+enum AuthError: Error {
+    case nouser(String)
+    case kakaoLogin // 카카오쪽에서 로그인 실패
+    case parsing
+
+    var message: String {
+        switch self {
+        case .nouser:
+            return ""
+        case .kakaoLogin:
+            return "카카오 로그인 실패"
+        case .parsing:
+            return "알 수 없는 오류... 다시 시도해주세요."
+        }
+    }
+}
+
+extension Error {
+    func toAuthError() -> AuthError? {
+        guard let error = self as? AuthError else {
+            return nil
+        }
+        return error
+    }
+}

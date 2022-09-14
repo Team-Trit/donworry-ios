@@ -186,12 +186,14 @@ extension ConfirmTermViewController {
 // MARK: - TableViewDataSource
 extension ConfirmTermViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (reactor?.checkedTerms.count)!
+        guard let reactor = reactor else { return 0 }
+        return reactor.currentState.checkedTerms.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let reactor = reactor else { return .init() }
         let cell = tableView.dequeueReusableCell(withIdentifier: "TermConfirmCell", for: indexPath)
-        cell.textLabel?.text = "* \((reactor?.checkedTerms[indexPath.row])!)"
+        cell.textLabel?.text = "* \((reactor.currentState.checkedTerms[indexPath.row]))"
         cell.textLabel?.font = .designSystem(weight: .regular, size: ._15)
         cell.textLabel?.textColor = .designSystem(.gray818181)
         return cell

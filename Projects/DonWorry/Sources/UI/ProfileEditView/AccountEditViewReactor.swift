@@ -21,6 +21,7 @@ protocol AccountEditViewDelegate: AnyObject {
 
 final class AccountEditViewReactor: Reactor {
     private let userService: UserService
+    private let getUserUseCase: GetUserAccountUseCase
     var user: User
     
     enum Action {
@@ -45,10 +46,14 @@ final class AccountEditViewReactor: Reactor {
     }
     
     let initialState: State
-    
-    init(userService: UserService) {
+
+    init(
+        userService: UserService = UserServiceImpl(),
+        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+    ) {
         self.userService = userService
-        self.user = userService.fetchLocalUser()!
+        self.getUserUseCase = getUserUseCase
+        self.user = getUserUseCase.getUserAccountUnWrapped()!
         self.initialState = State(
             bank: user.bankAccount.bank,
             isDoneButtonAvailable: false

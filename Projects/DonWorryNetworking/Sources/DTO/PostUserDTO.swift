@@ -13,8 +13,8 @@ extension DTO {
         public let id: Int
         public let nickname: String
         public let isAgreeMarketing: Bool
-        public let email, tokenType, accessToken: String
-        public let refreshToken: String
+        public let tokenType, accessToken, refreshToken: String
+        public let imgUrl: String?
         public let account: Account
         
         public struct Account: Codable {

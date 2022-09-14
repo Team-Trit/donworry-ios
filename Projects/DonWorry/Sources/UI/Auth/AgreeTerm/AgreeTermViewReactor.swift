@@ -10,12 +10,14 @@ import ReactorKit
 import RxCocoa
 
 enum AgreeTermStep {
+    typealias SignUpModel = AuthModels.SignUp.Request
     case none
     case pop
-    case confirmTerm(checkedTerms: [String], newUser: SignUpUserModel)
+    case confirmTerm(checkedTerms: [String], newUser: SignUpModel)
 }
 
 final class AgreeTermViewReactor: Reactor {
+    typealias SignUpModel = AuthModels.SignUp.Request
     let dataSource: [String] = [
         "전체동의",
         "(필수) 돈워리 회원가입 및 이용약관 동의",
@@ -24,7 +26,6 @@ final class AgreeTermViewReactor: Reactor {
         "(선택) 이벤트 알림 수신 동의"
     ]
     private var checkedTerms: [String] = .init(repeating: "", count: 5)
-    private var user: SignUpUserModel
     
     enum Action {
         case backButtonPressed
@@ -38,17 +39,16 @@ final class AgreeTermViewReactor: Reactor {
     }
     
     struct State {
+        var signUpModel: SignUpModel
         var isChecked: [Bool]
         @Pulse var step: AgreeTermStep?
     }
     
     let initialState: State
     
-    init(newUser: SignUpUserModel) {
-        self.user = newUser
-        self.initialState = State(
-            isChecked: [false, false, false, false, false]
-        )
+    init(signUpModel: SignUpModel) {
+        self.initialState = State(signUpModel: signUpModel, isChecked:  [false, false, false, false, false])
+
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -61,7 +61,7 @@ final class AgreeTermViewReactor: Reactor {
             
         case .doneButtonPressed:
             let checked = checkedTerms.filter { $0 != "" }
-            return .just(.routeTo(step: .confirmTerm(checkedTerms: checked, newUser: user)))
+            return .just(.routeTo(step: .confirmTerm(checkedTerms: checked, newUser: currentState.signUpModel)))
         }
     }
     
@@ -95,8 +95,7 @@ final class AgreeTermViewReactor: Reactor {
                     self.checkedTerms[i] = ""
                 }
             }
-            self.user.isAgreeMarketing = newState.isChecked[4]
-            
+            newState.signUpModel.isAgreeMarketing = newState.isChecked[4]
         case .routeTo(let step):
             newState.step = step
         }

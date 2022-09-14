@@ -123,7 +123,10 @@ extension AgreeTermViewController {
             
         case let .confirmTerm(checkedTerms, newUser):
             let vc = ConfirmTermViewController()
-            vc.reactor = ConfirmTermViewReactor(checkedTerms: checkedTerms, newUser: newUser)
+            vc.reactor = ConfirmTermViewReactor(
+                signUpModel: newUser,
+                checkedTerms: checkedTerms
+            )
             vc.modalPresentationStyle = .overCurrentContext
             self.present(vc, animated: false)
             

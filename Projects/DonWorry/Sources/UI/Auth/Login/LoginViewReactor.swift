@@ -11,186 +11,110 @@ import ReactorKit
 import RxSwift
 
 enum LoginStep {
+    typealias OAuthType = AuthModels.OAuthType
     case none
-    case enterUserInfo(provider: LoginProvider, token: String)
+    case signup(String, OAuthType)
     case home
 }
 
 final class LoginViewReactor: Reactor {
+    typealias Token = String
     // TODO: 삭제하기
     private let testUserService: TestUserService
-    private let userService: UserService
-    private let disposeBag = DisposeBag()
+    private let signInUseCase: SignInUseCase
     
     enum Action {
-        case appleLoginButtonPressed
-        //        case googleLoginButtonPressed
-        case proceedWithAppleToken(identityToken: String)
+        case proceedWithAppleToken(identityToken: Token)
         case kakaoLoginButtonPressed
+        case routeToHome
+        case routeToSignUp(Token)
+        case errorToast(String)
         // TODO: 삭제하기
         case didTapTestUserButton
     }
     
     enum Mutation {
-        case login
-        case loginError
-        case performAppleLogin
         case routeTo(LoginStep)
+        case toast(String)
+        case nothing
     }
     
     struct State {
         @Pulse var appleLoginTrigger: Void?
         @Pulse var step: LoginStep?
+        @Pulse var toast: String?
     }
     
     let initialState: State
+    var disposeBag: DisposeBag
     
     init(
         testUserService: TestUserService = TestUserServiceImpl(),
-        userService: UserService = UserServiceImpl()
+        signInUseCase: SignInUseCase = SignInUseCaseImpl()
     ) {
         self.testUserService = testUserService
-        self.userService = userService
+        self.signInUseCase = signInUseCase
         self.initialState = State()
+        self.disposeBag = .init()
+
+        self.signInUseCase.completeKakaoLogin
+            .subscribe(onNext: { [weak self] _ in
+                self?.action.onNext(.routeToHome)
+            }, onError: { [weak self] error in
+                guard let error = error.toAuthError() else { return }
+                switch error {
+                case .nouser(let token):
+                    self?.action.onNext(.routeToSignUp(token))
+                default:
+                    self?.action.onNext(.errorToast(error.message))
+                }
+            }).disposed(by: disposeBag)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .appleLoginButtonPressed:
-            return .just(Mutation.performAppleLogin)
-            
         case .proceedWithAppleToken(let identityToken):
-            var nextMutation: Observable<Mutation> = .empty()
-            userService.loginWithApple(identityToken: identityToken)
-                .subscribe(onNext: { user in
-                    print("✨애플 로그인 성공, 홈뷰로 이동")
-                    nextMutation = .just(.routeTo(.home))
-                }, onError: { error in
-                    guard let error = error as? UserError else { return }
-                    switch error {
-                    case .notUserInServer:
-                        print("🔥서버에 유저 없음 에러")
-                        nextMutation = .just(.routeTo(.enterUserInfo(provider: .APPLE, token: identityToken)))
-                        
-                    default:
-                        print("🔥다른 에러")
-                        break
-                    }
-                })
-                .disposed(by: disposeBag)
-            return nextMutation
-            
-            /*
-             case .googleLoginButtonPressed:
-             // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
-             */
-            
+            let signIn = requestAppleLogin(token: identityToken)
+            return signIn
         case .kakaoLoginButtonPressed:
-            var nextMutation: Observable<Mutation> = .empty()
-            userService.kakaoLogin()
-                .subscribe(onNext: { [weak self] oauthToken in
-                    let accessToken = oauthToken.accessToken
-                    print("✨카카오 로그인 실행")
-                    print("🔥카카오 토큰 : \(accessToken)")
-                    self?.userService.loginWithKakao(accessToken: accessToken)
-                        .subscribe(onNext: { user in
-                            print("✨카카오 로그인 성공, 홈뷰로 이동")
-                            nextMutation = .just(.routeTo(.home))
-                        }, onError: { error in
-                            guard let error = error as? UserError else { return }
-                            switch error {
-                            case .notUserInServer:
-                                print("🔥서버에 유저 없음 에러")
-                                nextMutation = .just(.routeTo(.enterUserInfo(provider: .KAKAO, token: accessToken)))
-                                
-                            default:
-                                print("🔥다른 에러")
-                                break
-                            }
-                        })
-                        .disposed(by: self!.disposeBag)
-                })
-                .disposed(by: disposeBag)
-            return nextMutation
-            
-            // TODO: 삭제하기
+            return signInUseCase.kakaoLogin().map { _ in .nothing }
+        case .routeToHome:
+            return .just(.routeTo(.home))
+        case .routeToSignUp(let token):
+            return .just(.routeTo(.signup(token, .kakao)))
+        case .errorToast(let message):
+            return .just(.toast(message))
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
             return testUserService.signIn(1)
                 .map { _ in .routeTo(.home) }
         }
     }
-    
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        
         switch mutation {
-        case .login:
-            break
-            
-        case .loginError:
-            break
-            
-        case .performAppleLogin:
-            newState.appleLoginTrigger = ()
-            
         case .routeTo(let step):
             newState.step = step
+        case .toast(let message):
+            newState.toast = message
+        case .nothing:
+            break
         }
-        
         return newState
     }
-}
 
-// MARK: - Helper
-extension LoginViewReactor {
-    private func login(_ token: String, _ provider: LoginProvider) -> Observable<LoginViewReactor.Mutation> {
-        switch provider {
-        case .APPLE:
-            return userService.loginWithApple(identityToken: token)
-                .map { _ in
-                    print("✨애플 로그인 됨")
-                    return .routeTo(.home)
+    private func requestAppleLogin(token: String) -> Observable<Mutation> {
+        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token))
+            .map { _ in Mutation.routeTo(.home) }
+            .catch { error in
+                guard let error = error.toAuthError() else { return .error(error) }
+                switch error {
+                case .nouser(let token):
+                    return .just(.routeTo(.signup(token, .apple)))
+                default:
+                    return .just(.toast(error.message))
                 }
-                .catch { error in
-                    guard let error = error as? UserError else { return .empty() }
-                    switch error {
-                    case .notUserInServer:
-                        print("✨애플 로그인 안되고 회원가입 해야함")
-                        return .just(.routeTo(.enterUserInfo(provider: .APPLE, token: token)))
-                        
-                    default:
-                        print("✨다른 에러임")
-                        
-                        return .empty()
-                    }
-                }
-            
-            /*
-             case .GOOGLE:
-             */
-            
-        case .KAKAO:
-            return userService.loginWithKakao(accessToken: token)
-                .map { _ in
-                    print("✨카카오 로그인 됨")
-                    return .routeTo(.home)
-                }
-                .catch { error in
-                    guard let error = error as? UserError else { return .empty()}
-                    switch error {
-                    case .notUserInServer:
-                        print("✨카카오 로그인 안되고 회원가입 해야함")
-                        return .just(.routeTo(.enterUserInfo(provider: .KAKAO, token: token)))
-                        
-                    default:
-                        print("✨다른 에러임")
-                        return .empty()
-                    }
-                }
-            
-        default:
-            return .empty()
-        }
+            }
     }
 }
