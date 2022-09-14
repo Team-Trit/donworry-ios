@@ -72,19 +72,19 @@ extension LoginViewController {
         }
         
         appleLoginButton.snp.makeConstraints { make in
+            make.bottom.equalTo(kakaoLoginButton.snp.top).inset(-10)
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(270)
         }
         
         /*
         googleLoginButton.snp.makeConstraints { make in
-            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
+            make.bottom.equalTo(kakaoLoginButton.snp.top).inset(10)
             make.centerX.equalToSuperview()
         }
          */
         
         kakaoLoginButton.snp.makeConstraints { make in
-            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.centerX.equalToSuperview()
         }
         

@@ -43,14 +43,6 @@ final class EnterUserInfoViewController: BaseViewController, View{
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
-        
-        UserApi.shared.rx.accessTokenInfo()
-            .subscribe(onSuccess: { info in
-                print("✨앱 아이디 : \(info.appId)")
-                print("✨액세스 토큰 만료시간 : \(info.expiresIn)")
-                print("✨사용자 아이디 : \(info.id)")
-            })
-            .disposed(by: disposeBag)
     }
     
     func bind(reactor: EnterUserInfoViewReactor) {
