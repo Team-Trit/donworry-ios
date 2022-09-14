@@ -213,10 +213,11 @@ extension HomeViewController {
 
     @objc
     private func routeToPaymentListScene(_ notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String: Int] else { return }
-        guard let spaceID = userInfo["joinSpace.spaceID"],
-              let adminID = userInfo["joinSpace.adminID"] else { return }
-        move(to: .spaceList(spaceID, adminID))
+        guard let userInfo = notification.userInfo as? [String: Any] else { return }
+        guard let spaceID = userInfo["joinSpace.spaceID"] as? Int,
+              let adminID = userInfo["joinSpace.adminID"] as? Int,
+              let status = userInfo["joinSpace.status"] as? String else { return }
+        move(to: .spaceList(spaceID, adminID, status))
     }
 }
 
@@ -243,9 +244,10 @@ extension HomeViewController {
                 return
             }
             self.present(viewController, animated: true)
-        case .alert:
-            let alertViewController = AlertViewViewController()
-            self.navigationController?.pushViewController(alertViewController, animated: true)
+        case .alarm:
+            let alarm = AlarmViewController()
+            alarm.reactor = AlarmReactor()
+            self.navigationController?.pushViewController(alarm, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
@@ -254,10 +256,10 @@ extension HomeViewController {
             self.present(confirmLeaveAlertController(), animated: true)
         case .cantLeaveSpace:
             self.present(cantLeaveAlertController(), animated: true)
-        case .spaceList(let spaceID, let adminID):
+        case .spaceList(let spaceID, let adminID, let status):
             let paymentCardListViewController = PaymentCardListViewController()
             paymentCardListViewController.reactor = PaymentCardListReactor(
-                spaceID: spaceID, adminID: adminID
+                spaceID: spaceID, adminID: adminID, status: status
             )
             self.navigationController?.pushViewController(paymentCardListViewController, animated: true)
         case .none:
@@ -267,8 +269,8 @@ extension HomeViewController {
 
     @objc func sheetSentMoneyDetailViewController(spaceID: Int, paymentID: Int) -> UIViewController? {
         if #available(iOS 15.0, *) {
-            let sentMoneyDetailViewController = SentMoneyDetailViewController()
-            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
+            let sentMoneyDetailViewController = SendMoneyDetailViewController()
+            sentMoneyDetailViewController.reactor = SendMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
             if let presentationController = sentMoneyDetailViewController.sheetPresentationController {
                 presentationController.detents = [.medium()]
                 presentationController.prefersGrabberVisible = true

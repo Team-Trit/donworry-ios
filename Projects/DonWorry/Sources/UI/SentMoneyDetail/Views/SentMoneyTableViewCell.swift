@@ -9,9 +9,15 @@
 import UIKit
 import DesignSystem
 
+public struct SentMoneyCellViewModel {
+    let name: String
+    let date: String
+    let totalAmount: Int
+    let totalUers: Int
+    let myAmount: Int
+}
+
 class SentMoneyTableViewCell: UITableViewCell {
-
-
     public let numberformatter = NumberFormatter()
     
     static let identifier: String = "SentMoneyTableViewCell"
@@ -106,7 +112,7 @@ class SentMoneyTableViewCell: UITableViewCell {
         
     }
 
-    func configure(icon: String, myPayment: SendingMoneyInfoViewModel) {
+    func configure(icon: String, myPayment: SentMoneyCellViewModel) {
         numberformatter.numberStyle = .decimal
         spaceIcon.image = UIImage(named: "baconImage")
         spaceNameLabel.text = myPayment.name
@@ -115,7 +121,7 @@ class SentMoneyTableViewCell: UITableViewCell {
         dividedAmount.text = numberformatter.string(for: myPayment.myAmount)! + "원"
     }
     
-    func makeAtrributedString(myPayment: SendingMoneyInfoViewModel) -> NSMutableAttributedString {
+    func makeAtrributedString(myPayment: SentMoneyCellViewModel) -> NSMutableAttributedString {
         numberformatter.numberStyle = .decimal
         let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
         let attributedQuote = NSMutableAttributedString(string: paymentString)

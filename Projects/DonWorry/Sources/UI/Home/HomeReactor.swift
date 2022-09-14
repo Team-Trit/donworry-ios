@@ -16,11 +16,11 @@ enum HomeStep {
     case joinSpace
     case recievedMoneyDetail(Int)
     case sentMoneyDetail(Int, Int)
-    case alert
+    case alarm
     case profile
     case leaveAlertMessage // 확인메시지 알람창 -> 토스트
     case cantLeaveSpace // 오류메시지 알림창 -> 토스트
-    case spaceList(Int, Int)
+    case spaceList(Int, Int, String)
     case none
 }
 
@@ -82,7 +82,7 @@ final class HomeReactor: Reactor {
         case .didSelectSpace(let index):
             return .just(.updateSpace(index))
         case .didTapAlarm:
-            return .just(.routeTo(.alert))
+            return .just(.routeTo(.alarm))
         case .didTapSearchButton:
             return .just(.routeTo(.joinSpace))
         case .didTapCreateSpaceButton:
@@ -97,7 +97,7 @@ final class HomeReactor: Reactor {
             return .just(.routeTo(.recievedMoneyDetail(selectedSpace.id)))
         case .didTapStateBillCard:
             let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
-            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID)))
+            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID, selectedSpace.status)))
         case .didTapLeaveBillCard:
             return requestLeave()
         case .none:

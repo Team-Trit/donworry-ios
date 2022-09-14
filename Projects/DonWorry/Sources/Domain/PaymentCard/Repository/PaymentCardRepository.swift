@@ -14,10 +14,11 @@ import Models
 
 protocol PaymentCardRepository {
     func fetchPaymentCardList(spaceID: Int) -> Observable<PaymentCardModels.FetchCardList.Response>
-    func joinPaymentCardList(ids:[Int]) -> Observable<String>
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response>
+    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func createCard(request: PaymentCardModels.CreateCard.Request) -> Observable<PaymentCardModels.Empty.Response>
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response>
-    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.DeleteCard.Empty>
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response>
     func putEditPaymentCard(id: Int, totalAmount: Int) -> Observable<PaymentCardModels.PutCard.Response>
 }
 
@@ -40,14 +41,24 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                 )
             }.asObservable()
     }
-    
-    func joinPaymentCardList(ids: [Int]) -> Observable<String> {
-        network.request(PostJoinPaymentCardAPI(request: .init(cardIds: ids)))
-            .compactMap { _ in
-                    return "suc"
-            }.asObservable()
+
+    func joinCards(request: PaymentCardModels.JoinCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        network.request(
+            PostJoinPaymentCardAPI(
+                request:  .init(
+                    currentCardIds: request.currentCardIds,
+                    selectedCardIds: request.selectedCardIds
+                )
+            )
+        )
+        .compactMap { _ in .init() }.asObservable()
     }
-    
+
+    func joinOneCard(request: PaymentCardModels.JoinOneCard.Request) -> Observable<PaymentCardModels.Empty.Response> {
+        network.request(PostJoinOnePaymentCardAPI(cardID: request.cardID))
+            .compactMap { _ in .init() }.asObservable()
+    }
+
     func fetchPaymentCard(cardId: Int) -> Observable<PaymentCardModels.FetchCard.Response> {
         network.request(GetPaymentCardAPI(cardId: cardId))
             .compactMap { [weak self] response in
@@ -56,11 +67,9 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             }.asObservable()
     }
     
-    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.DeleteCard.Empty>  {
+    func deletePaymentCardList(cardId: Int) -> Observable<PaymentCardModels.Empty.Response> {
          network.request(DeletePaymentCardAPI(cardId: cardId))
-            .compactMap { _ in
-                return .init()
-            }
+            .compactMap { _ in return .init() }
             .asObservable()
             
     }
@@ -96,7 +105,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder),
             taker: .init(id: dto.taker.id, nickname: dto.taker.nickname, imgURL: dto.taker.imgURL),
             givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) },
-            isUserParticipatedIn: false
+            isUserParticipatedIn: dto.isUserJoin
         )
     }
     

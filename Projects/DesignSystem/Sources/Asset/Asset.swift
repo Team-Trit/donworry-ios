@@ -70,4 +70,5 @@ public enum Asset: String {
     case ic_billcard_ing
     case ic_billcard_leave
     case ic_check_gradient
+    case ic_money
 }

@@ -7,30 +7,26 @@
 //
 
 import UIKit
-import Models
+import Kingfisher
 import DesignSystem
 
+struct AttendanceCellViewModel {
+    let id: Int
+    let name: String
+    let imgURL: String?
+    
+}
 class AttendanceCollectionViewCell: UICollectionViewCell {
-    
+
     static let cellID = "attendanceCollectionViewCell"
-    
-    var user: User? {
+
+    var viewModel: AttendanceCellViewModel? {
         didSet {
-            guard let user = user else {
-                return
-            }
-            
-            if user.image == "" || user.image == nil {
-                userImageView.backgroundColor = .designSystem(Pallete.grayF6F6F6)
-                userImageView.image = UIImage(.ic_basic_profile_image)
-            } else {
-                let url = URL(string: user.image)
-                userImageView.kf.setImage(with: url)
-            }
-            userNicknameLabel.text = user.nickName
+            self.userNicknameLabel.text = viewModel?.name
+            self.userImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.imgURL)
         }
     }
-    
+
     fileprivate let userImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.setWidth(width: 48)

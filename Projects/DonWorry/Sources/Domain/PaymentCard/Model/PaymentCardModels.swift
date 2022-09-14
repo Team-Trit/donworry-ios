@@ -97,6 +97,8 @@ enum PaymentCardModels {
     enum Empty {
         struct Response {}
     }
+
+    // MARK: 정산 내역(카드) 정보 불러오기
     
     enum FetchCard {
         struct Response {
@@ -108,10 +110,10 @@ enum PaymentCardModels {
             }
             
             struct User: Codable {
-                public let id: Int
-                public let isTaker: Bool
-                public let nickname: String
-               public let imgURL: String?
+                let id: Int
+                let isTaker: Bool
+                let nickname: String
+                let imgURL: String?
 
                 enum CodingKeys: String, CodingKey {
                     case id, isTaker, nickname
@@ -120,6 +122,8 @@ enum PaymentCardModels {
             }
         }
     }
+
+    // MARK: 정산 내역(카드) 수정하기
     
     enum PutCard {
         struct Response {
@@ -129,9 +133,19 @@ enum PaymentCardModels {
             }
         }
     }
-    
-    enum DeleteCard {
-        public struct Empty: Decodable { }
+
+    // MARK: 정산 내역 (카드) 참여하기
+
+    enum JoinCard {
+        struct Request {
+            let currentCardIds: [Int]
+            let selectedCardIds: [Int]
+        }
     }
-    
+
+    enum JoinOneCard {
+        struct Request {
+            let cardID: Int
+        }
+    }
 }
