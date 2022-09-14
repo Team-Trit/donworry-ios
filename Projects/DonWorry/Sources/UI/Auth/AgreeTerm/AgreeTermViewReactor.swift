@@ -11,8 +11,8 @@ import RxCocoa
 
 enum AgreeTermStep {
     typealias SignUpModel = AuthModels.SignUp.Request
-    case none
     case pop
+    case home
     case confirmTerm(checkedTerms: [String], newUser: SignUpModel)
 }
 

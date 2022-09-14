@@ -10,7 +10,6 @@ import ReactorKit
 
 enum ConfirmTermStep {
     case home
-    case none
 }
 
 final class ConfirmTermViewReactor: Reactor {

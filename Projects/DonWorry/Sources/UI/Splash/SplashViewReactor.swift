@@ -10,17 +10,39 @@ import Foundation
 import ReactorKit
 import RxSwift
 
+enum SplashStep {
+    case home
+    case login
+}
+
 final class SplashViewReactor: Reactor {
 
     enum Action {
-        case fetchUser
+        case judgeUserIsLogined
     }
 
     struct State {
-
+        @Pulse var step: SplashStep?
     }
 
     let initialState: State = State()
 
-    init() {}
+    init(isUserLogginedUseCase: IsUserLogginedUseCase = IsUserLogginedUseCaseImpl()) {
+        self.isUserLogginedUseCase = isUserLogginedUseCase
+    }
+
+    func reduce(state: State, mutation: Action) -> State {
+        var newState = state
+        switch mutation {
+        case .judgeUserIsLogined:
+            if isUserLogginedUseCase.isUserLoggined() {
+                newState.step = .home
+            } else {
+                newState.step = .login
+            }
+        }
+        return newState
+    }
+
+    private let isUserLogginedUseCase: IsUserLogginedUseCase
 }
