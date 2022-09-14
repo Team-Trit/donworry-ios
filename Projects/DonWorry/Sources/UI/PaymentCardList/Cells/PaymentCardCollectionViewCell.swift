@@ -39,7 +39,7 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
 
     var viewModel: PaymentCardCellViewModel? {
         didSet {
-            self.checkImageView.isHidden = viewModel?.isUserParticipated ?? true
+            self.checkImageView.isHidden = !(viewModel?.isUserParticipated ?? true)
             self.paymentCardInRoomView.viewModel = convert(viewModel)
         }
     }

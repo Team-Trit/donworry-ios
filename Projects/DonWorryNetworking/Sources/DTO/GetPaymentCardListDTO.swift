@@ -38,6 +38,7 @@ extension DTO {
             public let account: Account
             public let taker: User
             public let givers: [User]
+            public let isUserJoin: Bool
 
             public struct User: Codable {
                 public let id: Int

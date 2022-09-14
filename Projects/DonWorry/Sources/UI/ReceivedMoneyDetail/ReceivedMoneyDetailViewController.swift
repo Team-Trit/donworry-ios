@@ -18,7 +18,7 @@ import DonWorryExtensions
 final class RecievedMoneyDetailViewController: BaseViewController, View {
     typealias Reactor = ReceivedMoneyDetailReactor
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .black

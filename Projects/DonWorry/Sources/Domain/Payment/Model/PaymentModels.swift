@@ -24,7 +24,8 @@ enum PaymentModels {
             let takerNickname: String
             let account: Account
             let cards: [Card]
-
+            let payments: [Payment]
+            
             struct Account {
                 let bank, number, holder: String
             }
@@ -35,6 +36,14 @@ enum PaymentModels {
                 let categoryImgURL: String
                 let totalAmount, cardJoinUserCount, amountPerUser: Int
             }
+
+
+            struct Payment: Codable {
+                let id, amount: Int
+                let isCompleted: Bool
+                let takerNickname: String
+            }
+
         }
     }
 

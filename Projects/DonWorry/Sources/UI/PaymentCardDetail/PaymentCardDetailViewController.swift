@@ -15,10 +15,11 @@ import DesignSystem
 import Models
 import PhotosUI
 import Combine
+import DonWorryExtensions
 
 final class PaymentCardDetailViewController: BaseViewController {
     
-    private let viewModel: PaymentCardDetailViewModel
+    private var viewModel: PaymentCardDetailViewModel
     private var cancelBag = Set<AnyCancellable>()
     
     init(viewModel: PaymentCardDetailViewModel) {
@@ -70,6 +71,7 @@ final class PaymentCardDetailViewController: BaseViewController {
     
     lazy private var editButton: UIButton = {
         let button = UIButton()
+        button.isHidden = true
         button.setWidth(width: 16)
         button.setHeight(height: 22)
         button.contentMode = .scaleAspectFit
@@ -137,52 +139,51 @@ final class PaymentCardDetailViewController: BaseViewController {
     private lazy var bottomButton: UIButton = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.titleLabel?.font = .systemFont(ofSize: 15, weight: .heavy)
-        $0.layer.cornerRadius = 25
-        $0.addTarget(self, action: #selector(didTapBottomButton), for: .touchUpInside)
+        $0.setTitle("참석 완료", for: .disabled)
+        $0.setBackgroundColor(.designSystem(.grayC5C5C5)!, for: .disabled)
         return $0
     }(UIButton())
     
     @objc private func editPrice() {
         let paymentCardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
+        paymentCardAmountEditViewController.reactor = PaymentCardAmountEditReactor(title: viewModel.paymentCardName, updateCard: viewModel.paymentCard)
+                                                                                   
         navigationController?.pushViewController(paymentCardAmountEditViewController, animated: true)
     }
-    
-    @objc private func didTapBottomButton() {
+
         
-        if viewModel.isAdmin {
-            let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
-                                            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
-            alert.view.tintColor = .black
-            alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
-            
-            let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
-                self.viewModel.deletePaymentCard()
-                self.navigationController?.popViewController(animated: true)
-            })
-            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
-            
-            alert.addAction(action)
-            alert.addAction(cancel)
-            
-            present(alert, animated: true, completion: nil)
-            
-        } else {
-            viewModel.toggleAttendance()
-            if viewModel.isAttended {
-                bottomButton.setTitle("참석 완료", for: .normal)
-                bottomButton.backgroundColor = .designSystem(.grayC5C5C5)
-            } else {
-                bottomButton.setTitle("참석 확인", for: .normal)
-                bottomButton.backgroundColor = .designSystem(.mainBlue)
-            }
+//        if viewModel.isAdmin {
+//            let alert = UIAlertController(title: "정산카드를 삭제합니다.", message:
+//                                            "지금 삭제하시면 현재까지\n등록된 내용이 삭제됩니다.", preferredStyle: .alert)
+//            alert.view.tintColor = .black
+//            alert.setValue(NSAttributedString(string: alert.message!, attributes: [NSAttributedString.Key.font : UIFont.designSystem(weight: .regular, size: ._13), NSAttributedString.Key.foregroundColor : UIColor.designSystem(.gray696969)]), forKey: "attributedMessage")
+//
+//            let action = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
+//                self.viewModel.deletePaymentCard()
+//                self.navigationController?.popViewController(animated: true)
+//            })
+//            let cancel = UIAlertAction(title: "취소", style: .default, handler: nil)
+//
+//            alert.addAction(action)
+//            alert.addAction(cancel)
+//
+
+    var buttonType: ButtonType = .participate {
+        didSet {
+            bottomButton.setTitle(buttonType.title, for: .normal)
+            bottomButton.setBackgroundColor(buttonType.buttonColor!, for: .normal)
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        attributes()
         layout()
         bind()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.updatePaymentCard()
     }
     
     private func attributes() {
@@ -204,28 +205,76 @@ final class PaymentCardDetailViewController: BaseViewController {
         }
     }
 
+    func bind(reactor: Reactor) {
+        self.rx.viewDidLoad.map { .viewDidLoad }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.bottomButton.rx.tap.map { .didTapBottomButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.isCardAdmin }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isCardAdmin in
+                self?.buttonType = isCardAdmin ? .delete : .participate
+            }).disposed(by: disposeBag)
+
+        reactor.state.map { $0.cardName }
+            .bind(to: navigationBar.titleLabel!.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state.map { $0.amount }
+            .observe(on: MainScheduler.instance)
+            .compactMap { Formatter.amountFormatter.string(from: NSNumber(value: $0)) }
+            .subscribe(onNext: { [weak self] amountText in
+                self?.priceLabel.text = amountText + "원"
+            }, onError: { [weak self] _ in
+                self?.priceLabel.text = "0원"
+            }).disposed(by: disposeBag)
+
+        reactor.state.map { $0.participatedUsers }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] participatedUsers in
+                self?.attendanceLabel.text = "참여자 \(participatedUsers.count)"
+                self?.attendanceCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.state.map { $0.imgURLs }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.fileCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$step)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] step in
+                self?.move(to: step)
+            }).disposed(by: disposeBag)
+    }
 }
 
-//MARK: Layout
+// MARK: Routing
+
 extension PaymentCardDetailViewController {
-    private func bind() {
-        
-        navigationBar.leftItem.rx.tap
-            .bind {
-                self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        viewModel.$paymentCard
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.fileCollectionView.reloadData()
-                self?.attendanceCollectionView.reloadData()
-                self?.attributes()
-            }
-            .store(in: &cancelBag)
+    func move(to step: PaymentCardDetailStep) {
+        switch step {
+        case .pop:
+            self.navigationController?.popViewController(animated: true)
+        case .editAmount:
+            break
+
+        }
     }
-    
+}
+
+extension PaymentCardDetailViewController {
+
     private func layout() {
         
         let totalBottomView = UIView()
@@ -280,6 +329,8 @@ extension PaymentCardDetailViewController {
         
         totalBottomView.addSubview(bottomButton)
         bottomButton.anchor(left: totalBottomView.leftAnchor, bottom: totalBottomView.bottomAnchor, right: totalBottomView.rightAnchor, paddingLeft: 24, paddingBottom: 50, paddingRight: 24, height: 50)
+
+        bottomButton.roundCorners(25)
     }
 }
 
@@ -287,78 +338,42 @@ extension PaymentCardDetailViewController {
 extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        guard let state = reactor?.currentState else { return 0 }
         switch collectionView {
         case attendanceCollectionView:
-            return viewModel.numOfUsers
+            return state.participatedUsers.count
         case fileCollectionView:
-            return viewModel.imageUrlStrings.count
-            //MARK: 추후 사진 수정시 이용됩니다
-//            return cameraImageArray.count
-//            if cameraImageArray.count == 0 {
-//                return viewModel.numOfFilesWhenNoImages
-//            } else if cameraImageArray.count == 3 {
-//                return 3
-//            } else {
-//                return viewModel.isAdmin ? cameraImageArray.count + 1 : cameraImageArray.count
-//            }
+            return state.imgURLs.count
         default:
             return 0
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let state = reactor?.currentState else { return .init() }
         switch collectionView {
         case attendanceCollectionView:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return UICollectionViewCell() }
-            cell.user = viewModel.userCollectionViewAt(indexPath.row)
+            cell.viewModel = state.participatedUsers[indexPath.item]
             return cell
         case fileCollectionView:
-            //MARK: 추후 사진 수정시 이용됩니다
-//            if viewModel.isAdmin {
-//                if cameraImageArray.count == 3 {
-//                    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-//                    cell.FileCollectionViewCellDelegate = self
-//                    cell.container.image = cameraImageArray[indexPath.row]
-//                    cell.deleteCircle.tag = indexPath.row
-//                    return cell
-//                } else {
-//                    if indexPath.row == 0 {
-//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileAddCollectionViewCell.cellID, for: indexPath) as? FileAddCollectionViewCell else { return UICollectionViewCell() }
-//                        return cell
-//                    } else {
-//                        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-//                        cell.FileCollectionViewCellDelegate = self
-//                        cell.container.image = cameraImageArray[(indexPath.row - 1)]
-//                        cell.deleteCircle.tag = (indexPath.row - 1)
-//                        return cell
-//                    }
-//                }
-//            } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return UICollectionViewCell() }
-            cell.FileCollectionViewCellDelegate = self
-            cell.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            cell.imageUrl = state.imgURLs[indexPath.item]
             cell.deleteButton.isHidden = true
             return cell
-//            }
         default: return UICollectionViewCell()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
-        case attendanceCollectionView:
-            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: AttendanceCollectionViewCell.cellID, for: indexPath) as? AttendanceCollectionViewCell else { return }
-            //MARK: 추후 사진 수정시 이용됩니다
         case fileCollectionView:
-//            guard viewModel.isAdmin else { return }
-            guard let _ = collectionView.dequeueReusableCell(withReuseIdentifier: FileCollectionViewCell.cellID, for: indexPath) as? FileCollectionViewCell else { return }
+            guard let cell = collectionView.cellForItem(at: indexPath) as? FileCollectionViewCell else {
+                return
+            }
             let detailImageViewController = DetailImageViewController()
-            detailImageViewController.imageUrl = viewModel.imageUrlStrings[indexPath.row]
+            detailImageViewController.imageUrl = cell.imageUrl
             present(detailImageViewController, animated: true)
-            //MARK: 추후 사진 수정시 이용됩니다
-//            if cameraImageArray.count < 3 && indexPath.row == 0 {
-//                showPhotoPicker()
-//            }
         default:
             break
         }
@@ -378,48 +393,27 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
     }
 }
 
-extension PaymentCardDetailViewController: FileCollectionViewCellDelegate {
-    func deletePhoto() {
-        DispatchQueue.main.async {
-            self.fileCollectionView.reloadData()
+extension PaymentCardDetailViewController {
+    enum ButtonType {
+        case delete
+        case participate
+
+        var title: String {
+            switch self {
+            case .delete:
+                return "삭제하기"
+            case .participate:
+                return "정산하기"
+            }
+        }
+
+        var buttonColor: UIColor? {
+            switch self {
+            case .delete:
+                return .designSystem(.redTopGradient)
+            case .participate:
+                return .designSystem(.mainBlue)
+            }
         }
     }
 }
-
-//MARK: 추후 사진 수정시 이용됩니다
-//extension PaymentCardDetailViewController: PHPickerViewControllerDelegate{
-//
-//    func showPhotoPicker() {
-//        var config = PHPickerConfiguration()
-//        config.selectionLimit = 3
-//        let phPickerVC = PHPickerViewController(configuration: config)
-//        phPickerVC.delegate = self
-//        self.present(phPickerVC, animated: true)
-//    }
-//    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-//        dismiss(animated: true)
-//        var images = [UIImage]()
-//        for result in results {
-//            result.itemProvider.loadObject(ofClass: UIImage.self){ object,
-//                error in
-//                if let image = object as? UIImage {
-//                    images.append(image)
-//                }
-//                for image in images {
-//                    if cameraImageArray.count == 3 {
-//                        cameraImageArray[0] = image
-//                    }
-//                    else {
-//                        cameraImageArray += [image]
-//                    }
-//                }
-//                DispatchQueue.main.async {
-//                    self.fileCollectionView.reloadData()
-//                }
-//
-//            }
-//        }
-//    }
-//}
-
-
