@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>778946247504-7rcbop9mhg641jv00b7u2d6cphugmv8r.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.778946247504-7rcbop9mhg641jv00b7u2d6cphugmv8r</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD6aYzgUaiuUrEDTGP1t08uIaDH0tmodYM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>778946247504</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.TriT.DonWorry</string>
+	<key>PROJECT_ID</key>
+	<string>donworry-cd23e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>donworry-cd23e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:778946247504:ios:8c1e19469fc036e3518a55</string>
+</dict>
+</plist>

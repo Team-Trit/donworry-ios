@@ -8,89 +8,113 @@
 
 import Models
 import ReactorKit
+import RxSwift
 
 enum LoginStep {
-    // TODO: 삭제하기
-    case home
-    
+    typealias OAuthType = AuthModels.OAuthType
     case none
-    case enterUserInfo(provider: LoginProvider, token: String)
+    case signup(String, OAuthType)
+    case home
 }
 
 final class LoginViewReactor: Reactor {
+    typealias Token = String
     // TODO: 삭제하기
     private let testUserService: TestUserService
-    private let userService: UserService
+    private let signInUseCase: SignInUseCase
     
     enum Action {
-        case appleLoginButtonPressed
-//        case googleLoginButtonPressed
-        case proceedWithAppleToken(identityToken: String)
+        case proceedWithAppleToken(identityToken: Token)
         case kakaoLoginButtonPressed
+        case routeToHome
+        case routeToSignUp(Token)
+        case errorToast(String)
         // TODO: 삭제하기
         case didTapTestUserButton
     }
     
     enum Mutation {
-        case performAppleLogin
         case routeTo(LoginStep)
+        case toast(String)
+        case nothing
     }
     
     struct State {
         @Pulse var appleLoginTrigger: Void?
         @Pulse var step: LoginStep?
+        @Pulse var toast: String?
     }
     
     let initialState: State
+    var disposeBag: DisposeBag
     
     init(
         testUserService: TestUserService = TestUserServiceImpl(),
-        userService: UserService = UserServiceImpl()
+        signInUseCase: SignInUseCase = SignInUseCaseImpl()
     ) {
         self.testUserService = testUserService
-        self.userService = userService
+        self.signInUseCase = signInUseCase
         self.initialState = State()
+        self.disposeBag = .init()
+
+        self.signInUseCase.completeKakaoLogin
+            .subscribe(onNext: { [weak self] _ in
+                self?.action.onNext(.routeToHome)
+            }, onError: { [weak self] error in
+                guard let error = error.toAuthError() else { return }
+                switch error {
+                case .nouser(let token):
+                    self?.action.onNext(.routeToSignUp(token))
+                default:
+                    self?.action.onNext(.errorToast(error.message))
+                }
+            }).disposed(by: disposeBag)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .appleLoginButtonPressed:
-            return .just(Mutation.performAppleLogin)
-            
         case .proceedWithAppleToken(let identityToken):
-            return .just(.routeTo(.enterUserInfo(provider: .APPLE, token: identityToken)))
-            
-        /*
-        case .googleLoginButtonPressed:
-            // MARK: 1차 배포에서는 구글 로그인 빼고 구현 예정
-            return .empty()
-        */
-            
+            let signIn = requestAppleLogin(token: identityToken)
+            return signIn
         case .kakaoLoginButtonPressed:
-            return userService.loginWithKakao()
-                .map { oauthToken in
-                    return .routeTo(.enterUserInfo(provider: .KAKAO, token: oauthToken.accessToken))
-                }
-            
-            // TODO: 삭제하기
+            return signInUseCase.kakaoLogin().map { _ in .nothing }
+        case .routeToHome:
+            return .just(.routeTo(.home))
+        case .routeToSignUp(let token):
+            return .just(.routeTo(.signup(token, .kakao)))
+        case .errorToast(let message):
+            return .just(.toast(message))
         case .didTapTestUserButton:
             // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
             return testUserService.signIn(1)
                 .map { _ in .routeTo(.home) }
         }
     }
-    
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        
         switch mutation {
-        case .performAppleLogin:
-            newState.appleLoginTrigger = ()
-            
         case .routeTo(let step):
             newState.step = step
+        case .toast(let message):
+            newState.toast = message
+        case .nothing:
+            break
         }
-        
         return newState
+    }
+
+    private func requestAppleLogin(token: String) -> Observable<Mutation> {
+        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token))
+            .map { _ in Mutation.routeTo(.home) }
+            .catch { error in
+                guard let error = error.toAuthError() else { return .error(error) }
+                switch error {
+                case .nouser(let token):
+                    return .just(.routeTo(.signup(token, .apple)))
+                default:
+                    return .just(.toast(error.message))
+                }
+            }
     }
 }

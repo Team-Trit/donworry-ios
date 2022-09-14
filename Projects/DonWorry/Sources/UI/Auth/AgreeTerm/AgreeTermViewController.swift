@@ -41,6 +41,7 @@ final class AgreeTermViewController: BaseViewController, View {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        setNotificationCenter()
     }
     
     func bind(reactor: Reactor) {
@@ -82,6 +83,17 @@ extension AgreeTermViewController {
             make.height.equalTo(50)
         }
     }
+
+    private func setNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(signup), name: .init("AgreeTerm.dismiss.signup.routeToHome"), object: nil)
+    }
+
+    @objc
+    private func signup() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.route(to: .home)
+        }
+    }
 }
 
 // MARK: - Bind
@@ -105,11 +117,10 @@ extension AgreeTermViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: AgreeTermStep.none)
             .compactMap { $0 }
-            .drive { [weak self] in
+            .subscribe(onNext: { [weak self] in
                 self?.route(to: $0)
-            }
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -120,16 +131,30 @@ extension AgreeTermViewController {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
-            
-        case let .confirmTerm(checkedTerms, newUser):
-            let vc = ConfirmTermViewController()
-            vc.reactor = ConfirmTermViewReactor(checkedTerms: checkedTerms, newUser: newUser)
-            vc.modalPresentationStyle = .overCurrentContext
-            self.present(vc, animated: false)
-            
-        default:
-            break
+        case .home:
+            let homeViewController = HomeViewController()
+            homeViewController.reactor = HomeReactor()
+            self.navigationController?.setViewControllers([homeViewController], animated: true)
+        case .confirmTerm(let checkedTerms, let signupModel):
+            let confirmTermViewController = ConfirmTermViewController()
+            confirmTermViewController.reactor = ConfirmTermViewReactor(
+                signUpModel: signupModel,
+                checkedTerms: checkedTerms
+            )
+            if #available(iOS 15.0, *) {
+                if let presentationController = confirmTermViewController.sheetPresentationController {
+                    presentationController.detents = [.medium()]
+                    presentationController.prefersGrabberVisible = true
+                }
+            }
+            self.present(confirmTermViewController, animated: true)
         }
+    }
+
+
+    @objc func sheetConfirmTermViewController(signupModel: Int, checkedTerms: Int) -> UIViewController? {
+
+        return nil
     }
 }
 

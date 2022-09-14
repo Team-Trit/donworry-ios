@@ -43,14 +43,6 @@ final class EnterUserInfoViewController: BaseViewController, View{
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
         setUI()
-        
-        UserApi.shared.rx.accessTokenInfo()
-            .subscribe(onSuccess: { info in
-                print("✨앱 아이디 : \(info.appId)")
-                print("✨액세스 토큰 만료시간 : \(info.expiresIn)")
-                print("✨사용자 아이디 : \(info.id)")
-            })
-            .disposed(by: disposeBag)
     }
     
     func bind(reactor: EnterUserInfoViewReactor) {
@@ -140,7 +132,7 @@ extension EnterUserInfoViewController {
     }
 
     private func render(_ reactor: EnterUserInfoViewReactor) {
-        reactor.state.map { $0.bank }
+        reactor.state.map { $0.signUpModel.bank }
             .asDriver(onErrorJustReturn: "은행선택")
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
@@ -172,9 +164,9 @@ extension EnterUserInfoViewController {
             vc.reactor = SelectBankViewReactor(userInfoViewDelegate: delegate, parentView: .enterUserInfo)
             self.present(vc, animated: true)
             
-        case .agreeTerm(let newUser):
+        case .agreeTerm(let signupModel):
             let vc = AgreeTermViewController()
-            vc.reactor = AgreeTermViewReactor(newUser: newUser)
+            vc.reactor = AgreeTermViewReactor(signUpModel: signupModel)
             self.navigationController?.pushViewController(vc, animated: true)
             
         default:

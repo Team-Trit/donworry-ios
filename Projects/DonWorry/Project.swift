@@ -23,7 +23,8 @@ let project = Project.make(
             .external(name: "RxCocoa"),
             .external(name: "ReactorKit"),
             .external(name: "FlexLayout"),
-            .external(name: "RxKakaoSDK")
+            .external(name: "RxKakaoSDK"),
+            .external(name: "FirebaseDynamicLinks"),
         ]
     ),
     Target.unitTests(name: "DonWorry"),

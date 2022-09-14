@@ -9,6 +9,12 @@
 import Foundation
 import DonWorryLocalStorage
 
+protocol AccessTokenRepository {
+    func fetchAccessToken() -> AccessToken?                     // 로컬 토큰 정보 가져오기
+    func saveAccessToken(_ accessToken: AccessToken) -> Bool    // 로컬에 토큰 저장하기
+    func deleteAccessToken() -> Bool                            // 로컬 토큰 정보 삭제
+}
+
 final class AccessTokenRepositoryImpl: AccessTokenRepository {
     private let localStorage: LocalStorage
     

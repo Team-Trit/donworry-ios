@@ -14,12 +14,12 @@ struct LocalUser: Codable {
     var id: ID
     var nickName: String
     var bankAccount: LocalBankAccount
-    var image: String
+    var image: String?
 
     init(id: Int,
          nickName: String,
          bankAccount: LocalBankAccount,
-         image: String) {
+         image: String?) {
         self.id = id
         self.nickName = nickName
         self.bankAccount = bankAccount

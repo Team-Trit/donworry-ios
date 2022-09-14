@@ -10,6 +10,12 @@ import Foundation
 import Models
 import DonWorryLocalStorage
 
+protocol UserAccountRepository {
+    func fetchLocalUserAccount() -> User?                // 로컬 유저 정보 가져오기
+    func saveLocalUserAccount(_ user: User) -> Bool      // 로컬에 유저 저장하기
+    func deleteLocalUserAccount() -> Bool                       // 로컬 유저 정보 삭제
+}
+
 final class UserAccountRepositoryImpl: UserAccountRepository {
     private let localStorage: LocalStorage
 
@@ -45,6 +51,6 @@ extension UserAccountRepositoryImpl {
             id: localUser.id,
             nickName: localUser.nickName,
             bankAccount: .init(bank: localBankAccount.bank, accountHolderName: localBankAccount.accountHolderName, accountNumber: localBankAccount.accountNumber),
-            image: localUser.image)
+            image: localUser.image ?? "")
     }
 }

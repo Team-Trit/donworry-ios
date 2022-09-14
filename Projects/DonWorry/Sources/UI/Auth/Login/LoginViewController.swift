@@ -72,19 +72,19 @@ extension LoginViewController {
         }
         
         appleLoginButton.snp.makeConstraints { make in
+            make.bottom.equalTo(kakaoLoginButton.snp.top).inset(-10)
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(270)
         }
         
         /*
         googleLoginButton.snp.makeConstraints { make in
-            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
+            make.bottom.equalTo(kakaoLoginButton.snp.top).inset(10)
             make.centerX.equalToSuperview()
         }
          */
         
         kakaoLoginButton.snp.makeConstraints { make in
-            make.top.equalTo(appleLoginButton.snp.bottom).offset(10)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.centerX.equalToSuperview()
         }
         
@@ -106,8 +106,9 @@ extension LoginViewController {
 extension LoginViewController {
     private func dispatch(to reactor: LoginViewReactor) {
         appleLoginButton.rx.tap
-            .map { Reactor.Action.appleLoginButtonPressed }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] _ in
+                self?.presentAppleLogin()
+            })
             .disposed(by: disposeBag)
         
         /*
@@ -124,21 +125,6 @@ extension LoginViewController {
     }
     
     private func render(_ reactor: LoginViewReactor) {
-        reactor.pulse(\.$appleLoginTrigger)
-            .asDriver(onErrorJustReturn: ())
-            .compactMap { $0 }
-            .drive(onNext: { _ in
-                let appleIDProvider = ASAuthorizationAppleIDProvider()
-                let request = appleIDProvider.createRequest()
-                request.requestedScopes = [.fullName, .email]
-                
-                let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-                authorizationController.delegate = self
-                authorizationController.presentationContextProvider = self
-                authorizationController.performRequests()
-            })
-            .disposed(by: disposeBag)
-        
         reactor.pulse(\.$step)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
@@ -147,18 +133,31 @@ extension LoginViewController {
             })
             .disposed(by: disposeBag)
     }
+
+    private func presentAppleLogin() {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
+    }
 }
 
-// MARK: - Route
+// MARK: - Routing
+
 extension LoginViewController {
     private func route(to step: LoginStep) {
         switch step {
-        case let .enterUserInfo(provider, token):
+        case let .signup(token, oauthType):
             let vc = EnterUserInfoViewController()
-            vc.reactor = EnterUserInfoViewReactor(provider: provider, token: token)
+            vc.reactor = EnterUserInfoViewReactor(
+                oauthType: oauthType,
+                token: token
+            )
             self.navigationController?.pushViewController(vc, animated: true)
-            
-            // TODO: 삭제하기
         case .home:
             let homeViewController = HomeViewController()
             homeViewController.reactor = HomeReactor()
@@ -171,39 +170,30 @@ extension LoginViewController {
 }
 
 // MARK: - Apple Login
+
 extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    func presentationAnchor(
+        for controller: ASAuthorizationController
+    ) -> ASPresentationAnchor {
         return self.view.window!
     }
     
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        switch authorization.credential {
-        case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            guard let identityToken = appleIDCredential.identityToken else { return }
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+           let identityToken = appleIDCredential.identityToken {
             let tokenString = String(decoding: identityToken, as: UTF8.self)
             reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString))
-
-        default:
-            break
         }
+        DWToastFactory.show(message: "애플 로그인 실패", type: .error)
     }
     
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print(error.localizedDescription)
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithError error: Error
+    ) {
+        DWToastFactory.show(message: "애플 로그인 실패", type: .error)
     }
 }
-
-// TODO: 삭제하기
-/*
-extension LoginViewController {
-    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        switch motion {
-        case .motionShake:
-            let viewcontroller = TestViewController()
-            self.present(viewcontroller, animated: true)
-        default:
-            break
-        }
-    }
-}
-*/

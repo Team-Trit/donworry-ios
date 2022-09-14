@@ -20,6 +20,8 @@ enum ProfileStep {
 
 final class ProfileViewReactor: Reactor {
     private let userService: UserService
+    private let getUserUseCase: GetUserAccountUseCase
+
     private var user: User
     enum Action {
         case viewWillAppear
@@ -56,9 +58,13 @@ final class ProfileViewReactor: Reactor {
     
     let initialState: State
     
-    init(userService: UserService = UserServiceImpl()) {
+    init(
+        userService: UserService = UserServiceImpl(),
+        getUserUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl()
+    ) {
         self.userService = userService
-        self.user = userService.fetchLocalUser()!
+        self.getUserUseCase = getUserUseCase
+        self.user = getUserUseCase.getUserAccountUnWrapped()!
         self.initialState = State(
             nickname: user.nickName,
             imageURL: user.image,
@@ -71,7 +77,7 @@ final class ProfileViewReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            guard let currentUser = userService.fetchLocalUser() else { return .empty() }
+            guard let currentUser = getUserUseCase.getUserAccountUnWrapped() else { return .empty() }
             return .just(Mutation.updateUser(currentUser))
             
         case .pressBackButton:
@@ -87,10 +93,7 @@ final class ProfileViewReactor: Reactor {
                                    holder: nil,
                                    accountNumber: nil,
                                    isAgreeMarketing: nil)
-            .map { _ in
-                let currentUser = self.userService.fetchLocalUser()!
-                return .updateUser(currentUser)
-            }
+            .map { return .updateUser($0) }
             
         case .pressUpdateNickNameButton:
             return .just(Mutation.routeTo(step: .nicknameEdit))
@@ -123,7 +126,6 @@ final class ProfileViewReactor: Reactor {
             return .empty()
             
         case .pressLogoutButton:
-            userService.deleteLocalUser()
             return .empty()
             
         case .pressAccountDeleteButton:

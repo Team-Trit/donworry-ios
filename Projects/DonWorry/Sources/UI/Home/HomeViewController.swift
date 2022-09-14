@@ -244,9 +244,10 @@ extension HomeViewController {
                 return
             }
             self.present(viewController, animated: true)
-        case .alert:
-            let alertViewController = AlertViewViewController()
-            self.navigationController?.pushViewController(alertViewController, animated: true)
+        case .alarm:
+            let alarm = AlarmViewController()
+            alarm.reactor = AlarmReactor()
+            self.navigationController?.pushViewController(alarm, animated: true)
         case .profile:
             let profileViewController = ProfileViewController()
             profileViewController.reactor = ProfileViewReactor()
@@ -268,8 +269,8 @@ extension HomeViewController {
 
     @objc func sheetSentMoneyDetailViewController(spaceID: Int, paymentID: Int) -> UIViewController? {
         if #available(iOS 15.0, *) {
-            let sentMoneyDetailViewController = SentMoneyDetailViewController()
-            sentMoneyDetailViewController.reactor = SentMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
+            let sentMoneyDetailViewController = SendMoneyDetailViewController()
+            sentMoneyDetailViewController.reactor = SendMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
             if let presentationController = sentMoneyDetailViewController.sheetPresentationController {
                 presentationController.detents = [.medium()]
                 presentationController.prefersGrabberVisible = true
