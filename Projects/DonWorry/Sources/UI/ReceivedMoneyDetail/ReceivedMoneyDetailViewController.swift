@@ -144,6 +144,7 @@ extension RecievedMoneyDetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let reactor = reactor else { return .init() }
         let cell = tableView.dequeueReusableCell(RecievedMoneyTableViewCell.self, for: indexPath)
+        cell.selectionStyle = .none
         cell.configure(reactor.currentState.payments[indexPath.row])
         return cell
     }
