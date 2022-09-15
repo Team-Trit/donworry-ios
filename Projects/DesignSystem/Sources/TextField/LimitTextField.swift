@@ -16,9 +16,9 @@ public enum LimitTextFieldType {
     case account    // 계좌번호를 입력해주세요
     
     case roomCode  // 정산방 코드를 입력해주세요
-    case roomName  // 정산방 이름을 입력하세요
+    case roomName  // 정산방 이름을 입력하세요, 12
     
-    case paymentTitle  // 정산하고자 하는 항목을 입력하세요
+    case paymentTitle  // 정산하고자 하는 항목을 입력하세요, 12
 }
 
 final public class LimitTextField: UIView {
@@ -66,8 +66,10 @@ extension LimitTextField {
             placeholder = "정산방 코드를 입력해주세요"
         case .roomName:
             placeholder = "정산방 이름을 입력하세요"
+            self.limit = 12
         case .paymentTitle:
             placeholder = "정산하고자 하는 항목을 입력하세요"
+            self.limit = 12
         }
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._13)])
         
