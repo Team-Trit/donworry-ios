@@ -56,7 +56,8 @@ final class NicknameEditViewReactor: Reactor {
         case .viewDidLoad:
             return getUserAccountUseCase.getUserAccount()
                 .map { user in
-                    return .setup(user!)
+                    guard let user = user else { return .routeTo(step: .pop) }
+                    return .setup(user)
                 }
             
         case .pressBackButton:

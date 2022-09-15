@@ -69,7 +69,10 @@ final class ProfileViewReactor: Reactor {
         switch action {
         case .viewWillAppear:
             return getUserAccountUseCase.getUserAccount()
-                .map { .updateUser($0!) }
+                .map { user in
+                    guard let user = user else { return .routeTo(step: .pop) }
+                    return .updateUser(user)
+                }
             
         case .pressBackButton:
             return .just(.routeTo(step: .pop))
@@ -95,7 +98,6 @@ final class ProfileViewReactor: Reactor {
             return .just(Mutation.routeTo(step: .accountEdit))
             
         case .pressServiceButton(let index):
-            print("✨눌렷음")
             switch index {
             case 2:
                 // 공지사항
@@ -119,6 +121,7 @@ final class ProfileViewReactor: Reactor {
             return .empty()
             
         case .pressLogoutButton:
+            // TODO: 로그아웃
             return .empty()
             
         case .pressAccountDeleteButton:
