@@ -56,7 +56,7 @@ extension AccountInputField {
             chooseBankButton.snp.makeConstraints { make in
                 make.top.leading.equalToSuperview()
                 make.width.equalTo(90)
-                make.height.equalTo(30)
+                make.height.equalTo(32)
             }
             
             holderTextField.snp.makeConstraints { make in
@@ -73,7 +73,7 @@ extension AccountInputField {
             chooseBankButton.snp.makeConstraints { make in
                 make.top.leading.equalToSuperview()
                 make.width.equalTo(75)
-                make.height.equalTo(30)
+                make.height.equalTo(32)
             }
             
             holderTextField.snp.makeConstraints { make in
