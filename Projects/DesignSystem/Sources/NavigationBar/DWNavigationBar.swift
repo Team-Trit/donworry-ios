@@ -69,6 +69,7 @@ final public class DWNavigationBar: UIView {
         self.init()
 
         titleLabel = UILabel()
+        titleLabel?.textAlignment = .center
         titleLabel?.font = .designSystem(weight: .heavy, size: ._20)
         titleLabel?.text = title
         setTitleLabel()
@@ -101,6 +102,7 @@ extension DWNavigationBar {
         self.addSubview(titleLabel!)
         
         titleLabel?.snp.makeConstraints { make in
+            make.width.equalTo(180)
             make.centerX.equalToSuperview()
             make.centerY.equalTo(leftItem.snp.centerY)
         }
