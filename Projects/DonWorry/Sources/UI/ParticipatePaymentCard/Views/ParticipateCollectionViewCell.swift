@@ -53,7 +53,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             userImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.payer.imgURL)
             iconImageView.image =  UIImage(assetName: viewModel?.categoryName ?? "")
             userNickNameLabel.text = viewModel?.payer.name
-
+            
             let bgColor = viewModel?.bgColor ?? ""
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
@@ -156,6 +156,7 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._13)
         label.textColor = .white
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
