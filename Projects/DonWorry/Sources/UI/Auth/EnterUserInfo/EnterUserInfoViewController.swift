@@ -137,6 +137,14 @@ extension EnterUserInfoViewController {
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
         
+        
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { toast in
+                DWToastFactory.show(message: toast, type: .error)
+            }).disposed(by: disposeBag)
+        
         reactor.pulse(\.$isNextButtonAvailable)
             .asDriver(onErrorJustReturn: false)
             .drive(self.nextButton.rx.isEnabled)

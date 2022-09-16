@@ -22,6 +22,7 @@ public enum LimitTextFieldType {
 }
 
 final public class LimitTextField: UIView {
+    private var type: LimitTextFieldType
     public lazy var textField: PaddedTextField = {
         let v = PaddedTextField()
         v.clearButtonMode = .whileEditing
@@ -33,7 +34,6 @@ final public class LimitTextField: UIView {
         v.backgroundColor = textField.text!.isEmpty ? .designSystem(.grayC5C5C5) : .designSystem(.mainBlue)
         return v
     }()
-    private var type: LimitTextFieldType
     private var limit: Int?
     private var limitLabel: UILabel?
     

@@ -12,6 +12,7 @@ enum AuthError: Error {
     case nouser(String)
     case kakaoLogin // 카카오쪽에서 로그인 실패
     case parsing
+    case duplicatedNickname
 
     var message: String {
         switch self {
@@ -21,6 +22,8 @@ enum AuthError: Error {
             return "카카오 로그인 실패"
         case .parsing:
             return "알 수 없는 오류... 다시 시도해주세요."
+        case .duplicatedNickname:
+            return "현재 사용 중인 닉네임입니다."
         }
     }
 }

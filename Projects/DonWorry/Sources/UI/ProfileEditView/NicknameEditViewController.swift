@@ -115,6 +115,14 @@ extension NicknameEditViewController {
             .drive(doneButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { toast in
+                DWToastFactory.show(message: toast, type: .error)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$step)
             .asDriver(onErrorJustReturn: NicknameEditViewStep.none)
             .compactMap { $0 }

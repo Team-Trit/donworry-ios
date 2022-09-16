@@ -66,4 +66,11 @@ enum AuthModels {
             let result: String
         }
     }
+    
+    enum CheckNickname {
+        struct Request {
+            let nickname: String
+        }
+        
+    }
 }
