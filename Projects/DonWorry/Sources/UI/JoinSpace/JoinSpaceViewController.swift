@@ -70,13 +70,9 @@ final class JoinSpaceViewController: BaseViewController, View {
         reactor.pulse(\.$error)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.showToast(message: reactor.currentState.errorMessage)
+            .subscribe(onNext: { message in
+                DWToastFactory.show(message: message, type: .error)
             }).disposed(by: disposeBag)
-    }
-
-    private func showToast(message: String) {
-        print(message)
     }
 
     private func setNotification() {

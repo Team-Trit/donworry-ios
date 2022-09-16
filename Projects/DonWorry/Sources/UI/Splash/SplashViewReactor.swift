@@ -13,36 +13,78 @@ import RxSwift
 enum SplashStep {
     case home
     case login
+    case paymentCardList(SpaceModels.JoinSpace.Response)
 }
 
 final class SplashViewReactor: Reactor {
 
     enum Action {
-        case judgeUserIsLogined
+        case splashEnd
+    }
+
+    enum Mutation {
+        case error(Error)
+        case routeTo(SplashStep)
     }
 
     struct State {
+        var shareID: String?
+        @Pulse var errorMessage: String?
         @Pulse var step: SplashStep?
     }
 
-    let initialState: State = State()
+    let initialState: State
 
-    init(isUserLogginedUseCase: IsUserLogginedUseCase = IsUserLogginedUseCaseImpl()) {
+    init(
+        shareID: String?,
+        isUserLogginedUseCase: IsUserLogginedUseCase = IsUserLogginedUseCaseImpl(),
+        joinSpaceUseCase: JoinSpaceUseCase = JoinSpaceUseCaseImpl()
+
+    ) {
+        self.initialState = State(shareID: shareID)
         self.isUserLogginedUseCase = isUserLogginedUseCase
+        self.joinSpaceUseCase = joinSpaceUseCase
     }
 
-    func reduce(state: State, mutation: Action) -> State {
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .splashEnd:
+            let isUserLoggined = isUserLogginedUseCase.isUserLoggined()
+            let goToHome = (currentState.shareID == nil) && isUserLoggined
+
+            if goToHome  {
+                return .just(.routeTo(.home))
+            } else if !isUserLoggined {
+                return .just(.routeTo(.login))
+            } else {
+                return joinSpace().catch { .just(.error($0)) }
+
+            }
+        }
+    }
+
+    func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-        case .judgeUserIsLogined:
-            if isUserLogginedUseCase.isUserLoggined() {
-                newState.step = .home
-            } else {
-                newState.step = .login
-            }
+        case .error(let error):
+            newState.errorMessage = error.toSpaceError()?.message
+            newState.step = .home
+        case .routeTo(let step):
+            newState.step = step
         }
         return newState
     }
 
+    private func joinSpace() -> Observable<Mutation> {
+        if let shareID = currentState.shareID {
+            return joinSpaceUseCase.joinSpace(shareID: shareID)
+                .asObservable()
+                .map { .routeTo(.paymentCardList($0)) }
+        }
+        return .just(.routeTo(.login))
+
+    }
+
     private let isUserLogginedUseCase: IsUserLogginedUseCase
+    private let joinSpaceUseCase: JoinSpaceUseCase
 }

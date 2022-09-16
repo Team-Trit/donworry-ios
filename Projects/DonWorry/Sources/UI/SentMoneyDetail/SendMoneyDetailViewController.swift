@@ -16,7 +16,7 @@ import DonWorryExtensions
 
 final class SendMoneyDetailViewController: BaseViewController, View {
     typealias Reactor = SendMoneyDetailViewReactor
-    
+
     private var statusView: SendMoneyDetailStatusView = {
         let status = SendMoneyDetailStatusView()
         return status

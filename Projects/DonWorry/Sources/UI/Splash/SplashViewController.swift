@@ -44,14 +44,20 @@ final class SplashViewController: BaseViewController, View {
             .subscribe(onNext: { [weak self] step in
                 self?.move(to: step)
             }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$errorMessage)
+            .compactMap { $0 }
+            .subscribe(onNext: { message in
+                DWToastFactory.show(message: message, type: .error)
+            }).disposed(by: disposeBag)
     }
 
     private func animateSplash() {
-        Timer.scheduledTimer(timeInterval: 2.3, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
     }
 
     @objc func splashTimeOut() {
-        reactor?.action.onNext(.judgeUserIsLogined)
+        reactor?.action.onNext(.splashEnd)
     }
 }
 
@@ -62,10 +68,13 @@ extension SplashViewController {
             routeToHomeViewController()
         case .login:
             routeToLoginViewController()
+        case .paymentCardList(let response):
+            let paymentCardList = createPaymentCardListViewController(with: response)
+            routeToPaymentCardListViewController(paymentCardList)
         }
     }
 
-    func routeToLoginViewController() {
+    private func routeToLoginViewController() {
         let loginViewController = LoginViewController()
         loginViewController.reactor = LoginViewReactor()
         let navigationController = UINavigationController(rootViewController: loginViewController)
@@ -79,7 +88,7 @@ extension SplashViewController {
             }, completion: nil)
     }
 
-    func routeToHomeViewController() {
+    private func routeToHomeViewController() {
         let homeViewController = HomeViewController()
         homeViewController.reactor = HomeReactor()
         let navigationController = UINavigationController(rootViewController: homeViewController)
@@ -91,6 +100,29 @@ extension SplashViewController {
             animations: {
                 self.window?.rootViewController = navigationController
             }, completion: nil)
+    }
+
+    private func routeToPaymentCardListViewController(_ paymentCardList: PaymentCardListViewController) {
+        let home = HomeViewController()
+        home.reactor = HomeReactor()
+        let navigationController = UINavigationController()
+        navigationController.isNavigationBarHidden = true
+        navigationController.setViewControllers([home, paymentCardList], animated: true)
+        UIView.transition(
+            with: self.window!,
+            duration: 0.2,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.window?.rootViewController = navigationController
+            }, completion: nil)
+    }
+
+    private func createPaymentCardListViewController(with response: SpaceModels.JoinSpace.Response) -> PaymentCardListViewController {
+        let paymentCardListViewController = PaymentCardListViewController()
+        paymentCardListViewController.reactor = PaymentCardListReactor(
+            spaceID: response.id, adminID: response.adminID, status: response.status
+        )
+        return paymentCardListViewController
     }
 
     private var window: UIWindow? {
