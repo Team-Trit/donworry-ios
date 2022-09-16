@@ -26,6 +26,7 @@ protocol AuthRepository {
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
     func loginWithApple(identityToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func loginWithKakao(accessToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func logout() -> Observable<AuthModels.Logout.Response>
 }
 
 final class AuthRepositoryImpl: AuthRepository {
@@ -75,6 +76,14 @@ final class AuthRepositoryImpl: AuthRepository {
             }.catch { [weak self] error in
                 return .error(self?.judgeSignInError(error, accessToken) ?? .parsing)
             }.asObservable()
+    }
+    
+    func logout() -> Observable<AuthModels.Logout.Response> {
+        network.request(LogoutAPI())
+            .compactMap { response in
+                return .init(result: response.result)
+            }
+            .asObservable()
     }
 
 

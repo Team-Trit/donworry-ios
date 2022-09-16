@@ -60,4 +60,10 @@ enum AuthModels {
     enum Empty {
         struct Response {}
     }
+    
+    enum Logout {
+        struct Response {
+            let result: String
+        }
+    }
 }

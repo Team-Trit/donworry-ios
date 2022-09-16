@@ -24,6 +24,7 @@ final class ProfileViewReactor: Reactor {
     private let getUserAccountUseCase: GetUserAccountUseCase
     private let uploadImageUseCase: UploadImageUseCase
     private let updateProfileImageUseCase: UpdateProfileImageUseCase
+    private let logoutUseCase: LogoutUseCase
     private let disposeBag: DisposeBag
 
     enum Action {
@@ -57,11 +58,13 @@ final class ProfileViewReactor: Reactor {
     init(
         getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
         uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
-        updateProfileImageUseCase: UpdateProfileImageUseCase = UpdateProfileImageUseCaseImpl()
+        updateProfileImageUseCase: UpdateProfileImageUseCase = UpdateProfileImageUseCaseImpl(),
+        logoutUseCase: LogoutUseCase = LogoutUseCaseImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
         self.uploadImageUseCase = uploadImageUseCase
         self.updateProfileImageUseCase = updateProfileImageUseCase
+        self.logoutUseCase = logoutUseCase
         disposeBag = .init()
         self.initialState = State(
             user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: "")
@@ -120,8 +123,8 @@ final class ProfileViewReactor: Reactor {
             return .empty()
             
         case .pressLogoutButton:
-            // TODO: 로그아웃
-            return .empty()
+            return logoutUseCase.logout()
+                .map { _ in return .routeTo(step: .none)}
             
         case .pressAccountDeleteButton:
             return .just(.routeTo(step: .deleteAccountSheet))
