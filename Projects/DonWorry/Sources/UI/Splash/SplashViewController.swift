@@ -76,7 +76,7 @@ final class SplashViewController: BaseViewController, View {
     }
 
     private func animateSplash() {
-        Timer.scheduledTimer(timeInterval: 1.1, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
     }
 
     @objc func splashTimeOut() {
@@ -84,7 +84,7 @@ final class SplashViewController: BaseViewController, View {
     }
 }
 
-extension SplashViewController {
+extension SplashViewController: UIGestureRecognizerDelegate {
     func move(to step: SplashStep) {
         switch step {
         case .home:
@@ -102,6 +102,8 @@ extension SplashViewController {
         loginViewController.reactor = LoginViewReactor()
         let navigationController = UINavigationController(rootViewController: loginViewController)
         navigationController.isNavigationBarHidden = true
+        navigationController.interactivePopGestureRecognizer?.delegate = self
+        navigationController.interactivePopGestureRecognizer?.isEnabled = true
         UIView.transition(
             with: self.window!,
             duration: 0.2,
@@ -116,6 +118,8 @@ extension SplashViewController {
         homeViewController.reactor = HomeReactor()
         let navigationController = UINavigationController(rootViewController: homeViewController)
         navigationController.isNavigationBarHidden = true
+        navigationController.interactivePopGestureRecognizer?.delegate = self
+        navigationController.interactivePopGestureRecognizer?.isEnabled = true
         UIView.transition(
             with: self.window!,
             duration: 0.2,
@@ -131,6 +135,8 @@ extension SplashViewController {
         let navigationController = UINavigationController()
         navigationController.isNavigationBarHidden = true
         navigationController.setViewControllers([home, paymentCardList], animated: true)
+        navigationController.interactivePopGestureRecognizer?.delegate = self
+        navigationController.interactivePopGestureRecognizer?.isEnabled = true
         UIView.transition(
             with: self.window!,
             duration: 0.2,

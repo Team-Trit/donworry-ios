@@ -37,6 +37,7 @@ final class PaymentCardDetailViewReactor: Reactor {
         var cardID: Int
         var cardName: String
         var isCardAdmin: Bool
+        var spaceStatus: String
         var participatedUsers: [AttendanceCellViewModel]
         var amount: Int
         var isParticipated: Bool?
@@ -51,6 +52,7 @@ final class PaymentCardDetailViewReactor: Reactor {
         cardID: Int,
         cardName: String,
         isCardAdmin: Bool,
+        spaceStatus: String,
         participatedUsers: [AttendanceCellViewModel],
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
         userAccountService: UserAccountRepository = UserAccountRepositoryImpl()
@@ -59,6 +61,7 @@ final class PaymentCardDetailViewReactor: Reactor {
             cardID: cardID,
             cardName: cardName,
             isCardAdmin: isCardAdmin,
+            spaceStatus: spaceStatus,
             participatedUsers: participatedUsers,
             amount: 0,
             imgURLs: []

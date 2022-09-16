@@ -163,7 +163,13 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
+        reactor.state.map { $0.spaceStatus }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.bottomButton.isHidden = !($0 == "OPEN")
+            }).disposed(by: disposeBag)
+
         reactor.state.map { $0.isCardAdmin }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isCardAdmin in

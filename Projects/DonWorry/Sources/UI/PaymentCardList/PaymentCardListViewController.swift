@@ -244,11 +244,14 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 
     private func render(reactor: Reactor) {
+        
         reactor.state.map { ($0.space, $0.isUserAdmin) }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (space, isUserAdmin) in
                 self?.navigationBar.titleLabel?.text = space.title
                 self?.startPaymentAlgorithmButton.isEnabled = space.status == "OPEN" && isUserAdmin
+                self?.shareLinkButton.isHidden = !(space.status == "OPEN")
+                self?.checkParticipatedButton.isHidden = !(space.status == "OPEN")
             }).disposed(by: disposeBag)
 
         reactor.state.map { $0.space.shareID }
@@ -339,12 +342,13 @@ extension PaymentCardListViewController {
         switch step {
         case .pop:
             self.navigationController?.popToRootViewController(animated: true)
-        case .paymentCardDetail(let card, let isCardAdmin):
+        case .paymentCardDetail(let card, let isCardAdmin, let status):
             let detailViewController = PaymentCardDetailViewController()
             detailViewController.reactor = PaymentCardDetailViewReactor(
                 cardID: card.id,
                 cardName: card.name,
                 isCardAdmin: isCardAdmin,
+                spaceStatus: status,
                 participatedUsers: card.participatedUserList.map {
                     .init(id: $0.id, name: $0.nickName, imgURL: $0.imageURL)
                 }

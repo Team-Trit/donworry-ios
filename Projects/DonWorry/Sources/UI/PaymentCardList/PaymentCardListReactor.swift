@@ -14,7 +14,7 @@ enum PaymentCardListStep {
     typealias IsCardAdmin = Bool
 
     case pop
-    case paymentCardDetail(PaymentCardCellViewModel, IsCardAdmin)
+    case paymentCardDetail(PaymentCardCellViewModel, IsCardAdmin, String)
     case actionSheet
     case nameEdit
     case addPaymentCard
@@ -137,7 +137,7 @@ final class PaymentCardListReactor: Reactor {
 
     private func requestIsUserCardAdmin(card: PaymentCardCellViewModel) -> Observable<Mutation> {
         judgeSpaceAdminUseCase.judgeUserIsCardAdmin(cardAdminID: card.payer.id)
-            .map { .routeTo(.paymentCardDetail(card, $0)) }
+            .map { .routeTo(.paymentCardDetail(card, $0, self.currentState.space.status)) }
     }
     private func requestPaymentCardListInformation() -> Observable<Mutation> {
         paymentCardService.fetchPaymentCardList(spaceID: currentState.space.id)
