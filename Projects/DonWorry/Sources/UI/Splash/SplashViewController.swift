@@ -15,8 +15,25 @@ import DesignSystem
 
 final class SplashViewController: BaseViewController, View {
 
-    lazy var logoImageView: UIImageView = {
-        let v = UIImageView(image: UIImage(.ic_spash_logo))
+    lazy var animationView: UIImageView = {
+        let v = UIImageView(frame: .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width))
+        guard let path = Bundle.main.path(forResource: "splash", ofType: "gif") else {
+            fatalError("Gif does not exist at that path")
+        }
+        let url = URL(fileURLWithPath: path)
+        guard let gifData = try? Data(contentsOf: url),
+              let source =  CGImageSourceCreateWithData(gifData as CFData, nil) else {
+            fatalError("Gif does not exist at that path")
+        }
+        var images = [UIImage]()
+        let imageCount = CGImageSourceGetCount(source)
+        for i in 0 ..< imageCount {
+            if let image = CGImageSourceCreateImageAtIndex(source, i, nil) {
+                images.append(UIImage(cgImage: image))
+            }
+        }
+        v.animationImages = images
+        v.startAnimating()
         return v
     }()
 
@@ -26,12 +43,18 @@ final class SplashViewController: BaseViewController, View {
         animateSplash()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        animationView.stopAnimating()
+    }
+
     private func setUI() {
         self.view.backgroundColor = .designSystem(.white)
 
-        self.view.addSubview(self.logoImageView)
+        self.view.addSubview(self.animationView)
 
-        self.logoImageView.snp.makeConstraints { make in
+        self.animationView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
             make.width.height.equalTo(200)
@@ -53,7 +76,7 @@ final class SplashViewController: BaseViewController, View {
     }
 
     private func animateSplash() {
-        Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.1, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
     }
 
     @objc func splashTimeOut() {
