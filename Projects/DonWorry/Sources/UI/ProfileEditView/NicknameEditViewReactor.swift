@@ -17,6 +17,7 @@ enum NicknameEditViewStep {
 final class NicknameEditViewReactor: Reactor {
     private let getUserAccountUseCase: GetUserAccountUseCase
     private let updateNicknameUseCase: UpdateNicknameUseCase
+    private let checkNicknameUseCase: CheckNicknameUseCase
 
     enum Action {
         case viewDidLoad
@@ -28,12 +29,14 @@ final class NicknameEditViewReactor: Reactor {
     enum Mutation {
         case setup(Models.User)
         case updateNickname(nickname: String)
+        case showToast(message: String)
         case routeTo(step: NicknameEditViewStep)
     }
     
     struct State {
         var user: Models.User
         @Pulse var isDoneButtonAvailable: Bool
+        @Pulse var toast: String?
         @Pulse var step: NicknameEditViewStep?
     }
     
@@ -41,10 +44,12 @@ final class NicknameEditViewReactor: Reactor {
 
     init(
         getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
-        updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCaseImpl()
+        updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCaseImpl(),
+        checkNicknameUseCase: CheckNicknameUseCase = CheckNicknameUseCaseImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
         self.updateNicknameUseCase = updateNicknameUseCase
+        self.checkNicknameUseCase = checkNicknameUseCase
         self.initialState = State(
             user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: ""),
             isDoneButtonAvailable: false
@@ -67,8 +72,21 @@ final class NicknameEditViewReactor: Reactor {
             return .just(.updateNickname(nickname: nickname))
             
         case .pressDoneButton:
-            return updateNicknameUseCase.updateNickname(nickname: currentState.user.nickName)
-                .map { _ in .routeTo(step: .pop) }
+            let nickname = currentState.user.nickName
+            return checkNicknameUseCase.checkNickname(nickname: nickname)
+                .flatMap { [weak self] _ in
+                    return self?.updateNicknameUseCase.updateNickname(nickname: nickname)
+                        .map { _ in .routeTo(step: .pop) } ?? .just(.showToast(message: "닉네임 수정을 실패했습니다."))
+                }.catch { error in
+                    guard let error = error as? AuthError else { return .empty() }
+                    switch error {
+                    case .duplicatedNickname:
+                        return .just(.showToast(message: "현재 사용 중인 닉네임입니다."))
+
+                    default:
+                        return .empty()
+                    }
+                }
         }
     }
     
@@ -83,6 +101,9 @@ final class NicknameEditViewReactor: Reactor {
             newState.user.nickName = nickname
             newState.isDoneButtonAvailable = nickname.count == 0 ? false : true
             
+        case .showToast(let message):
+            newState.toast = message
+
         case .routeTo(let step):
             newState.step = step
         }

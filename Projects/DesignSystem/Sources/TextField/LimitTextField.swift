@@ -22,6 +22,7 @@ public enum LimitTextFieldType {
 }
 
 final public class LimitTextField: UIView {
+    private var type: LimitTextFieldType
     public lazy var textField: PaddedTextField = {
         let v = PaddedTextField()
         v.clearButtonMode = .whileEditing
@@ -33,7 +34,6 @@ final public class LimitTextField: UIView {
         v.backgroundColor = textField.text!.isEmpty ? .designSystem(.grayC5C5C5) : .designSystem(.mainBlue)
         return v
     }()
-    private var type: LimitTextFieldType
     private var limit: Int?
     private var limitLabel: UILabel?
     
@@ -66,10 +66,10 @@ extension LimitTextField {
             placeholder = "정산방 코드를 입력해주세요"
         case .roomName:
             placeholder = "정산방 이름을 입력하세요"
-            self.limit = 12
+            self.limit = 10
         case .paymentTitle:
             placeholder = "정산하고자 하는 항목을 입력하세요"
-            self.limit = 12
+            self.limit = 10
         }
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._13)])
         

@@ -19,20 +19,14 @@ enum EnterUserInfoStep {
 final class EnterUserInfoViewReactor: Reactor {
     typealias SignUpModel = AuthModels.SignUp.Request
     typealias OAuthType = AuthModels.OAuthType
+    private let checkNicknameUseCase: CheckNicknameUseCase
+    
     enum TextFieldType {
         case nickname
         case accountHolder
         case accountNumber
     }
-//    private var user = SignUpUserModel(provider: .none,
-//                                     nickname: "",
-//                                     email: "",
-//                                     bank: "",
-//                                     bankNumber: "",
-//                                     bankHolder: "",
-//                                     isAgreeMarketing: false,
-//                                     token: "")
-//
+    
     enum Action {
         case backButtonPressed
         case nicknameFieldUpdated(nickname: String)
@@ -46,21 +40,27 @@ final class EnterUserInfoViewReactor: Reactor {
     enum Mutation {
         case updateSubject(type: TextFieldType, _ value: String)
         case updateBank(selectedBank: String)
+        case showToast(message: String)
         case routeTo(step: EnterUserInfoStep)
     }
     
     struct State {
         var signUpModel: SignUpModel
         @Pulse var isNextButtonAvailable: Bool
+        @Pulse var toast: String?
         @Pulse var step: EnterUserInfoStep?
     }
     
     let initialState: State
     
-    init(oauthType: OAuthType, token: String) {
+    init(oauthType: OAuthType,
+         token: String,
+         checkNicknameUseCase: CheckNicknameUseCase = CheckNicknameUseCaseImpl()
+    ) {
         var signUpModel = SignUpModel.initialValue
         signUpModel.token = token
         signUpModel.oauthType = oauthType
+        self.checkNicknameUseCase = checkNicknameUseCase
         self.initialState = State(signUpModel: signUpModel, isNextButtonAvailable: false)
     }
     
@@ -70,7 +70,7 @@ final class EnterUserInfoViewReactor: Reactor {
             return .just(.routeTo(step: .pop))
             
         case .nicknameFieldUpdated(let nickname):
-            return .just(Mutation.updateSubject(type: .nickname, nickname))
+            return .just(.updateSubject(type: .nickname, nickname))
             
         case .accountHolderFieldUpdated(let holder):
             return .just(Mutation.updateSubject(type: .accountHolder, holder))
@@ -83,7 +83,8 @@ final class EnterUserInfoViewReactor: Reactor {
         case .bankSelected(let bank):
             return .just(Mutation.updateBank(selectedBank: bank))
         case .nextButtonPressed:
-            return .just(.routeTo(step: .agreeTerm(currentState.signUpModel)))
+            let checkNickname = checkNickname(nickname: currentState.signUpModel.nickname)
+            return checkNickname
         }
     }
     
@@ -102,6 +103,10 @@ final class EnterUserInfoViewReactor: Reactor {
             }
         case .updateBank(let bank):
             newState.signUpModel.bank = bank
+            
+        case .showToast(let message):
+            newState.toast = message
+
         case .routeTo(let step):
             newState.step = step
         }
@@ -118,5 +123,21 @@ extension EnterUserInfoViewReactor: EnterUserInfoViewDelegate {
     
     func saveBank(_ selectedBank: String) {
         self.action.onNext(Action.bankSelected(selectedBank))
+    }
+    
+    private func checkNickname(nickname: String) -> Observable<Mutation> {
+        checkNicknameUseCase.checkNickname(nickname: nickname)
+            .map { _ in .routeTo(step: .none) }
+            .catch { error in
+                guard let error = error.toAuthError() else { return .error(error)}
+
+                switch error {
+                case .duplicatedNickname:
+                    return .just(.showToast(message: "현재 사용 중인 닉네임입니다."))
+                    
+                default:
+                    return .just(.routeTo(step: .agreeTerm(self.currentState.signUpModel)))
+                }
+            }
     }
 }

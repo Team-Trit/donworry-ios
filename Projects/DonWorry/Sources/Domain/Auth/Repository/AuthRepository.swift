@@ -26,6 +26,8 @@ protocol AuthRepository {
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
     func loginWithApple(identityToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func loginWithKakao(accessToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func logout() -> Observable<AuthModels.Empty.Response>
+    func checkNickname(nickname: String) -> Observable<AuthModels.Empty.Response>
 }
 
 final class AuthRepositoryImpl: AuthRepository {
@@ -76,6 +78,21 @@ final class AuthRepositoryImpl: AuthRepository {
                 return .error(self?.judgeSignInError(error, accessToken) ?? .parsing)
             }.asObservable()
     }
+    
+    func logout() -> Observable<AuthModels.Empty.Response> {
+        network.request(LogoutAPI())
+            .compactMap { _ in return .init() }
+            .asObservable()
+    }
+    
+    func checkNickname(nickname: String) -> Observable<AuthModels.Empty.Response> {
+        network.request(CheckNicknameAPI(nickname: nickname))
+            .compactMap { _ in return .init() }
+            .catch { [weak self] error in
+                return .error(self?.judgeNicknameError(error) ?? .parsing)
+            }
+            .asObservable()
+    }
 
 
     private func judgeSignInError(_ error: Error, _ token: String) -> AuthError {
@@ -83,6 +100,16 @@ final class AuthRepositoryImpl: AuthRepository {
         switch error {
         case .httpStatus(let status):
             if status == 401 { return .nouser(token) }
+        default: break
+        }
+        return .parsing
+    }
+    
+    private func judgeNicknameError(_ error: Error) -> AuthError {
+        guard let error = error as? NetworkError else { return .parsing }
+        switch error {
+        case .httpStatus(let status):
+            if status == 409 { return .duplicatedNickname }
         default: break
         }
         return .parsing
