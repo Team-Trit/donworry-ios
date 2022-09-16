@@ -66,10 +66,10 @@ extension LimitTextField {
             placeholder = "정산방 코드를 입력해주세요"
         case .roomName:
             placeholder = "정산방 이름을 입력하세요"
-            self.limit = 12
+            self.limit = 10
         case .paymentTitle:
             placeholder = "정산하고자 하는 항목을 입력하세요"
-            self.limit = 12
+            self.limit = 10
         }
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._13)])
         
