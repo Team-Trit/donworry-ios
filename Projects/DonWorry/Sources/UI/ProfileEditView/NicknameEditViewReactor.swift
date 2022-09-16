@@ -74,9 +74,9 @@ final class NicknameEditViewReactor: Reactor {
         case .pressDoneButton:
             let nickname = currentState.user.nickName
             return checkNicknameUseCase.checkNickname(nickname: nickname)
-                .flatMap { [weak self] response in
+                .flatMap { [weak self] _ in
                     return self?.updateNicknameUseCase.updateNickname(nickname: nickname)
-                        .map { Mutation.updateNickname(nickname: $0.nickName) } ?? .just(.showToast(message: "닉네임 수정을 실패했습니다."))
+                        .map { _ in .routeTo(step: .pop) } ?? .just(.showToast(message: "닉네임 수정을 실패했습니다."))
                 }.catch { error in
                     guard let error = error as? AuthError else { return .empty() }
                     switch error {

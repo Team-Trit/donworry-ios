@@ -11,7 +11,7 @@ import Foundation
 import Moya
 
 public struct LogoutAPI: ServiceAPI {
-    public typealias Response = DTO.Logout
+    public typealias Response = DTO.Empty
     public var path: String { return "/logout" }
     public var method: Method = .get
     public var task: Task {

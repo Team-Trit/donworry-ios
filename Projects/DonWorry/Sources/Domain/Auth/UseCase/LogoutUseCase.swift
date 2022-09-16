@@ -11,7 +11,7 @@ import Foundation
 import RxSwift
 
 protocol LogoutUseCase {
-    func logout() -> Observable<AuthModels.Logout.Response>
+    func logout() -> Observable<AuthModels.Empty.Response>
 }
 
 final class LogoutUseCaseImpl: LogoutUseCase {
@@ -21,7 +21,7 @@ final class LogoutUseCaseImpl: LogoutUseCase {
         self.authRepository = authRepository
     }
     
-    func logout() -> Observable<AuthModels.Logout.Response> {
+    func logout() -> Observable<AuthModels.Empty.Response> {
         authRepository.logout()
     }
 }

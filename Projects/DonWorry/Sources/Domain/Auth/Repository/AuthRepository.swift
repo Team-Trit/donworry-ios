@@ -26,7 +26,7 @@ protocol AuthRepository {
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
     func loginWithApple(identityToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func loginWithKakao(accessToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
-    func logout() -> Observable<AuthModels.Logout.Response>
+    func logout() -> Observable<AuthModels.Empty.Response>
     func checkNickname(nickname: String) -> Observable<AuthModels.Empty.Response>
 }
 
@@ -79,11 +79,9 @@ final class AuthRepositoryImpl: AuthRepository {
             }.asObservable()
     }
     
-    func logout() -> Observable<AuthModels.Logout.Response> {
+    func logout() -> Observable<AuthModels.Empty.Response> {
         network.request(LogoutAPI())
-            .compactMap { response in
-                return .init(result: response.result)
-            }
+            .compactMap { _ in return .init() }
             .asObservable()
     }
     
