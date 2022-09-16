@@ -23,7 +23,7 @@ final class ImageRepositoryImpl: ImageRepository {
     }
 
     func uploadImage(request: ImageModels.UploadImage.Request) -> Observable<ImageModels.UploadImage.Response> {
-        guard let imageData = request.image.jpegData(compressionQuality: 1) else { return .error(ImageError.upload)}
+        guard let imageData = request.image.jpegData(compressionQuality: 0.4) else { return .error(ImageError.upload)}
         return network.request(UploadImageAPI(type: request.type, request: .init(imageData: imageData)))
             .compactMap { response in
                     .init(imageURL: response.imgUrl)

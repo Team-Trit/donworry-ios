@@ -161,6 +161,13 @@ extension ProfileViewController {
                 self?.route(to: $0)
             })
             .disposed(by: disposeBag)
+
+        reactor.pulse(\.$error)
+            .compactMap { $0 }
+            .subscribe(onNext: {
+                DWToastFactory.show(message: $0, type: .error)
+
+            }).disposed(by: disposeBag)
     }
 }
 

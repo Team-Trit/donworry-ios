@@ -42,10 +42,13 @@ final class ProfileViewReactor: Reactor {
     enum Mutation {
         case updateUser(User)
         case routeTo(step: ProfileStep)
+        case error(String?)
     }
     
     struct State {
         var user: Models.User
+
+        @Pulse var error: String?
         @Pulse var step: ProfileStep?
     }
     
@@ -82,13 +85,9 @@ final class ProfileViewReactor: Reactor {
             
         case .updateProfileImage(let image):
             return uploadImageUseCase.uploadProfileImage(request: .init(image: image!, type: "profile"))
-                .map { [weak self] response in
-                    return .updateUser(User(id: self!.currentState.user.id,
-                                            nickName: self!.currentState.user.nickName,
-                                            bankAccount: BankAccount(bank: self!.currentState.user.bankAccount.bank,
-                                                                     accountHolderName: self!.currentState.user.bankAccount.accountHolderName,
-                                                                     accountNumber: self!.currentState.user.bankAccount.accountNumber),
-                                            image: response.imageURL))
+                .flatMap { [weak self] response in
+                    (self?.updateProfileImageUseCase.updateProfileImage(imgURL: response.imageURL)
+                        .compactMap { Mutation.updateUser($0) }) ?? .just(.error("프로필 이미지 업데이트 실패!"))
                 }
 
         case .pressUpdateNickNameButton:
@@ -142,6 +141,9 @@ final class ProfileViewReactor: Reactor {
             
         case .routeTo(let step):
             newState.step = step
+
+        case .error(let message):
+            newState.error = message
         }
         
         return newState
