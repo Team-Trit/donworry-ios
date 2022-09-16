@@ -24,7 +24,7 @@ enum HomeStep {
     case none
 }
 
-final class HomeReactor: Reactor {
+final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     typealias Section = BillCardSection
     typealias HeaderModel = HomeHeaderViewModel
     typealias SpaceList = [SpaceModels.FetchSpaceList.Space]
@@ -69,10 +69,13 @@ final class HomeReactor: Reactor {
         _ spaceService: SpaceService = SpaceServiceImpl(),
         _ homePresenter: HomePresenter = HomePresenterImpl()
     ) {
+        self.presentationDelegateProxy = AdaptivePresentationControllerDelegateProxy()
         self.getUserAccountUseCase = getUserAccountUseCase
         self.spaceService = spaceService
         self.homePresenter = homePresenter
         self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
+
+        self.presentationDelegateProxy.delegate = self
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -185,6 +188,11 @@ final class HomeReactor: Reactor {
         getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) }
     }
 
+    func presentationControllerDidDismiss() {
+        print("presentationControllerDidDismiss")
+    }
+
+    private let presentationDelegateProxy: AdaptivePresentationControllerDelegateProxy
     private let getUserAccountUseCase: GetUserAccountUseCase
     private let spaceService: SpaceService
     private let homePresenter: HomePresenter
