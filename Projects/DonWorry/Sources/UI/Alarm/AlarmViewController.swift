@@ -18,11 +18,24 @@ final class AlarmViewController: BaseViewController, View {
     typealias Reactor = AlarmReactor
     lazy var navigationBar = DWNavigationBar(title: "알림", rightButtonTitle: "전체삭제")
 
+    lazy var emptyStackView: UIStackView = {
+        let v = UIStackView()
+        v.spacing = 0
+        v.alignment = .center
+        v.distribution = .fill
+        v.axis = .vertical
+        return v
+    }()
+
+    lazy var emptyImageView: UIImageView = {
+        let v = UIImageView(image: UIImage(.ic_spash_logo))
+        return v
+    }()
     lazy var emptyLabel: UILabel = {
         let v = UILabel()
-        v.text = "알림이 없어요."
-        v.font = .designSystem(weight: .regular, size: ._15)
-        v.textColor = .designSystem(.black)
+        v.text = "아직 알림이 없어요."
+        v.font = .designSystem(weight: .bold, size: ._15)
+        v.textColor = .designSystem(.gray818181)
         return v
     }()
 
@@ -59,9 +72,10 @@ final class AlarmViewController: BaseViewController, View {
         reactor.state.map { $0.alarmModels }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] alarms in
-                self?.emptyLabel.isHidden = !alarms.isEmpty
+                self?.emptyStackView.isHidden = !alarms.isEmpty
                 self?.tableView.reloadData()
             }).disposed(by: disposeBag)
+
         reactor.pulse(\.$step)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
@@ -93,16 +107,21 @@ extension AlarmViewController {
     private func layout() {
         view.addSubview(tableView)
         view.addSubviews(navigationBar, tableView)
-        view.addSubview(emptyLabel)
+        view.addSubview(emptyStackView)
+        emptyStackView.addArrangedSubviews(emptyImageView, emptyLabel)
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
 
-        emptyLabel.snp.makeConstraints { make in
+        emptyStackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(20)
         }
+        emptyImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(80)
+        }
+
         tableView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
         navigationBar.rightItem?.addTarget(self, action: #selector(removeAll), for: .touchUpInside)
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
