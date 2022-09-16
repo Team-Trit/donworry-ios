@@ -20,10 +20,9 @@ final class AgreeTermViewReactor: Reactor {
     typealias SignUpModel = AuthModels.SignUp.Request
     let dataSource: [String] = [
         "전체동의",
-        "(필수) 돈워리 회원가입 및 이용약관 동의",
-        "(필수) 돈워리의 개인정보수집 및 이용에 동의",
-        "(필수) 돈워리의 개인정보 제 3자 제공 동의",
-        "(선택) 이벤트 알림 수신 동의"
+        "(필수) 만 14세 이상입니다.",
+        "(필수) 돈워리 회원약관 및 이용약관 동의",
+        "(필수) 개인정보처리방침"
     ]
     private var checkedTerms: [String] = .init(repeating: "", count: 5)
     
@@ -47,7 +46,7 @@ final class AgreeTermViewReactor: Reactor {
     let initialState: State
     
     init(signUpModel: SignUpModel) {
-        self.initialState = State(signUpModel: signUpModel, isChecked:  [false, false, false, false, false])
+        self.initialState = State(signUpModel: signUpModel, isChecked:  [false, false, false, false])
 
     }
     
@@ -73,29 +72,29 @@ final class AgreeTermViewReactor: Reactor {
             if index == 0 {
                 // 전체 동의
                 if newState.isChecked.allSatisfy({ $0 }) {
-                    newState.isChecked = [false, false, false, false, false]
+                    newState.isChecked = [false, false, false, false]
                 } else {
-                    newState.isChecked = [true, true, true, true, true]
+                    newState.isChecked = [true, true, true, true]
                 }
             } else {
                 // 개별 동의
                 newState.isChecked[index].toggle()
                 
-                if newState.isChecked[1...4].allSatisfy({ $0 }) {
+                if newState.isChecked[1...3].allSatisfy({ $0 }) {
                     newState.isChecked[0] = true
                 } else {
                     newState.isChecked[0] = false
                 }
             }
             
-            for i in 1...4 {
+            for i in 1...3 {
                 if newState.isChecked[i] {
                     self.checkedTerms[i] = self.dataSource[i]
                 } else {
                     self.checkedTerms[i] = ""
                 }
             }
-            newState.signUpModel.isAgreeMarketing = newState.isChecked[4]
+            
         case .routeTo(let step):
             newState.step = step
         }

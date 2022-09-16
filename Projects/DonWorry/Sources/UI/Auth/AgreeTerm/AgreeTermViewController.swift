@@ -169,6 +169,19 @@ extension AgreeTermViewController: UITableViewDataSource {
         let index = indexPath.row
         cell.titleLabel.text = reactor?.dataSource[index]
         
+        switch index {
+        case 2:
+            cell.linkButton.setTitle("보기", for: .normal)
+            cell.linkButton.addTarget(self, action: #selector(linkToUserTerm), for: .touchUpInside)
+            
+        case 3:
+            cell.linkButton.setTitle("보기", for: .normal)
+            cell.linkButton.addTarget(self, action: #selector(linkToSelfTerm), for: .touchUpInside)
+            
+        default:
+            break
+        }
+        
         cell.checkButton.rx.tap
             .map { Reactor.Action.checkButtonPressed(index) }
             .bind(to: reactor!.action)
@@ -194,5 +207,24 @@ extension AgreeTermViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? AgreeTermTableViewCell else { return }
         cell.disposeBag = DisposeBag()
+    }
+}
+
+// MARK: - Link Methods {
+extension AgreeTermViewController {
+    @objc private func linkToUserTerm() {
+        if let url = URL(string: "https://www.notion.so/avery-in-ada/0ec63d93d3f3407e8b881575ac952533") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
+    
+    @objc private func linkToSelfTerm() {
+        if let url = URL(string: "https://www.notion.so/avery-in-ada/b45057e381694f2d94f41e3e53934574") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }
