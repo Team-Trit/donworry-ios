@@ -75,14 +75,14 @@ extension UserRepository {
   
     
     fileprivate func convertToUser(userDTO dto: DTO.PostUser) -> Models.User {
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: "")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: .init(bank: dto.account.bank, accountHolderName: dto.account.holder, accountNumber: dto.account.number), image: dto.imgUrl ?? "")
     }
     
     fileprivate func convertToUser(patchUserDTO dto: DTO.PatchUser) -> Models.User {
         let bankAccount = BankAccount(bank: dto.account.bank,
                                       accountHolderName: dto.account.holder,
                                       accountNumber: dto.account.number)
-        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: "")
+        return .init(id: dto.id, nickName: dto.nickname, bankAccount: bankAccount, image: dto.imgUrl ?? "")
     }
 
     fileprivate func patchUserRequest(
