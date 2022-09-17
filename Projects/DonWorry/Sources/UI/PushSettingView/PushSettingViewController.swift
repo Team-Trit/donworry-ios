@@ -1,5 +1,5 @@
 //
-//  ProfileDetailViewsViewController.swift
+//  PushSettingViewController.swift
 //  App
 //
 //  Created by uiskim on 2022/09/05.
@@ -19,9 +19,6 @@ struct Toggle {
 }
 
 final class PushSettingViewController: BaseViewController {
-
-    #warning("ReactorKit으로 변환 필요 + RxFlow를 통해 주입하기")
-    
     let toggleTitles: [Toggle] = [
         Toggle(main: "정산알림", sub: "정산시작, 정산완료, 재촉"),
         Toggle(main: "서비스 마케팅 알림", sub: "이벤트, 혜택 등")
