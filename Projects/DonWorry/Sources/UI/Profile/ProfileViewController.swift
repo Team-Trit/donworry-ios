@@ -166,7 +166,6 @@ extension ProfileViewController {
             .compactMap { $0 }
             .subscribe(onNext: {
                 DWToastFactory.show(message: $0, type: .error)
-
             }).disposed(by: disposeBag)
     }
 }
@@ -285,9 +284,10 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.profileImageView.addGestureRecognizer(tapGesture)
                 
                 cell.editButton.rx.tap
-                    .map {
-                        return Reactor.Action.pressUpdateNickNameButton }
-                    .bind(to: reactor!.action)
+                    .map { Reactor.Action.pressUpdateNickNameButton }
+                    .bind(onNext: { [weak self] in
+                        self?.reactor?.action.onNext($0)
+                    })
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.user.image }
@@ -311,7 +311,9 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.selectionStyle = .none
                 cell.editButton.rx.tap
                     .map { Reactor.Action.pressUpdateAccountButton }
-                    .bind(to: reactor!.action)
+                    .bind(onNext: { [weak self] in
+                        self?.reactor?.action.onNext($0)
+                    })
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.user.bankAccount.bank }

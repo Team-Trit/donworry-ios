@@ -27,8 +27,8 @@ final class AccountEditViewController: BaseViewController, View {
     }()
     lazy var accountEditField: AccountInputField = {
         let v = AccountInputField(frame: .zero, type: .EnterUserInfo)
-        v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountHolderName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
-        v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountNumber)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountHolderName) ?? "예금주명", attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountNumber) ?? "계좌번호", attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
         return v
     }()
     private lazy var doneButton: DWButton = {
@@ -163,8 +163,9 @@ extension AccountEditViewController {
             self.navigationController?.popViewController(animated: true)
             
         case .presentSelectBankView:
+            guard let currentReactor = self.reactor else { return }
             let vc = SelectBankViewController()
-            let reactor = SelectBankViewReactor(accountEditViewDelegate: self.reactor!, parentView: .profileAccountEdit)
+            let reactor = SelectBankViewReactor(accountEditViewDelegate: currentReactor, parentView: .profileAccountEdit)
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
         }

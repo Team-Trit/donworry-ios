@@ -27,7 +27,7 @@ final class NicknameEditViewController: BaseViewController, View {
     }()
     private lazy var nicknameEditField: LimitTextField = {
         let v = LimitTextField(frame: .zero, type: .nickName)
-        v.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.nickName)!, attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.nickName) ?? "닉네임", attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
         return v
     }()
     private lazy var doneButton: DWButton = {
