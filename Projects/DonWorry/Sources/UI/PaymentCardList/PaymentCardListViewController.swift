@@ -421,7 +421,7 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         guard let currentState = reactor?.currentState else { return 0 }
-        if currentState.space.status == "PROGRESS" {
+        if currentState.space.status != "OPEN" {
             return currentState.paymentCardListViewModel.count
         } else {
             return currentState.paymentCardListViewModel.count + 1

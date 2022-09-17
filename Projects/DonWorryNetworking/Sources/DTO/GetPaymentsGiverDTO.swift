@@ -10,7 +10,7 @@ import Foundation
 
 extension DTO {
     public struct GetPaymentsGiver: Codable {
-        public let paymentID, spaceID, amount, spaceTotalAmount: Int
+        public let paymentID, spaceID, amount, totalAmount: Int
         public let isCompleted: Bool
         public let takerNickname: String
         public let account: Account
@@ -19,7 +19,7 @@ extension DTO {
         enum CodingKeys: String, CodingKey {
             case paymentID = "paymentId"
             case spaceID = "spaceId"
-            case amount, spaceTotalAmount, isCompleted, takerNickname, account, cards, payments
+            case amount, totalAmount, isCompleted, takerNickname, account, cards, payments
         }
 
         public struct Account: Codable {

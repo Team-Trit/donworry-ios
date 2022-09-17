@@ -77,12 +77,6 @@ final class SpaceRepositoryImpl: SpaceRepository {
     }
     
     private func judgeLeaveAndDeleteSpaceError(_ error: Error) -> SpaceError {
-        guard let error = error as? NetworkError else { return .undefined }
-        switch error {
-        case .httpStatus(let status):
-            if status == 400 { return .deletedSpace }
-        default: break
-        }
         return .undefined
     }
 
@@ -90,8 +84,9 @@ final class SpaceRepositoryImpl: SpaceRepository {
         guard let error = error as? NetworkError else { return .undefined }
         switch error {
         case .httpStatus(let status):
-            if status == 400 { return .alreadyJoined }
-            else if status == 403 { return .shareIDIsNotInvalid }
+            if status == 400 { return .shareIDIsNotInvalid }
+            else if status == 403 { return .alreadyJoined }
+            else if status == 409 { return .alreadyStarted}
         default: break
         }
         return .undefined
