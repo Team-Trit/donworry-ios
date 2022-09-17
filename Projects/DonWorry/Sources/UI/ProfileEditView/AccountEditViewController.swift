@@ -29,6 +29,7 @@ final class AccountEditViewController: BaseViewController, View {
         let v = AccountInputField(frame: .zero, type: .EnterUserInfo)
         v.holderTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountHolderName) ?? "예금주명", attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
         v.accountTextField.textField.attributedPlaceholder = NSAttributedString(string: (reactor?.currentState.user.bankAccount.accountNumber) ?? "계좌번호", attributes: [.font: UIFont.designSystem(weight: .regular, size: ._15)])
+        v.accountTextField.textField.delegate = self
         return v
     }()
     private lazy var doneButton: DWButton = {
@@ -169,6 +170,16 @@ extension AccountEditViewController {
             vc.reactor = reactor
             self.navigationController?.present(vc, animated: true)
         }
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension AccountEditViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard CharacterSet(charactersIn: "0123456789").isSuperset(of: CharacterSet(charactersIn: string)) else {
+             return false
+        }
+        return true
     }
 }
 

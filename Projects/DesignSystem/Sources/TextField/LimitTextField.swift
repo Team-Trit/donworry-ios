@@ -11,14 +11,14 @@ import UIKit
 import SnapKit
 
 public enum LimitTextFieldType {
-    case nickName   // 닉네임을 입력해주세요, 20
-    case holder     // 예금주명을 입력해주세요, 20
+    case nickName   // 닉네임을 입력해주세요, limit : 10
+    case holder     // 예금주명을 입력해주세요, limit : 20
     case account    // 계좌번호를 입력해주세요
     
     case roomCode  // 정산방 코드를 입력해주세요
-    case roomName  // 정산방 이름을 입력하세요, 12
+    case roomName  // 정산방 이름을 입력하세요, limit : 12
     
-    case paymentTitle  // 정산하고자 하는 항목을 입력하세요, 12
+    case paymentTitle  // 정산하고자 하는 항목을 입력하세요, limit : 12
 }
 
 final public class LimitTextField: UIView {
@@ -62,6 +62,7 @@ extension LimitTextField {
             self.limit = 20
         case .account:
             placeholder = "계좌번호를 입력해주세요"
+            textField.keyboardType = .decimalPad
         case .roomCode:
             placeholder = "정산방 코드를 입력해주세요"
         case .roomName:
