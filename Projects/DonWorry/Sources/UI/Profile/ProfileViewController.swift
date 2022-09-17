@@ -280,10 +280,9 @@ extension ProfileViewController: UITableViewDataSource {
         case .user:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
                 cell.selectionStyle = .none
-                cell.imagePlusButton.rx.tap
-                    .map { Reactor.Action.pressUpdateProfileImageButton }
-                    .bind(to: reactor!.action)
-                    .disposed(by: cell.disposeBag)
+                
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+                cell.profileImageView.addGestureRecognizer(tapGesture)
                 
                 cell.editButton.rx.tap
                     .map {
@@ -414,6 +413,10 @@ extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerCo
 
 // MARK: - Tap Gesture
 extension ProfileViewController {
+    @objc private func profileImageTapped() {
+        reactor?.action.onNext(.pressUpdateProfileImageButton)
+    }
+    
     @objc private func inquiryButtonTapped() {
         if let url = URL(string: "https://pf.kakao.com/_LCulxj" ) {
             if UIApplication.shared.canOpenURL(url) {
