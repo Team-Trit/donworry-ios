@@ -166,7 +166,6 @@ extension ProfileViewController {
             .compactMap { $0 }
             .subscribe(onNext: {
                 DWToastFactory.show(message: $0, type: .error)
-
             }).disposed(by: disposeBag)
     }
 }
@@ -280,15 +279,15 @@ extension ProfileViewController: UITableViewDataSource {
         case .user:
             if let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewUserCell.identifier, for: indexPath) as? ProfileTableViewUserCell {
                 cell.selectionStyle = .none
-                cell.imagePlusButton.rx.tap
-                    .map { Reactor.Action.pressUpdateProfileImageButton }
-                    .bind(to: reactor!.action)
-                    .disposed(by: cell.disposeBag)
+                
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+                cell.profileImageView.addGestureRecognizer(tapGesture)
                 
                 cell.editButton.rx.tap
-                    .map {
-                        return Reactor.Action.pressUpdateNickNameButton }
-                    .bind(to: reactor!.action)
+                    .map { Reactor.Action.pressUpdateNickNameButton }
+                    .bind(onNext: { [weak self] in
+                        self?.reactor?.action.onNext($0)
+                    })
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.user.image }
@@ -312,7 +311,9 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.selectionStyle = .none
                 cell.editButton.rx.tap
                     .map { Reactor.Action.pressUpdateAccountButton }
-                    .bind(to: reactor!.action)
+                    .bind(onNext: { [weak self] in
+                        self?.reactor?.action.onNext($0)
+                    })
                     .disposed(by: cell.disposeBag)
                 
                 reactor?.state.map { $0.user.bankAccount.bank }
@@ -414,6 +415,10 @@ extension ProfileViewController: UINavigationControllerDelegate, UIImagePickerCo
 
 // MARK: - Tap Gesture
 extension ProfileViewController {
+    @objc private func profileImageTapped() {
+        reactor?.action.onNext(.pressUpdateProfileImageButton)
+    }
+    
     @objc private func inquiryButtonTapped() {
         if let url = URL(string: "https://pf.kakao.com/_LCulxj" ) {
             if UIApplication.shared.canOpenURL(url) {

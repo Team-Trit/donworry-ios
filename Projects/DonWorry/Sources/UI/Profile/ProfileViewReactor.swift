@@ -87,7 +87,8 @@ final class ProfileViewReactor: Reactor {
             return .just(.routeTo(step: .profileImageSheet))
             
         case .updateProfileImage(let image):
-            return uploadImageUseCase.uploadProfileImage(request: .init(image: image!, type: "profile"))
+            guard let image = image else { return .empty() }
+            return uploadImageUseCase.uploadProfileImage(request: .init(image: image, type: "profile"))
                 .flatMap { [weak self] response in
                     (self?.updateProfileImageUseCase.updateProfileImage(imgURL: response.imageURL)
                         .compactMap { Mutation.updateUser($0) }) ?? .just(.error("프로필 이미지 업데이트 실패!"))
