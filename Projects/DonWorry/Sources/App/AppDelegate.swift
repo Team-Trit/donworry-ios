@@ -7,36 +7,19 @@
 
 import UIKit
 import Firebase
+import FirebaseMessaging
 import FirebaseDynamicLinks
-
-import DonWorryLocalStorage
+import UserNotifications
 import KakaoSDKCommon
-import RxCocoa
-import RxSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let isLoggedIn = BehaviorRelay<Bool>(value: false)
-    private let disposeBag = DisposeBag()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KakaoSDK.initSDK(appKey: "edeee91b673464dc9a3a5b65b063faaa")
-        
-        let tokenObservable = UserDefaults.standard.rx.observe(String.self, UserDefaultsKey.accessToken.rawValue)
-            .map { $0 != nil }
-            .asObservable()
-        let userObservable = UserDefaults.standard.rx.observe(Data.self, UserDefaultsKey.userAccount.rawValue)
-            .map { $0 != nil }
-            .asObservable()
-        
-        Observable.zip(tokenObservable, userObservable)
-            .map { $0 && $1 }
-            .bind(to: isLoggedIn)
-            .disposed(by: disposeBag)
-        
+
         // Firebase Configuration
-        FirebaseApp.configure()
-        
+        setupFirebase(application: application)
         return true
     }
 
@@ -44,5 +27,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+}
+
+// MARK: UNUserNotificationCenterDelegate
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+}
+
+// MARK: MessagingDelegate
+extension AppDelegate: MessagingDelegate {
+
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        
+    }
+}
+
+extension AppDelegate {
+
+    func setupFirebase(application: UIApplication) {
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: {_, _ in })
+
+        application.registerForRemoteNotifications()
     }
 }
