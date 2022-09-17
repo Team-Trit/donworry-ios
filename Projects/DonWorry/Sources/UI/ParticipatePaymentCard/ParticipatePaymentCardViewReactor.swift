@@ -6,7 +6,6 @@
 //  Copyright (c) 2022 Tr-iT. All rights reserved.
 //
 
-import Foundation
 import ReactorKit
 import RxSwift
 
@@ -61,7 +60,7 @@ final class ParticipatePaymentCardViewReactor: Reactor {
             return .just(.routeTo(.dismiss))
         case .didTapCancelSelectButton:
             let selectCard = getUserAccountUseCase.compareIsUserList(
-                ids: currentState.cardList.filter { $0.isSelected}.map { $0.payer.id }
+                ids: currentState.cardList.filter { $0.isSelected }.map { $0.payer.id }
             ).map { Mutation.resetCardList }
                 .catch { .just(.toast($0)) }
             return selectCard

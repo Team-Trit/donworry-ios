@@ -4,10 +4,12 @@
 //
 //  Created by Hankyu Lee on 2022/08/24.
 //
+
 import UIKit
 
 import DesignSystem
 import DonWorryExtensions
+import RxSwift
 
 struct ParticipateCellViewModel: Equatable {
     let id: Int
@@ -30,14 +32,10 @@ struct ParticipateCellViewModel: Equatable {
     }
 }
 
-protocol ParticipateCellDelegate: AnyObject {
-    func toggleCheckAt(_ viewModel: ParticipateCellViewModel)
-}
-
 class ParticipateCollectionViewCell: UICollectionViewCell {
     static let cellID = "ParticipateCollectionViewCellID"
-    fileprivate lazy var boundsWidth = contentView.bounds.width
-    weak var delegate: ParticipateCellDelegate?
+    var disposeBag = DisposeBag()
+    private lazy var boundsWidth = contentView.bounds.width
 
     var viewModel: ParticipateCellViewModel? {
         didSet {
@@ -53,114 +51,95 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
             userImageView.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.payer.imgURL)
             iconImageView.image =  UIImage(assetName: viewModel?.categoryName ?? "")
             userNickNameLabel.text = viewModel?.payer.name
-            
+
             let bgColor = viewModel?.bgColor ?? ""
             cardLeftView.backgroundColor = UIColor(hex: bgColor)?.withAlphaComponent(0.72)
             cardRightView.backgroundColor = UIColor(hex: bgColor)
 
             dateLabel.text = viewModel?.date ?? ""
             dateLabel.textColor = UIColor(hex: bgColor)
-            isChecked = viewModel?.isSelected ?? false
-        }
-    }
-    var isChecked: Bool = false {
-        willSet {
-            checkButton.setImage(newValue ? UIImage(.check_gradient_image) : nil , for: .normal)
         }
     }
     
-    fileprivate lazy var checkButton: UIButton = {
+    lazy var checkButton: UIButton = {
         let button = UIButton()
         button.setWidth(width: 42)
         button.setHeight(height: 42)
         button.roundCorners(21)
         button.backgroundColor = .designSystem(.grayF6F6F6)
         button.contentMode = .scaleAspectFit
-        button.addTarget(self, action: #selector(toggleCheck), for: .touchUpInside)
         return button
     }()
-    
-    fileprivate let wrappedCardTotalView :UIView = {
+    private let wrappedCardTotalView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
         view.addShadowWithRoundedCorners(20.0, shadowColor: CGColor(red: 0, green: 0, blue: 0, alpha: 0.5), opacity: 1)
         return view
     }()
-        
-    fileprivate let cardTotalView :UIView = {
+    private let cardTotalView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         view.roundCorners(20)
         return view
     }()
-    
-    fileprivate let cardLeftView: UIView = {
+    let cardLeftView: UIView = {
         let view = UIView()
         view.roundCorners(20)
         view.clipsToBounds = true
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
-        
         return view
     }()
-    
-    fileprivate let cardRightView: UIView = {
+    let cardRightView: UIView = {
         let view = UIView()
         view.roundCorners(20)
         view.clipsToBounds = true
         view.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
         return view
     }()
-    
-    fileprivate let cardNameLabel: UILabel = {
+    let cardNameLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._15)
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         return label
     }()
-    
-    fileprivate let iconImageView: UIImageView = {
+    let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.setWidth(width: 28)
         imageView.setHeight(height: 28)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    
-    fileprivate let imageContainerView: UIView = {
+    private let imageContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .designSystem(.white)
         view.roundCorners(5)
         view.setHeight(height: 33)
         view.setWidth(width: 33)
         return view
     }()
-    
-    fileprivate let totalPriceLabel: UILabel = {
+    let totalPriceLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         label.font = .designSystem(weight: .heavy, size: ._20)
         return label
     }()
-    
-    fileprivate let userImageView: UIImageView = {
+    let userImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.setWidth(width: 25)
         imageView.setHeight(height: 25)
         imageView.roundCorners(12.5)
-        imageView.contentMode = .scaleToFill //
+        imageView.contentMode = .scaleToFill
         imageView.clipsToBounds = true
         return imageView
     }()
-    
-    fileprivate let userNickNameLabel: UILabel = {
+    let userNickNameLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._13)
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
-    
-    fileprivate let dateLabelContainer: UIView = {
+    private let dateLabelContainer: UIView = {
         let view = UIView()
         view.roundCorners(11)
         view.setWidth(width: 40)
@@ -168,11 +147,10 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         view.backgroundColor = .designSystem(.grayF6F6F6)?.withAlphaComponent(0.80)
         return view
     }()
-    
-    fileprivate let dateLabel: UILabel = {
+    let dateLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._9)
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         return label
     }()
 
@@ -183,9 +161,12 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
 }
-    
-    fileprivate func setUI() {
+
+// MARK: - Set UI
+extension ParticipateCollectionViewCell {
+    private func setUI() {
         let hstack = UIStackView(arrangedSubviews: [checkButton, wrappedCardTotalView])
         hstack.spacing = 17
         hstack.alignment = .center
@@ -235,12 +216,5 @@ class ParticipateCollectionViewCell: UICollectionViewCell {
         cardRightView.addSubview(dateLabelContainer)
         dateLabelContainer.anchor(bottom: cardRightView.bottomAnchor, paddingBottom: 24)
         dateLabelContainer.centerX(inView: userImageView)
-    }
-    
-    @objc fileprivate func toggleCheck() {
-        guard let viewModel = viewModel else {
-            return
-        }
-        delegate?.toggleCheckAt(viewModel)
     }
 }
