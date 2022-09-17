@@ -56,7 +56,7 @@ extension LimitTextField {
         switch type {
         case .nickName:
             placeholder = "닉네임을 입력해주세요"
-            self.limit = 20
+            self.limit = 10
         case .holder:
             placeholder = "예금주명을 입력해주세요"
             self.limit = 20
