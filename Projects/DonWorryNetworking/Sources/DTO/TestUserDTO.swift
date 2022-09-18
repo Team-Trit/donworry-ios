@@ -13,7 +13,7 @@ extension DTO {
         public let id: Int
         public let nickname: String
         public let isAgreeMarketing: Bool
-        public let email, tokenType, accessToken: String
+        public let tokenType, accessToken: String
         public let refreshToken: String
         public let account: Account
 
