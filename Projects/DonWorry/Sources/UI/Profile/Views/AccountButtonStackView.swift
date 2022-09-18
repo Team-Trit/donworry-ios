@@ -58,6 +58,7 @@ extension AccountButtonStackView {
         
         borderLabel.snp.makeConstraints { make in
             make.leading.equalTo(logoutButton.snp.trailing).offset(5)
+            
         }
         
         deleteButton.snp.makeConstraints { make in
