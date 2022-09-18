@@ -46,6 +46,7 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
             self.descriptionLabel.text = "미정산: \(viewModel.userCount) / \(viewModel.totalCount)"
             self.amountLabel.text = viewModel.amount
             if viewModel.isCompleted { self.addCompleteView() }
+            else { self.removeCompleteView() }
         }
     }
 

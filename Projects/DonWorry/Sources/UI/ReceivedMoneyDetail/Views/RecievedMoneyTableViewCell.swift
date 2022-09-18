@@ -8,26 +8,28 @@
 
 import UIKit
 import DesignSystem
+import DonWorryExtensions
 import BaseArchitecture
+import Kingfisher
 
 struct RecievingCellViewModel {
     let name: String
     let money: Int
     var isCompleted: Bool = false
+    var imgURL: String?
 }
 
 final class RecievedMoneyTableViewCell: UITableViewCell {
     
     static let identifier: String = "RecievedMoneyTableViewCell"
     
-    private let profileImage: UIImageView = {
+    private let profileImageView: UIImageView = {
         let profileImage = UIImageView()
         profileImage.translatesAutoresizingMaskIntoConstraints = false
-        profileImage.image = UIImage(named: "profiledefaltimage")
         return profileImage
     }()
     
-    private let userName: UILabel = {
+    private let userNameLabel: UILabel = {
         let userName = UILabel()
         userName.translatesAutoresizingMaskIntoConstraints = false
         userName.textAlignment = .left
@@ -35,7 +37,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
         return userName
     }()
     
-    private let recievedMoney: UILabel = {
+    private let recievedMoneyLabel: UILabel = {
         let recievedMoney = UILabel()
         recievedMoney.translatesAutoresizingMaskIntoConstraints = false
         recievedMoney.font = UIFont.systemFont(ofSize: 15, weight: .heavy)
@@ -53,33 +55,36 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
     }
     
     func render() {
-        contentView.addSubview(profileImage)
-        profileImage.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        profileImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
-        profileImage.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        profileImage.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        contentView.addSubview(profileImageView)
+        profileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+
+        contentView.addSubview(userNameLabel)
+        userNameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        userNameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 12).isActive = true
+        userNameLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
         
-        contentView.addSubview(userName)
-        userName.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        userName.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 12).isActive = true
-        userName.widthAnchor.constraint(equalToConstant: 130).isActive = true
-        
-        contentView.addSubview(recievedMoney)
-        recievedMoney.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        recievedMoney.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
-        recievedMoney.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        
+        contentView.addSubview(recievedMoneyLabel)
+        recievedMoneyLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        recievedMoneyLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+        recievedMoneyLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+
+        profileImageView.roundCorners(25)
     }
     
     func configure(_ content: RecievingCellViewModel) {
         let numberformatter = NumberFormatter()
         numberformatter.numberStyle = .decimal
-        userName.text = content.name
-        recievedMoney.text = numberformatter.string(for: content.money)! + "원"
+        userNameLabel.text = content.name
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.setBasicProfileImageWhenNilAndEmpty(with: content.imgURL)
+        recievedMoneyLabel.text = numberformatter.string(for: content.money)! + "원"
         if content.isCompleted {
-            profileImage.layer.opacity = 0.5
-            userName.layer.opacity = 0.5
-            recievedMoney.layer.opacity = 0.5
+            profileImageView.layer.opacity = 0.5
+            userNameLabel.layer.opacity = 0.5
+            recievedMoneyLabel.layer.opacity = 0.5
         }
     }
     

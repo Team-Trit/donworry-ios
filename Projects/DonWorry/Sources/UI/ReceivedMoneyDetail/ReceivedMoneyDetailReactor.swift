@@ -67,7 +67,8 @@ final class ReceivedMoneyDetailReactor: Reactor {
         return .init(
             name: entity.user.nickname,
             money: entity.amount,
-            isCompleted: entity.isCompleted
+            isCompleted: entity.isCompleted,
+            imgURL: entity.user.imgURL
         )
     }
 
