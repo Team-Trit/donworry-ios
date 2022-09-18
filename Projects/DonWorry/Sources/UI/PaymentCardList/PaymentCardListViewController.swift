@@ -110,6 +110,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
     
     // MARK: ShareSheet
+
     func showShareSheet(url: URL) {
         let promoText = "돈워리에서 정산할래요?" // 🔀 TEXT 변경필요
         let activityVC = UIActivityViewController(activityItems: [promoText, url], applicationActivities: nil)

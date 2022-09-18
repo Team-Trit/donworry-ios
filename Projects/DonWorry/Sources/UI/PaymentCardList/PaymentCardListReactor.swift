@@ -9,6 +9,7 @@
 import Foundation
 import ReactorKit
 import RxSwift
+import RxRelay
 
 enum PaymentCardListStep {
     typealias IsCardAdmin = Bool
@@ -31,6 +32,7 @@ final class PaymentCardListReactor: Reactor {
 
     enum Action {
         case viewWillAppear
+        case getPaymentStatus
         case didTapStartPaymentAlgorithmButton
         case didTapBackButton
         case didTapParticipatedButton
@@ -59,7 +61,7 @@ final class PaymentCardListReactor: Reactor {
     }
 
     let initialState: State
-    
+    var disposeBag: DisposeBag
     init(
         spaceID: Int, adminID: Int, status: String,
         spaceService: SpaceService = SpaceServiceImpl(),
@@ -67,11 +69,19 @@ final class PaymentCardListReactor: Reactor {
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
         paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
     ) {
+        self.disposeBag = .init()
+        
         self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: status, shareID: ""))
         self.spaceService = spaceService
         self.judgeSpaceAdminUseCase = judgeSpaceAdminUseCase
         self.paymentCardService = paymentCardService
         self.paymentCardListPresenter =  paymentCardListPresenter
+
+        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.action.onNext(.getPaymentStatus)
+            })
+            .disposed(by: disposeBag)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -79,8 +89,9 @@ final class PaymentCardListReactor: Reactor {
         case .viewWillAppear:
             let isUserAdmin = requestIsUserSpaceAdmin()
             let paymentCardListInformation = requestPaymentCardListInformation()
-
             return .concat([isUserAdmin, paymentCardListInformation])
+        case .getPaymentStatus:
+            return requestPaymentCardListInformation()
         case .didTapStartPaymentAlgorithmButton:
             return requestStartPaymentAlgorithm()
         case .didTapBackButton:
