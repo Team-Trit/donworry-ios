@@ -13,8 +13,9 @@ import Moya
 public struct AppleRegisterAPI: ServiceAPI {
     public typealias Response = DTO.PostUser
     public var request: Request
-    public init(request: Request, identityToken: String) {
+    public init(request: Request, identityToken: String, fcmToken: String) {
         self.request = request
+        self.fcmToken = fcmToken
         self.identityToken = identityToken
     }
     public var path: String { return "/register/user/apple" }
@@ -22,8 +23,12 @@ public struct AppleRegisterAPI: ServiceAPI {
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    public var headers: [String : String]? { return ["Authorization-APPLE": "Bearer \(identityToken)"] }
+    public var headers: [String : String]? {
+        ["Authorization-APPLE": "Bearer \(identityToken)",
+         "DeviceToken": "\(fcmToken)"]
+    }
     private let identityToken: String
+    private let fcmToken: String
 }
 
 extension AppleRegisterAPI {

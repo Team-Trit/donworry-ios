@@ -20,6 +20,7 @@ final class SignInUseCaseImpl: SignInUseCase {
     private let authRepository: AuthRepository
     private let accessTokenRepository: AccessTokenRepository
     private let userAccountRepository: UserAccountRepository
+    private let fcmTokenRepository: FCMDeviceTokenRepository
 
     let kakaoLoginToken: PublishSubject<AuthModels.Kakao.Response>
     var completeKakaoLogin: PublishSubject<AuthModels.Empty.Response>
@@ -28,7 +29,8 @@ final class SignInUseCaseImpl: SignInUseCase {
     init(
         authRepository: AuthRepository = AuthRepositoryImpl(),
         accessTokenRepository: AccessTokenRepository = AccessTokenRepositoryImpl(),
-        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
+        fcmTokenRepository: FCMDeviceTokenRepository = FCMDeviceTokenRepositoryImpl()
     ) {
         self.kakaoLoginToken = .init()
         self.completeKakaoLogin = .init()
@@ -36,7 +38,7 @@ final class SignInUseCaseImpl: SignInUseCase {
         self.authRepository = authRepository
         self.accessTokenRepository = accessTokenRepository
         self.userAccountRepository = userAccountRepository
-
+        self.fcmTokenRepository = fcmTokenRepository
 
         kakaoLoginToken.subscribe(onNext: { [weak self] in
             self?.signInWithKakao(token: $0.token)
@@ -52,7 +54,8 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
-        authRepository.loginWithApple(identityToken: request.token)
+        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
@@ -61,7 +64,8 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     private func signInWithKakao(token: String) {
-        authRepository.loginWithKakao(accessToken: token)
+        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return }
+        authRepository.loginWithKakao(accessToken: token, deviceToken: fcmToken)
             .subscribe(onNext: { [weak self] (user, authentication) in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)

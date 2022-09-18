@@ -12,4 +12,5 @@ public enum UserDefaultsKey: String {
     case accessToken
     case refreshToken
     case userAccount
+    case fcmDeviceToken
 }

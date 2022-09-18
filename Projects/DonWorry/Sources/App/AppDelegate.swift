@@ -11,6 +11,7 @@ import FirebaseMessaging
 import FirebaseDynamicLinks
 import UserNotifications
 import KakaoSDKCommon
+import DonWorryLocalStorage
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -42,10 +43,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 }
 
 // MARK: MessagingDelegate
+
 extension AppDelegate: MessagingDelegate {
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        
+        if let fcmToken = fcmToken {
+            UserDefaults.standard.write(fcmToken, key: .fcmDeviceToken)
+        }
     }
 }
 
