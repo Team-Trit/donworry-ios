@@ -98,6 +98,7 @@ extension ProfileTableViewAccountCell {
         editButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
         }
         
         separatorLine.snp.makeConstraints { make in
