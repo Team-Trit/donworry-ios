@@ -155,9 +155,8 @@ extension ProfileViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$step)
-            .asDriver(onErrorJustReturn: ProfileStep.none)
             .compactMap { $0 }
-            .drive(onNext: { [weak self] in
+            .subscribe(onNext: { [weak self] in
                 self?.route(to: $0)
             })
             .disposed(by: disposeBag)
@@ -171,12 +170,11 @@ extension ProfileViewController {
 }
 
 // MARK: - Route
-extension ProfileViewController {
+extension ProfileViewController: UIGestureRecognizerDelegate {
     private func route(to step: ProfileStep) {
         switch step {
         case .pop:
             self.navigationController?.popViewController(animated: true)
-            
         case .profileImageSheet:
             let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             let choosePhotoAction = UIAlertAction(title: "앨범에서 사진 선택", style: .default) { _ in
@@ -257,10 +255,29 @@ extension ProfileViewController {
             alert.addAction(confirmAction)
             alert.addAction(cancelAction)
             self.present(alert, animated: true)
-            
-        default:
-            break
+
+        case .login:
+            let loginViewController = LoginViewController()
+            loginViewController.reactor = LoginViewReactor()
+            let navigationController = UINavigationController(rootViewController: loginViewController)
+            navigationController.isNavigationBarHidden = true
+            navigationController.interactivePopGestureRecognizer?.delegate = self
+            navigationController.interactivePopGestureRecognizer?.isEnabled = true
+            UIView.transition(
+                with: self.window!,
+                duration: 0.2,
+                options: .transitionCrossDissolve,
+                animations: {
+                    self.window?.rootViewController = navigationController
+                }, completion: nil)
         }
+    }
+
+    private var window: UIWindow? {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return scene.windows.first
+        }
+        return nil
     }
 }
 

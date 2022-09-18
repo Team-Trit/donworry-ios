@@ -27,6 +27,7 @@ protocol AuthRepository {
     func loginWithApple(identityToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func loginWithKakao(accessToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func logout() -> Observable<AuthModels.Empty.Response>
+    func deregister() -> Observable<AuthModels.Empty.Response>
     func checkNickname(nickname: String) -> Observable<AuthModels.Empty.Response>
 }
 
@@ -94,6 +95,11 @@ final class AuthRepositoryImpl: AuthRepository {
             .asObservable()
     }
 
+    func deregister() -> Observable<AuthModels.Empty.Response> {
+        network.request(DeregisterAPI(authorizationCode: ""))
+            .compactMap { _ in return .init() }
+            .asObservable()
+    }
 
     private func judgeSignInError(_ error: Error, _ token: String) -> AuthError {
         guard let error = error as? NetworkError else { return .parsing }

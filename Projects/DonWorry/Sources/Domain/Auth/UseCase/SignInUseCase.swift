@@ -10,10 +10,9 @@ import Foundation
 import RxSwift
 
 protocol SignInUseCase {
-    var completeKakaoLogin: PublishSubject<AuthModels.Empty.Response> { get }
-
-    func kakaoLogin() -> Observable<AuthModels.Empty.Response>
+    func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
     func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
+    func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
 }
 
 final class SignInUseCaseImpl: SignInUseCase {
@@ -39,16 +38,18 @@ final class SignInUseCaseImpl: SignInUseCase {
         self.accessTokenRepository = accessTokenRepository
         self.userAccountRepository = userAccountRepository
         self.fcmTokenRepository = fcmTokenRepository
-
-        kakaoLoginToken.subscribe(onNext: { [weak self] in
-            self?.signInWithKakao(token: $0.token)
-        }).disposed(by: disposeBag)
     }
 
-    func kakaoLogin() -> Observable<AuthModels.Empty.Response> {
+    func kakaoLogin() -> Observable<AuthModels.Kakao.Response> {
         authRepository.kakaoLogin()
-            .map { [weak self] token in
-                self?.kakaoLoginToken.onNext(token)
+    }
+
+    func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
+        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        return authRepository.loginWithKakao(accessToken: request.token, deviceToken: fcmToken)
+            .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
+                _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
+                _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
                 return .init()
             }
     }
@@ -63,15 +64,4 @@ final class SignInUseCaseImpl: SignInUseCase {
             }
     }
 
-    private func signInWithKakao(token: String) {
-        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return }
-        authRepository.loginWithKakao(accessToken: token, deviceToken: fcmToken)
-            .subscribe(onNext: { [weak self] (user, authentication) in
-                _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
-                _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
-                self?.completeKakaoLogin.onNext(.init())
-            }, onError: { [weak self] in
-                self?.completeKakaoLogin.onError($0)
-            }).disposed(by: disposeBag)
-    }
 }
