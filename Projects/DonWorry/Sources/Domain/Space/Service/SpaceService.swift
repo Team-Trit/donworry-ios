@@ -67,6 +67,7 @@ final class SpaceServiceImpl: SpaceService {
     // 방장이고 방의 상태가 OPEN 일 경우를 판단해준다. 
     private func isAdminAndIsSpaceStatusOpen(_ request: SpaceModels.LeaveSpace.Request) -> Bool {
         guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else { return false }
+        print("isAdminAndIsSpaceStatusOpen는? ", (request.isAdmin == userID) && (request.isStatusOpen))
         return (request.isAdmin == userID) && (request.isStatusOpen)
     }
 }

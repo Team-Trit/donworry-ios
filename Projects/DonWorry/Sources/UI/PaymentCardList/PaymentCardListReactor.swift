@@ -157,8 +157,14 @@ final class PaymentCardListReactor: Reactor {
 
     private func requestLeaveSpace() -> Observable<Mutation> {
         if !currentState.canLeaveSpace { return .just(.error(PaymentCardListViewError.cantLeaveUntilPaymentsCompleted)) }
-        return spaceService.leaveSpace(request: .init(isStatusOpen: currentState.canLeaveSpace, isAdmin: currentState.space.adminID, spaceID: currentState.space.id))
-            .map { _ in  .routeTo(.pop) }
+        return spaceService.leaveSpace(
+            request: .init(
+                isStatusOpen: currentState.space.status == "OPEN",
+                isAdmin: currentState.space.adminID,
+                spaceID: currentState.space.id
+            )
+        )
+        .map { _ in  .routeTo(.pop) }
     }
 
     private let spaceService: SpaceService
