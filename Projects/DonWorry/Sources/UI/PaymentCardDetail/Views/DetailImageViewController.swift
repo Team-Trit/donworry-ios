@@ -6,7 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
-import Foundation
+import Kingfisher
 import UIKit
 
 class DetailImageViewController: UIViewController {
@@ -20,7 +20,9 @@ class DetailImageViewController: UIViewController {
     var imageUrl: String? {
         didSet {
             let url = URL(string: imageUrl ?? "")
-            container.kf.setImage(with: url)
+            container.kf.indicatorType = .activity
+            container.kf.setImage(with: url,
+                                  options: [.forceTransition])
             //reload
         }
     }

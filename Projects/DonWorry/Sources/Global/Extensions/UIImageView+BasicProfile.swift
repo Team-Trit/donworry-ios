@@ -13,8 +13,10 @@ import DesignSystem
 extension UIImageView {
     func setBasicProfileImageWhenNilAndEmpty(with urlString: String?) {
         if let urlString = urlString, urlString.isEmpty == false {
+            self.kf.indicatorType = .activity
             let url = URL(string: urlString)
-            self.kf.setImage(with: url)
+            self.kf.setImage(with: url,
+                             options: [.forceTransition])
         } else {
             self.backgroundColor = .designSystem(Pallete.grayF6F6F6)
             self.image = UIImage(.ic_basic_profile_image)
