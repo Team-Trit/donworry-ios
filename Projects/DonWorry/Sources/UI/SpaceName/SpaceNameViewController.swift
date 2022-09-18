@@ -112,7 +112,7 @@ final class SpaceNameViewController: BaseViewController, View {
 
             UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
                 self.nextButton.snp.updateConstraints { make in
-                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight - 15)
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  keyboardHeight - 15 : keyboardHeight + 15)
                 }
                 self.view.layoutIfNeeded()
             })
@@ -123,7 +123,7 @@ final class SpaceNameViewController: BaseViewController, View {
     @objc func keyboardWillHide(notification: NSNotification) {
         UIView.animate(withDuration: 1) {
             self.nextButton.snp.updateConstraints { make in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
             }
             self.view.layoutIfNeeded()
         }
@@ -151,7 +151,7 @@ extension SpaceNameViewController {
         }
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(25)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
         }
     }
 }

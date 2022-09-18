@@ -123,24 +123,3 @@ final class DWToastFactory {
 
     private static let feedbackGenerator = UINotificationFeedbackGenerator()
 }
-
-extension UIWindow {
-
-    public static var current: UIWindow? {
-        UIApplication.shared.windows.first(where: \.isKeyWindow)
-    }
-    
-
-}
-
-extension UIDevice {
-    var hasNotch: Bool {
-        if #available(iOS 11.0, *) {
-            let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
-            return bottom > 0
-        } else {
-            // Fallback on earlier versions
-            return false
-        }
-    }
-}

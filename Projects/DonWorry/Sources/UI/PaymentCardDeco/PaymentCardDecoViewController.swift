@@ -254,7 +254,7 @@ extension PaymentCardDecoViewController {
         self.completeButton.snp.makeConstraints { make in
             make.leading.equalTo(self.view.snp.leading).inset(25)
             make.trailing.equalTo(self.view.snp.trailing).inset(25)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
             make.height.equalTo(50)
         }
     }

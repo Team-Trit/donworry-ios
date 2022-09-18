@@ -328,7 +328,7 @@ extension PaymentCardListViewController {
         }
         self.floatingStackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(6)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
             make.leading.trailing.equalToSuperview().inset(25)
         }
 
