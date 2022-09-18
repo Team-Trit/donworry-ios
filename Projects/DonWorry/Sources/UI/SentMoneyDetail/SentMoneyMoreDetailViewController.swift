@@ -122,7 +122,7 @@ extension SentMoneyMoreDetailViewController: UITableViewDataSource {
 
         if indexPath.row < viewModel.sentMoneyList.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: SentMoneyTableViewCell.identifier, for: indexPath) as! SentMoneyTableViewCell
-            cell.configure(icon: "flame.fill", myPayment: viewModel.sentMoneyList[indexPath.row])
+            cell.configure(myPayment: viewModel.sentMoneyList[indexPath.row])
             return cell
         }
         

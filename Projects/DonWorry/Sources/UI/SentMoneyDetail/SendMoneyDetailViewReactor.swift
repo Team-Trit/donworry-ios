@@ -105,6 +105,7 @@ final class SendMoneyDetailViewReactor : Reactor {
         return .init(
             name: entity.name,
             date: formatDate(from: entity.paymentDate),
+            icon: entity.categoryImgURL,
             totalAmount: entity.totalAmount,
             totalUers: entity.cardJoinUserCount,
             myAmount: entity.amountPerUser

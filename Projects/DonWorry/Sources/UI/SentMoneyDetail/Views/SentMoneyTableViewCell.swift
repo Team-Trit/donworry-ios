@@ -12,6 +12,7 @@ import DesignSystem
 public struct SentMoneyCellViewModel {
     let name: String
     let date: String
+    let icon: String
     let totalAmount: Int
     let totalUers: Int
     let myAmount: Int
@@ -112,9 +113,9 @@ class SentMoneyTableViewCell: UITableViewCell {
         
     }
 
-    func configure(icon: String, myPayment: SentMoneyCellViewModel) {
+    func configure(myPayment: SentMoneyCellViewModel) {
         numberformatter.numberStyle = .decimal
-        spaceIcon.image = UIImage(named: "baconImage")
+        spaceIcon.image = UIImage(named: myPayment.icon)
         spaceNameLabel.text = myPayment.name
         paymentDate.text = myPayment.date
         dividedAmountDetail.attributedText = makeAtrributedString(myPayment: myPayment)

@@ -24,9 +24,11 @@ final class SendMoneyDetailViewController: BaseViewController, View {
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
+        accontInfo.addGestureRecognizer(tapGesture)
         return accontInfo
     }()
     lazy var buttonStackView: UIStackView = {
@@ -48,6 +50,11 @@ final class SendMoneyDetailViewController: BaseViewController, View {
         v.title = "보냈어요!"
         return v
     }()
+    
+    @objc func accountTapped() {
+        UIPasteboard.general.string = reactor?.currentState.currentStatus?.account.number
+        DWToastFactory.show(message: "복사되었어요!")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +75,7 @@ final class SendMoneyDetailViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        
         reactor.state.map { !$0.isSent }
             .bind(to: rightButtomButton.rx.isEnabled)
             .disposed(by: disposeBag)
