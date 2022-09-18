@@ -48,6 +48,11 @@ final class SpaceNameViewController: BaseViewController, View {
             .subscribe(onNext: { [weak self] in
                 self?.spaceNameView.textField.placeholder = $0
             }).disposed(by: disposeBag)
+        
+        reactor.state.map { $0.buttonText ?? "완료" }
+            .subscribe(onNext: { [weak self] in
+                self?.nextButton.title = $0
+            }).disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceName }
             .map { !$0.isEmpty }
@@ -129,7 +134,6 @@ final class SpaceNameViewController: BaseViewController, View {
 
 extension SpaceNameViewController {
     private func setUI() {
-        nextButton.title = "정산방 참가하기"
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(navigationBar, titleLabel, spaceNameView, nextButton)
 

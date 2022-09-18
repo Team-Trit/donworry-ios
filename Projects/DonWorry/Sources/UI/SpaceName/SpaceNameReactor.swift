@@ -38,6 +38,7 @@ final class SpaceNameReactor: Reactor {
     struct State {
         var title: String?
         var placeHolderText: String?
+        var buttonText: String?
         var spaceName: String = ""
         var type: RoomNameEditViewType
 
@@ -73,6 +74,7 @@ final class SpaceNameReactor: Reactor {
         case .setup:
             newState.title = titleMessage(of: currentState.type)
             newState.placeHolderText = placeHolderText(of: currentState.type)
+            newState.buttonText = buttonText(of: currentState.type)
         case .routeTo(let step):
             newState.step = step
         case .changeSpaceName(let name):
@@ -107,5 +109,15 @@ final class SpaceNameReactor: Reactor {
             return "ex) MC2 번개모임"
         }
     }
+    
+    private func buttonText(of type: RoomNameEditViewType) -> String {
+        switch type {
+        case .create:
+            return "정산방 참가하기"
+        case .rename:
+            return "완료"
+        }
+    }
+    
     private let spaceService: SpaceService
 }
