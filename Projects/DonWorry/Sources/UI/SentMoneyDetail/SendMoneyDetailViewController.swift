@@ -24,11 +24,11 @@ final class SendMoneyDetailViewController: BaseViewController, View {
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
-        accontInfo.addGestureRecognizer(tapGesture)
+//        accontInfo.addGestureRecognizer(tapGesture)
         return accontInfo
     }()
     lazy var buttonStackView: UIStackView = {
