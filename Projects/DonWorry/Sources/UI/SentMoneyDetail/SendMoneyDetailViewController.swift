@@ -24,11 +24,9 @@ final class SendMoneyDetailViewController: BaseViewController, View {
 
     private let accountInfo: AccountInformationView = {
         let accontInfo = AccountInformationView()
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
         accontInfo.layer.masksToBounds = true
         accontInfo.layer.cornerRadius = 8
         accontInfo.backgroundColor = .designSystem(.grayF6F6F6)
-//        accontInfo.addGestureRecognizer(tapGesture)
         return accontInfo
     }()
     lazy var buttonStackView: UIStackView = {
@@ -110,17 +108,13 @@ final class SendMoneyDetailViewController: BaseViewController, View {
             }).disposed(by: disposeBag)
 
     }
-
-    @objc private func copyTap() {
-        UIPasteboard.general.string = String((reactor?.currentState.currentStatus?.account.number)!)
-    }
 }
 
 extension SendMoneyDetailViewController {
 
     private func attributes() {
         self.view.backgroundColor = .white
-        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(copyTap))
+        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
         view.backgroundColor = .white
         accountInfo.addGestureRecognizer(copyTapGesture)
     }
