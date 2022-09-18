@@ -92,7 +92,7 @@ class SentMoneyTableViewCell: UITableViewCell {
         spaceIcon.centerYAnchor.constraint(equalTo: smallRoundRectangle.centerYAnchor).isActive = true
         spaceIcon.centerXAnchor.constraint(equalTo: smallRoundRectangle.centerXAnchor).isActive = true
         spaceIcon.widthAnchor.constraint(equalToConstant: 27).isActive = true
-        spaceIcon.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        spaceIcon.heightAnchor.constraint(equalToConstant: 27).isActive = true
         
         contentView.addSubview(spaceNameLabel)
         spaceNameLabel.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
