@@ -65,17 +65,17 @@ extension ParticipatePaymentCardViewController {
         participateCollectionView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
         }
         
         selectAllButton.snp.makeConstraints { make in
             make.trailing.equalTo(view.snp.centerX).offset(-8)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
         }
         
         checkAttendanceButton.snp.makeConstraints { make in
             make.leading.equalTo(view.snp.centerX).offset(8)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
         }
     }
 }

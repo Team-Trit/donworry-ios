@@ -254,7 +254,7 @@ extension PaymentCardDecoViewController {
         self.completeButton.snp.makeConstraints { make in
             make.leading.equalTo(self.view.snp.leading).inset(25)
             make.trailing.equalTo(self.view.snp.trailing).inset(25)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
             make.height.equalTo(50)
         }
     }
@@ -344,7 +344,7 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
             AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
                 if granted {
                     DispatchQueue.main.async {
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("Camera", comment: ""), style: .default) { [weak self] _ in
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("사진 촬영", comment: ""), style: .default) { [weak self] _ in
                             guard let self = self else { return }
                             self.imagePicker.sourceType = .camera
                             self.present(self.imagePicker, animated: true, completion: nil)
@@ -356,13 +356,13 @@ extension PaymentCardDecoViewController: PaymentCardDecoTableViewDelegate {
                 switch status {
                 case .authorized:
                     DispatchQueue.main.async {
-                        alertController.addAction(UIAlertAction(title: "Gallery", style: .default) { [weak self] action in
+                        alertController.addAction(UIAlertAction(title: "앨범에서 사진 선택", style: .default) { [weak self] action in
                             guard let self = self else { return }
                             self.imagePicker.sourceType = .photoLibrary
                             self.imagePicker.allowsEditing = false
                             self.present(self.imagePicker, animated: true, completion: nil)
                         })
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: { _ in
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("취소", comment: ""), style: .cancel, handler: { _ in
                         }))
 
                         alertController.modalPresentationStyle = .popover

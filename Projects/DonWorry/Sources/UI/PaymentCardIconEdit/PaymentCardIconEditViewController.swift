@@ -153,7 +153,7 @@ extension PaymentCardIconEditViewController {
         
         nextButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(25)
-            $0.bottom.equalToSuperview().inset(50)
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 40)
         }
         iconCollectionView.register(PaymentIconCell.self, forCellWithReuseIdentifier: "PaymentIconCell")
         

@@ -109,8 +109,8 @@ extension ProfileViewController {
         }
         
         accountButtonStackView.snp.makeConstraints { make in
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 20)
         }
     }
 }

@@ -59,7 +59,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        v.contentInset = UIEdgeInsets(top: 13, left: 25, bottom: 58 + 6 + 20, right: 25)
+        v.contentInset = UIEdgeInsets(top: 13, left: 0, bottom: 58 + 6 + 20, right: 0)
         v.register(PaymentCardCollectionViewCell.self)
         v.register(AddPaymentCardCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
@@ -322,12 +322,13 @@ extension PaymentCardListViewController {
         }
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(self.spaceIDLabel.snp.bottom).offset(15)
+//            make.center.equalToSuperview()
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         self.floatingStackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(6)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ?  0 : 30)
             make.leading.trailing.equalToSuperview().inset(25)
         }
 
