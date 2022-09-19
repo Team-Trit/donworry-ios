@@ -38,7 +38,7 @@ class AccountInformationView: UIView {
     private let copyImage: UIImageView = {
         let copyImage = UIImageView()
         copyImage.translatesAutoresizingMaskIntoConstraints = false
-        copyImage.image = UIImage(named: "copyImage")
+        copyImage.image = UIImage(systemName: "doc.on.doc")
         copyImage.tintColor = .designSystem(.gray818181)
         return copyImage
     }()
@@ -69,7 +69,7 @@ class AccountInformationView: UIView {
         addSubview(copyImage)
         copyImage.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         copyImage.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -30).isActive = true
-        copyImage.widthAnchor.constraint(equalToConstant: 19).isActive = true
+        copyImage.widthAnchor.constraint(equalToConstant: 22).isActive = true
         copyImage.heightAnchor.constraint(equalToConstant: 22).isActive = true
         
     }
