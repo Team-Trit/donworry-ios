@@ -8,6 +8,7 @@
 
 import UIKit
 import DesignSystem
+import DonWorryExtensions
 
 final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
     lazy var leaveImageView: UIImageView = {
@@ -32,6 +33,12 @@ final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUI()
+    }
+    
+    override var isHighlighted: Bool {
+        didSet {
+            self.showAnimationOnHilighted()
+        }
     }
 
     private func setUI() {

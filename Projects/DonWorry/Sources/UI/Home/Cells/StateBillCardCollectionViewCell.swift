@@ -54,6 +54,12 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
 
         setUI()
     }
+    
+    override var isHighlighted: Bool {
+        didSet {
+            self.showAnimationOnHilighted()
+        }
+    }
 
     private func setUI() {
         self.contentView.addSubview(self.statusImageView)
