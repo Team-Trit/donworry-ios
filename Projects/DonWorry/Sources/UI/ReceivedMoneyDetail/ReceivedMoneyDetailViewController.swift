@@ -83,13 +83,20 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
         bottomButton.rx.tap.map { .didTapBottomButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
         reactor.state.map { $0.currentStatus }
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] in
                 self?.statusView.configure(payment: $0.currentAmount, outstanding: $0.totalAmount)
                 self?.tableView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$toast)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { toast in
+                DWToastFactory.show(message: toast)
             }).disposed(by: disposeBag)
     }
 
