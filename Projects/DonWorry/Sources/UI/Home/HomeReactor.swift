@@ -150,6 +150,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
+                    space: selectedSpace,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
@@ -165,6 +166,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
+                    space: selectedSpace,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
@@ -177,6 +179,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
             newState.spaceViewModelList[currentState.selectedSpaceIndex] = homePresenter.formatSpaceCellViewModel(space: space)
             newState.sections = homePresenter.formatSection(
                 isAllPaymentCompleted: space.isAllPaymentCompleted,
+                space: space,
                 payments: space.payments,
                 isTaker: space.isTaker
             )

@@ -19,6 +19,7 @@ protocol HomePresenter {
 
     func formatSection(
         isAllPaymentCompleted: Bool,
+        space: SpaceModels.Space,
         payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection]
@@ -51,13 +52,14 @@ final class HomePresenterImpl: HomePresenter {
     }
     func formatSection(
         isAllPaymentCompleted: Bool,
+        space: SpaceModels.Space,
         payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection] {
-        if payments.isEmpty { return [.BillCardSection(createOpenStateCard())] }
-        var cards: [HomeBillCardItem] = createProgressStateCard(by: isAllPaymentCompleted)
+        if payments.isEmpty { return [.BillCardSection(createOpenStateCard(status: space.status))] }
+        var cards: [HomeBillCardItem] = createProgressStateCard(status: space.status)
         cards.append(contentsOf: formatBillCardList(from: payments, isTaker: isTaker))
-        if isAllPaymentCompleted { cards.append(.LeaveBillCard) } 
+        if isAllPaymentCompleted { cards.append(.LeaveBillCard) }
         return [.BillCardSection(cards)]
     }
 
@@ -72,12 +74,13 @@ final class HomePresenterImpl: HomePresenter {
         }
     }
 
-    private func createOpenStateCard() -> [HomeBillCardItem] {
-        return [.StateBillCard(.init(status: .open))]
+    private func createOpenStateCard(status: String) -> [HomeBillCardItem] {
+        return [.StateBillCard(.init(status: convertSpaceStatusInStateBillCard(with: status)))]
     }
 
-    private func createProgressStateCard(by isAllPaymentCompleted: Bool) -> [HomeBillCardItem] {
-        return [.StateBillCard(.init(status: isAllPaymentCompleted ? .done : .progress))]
+    private func createProgressStateCard(status: String) -> [HomeBillCardItem] {
+        return [.StateBillCard(.init(status: convertSpaceStatusInStateBillCard(with: status)))
+        ]
     }
 
     private func formatTakeBillCard(
@@ -117,7 +120,17 @@ final class HomePresenterImpl: HomePresenter {
             return .PROGRESS
         default:
             return .DONE
+        }
+    }
 
+    private func convertSpaceStatusInStateBillCard(with status: String) -> StateBillCardCollectionViewCell.SpaceStatus {
+        switch status {
+        case "OPEN":
+            return .OPEN
+        case "PROGRESS":
+            return .PROGRESS
+        default:
+            return .DONE
         }
     }
     
