@@ -33,7 +33,9 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
 
     enum Action {
         case viewWillAppear
-        case didSelectSpace(at: Int)
+        case viewDidDisppear
+        case getSpace(Int)
+        case didSelectSpace(at: Int, model: SpaceCellViewModel?)
         case didTapAlarm
         case didTapSearchButton
         case didTapCreateSpaceButton
@@ -48,17 +50,19 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     enum Mutation {
         case updateHomeHeader(User)
         case updateSpaceList(SpaceList)
-        case updateSpace(Index)
+        case updateSpace(Index, SpaceCellViewModel)
         case updateSpaceWithServer(Space)
+        case setupTimer(Bool)
         case routeTo(HomeStep)
     }
 
     struct State {
-        var spaceList: [Space] // 새로 서버를 불러오지 않기 때문에 뷰에서 들고있어야 하는 정보
         var spaceViewModelList: [SpaceCellViewModel] // 정산방 뷰모델
         var sections: [Section] // 정산카드 뷰모델
         var selectedSpaceIndex: Int // 선택된 정산방 index
+        var selectedSpaceViewModel: SpaceCellViewModel? // 선택된 정산방 ID
         var homeHeader: HeaderModel? // 헤더 뷰모델
+        var timer: Disposable?
 
         @Pulse var step: HomeStep?
     }
@@ -74,7 +78,11 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         self.getUserAccountUseCase = getUserAccountUseCase
         self.spaceService = spaceService
         self.homePresenter = homePresenter
-        self.initialState = .init(spaceList: [], spaceViewModelList: [], sections: [.BillCardSection([])], selectedSpaceIndex: 0)
+        self.initialState = .init(
+            spaceViewModelList: [],
+            sections: [.BillCardSection([])],
+            selectedSpaceIndex: 0
+        )
 
         self.presentationDelegateProxy.delegate = self
     }
@@ -82,12 +90,19 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return .concat([requestUserAccount(), requestSpaceList()])
-        case .didSelectSpace(let index):
-            let updateSpaceFirst = Observable.just(Mutation.updateSpace(index))
-            let selectedSpaceID = currentState.spaceList[index].id
-            let updateSpaceWithServer = spaceService.fetchSpace(request: .init(spaceID: selectedSpaceID)).map { Mutation.updateSpaceWithServer($0) }
-            return .concat([updateSpaceFirst, updateSpaceWithServer])
+            return .concat([requestUserAccount(), requestSpaceList(), .just(.setupTimer(true))])
+        case .viewDidDisppear:
+            return .just(.setupTimer(false))
+        case .getSpace(let spaceID):
+            return spaceService.fetchSpace(request: .init(spaceID: spaceID))
+                .map { .updateSpaceWithServer($0) }
+        case .didSelectSpace(let index, let spaceModel):
+            guard let space = spaceModel else {
+                return .error(SpaceError.undefined)
+            }
+            let updateSpace = Observable.just(Mutation.updateSpace(index, space))
+            let updateSpaceWithServer = requestSpace(spaceID: space.id)
+            return .concat([updateSpace, updateSpaceWithServer])
         case .didTapAlarm:
             return .just(.routeTo(.alarm))
         case .didTapSearchButton:
@@ -97,14 +112,20 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case .didTapProfileImage:
             return .just(.routeTo(.profile))
         case .didTapGiveBillCard(let paymentID):
-            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
-            return .just(.routeTo(.sentMoneyDetail(selectedSpace.id, paymentID)))
+            guard let selectedSpaceID = currentState.selectedSpaceViewModel?.id else {
+                return .error(SpaceError.undefined)
+            }
+            return .just(.routeTo(.sentMoneyDetail(selectedSpaceID, paymentID)))
         case .didTapTakeBillCard:
-            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
-            return .just(.routeTo(.recievedMoneyDetail(selectedSpace.id)))
+            guard let selectedSpaceID = currentState.selectedSpaceViewModel?.id else {
+                return .error(SpaceError.undefined)
+            }
+            return .just(.routeTo(.recievedMoneyDetail(selectedSpaceID)))
         case .didTapStateBillCard:
-            let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
-            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID, selectedSpace.status)))
+            guard let selectedSpace = currentState.selectedSpaceViewModel else {
+                return .error(SpaceError.undefined)
+            }
+            return .just(.routeTo(.spaceList(selectedSpace.id, selectedSpace.adminID, selectedSpace.status.rawValue)))
         case .didTapLeaveBillCard:
             return requestLeave()
         case .none:
@@ -117,27 +138,22 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         switch mutation {
         case .updateHomeHeader(let user):
             newState.homeHeader = .init(imageURL: user.image, nickName: user.nickName)
-        case .updateSpaceList(let spaceList):
-            if spaceList.isEmpty {
-                newState.spaceList = []
-                newState.spaceViewModelList = []
-                newState.sections = [.BillCardSection([])]
-                newState.selectedSpaceIndex = -1
-                break
+        case .setupTimer(let direction):
+            if direction {
+                newState.timer = setupTimer()
+            } else {
+                newState.timer?.dispose()
             }
-
+        case .updateSpaceList(let spaceList):
             if currentState.selectedSpaceIndex < spaceList.count {
                 let selectedSpace = spaceList[currentState.selectedSpaceIndex]
-                newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
-                    spaceList: spaceList,
-                    selectedIndex: currentState.selectedSpaceIndex
-                )
+                newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
-                newState.spaceList = spaceList
+                newState.selectedSpaceViewModel = homePresenter.formatSpaceCellViewModel(space: selectedSpace)
             }
 
             // 삭제하고 홈으로 돌아온 경우 선택된 정산방 index가 전체 정산방보다 큰 경우가 나옵니다.
@@ -146,35 +162,19 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 let initialIndex = spaceList.count - 1 // 마지막 정산방
                 newState.selectedSpaceIndex = initialIndex
                 let selectedSpace = spaceList[initialIndex]
-                newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
-                    spaceList: spaceList,
-                    selectedIndex: initialIndex
-                )
+                newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
-                newState.spaceList = spaceList
+                newState.selectedSpaceViewModel = homePresenter.formatSpaceCellViewModel(space: selectedSpace)
             }
-        case .updateSpace(let index): // 셀이 눌렸을 때 리로드
-            let selectedSpace = currentState.spaceList[index]
+        case .updateSpace(let index, let spaceModel):
             newState.selectedSpaceIndex = index
-            newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
-                spaceList: currentState.spaceList,
-                selectedIndex: index
-            )
-            newState.sections = homePresenter.formatSection(
-                isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
-                payments: selectedSpace.payments,
-                isTaker: selectedSpace.isTaker
-            )
+            newState.selectedSpaceViewModel = spaceModel
         case .updateSpaceWithServer(let space):
-            newState.spaceList[currentState.selectedSpaceIndex] = space
-            newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
-                spaceList: currentState.spaceList,
-                selectedIndex: currentState.selectedSpaceIndex
-            )
+            newState.spaceViewModelList[currentState.selectedSpaceIndex] = homePresenter.formatSpaceCellViewModel(space: space)
             newState.sections = homePresenter.formatSection(
                 isAllPaymentCompleted: space.isAllPaymentCompleted,
                 payments: space.payments,
@@ -187,7 +187,9 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     }
 
     private func requestLeave() -> Observable<Mutation> {
-        let selectedSpace = currentState.spaceList[currentState.selectedSpaceIndex]
+        guard let selectedSpace = currentState.selectedSpaceViewModel else {
+            return .error(SpaceError.undefined)
+        }
         if selectedSpace.isAllPaymentCompleted {
             return spaceService.leaveSpaceInProgress(requeset: .init(spaceID: selectedSpace.id))
                 .map { .updateSpaceList($0) }
@@ -203,9 +205,21 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         getUserAccountUseCase.getUserAccount().compactMap { $0 }.map { .updateHomeHeader($0) }
     }
 
-    func presentationControllerDidDismiss() {
-        print("presentationControllerDidDismiss")
+    private func requestSpace(spaceID: Int) -> Observable<Mutation> {
+        spaceService.fetchSpace(request: .init(spaceID: spaceID))
+            .map { Mutation.updateSpaceWithServer($0) }
     }
+
+    private func setupTimer() -> Disposable {
+        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+            if let selectedSpaceID = self?.currentState.selectedSpaceViewModel?.id {
+                self?.action.onNext(.getSpace(selectedSpaceID))
+            }
+        })
+    }
+
+    func presentationControllerDidDismiss() {}
 
     private let presentationDelegateProxy: AdaptivePresentationControllerDelegateProxy
     private let getUserAccountUseCase: GetUserAccountUseCase

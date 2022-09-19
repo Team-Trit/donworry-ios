@@ -58,16 +58,17 @@ enum SpaceModels {
 
     enum FetchSpaceList {
         typealias Response = [Space]
-
     }
 
     // MARK: 정산방 가져오기
+    
     enum FetchSpace {
         struct Request {
             let spaceID: Int
         }
         typealias Response = Space
     }
+
     // MARK: 정산방 생성하기
 
     enum CreateSpace {

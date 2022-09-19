@@ -11,11 +11,23 @@ import DesignSystem
 import SnapKit
 import DonWorryExtensions
 
-struct SpaceCellViewModel {
+struct SpaceCellViewModel: Equatable {
+    var id: Int
     var title: String
+    var status: SpaceCollectionViewCell.SpaceStatus
+    var adminID: Int
+    var isAllPaymentCompleted: Bool
 }
 
 final class SpaceCollectionViewCell: UICollectionViewCell {
+
+    enum SpaceStatus: String {
+        case OPEN
+        case PROGRESS
+        case DONE
+
+    }
+
     lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.numberOfLines = 2
@@ -23,7 +35,7 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
         v.textAlignment = .center
         return v
     }()
-    var gradientLayers: [CAGradientLayer] = []
+
     var viewModel: SpaceCellViewModel? {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -33,20 +45,26 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func selectedAttributes() {
-        self.titleLabel.textColor = .designSystem(.white)
-        if gradientLayers.isEmpty {
-            let layer = self.contentView.addGradientWithOutput(
-                startColor: .designSystem(.blueTopGradient)!,
-                endColor: .designSystem(.blueBottomGradient)!
-            )
-            self.gradientLayers.append(layer)
+    override var isSelected: Bool {
+        didSet {
+            if isSelected { selectedAttributes() }
+            else { unSelectedAttributes() }
         }
     }
 
-    func initialAttributes() {
-        self.titleLabel.textColor = .designSystem(.black)
-        self.contentView.backgroundColor = .designSystem(.grayF6F6F6)
+    func selectedAttributes() {
+        DispatchQueue.main.async { [weak self] in
+            self?.titleLabel.textColor = .designSystem(.white)
+            self?.contentView.backgroundColor = self?.viewModel?.status.selectedBackgroundColor
+        }
+
+    }
+
+    func unSelectedAttributes() {
+        DispatchQueue.main.async { [weak self] in
+            self?.titleLabel.textColor = .designSystem(.black)
+            self?.contentView.backgroundColor = self?.viewModel?.status.unselectedBackgroundColor
+        }
     }
 
     override init(frame: CGRect) {
@@ -70,12 +88,29 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
             make.top.bottom.equalToSuperview().inset(20)
         }
     }
+}
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        if gradientLayers.isNotEmpty {
-            gradientLayers.forEach { $0.removeFromSuperlayer() }
-            gradientLayers = []
+extension SpaceCollectionViewCell.SpaceStatus {
+
+    var unselectedBackgroundColor: UIColor? {
+        switch self {
+        case .OPEN:
+            return .designSystem(.grayF6F6F6)
+        case .PROGRESS:
+            return .designSystem(.blueToast)?.withAlphaComponent(0.2)
+        case .DONE:
+            return .designSystem(.redToast)?.withAlphaComponent(0.2)
+        }
+    }
+
+    var selectedBackgroundColor: UIColor? {
+        switch self {
+        case .OPEN:
+            return .designSystem(.black)
+        case .PROGRESS:
+            return .designSystem(.blueTopGradient)
+        case .DONE:
+            return .designSystem(.redTopGradient)
         }
     }
 }
