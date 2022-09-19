@@ -34,12 +34,6 @@ final class LeaveSpaceBillCardCollectionViewCell: UICollectionViewCell {
         super.init(coder: coder)
         setUI()
     }
-    
-    override var isHighlighted: Bool {
-        didSet {
-            self.showAnimationOnHilighted()
-        }
-    }
 
     private func setUI() {
         self.contentView.addSubview(self.titleLabel)
