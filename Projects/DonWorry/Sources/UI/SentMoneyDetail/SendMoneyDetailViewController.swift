@@ -48,6 +48,11 @@ final class SendMoneyDetailViewController: BaseViewController, View {
         v.title = "보냈어요!"
         return v
     }()
+    
+    @objc func accountTapped() {
+        UIPasteboard.general.string = reactor?.currentState.currentStatus?.account.number
+        DWToastFactory.show(message: "복사되었어요!")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +73,7 @@ final class SendMoneyDetailViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        
         reactor.state.map { !$0.isSent }
             .bind(to: rightButtomButton.rx.isEnabled)
             .disposed(by: disposeBag)
@@ -102,17 +108,13 @@ final class SendMoneyDetailViewController: BaseViewController, View {
             }).disposed(by: disposeBag)
 
     }
-
-    @objc private func copyTap() {
-        UIPasteboard.general.string = String((reactor?.currentState.currentStatus?.account.number)!)
-    }
 }
 
 extension SendMoneyDetailViewController {
 
     private func attributes() {
         self.view.backgroundColor = .white
-        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(copyTap))
+        let copyTapGesture = UITapGestureRecognizer(target: self, action: #selector(accountTapped))
         view.backgroundColor = .white
         accountInfo.addGestureRecognizer(copyTapGesture)
     }

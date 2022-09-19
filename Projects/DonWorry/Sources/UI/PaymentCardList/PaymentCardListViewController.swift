@@ -41,7 +41,6 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var spaceIDCopyButton: UIButton = {
         let v = UIButton(type: .system)
         v.setImage(.init(.btn_copy), for: .normal)
-        v.addTarget(self, action: #selector(copySpaceID), for: .touchUpInside)
         return v
     }()
     lazy var startPaymentAlgorithmButton: UIButton = {
@@ -115,11 +114,6 @@ final class PaymentCardListViewController: BaseViewController, View {
         let promoText = "돈워리에서 정산할래요?" // 🔀 TEXT 변경필요
         let activityVC = UIActivityViewController(activityItems: [promoText, url], applicationActivities: nil)
         present(activityVC, animated: true)
-    }
-
-    @objc
-    private func copySpaceID() {
-        UIPasteboard.general.string = reactor?.currentState.space.shareID
     }
     
     // MARK: 공유하기

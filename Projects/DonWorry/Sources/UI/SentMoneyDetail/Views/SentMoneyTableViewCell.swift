@@ -12,6 +12,7 @@ import DesignSystem
 public struct SentMoneyCellViewModel {
     let name: String
     let date: String
+    let icon: String
     let totalAmount: Int
     let totalUers: Int
     let myAmount: Int
@@ -91,7 +92,7 @@ class SentMoneyTableViewCell: UITableViewCell {
         spaceIcon.centerYAnchor.constraint(equalTo: smallRoundRectangle.centerYAnchor).isActive = true
         spaceIcon.centerXAnchor.constraint(equalTo: smallRoundRectangle.centerXAnchor).isActive = true
         spaceIcon.widthAnchor.constraint(equalToConstant: 27).isActive = true
-        spaceIcon.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        spaceIcon.heightAnchor.constraint(equalToConstant: 27).isActive = true
         
         contentView.addSubview(spaceNameLabel)
         spaceNameLabel.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
@@ -112,9 +113,9 @@ class SentMoneyTableViewCell: UITableViewCell {
         
     }
 
-    func configure(icon: String, myPayment: SentMoneyCellViewModel) {
+    func configure(myPayment: SentMoneyCellViewModel) {
         numberformatter.numberStyle = .decimal
-        spaceIcon.image = UIImage(named: "baconImage")
+        spaceIcon.image = UIImage(named: myPayment.icon)
         spaceNameLabel.text = myPayment.name
         paymentDate.text = myPayment.date
         dividedAmountDetail.attributedText = makeAtrributedString(myPayment: myPayment)
