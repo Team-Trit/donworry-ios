@@ -15,6 +15,7 @@ import DonWorryNetworking
 protocol AlarmRepository {
     func getAlarms() -> Observable<AlarmModels.GetAlarms.Response>
     func clearAlarms() -> Observable<AlarmModels.Empty.Response>
+    func pushPayments(request: AlarmModels.PushPayments.Request) -> Observable<AlarmModels.Empty.Response>
 }
 
 final class AlarmRepositoryImpl: AlarmRepository {
@@ -35,6 +36,24 @@ final class AlarmRepositoryImpl: AlarmRepository {
     func clearAlarms() -> Observable<AlarmModels.Empty.Response> {
         network.request(ClearAlarmsAPI())
             .compactMap { _ in .init() }.asObservable()
+    }
+
+    func pushPayments(request: AlarmModels.PushPayments.Request) -> Observable<AlarmModels.Empty.Response> {
+        network.request(PushPaymentAPI(request: createPushPayments(request: request)))
+            .compactMap { _ in .init() }.asObservable()
+    }
+
+    private func createPushPayments(request:  AlarmModels.PushPayments.Request) -> PushPaymentAPI.Request {
+        return .init(
+            spaceID: request.spaceID,
+            payments: request.payments.map {
+                .init(
+                    id: $0.id,
+                    receiverID: $0.receiverID,
+                    isCompleted: $0.isCompleted
+                )
+            }
+        )
     }
 
     private func convertToAlarm(_ dto: DTO.GetAlarmsDTO) -> AlarmModels.GetAlarms.Alarm {

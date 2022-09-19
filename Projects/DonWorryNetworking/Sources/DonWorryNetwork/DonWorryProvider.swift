@@ -11,12 +11,15 @@ import Moya
 
 final class DonWorryProvider<Target: TargetType>: MoyaProvider<Target> {
 
+    
     init(
         plugins: [PluginType] = [],
-        stubClosure: @escaping StubClosure = MoyaProvider.neverStub
+        stubClosure: @escaping StubClosure = MoyaProvider.neverStub,
+        session: Session = DonWorrySesssion.shared
     ) {
         super.init(
             stubClosure: stubClosure,
+            session: session,
             plugins: plugins + [loggin]
         )
     }

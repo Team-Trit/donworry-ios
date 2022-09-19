@@ -39,7 +39,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        self.rx.viewDidDisappear.map { _ in .viewDidDisppear }
+        self.rx.viewDidDisappear.map { _ in .viewDidDisappear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 

@@ -13,10 +13,12 @@ import BaseArchitecture
 import Kingfisher
 
 struct RecievingCellViewModel {
+    let id: Int
     let name: String
     let money: Int
+    let receiverID: Int
     var isCompleted: Bool = false
-    var imgURL: String?
+    let imgURL: String?
 }
 
 final class RecievedMoneyTableViewCell: UITableViewCell {

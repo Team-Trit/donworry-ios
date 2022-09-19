@@ -13,6 +13,7 @@ import Models
 protocol AlarmService {
     func getAlarms() -> Observable<AlarmModels.GetAlarms.Response>
     func clearAlarms() -> Observable<AlarmModels.Empty.Response>
+    func pushPayments(request: AlarmModels.PushPayments.Request) -> Observable<AlarmModels.Empty.Response>
 }
 
 final class AlarmServiceImpl: AlarmService {
@@ -25,5 +26,9 @@ final class AlarmServiceImpl: AlarmService {
 
     func clearAlarms() -> Observable<AlarmModels.Empty.Response> {
         alarmRepository.clearAlarms()
+    }
+
+    func pushPayments(request: AlarmModels.PushPayments.Request) -> Observable<AlarmModels.Empty.Response> {
+        alarmRepository.pushPayments(request: request)
     }
 }

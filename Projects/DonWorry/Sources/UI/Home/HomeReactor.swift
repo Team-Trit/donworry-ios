@@ -33,7 +33,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
 
     enum Action {
         case viewWillAppear
-        case viewDidDisppear
+        case viewDidDisappear
         case getSpace(Int)
         case didSelectSpace(at: Int, model: SpaceCellViewModel?)
         case didTapAlarm
@@ -91,7 +91,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         switch action {
         case .viewWillAppear:
             return .concat([requestUserAccount(), requestSpaceList(), .just(.setupTimer(true))])
-        case .viewDidDisppear:
+        case .viewDidDisappear:
             return .just(.setupTimer(false))
         case .getSpace(let spaceID):
             return spaceService.fetchSpace(request: .init(spaceID: spaceID))

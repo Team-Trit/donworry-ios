@@ -55,7 +55,7 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
 
         return tableView
     }()
-    private let buttomButton: DWButton = {
+    private let bottomButton: DWButton = {
         let buttonButton = DWButton.create(.xlarge50)
         buttonButton.translatesAutoresizingMaskIntoConstraints = false
         buttonButton.title = "재촉하기"
@@ -80,6 +80,10 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        bottomButton.rx.tap.map { .didTapBottomButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.currentStatus }
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -125,9 +129,9 @@ extension RecievedMoneyDetailViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 440).isActive = true
 
-        view.addSubview(buttomButton)
-        buttomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
-        giveSidePadding(someView: buttomButton, side: 27)
+        view.addSubview(bottomButton)
+        bottomButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        giveSidePadding(someView: bottomButton, side: 27)
     }
 
     func giveSidePadding(someView: UIView, side: Int) {
