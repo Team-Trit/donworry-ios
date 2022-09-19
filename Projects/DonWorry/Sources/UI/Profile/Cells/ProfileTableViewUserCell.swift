@@ -85,8 +85,9 @@ extension ProfileTableViewUserCell {
         }
         
         editButton.snp.makeConstraints { make in
-            make.leading.equalTo(nickNameLabel.snp.trailing).offset(10)
+            make.leading.equalTo(nickNameLabel.snp.trailing).offset(5)
             make.centerY.equalTo(profileImageView.snp.centerY)
+            make.width.height.equalTo(40)
         }
         
         separatorLine.snp.makeConstraints { make in
