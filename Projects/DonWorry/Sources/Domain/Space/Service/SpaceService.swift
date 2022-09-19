@@ -11,6 +11,7 @@ import RxSwift
 
 protocol SpaceService {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
+    func fetchSpace(request: SpaceModels.FetchSpace.Request) -> Observable<SpaceModels.FetchSpace.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
@@ -33,6 +34,10 @@ final class SpaceServiceImpl: SpaceService {
 
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         spaceRepository.fetchSpaceList()
+    }
+
+    func fetchSpace(request: SpaceModels.FetchSpace.Request) -> Observable<SpaceModels.FetchSpace.Response> {
+        spaceRepository.fetchSpace(spaceID: request.spaceID)
     }
 
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {

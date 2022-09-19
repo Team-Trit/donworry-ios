@@ -27,8 +27,8 @@ enum HomeStep {
 final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     typealias Section = BillCardSection
     typealias HeaderModel = HomeHeaderViewModel
-    typealias SpaceList = [SpaceModels.FetchSpaceList.Space]
-    typealias Space = SpaceModels.FetchSpaceList.Space
+    typealias SpaceList = [SpaceModels.Space]
+    typealias Space = SpaceModels.Space
     typealias Index = Int
 
     enum Action {
@@ -49,6 +49,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case updateHomeHeader(User)
         case updateSpaceList(SpaceList)
         case updateSpace(Index)
+        case updateSpaceWithServer(Space)
         case routeTo(HomeStep)
     }
 
@@ -83,7 +84,10 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case .viewWillAppear:
             return .concat([requestUserAccount(), requestSpaceList()])
         case .didSelectSpace(let index):
-            return .just(.updateSpace(index))
+            let updateSpaceFirst = Observable.just(Mutation.updateSpace(index))
+            let selectedSpaceID = currentState.spaceList[index].id
+            let updateSpaceWithServer = spaceService.fetchSpace(request: .init(spaceID: selectedSpaceID)).map { Mutation.updateSpaceWithServer($0) }
+            return .concat([updateSpaceFirst, updateSpaceWithServer])
         case .didTapAlarm:
             return .just(.routeTo(.alarm))
         case .didTapSearchButton:
@@ -164,6 +168,17 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
                 payments: selectedSpace.payments,
                 isTaker: selectedSpace.isTaker
+            )
+        case .updateSpaceWithServer(let space):
+            newState.spaceList[currentState.selectedSpaceIndex] = space
+            newState.spaceViewModelList = homePresenter.formatSpaceCellViewModel(
+                spaceList: currentState.spaceList,
+                selectedIndex: currentState.selectedSpaceIndex
+            )
+            newState.sections = homePresenter.formatSection(
+                isAllPaymentCompleted: space.isAllPaymentCompleted,
+                payments: space.payments,
+                isTaker: space.isTaker
             )
         case .routeTo(let step):
             newState.step = step

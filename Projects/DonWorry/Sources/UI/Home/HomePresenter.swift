@@ -12,13 +12,13 @@ import DonWorryExtensions
 
 protocol HomePresenter {
     func formatSpaceCellViewModel(
-        spaceList: [SpaceModels.FetchSpaceList.Space],
+        spaceList: [SpaceModels.Space],
         selectedIndex: Int
     ) -> [SpaceCellViewModel]
 
     func formatSection(
         isAllPaymentCompleted: Bool,
-        payments: [SpaceModels.FetchSpaceList.SpacePayment],
+        payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection]
 }
@@ -26,7 +26,7 @@ protocol HomePresenter {
 final class HomePresenterImpl: HomePresenter {
 
     func formatSpaceCellViewModel(
-        spaceList: [SpaceModels.FetchSpaceList.Space],
+        spaceList: [SpaceModels.Space],
         selectedIndex: Int
     ) -> [SpaceCellViewModel] {
         return spaceList.map {
@@ -35,7 +35,7 @@ final class HomePresenterImpl: HomePresenter {
     }
     func formatSection(
         isAllPaymentCompleted: Bool,
-        payments: [SpaceModels.FetchSpaceList.SpacePayment],
+        payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [BillCardSection] {
         if payments.isEmpty { return [.BillCardSection(createOpenStateCard())] }
@@ -46,7 +46,7 @@ final class HomePresenterImpl: HomePresenter {
     }
 
     private func formatBillCardList(
-        from payments: [SpaceModels.FetchSpaceList.SpacePayment],
+        from payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [HomeBillCardItem] {
         if isTaker {
@@ -65,7 +65,7 @@ final class HomePresenterImpl: HomePresenter {
     }
 
     private func formatTakeBillCard(
-        from payments: [SpaceModels.FetchSpaceList.SpacePayment],
+        from payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [HomeBillCardItem] {
         let completedAmount = payments.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
@@ -81,7 +81,7 @@ final class HomePresenterImpl: HomePresenter {
     }
 
     private func formatGiveBillCardList(
-        from payments: [SpaceModels.FetchSpaceList.SpacePayment],
+        from payments: [SpaceModels.SpacePayment],
         isTaker: Bool
     ) -> [HomeBillCardItem] {
         return payments.compactMap { [weak self] in
@@ -90,7 +90,7 @@ final class HomePresenterImpl: HomePresenter {
     }
 
     private func convertToGiveCellModel(
-        from payment: SpaceModels.FetchSpaceList.SpacePayment
+        from payment: SpaceModels.SpacePayment
     ) -> GiveBillCardCellViewModel {
         return .init(id: payment.id, takerID: payment.user.id, imageURL: payment.user.imgURL, nickName: payment.user.nickname, amount: formatter(payment.amount), isCompleted: payment.isCompleted)
     }

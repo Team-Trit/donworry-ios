@@ -61,11 +61,9 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                     at: .init(item: 0, section: 0),
                     at: .centeredHorizontally, animated: false
                 )
-            })
-                .map { .didSelectSpace(at: $0.item) }
-                .bind(to: reactor.action)
-
-                .disposed(by: disposeBag)
+            }).map { .didSelectSpace(at: $0.item) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in
@@ -108,7 +106,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         reactor.state.map { $0.spaceViewModelList }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
+                self?.spaceCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
         reactor.state.map { $0.sections }
