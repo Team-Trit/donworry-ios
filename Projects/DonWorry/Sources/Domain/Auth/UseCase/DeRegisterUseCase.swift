@@ -29,10 +29,10 @@ final class DeRegisterUseCaseImpl: DeRegisterUseCase {
 
     func deregister() -> Observable<AuthModels.Empty.Response> {
         authRepository.deregister()
-            .do { [weak self] in
+            .do(onNext: { [weak self] _ in
                 _ = self?.accessTokenRepository.deleteAccessToken()
                 _ = self?.userAccountRepository.deleteLocalUserAccount()
-            }
-    }
+            })
+                }
 }
 

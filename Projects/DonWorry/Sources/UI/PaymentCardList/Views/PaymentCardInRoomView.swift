@@ -50,7 +50,7 @@ public class PaymentCardInRoomView: UIView {
             guard let viewModel = viewModel else {
                 return
             }
-            self.drawParticipatedUser([viewModel.payer] + viewModel.participatedUserList)
+            self.drawParticipatedUser(viewModel.participatedUserList)
         }
     }
 

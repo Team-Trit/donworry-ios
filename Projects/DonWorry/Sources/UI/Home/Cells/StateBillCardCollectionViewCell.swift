@@ -16,10 +16,10 @@ struct StateBillCardViewModel: Equatable {
 final class StateBillCardCollectionViewCell: UICollectionViewCell {
 
     enum SpaceStatus {
-        case open
-        case progress
-        case done
-        case close
+        case OPEN
+        case PROGRESS
+        case DONE
+        case CLOSE
     }
 
     lazy var statusImageView: UIImageView = {
@@ -79,26 +79,26 @@ final class StateBillCardCollectionViewCell: UICollectionViewCell {
 
     private func setTitle(by status: SpaceStatus) -> String {
         switch status {
-        case .open:
+        case .OPEN:
             return "참석확인 중"
-        case .progress:
+        case .PROGRESS:
             return "정산 내역 보기"
-        case .done:
+        case .DONE:
             return "정산 완료"
-        case .close:
+        case .CLOSE:
             return ""
         }
     }
 
     private func setImage(by status: SpaceStatus) -> UIImage? {
         switch status {
-        case .open:
+        case .OPEN:
             return UIImage(.ic_billcard_ing)
-        case .progress:
+        case .PROGRESS:
             return UIImage(.ic_billcard_ing)
-        case .done:
+        case .DONE:
             return UIImage(.ic_billcard_check)
-        case .close:
+        case .CLOSE:
             return UIImage(.ic_billcard_ing)
         }
     }

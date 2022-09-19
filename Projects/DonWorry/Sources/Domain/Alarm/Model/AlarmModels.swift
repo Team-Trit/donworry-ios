@@ -27,6 +27,29 @@ enum AlarmModels {
             }
         }
     }
+
+    enum PushPayments {
+        struct Request {
+            let spaceID: Int
+            let payments: [Payment]
+            init(spaceID: Int, payments: [Payment]) {
+                self.spaceID = spaceID
+                self.payments = payments
+            }
+
+            struct Payment: Encodable {
+                let id: Int
+                let receiverID: Int
+                let isCompleted: Bool
+                init(id: Int, receiverID: Int, isCompleted: Bool) {
+                    self.id = id
+                    self.receiverID = receiverID
+                    self.isCompleted = isCompleted
+                }
+            }
+        }
+    }
+
     enum Empty {
         struct Response {}
     }

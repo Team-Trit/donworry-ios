@@ -33,7 +33,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
 
     enum Action {
         case viewWillAppear
-        case viewDidDisppear
+        case viewDidDisappear
         case getSpace(Int)
         case didSelectSpace(at: Int, model: SpaceCellViewModel?)
         case didTapAlarm
@@ -91,7 +91,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         switch action {
         case .viewWillAppear:
             return .concat([requestUserAccount(), requestSpaceList(), .just(.setupTimer(true))])
-        case .viewDidDisppear:
+        case .viewDidDisappear:
             return .just(.setupTimer(false))
         case .getSpace(let spaceID):
             return spaceService.fetchSpace(request: .init(spaceID: spaceID))
@@ -150,6 +150,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
+                    space: selectedSpace,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
@@ -165,6 +166,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
+                    space: selectedSpace,
                     payments: selectedSpace.payments,
                     isTaker: selectedSpace.isTaker
                 )
@@ -177,6 +179,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
             newState.spaceViewModelList[currentState.selectedSpaceIndex] = homePresenter.formatSpaceCellViewModel(space: space)
             newState.sections = homePresenter.formatSection(
                 isAllPaymentCompleted: space.isAllPaymentCompleted,
+                space: space,
                 payments: space.payments,
                 isTaker: space.isTaker
             )
