@@ -62,12 +62,6 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
         setUI()
     }
     
-    override var isHighlighted: Bool {
-        didSet {
-            self.showAnimationOnHilighted()
-        }
-    }
-
     private func setUI() {
         self.contentView.backgroundColor = .designSystem(.green)
         self.contentView.addSubview(self.statusImageView)
