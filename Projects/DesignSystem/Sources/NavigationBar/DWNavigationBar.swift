@@ -21,7 +21,7 @@ final public class DWNavigationBar: UIView {
         return v
     }()
     public var titleLabel: UILabel?
-    public var rightItem: UIButton?
+    public var rightItem: DWBaseButton?
 
     public enum RightButtonType {
         case text
@@ -46,7 +46,7 @@ final public class DWNavigationBar: UIView {
     public convenience init(title: String, rightButtonTitle: String) {
         self.init(title: title)
 
-        rightItem = UIButton(type: .system)
+        rightItem = DWBaseButton()
         rightItem?.setTitle(rightButtonTitle, for: .normal)
         rightItem?.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
         rightItem?.titleLabel?.font = .designSystem(weight: .regular, size: ._18)
@@ -55,7 +55,7 @@ final public class DWNavigationBar: UIView {
 
     public convenience init(title: String, rightButtonImageName: String) {
         self.init(title: title)
-        rightItem = UIButton(type: .system)
+        rightItem = DWBaseButton(type: .system)
         let image = UIImage(
             systemName: rightButtonImageName,
             withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .heavy)
