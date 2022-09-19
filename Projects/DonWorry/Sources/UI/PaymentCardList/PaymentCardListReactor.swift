@@ -32,6 +32,7 @@ final class PaymentCardListReactor: Reactor {
 
     enum Action {
         case viewWillAppear
+        case viewDidDisappear
         case getPaymentStatus
         case didTapStartPaymentAlgorithmButton
         case didTapBackButton
@@ -46,6 +47,7 @@ final class PaymentCardListReactor: Reactor {
     enum Mutation {
         case initializeState(PaymentCardListInformation)
         case initializeIsUserAdmin(Bool)
+        case setupTimer(Bool)
         case routeTo(PaymentCardListStep)
         case error(Error?)
     }
@@ -55,13 +57,13 @@ final class PaymentCardListReactor: Reactor {
         var paymentCardListViewModel: [PaymentCardCellViewModel] = []
         var canLeaveSpace: Bool = true
         var isUserAdmin: Bool = false
+        var timer: Disposable?
 
         @Pulse var error: Error?
         @Pulse var step: PaymentCardListStep?
     }
 
     let initialState: State
-    var disposeBag: DisposeBag
     init(
         spaceID: Int, adminID: Int, status: String,
         spaceService: SpaceService = SpaceServiceImpl(),
@@ -69,19 +71,11 @@ final class PaymentCardListReactor: Reactor {
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
         paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
     ) {
-        self.disposeBag = .init()
-        
         self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: status, shareID: ""))
         self.spaceService = spaceService
         self.judgeSpaceAdminUseCase = judgeSpaceAdminUseCase
         self.paymentCardService = paymentCardService
         self.paymentCardListPresenter =  paymentCardListPresenter
-
-        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.action.onNext(.getPaymentStatus)
-            })
-            .disposed(by: disposeBag)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -89,7 +83,10 @@ final class PaymentCardListReactor: Reactor {
         case .viewWillAppear:
             let isUserAdmin = requestIsUserSpaceAdmin()
             let paymentCardListInformation = requestPaymentCardListInformation()
-            return .concat([isUserAdmin, paymentCardListInformation])
+            let startTimer = Observable.just(Mutation.setupTimer(true))
+            return .concat([isUserAdmin, paymentCardListInformation, startTimer])
+        case .viewDidDisappear:
+            return .just(.setupTimer(false))
         case .getPaymentStatus:
             return requestPaymentCardListInformation()
         case .didTapStartPaymentAlgorithmButton:
@@ -124,6 +121,12 @@ final class PaymentCardListReactor: Reactor {
             )
         case .initializeIsUserAdmin(let isUserAdmin):
             newState.isUserAdmin = isUserAdmin
+        case .setupTimer(let direction):
+            if direction {
+                newState.timer = setupTimer()
+            } else {
+                newState.timer?.dispose()
+            }
         case .routeTo(let step):
             newState.step = step
         case .error(let error):
@@ -167,6 +170,12 @@ final class PaymentCardListReactor: Reactor {
         .map { _ in  .routeTo(.pop) }
     }
 
+    private func setupTimer() -> Disposable {
+        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
+            self?.action.onNext(.getPaymentStatus)
+        })
+    }
+    
     private let spaceService: SpaceService
     private let judgeSpaceAdminUseCase: JudgeSpaceAdminUseCase
     private let paymentCardService: PaymentCardService

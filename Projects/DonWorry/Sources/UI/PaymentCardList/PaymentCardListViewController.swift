@@ -186,6 +186,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.rx.viewDidDisappear.map { _ in .viewDidDisappear }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.navigationBar.leftItem.rx.tap.map { .didTapBackButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
