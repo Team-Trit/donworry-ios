@@ -110,6 +110,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
     
     // MARK: ShareSheet
+
     func showShareSheet(url: URL) {
         let promoText = "돈워리에서 정산할래요?" // 🔀 TEXT 변경필요
         let activityVC = UIActivityViewController(activityItems: [promoText, url], applicationActivities: nil)
@@ -182,6 +183,10 @@ final class PaymentCardListViewController: BaseViewController, View {
 
     private func dispatch(to reactor: Reactor) {
         self.rx.viewWillAppear.map { _ in .viewWillAppear }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        self.rx.viewDidDisappear.map { _ in .viewDidDisappear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -421,7 +426,7 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         guard let currentState = reactor?.currentState else { return 0 }
-        if currentState.space.status == "PROGRESS" {
+        if currentState.space.status != "OPEN" {
             return currentState.paymentCardListViewModel.count
         } else {
             return currentState.paymentCardListViewModel.count + 1

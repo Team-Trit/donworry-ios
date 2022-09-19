@@ -9,6 +9,7 @@
 import Models
 import ReactorKit
 import RxSwift
+import Foundation
 
 enum LoginStep {
     typealias OAuthType = AuthModels.OAuthType
@@ -56,19 +57,6 @@ final class LoginViewReactor: Reactor {
         self.signInUseCase = signInUseCase
         self.initialState = State()
         self.disposeBag = .init()
-
-        self.signInUseCase.completeKakaoLogin
-            .subscribe(onNext: { [weak self] _ in
-                self?.action.onNext(.routeToHome)
-            }, onError: { [weak self] error in
-                guard let error = error.toAuthError() else { return }
-                switch error {
-                case .nouser(let token):
-                    self?.action.onNext(.routeToSignUp(token))
-                default:
-                    self?.action.onNext(.errorToast(error.message))
-                }
-            }).disposed(by: disposeBag)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -77,7 +65,7 @@ final class LoginViewReactor: Reactor {
             let signIn = requestAppleLogin(token: identityToken)
             return signIn
         case .kakaoLoginButtonPressed:
-            return signInUseCase.kakaoLogin().map { _ in .nothing }
+            return requestKakaoLogin()
         case .routeToHome:
             return .just(.routeTo(.home))
         case .routeToSignUp(let token):
@@ -105,8 +93,24 @@ final class LoginViewReactor: Reactor {
     }
 
     private func requestAppleLogin(token: String) -> Observable<Mutation> {
-        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token))
+        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token, deviceToken: ""))
             .map { _ in Mutation.routeTo(.home) }
+            .catch { error in
+                guard let error = error.toAuthError() else { return .error(error) }
+                switch error {
+                case .nouser(let token):
+                    return .just(.routeTo(.signup(token, .apple)))
+                default:
+                    return .just(.toast(error.message))
+                }
+            }
+    }
+
+    private func requestKakaoLogin() -> Observable<Mutation> {
+        signInUseCase.kakaoLogin()
+            .flatMap { token in
+                self.signInUseCase.signInWithKakao(request: .init(oauthType: .kakao, token: token.token, deviceToken: ""))
+            }.map { _ in .routeTo(.home)}
             .catch { error in
                 guard let error = error.toAuthError() else { return .error(error) }
                 switch error {

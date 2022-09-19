@@ -11,6 +11,7 @@ import RxSwift
 
 protocol SpaceRepository {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
+    func fetchSpace(spaceID: Int) -> Observable<SpaceModels.FetchSpace.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
@@ -29,6 +30,12 @@ final class SpaceRepositoryImpl: SpaceRepository {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         network.request(GetSpaceListAPI())
             .compactMap { response in response.compactMap { [weak self] in self?.convert(from: $0) }}
+            .asObservable()
+    }
+
+    func fetchSpace(spaceID: Int) -> Observable<SpaceModels.FetchSpace.Response> {
+        network.request(GetSpaceAPI(spaceID: spaceID))
+            .compactMap { [weak self] response in self?.convert(from: response) }
             .asObservable()
     }
 
@@ -77,12 +84,6 @@ final class SpaceRepositoryImpl: SpaceRepository {
     }
     
     private func judgeLeaveAndDeleteSpaceError(_ error: Error) -> SpaceError {
-        guard let error = error as? NetworkError else { return .undefined }
-        switch error {
-        case .httpStatus(let status):
-            if status == 400 { return .deletedSpace }
-        default: break
-        }
         return .undefined
     }
 
@@ -90,14 +91,15 @@ final class SpaceRepositoryImpl: SpaceRepository {
         guard let error = error as? NetworkError else { return .undefined }
         switch error {
         case .httpStatus(let status):
-            if status == 400 { return .alreadyJoined }
-            else if status == 403 { return .shareIDIsNotInvalid }
+            if status == 400 { return .shareIDIsNotInvalid }
+            else if status == 403 { return .alreadyJoined }
+            else if status == 409 { return .alreadyStarted}
         default: break
         }
         return .undefined
     }
 
-    private func convert(from dto: DTO.Space) -> SpaceModels.FetchSpaceList.Space {
+    private func convert(from dto: DTO.Space) -> SpaceModels.Space {
         return .init(
             id: dto.id,
             adminID: dto.adminID,
@@ -109,10 +111,10 @@ final class SpaceRepositoryImpl: SpaceRepository {
             payments: dto.payments.map { convert(from: $0) }
         )
     }
-    private func convert(from dto: DTO.Space.Payment) -> SpaceModels.FetchSpaceList.SpacePayment {
+    private func convert(from dto: DTO.Space.Payment) -> SpaceModels.SpacePayment {
         return .init(id: dto.id, amount: dto.amount, isCompleted: dto.isCompleted, user: convert(from: dto.user))
     }
-    private func convert(from dto: DTO.Space.User) -> SpaceModels.FetchSpaceList.SpaceUser {
+    private func convert(from dto: DTO.Space.User) -> SpaceModels.SpaceUser {
         return .init(id: dto.id, nickname: dto.nickname, imgURL: dto.imgURL)
     }
 }

@@ -21,7 +21,9 @@ class PhotoCell: UICollectionViewCell {
         didSet {
             guard let viewModel = viewModel else { return }
             if let url = URL(string: viewModel) {
-                container.kf.setImage(with: url)
+                container.kf.indicatorType = .activity
+                container.kf.setImage(with: url,
+                                      options: [.forceTransition])
             }
         }
     }

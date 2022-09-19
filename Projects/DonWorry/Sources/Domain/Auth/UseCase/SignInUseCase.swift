@@ -10,16 +10,16 @@ import Foundation
 import RxSwift
 
 protocol SignInUseCase {
-    var completeKakaoLogin: PublishSubject<AuthModels.Empty.Response> { get }
-
-    func kakaoLogin() -> Observable<AuthModels.Empty.Response>
+    func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
     func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
+    func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
 }
 
 final class SignInUseCaseImpl: SignInUseCase {
     private let authRepository: AuthRepository
     private let accessTokenRepository: AccessTokenRepository
     private let userAccountRepository: UserAccountRepository
+    private let fcmTokenRepository: FCMDeviceTokenRepository
 
     let kakaoLoginToken: PublishSubject<AuthModels.Kakao.Response>
     var completeKakaoLogin: PublishSubject<AuthModels.Empty.Response>
@@ -28,7 +28,8 @@ final class SignInUseCaseImpl: SignInUseCase {
     init(
         authRepository: AuthRepository = AuthRepositoryImpl(),
         accessTokenRepository: AccessTokenRepository = AccessTokenRepositoryImpl(),
-        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
+        fcmTokenRepository: FCMDeviceTokenRepository = FCMDeviceTokenRepositoryImpl()
     ) {
         self.kakaoLoginToken = .init()
         self.completeKakaoLogin = .init()
@@ -36,23 +37,16 @@ final class SignInUseCaseImpl: SignInUseCase {
         self.authRepository = authRepository
         self.accessTokenRepository = accessTokenRepository
         self.userAccountRepository = userAccountRepository
-
-
-        kakaoLoginToken.subscribe(onNext: { [weak self] in
-            self?.signInWithKakao(token: $0.token)
-        }).disposed(by: disposeBag)
+        self.fcmTokenRepository = fcmTokenRepository
     }
 
-    func kakaoLogin() -> Observable<AuthModels.Empty.Response> {
+    func kakaoLogin() -> Observable<AuthModels.Kakao.Response> {
         authRepository.kakaoLogin()
-            .map { [weak self] token in
-                self?.kakaoLoginToken.onNext(token)
-                return .init()
-            }
     }
 
-    func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
-        authRepository.loginWithApple(identityToken: request.token)
+    func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
+        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        return authRepository.loginWithKakao(accessToken: request.token, deviceToken: fcmToken)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
@@ -60,14 +54,14 @@ final class SignInUseCaseImpl: SignInUseCase {
             }
     }
 
-    private func signInWithKakao(token: String) {
-        authRepository.loginWithKakao(accessToken: token)
-            .subscribe(onNext: { [weak self] (user, authentication) in
+    func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
+        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken)
+            .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)
-                self?.completeKakaoLogin.onNext(.init())
-            }, onError: { [weak self] in
-                self?.completeKakaoLogin.onError($0)
-            }).disposed(by: disposeBag)
+                return .init()
+            }
     }
+
 }

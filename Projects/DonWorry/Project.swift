@@ -25,6 +25,8 @@ let project = Project.make(
             .external(name: "FlexLayout"),
             .external(name: "RxKakaoSDK"),
             .external(name: "FirebaseDynamicLinks"),
+            .external(name: "FirebaseMessaging"),
+            .external(name: "FirebaseAnalytics"),
         ]
     ),
     Target.unitTests(name: "DonWorry"),

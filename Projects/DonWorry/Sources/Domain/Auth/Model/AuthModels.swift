@@ -44,6 +44,7 @@ enum AuthModels {
         struct Reqeust {
             let oauthType: OAuthType
             let token: String
+            var deviceToken: String
         }
 
         struct Response {

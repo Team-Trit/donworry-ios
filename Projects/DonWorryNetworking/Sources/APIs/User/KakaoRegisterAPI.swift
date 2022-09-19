@@ -13,17 +13,22 @@ import Moya
 public struct KakaoRegisterAPI: ServiceAPI {
     public typealias Response = DTO.PostUser
     public var request: Request
-    public init(request: Request, accessToken: String) {
+    public init(request: Request, accessToken: String, fcmToken: String) {
         self.request = request
         self.accessToken = accessToken
+        self.fcmToken = fcmToken
     }
     public var path: String { return "/register/user/kakao" }
     public var method: Method = .post
     public var task: Task {
         .requestJSONEncodable(request)
     }
-    public var headers: [String : String]? { return ["Authorization-KAKAO": "Bearer \(accessToken)"] }
+    public var headers: [String : String]? {
+        ["Authorization-KAKAO": "Bearer \(accessToken)",
+         "DeviceToken": "\(fcmToken)"]
+    }
     private let accessToken: String
+    private let fcmToken: String
 }
 
 extension KakaoRegisterAPI {

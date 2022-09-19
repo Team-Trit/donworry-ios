@@ -11,6 +11,7 @@ import RxSwift
 
 protocol SpaceService {
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response>
+    func fetchSpace(request: SpaceModels.FetchSpace.Request) -> Observable<SpaceModels.FetchSpace.Response>
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response>
     func joinSpace(shareID: String) -> Single<SpaceModels.JoinSpace.Response>
     func editSpaceName(id: Int, name: String) -> Observable<SpaceModels.EditSpaceTitle.Response>
@@ -33,6 +34,10 @@ final class SpaceServiceImpl: SpaceService {
 
     func fetchSpaceList() -> Observable<SpaceModels.FetchSpaceList.Response> {
         spaceRepository.fetchSpaceList()
+    }
+
+    func fetchSpace(request: SpaceModels.FetchSpace.Request) -> Observable<SpaceModels.FetchSpace.Response> {
+        spaceRepository.fetchSpace(spaceID: request.spaceID)
     }
 
     func createSpace(title: String) -> Observable<SpaceModels.CreateSpace.Response> {
@@ -67,6 +72,7 @@ final class SpaceServiceImpl: SpaceService {
     // 방장이고 방의 상태가 OPEN 일 경우를 판단해준다. 
     private func isAdminAndIsSpaceStatusOpen(_ request: SpaceModels.LeaveSpace.Request) -> Bool {
         guard let userID = userAccountRepository.fetchLocalUserAccount()?.id else { return false }
+        print("isAdminAndIsSpaceStatusOpen는? ", (request.isAdmin == userID) && (request.isStatusOpen))
         return (request.isAdmin == userID) && (request.isStatusOpen)
     }
 }

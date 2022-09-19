@@ -39,6 +39,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        self.rx.viewDidDisappear.map { _ in .viewDidDisppear }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         self.gotoSearchSpaceButton.rx.tap.map { .didTapSearchButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -56,16 +60,12 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         self.spaceCollectionView.rx.itemSelected
-            .do(onNext: { [weak self] _ in
-                self?.billCardCollectionView.scrollToItem(
-                    at: .init(item: 0, section: 0),
-                    at: .centeredHorizontally, animated: false
-                )
-            })
-                .map { .didSelectSpace(at: $0.item) }
-                .bind(to: reactor.action)
-
-                .disposed(by: disposeBag)
+            .compactMap { [weak self] indexPath -> (Int, SpaceCellViewModel?) in
+                let cell = self?.spaceCollectionView.cellForItem(at: indexPath) as? SpaceCollectionViewCell
+                return (indexPath.item, cell?.viewModel)
+            }.map { .didSelectSpace(at: $0, model: $1) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
         self.billCardCollectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in
@@ -106,9 +106,10 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.spaceCollectionView.reloadSections(IndexSet(integer: 0))
+                self?.spaceCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
         reactor.state.map { $0.sections }
@@ -337,10 +338,14 @@ extension HomeViewController: UICollectionViewDataSource {
             SpaceCollectionViewCell.self,
             for: indexPath
         )
-        let isSelected = indexPath.item == reactor.currentState.selectedSpaceIndex
-        if isSelected { cell.selectedAttributes() }
-        else { cell.initialAttributes() }
         cell.viewModel = reactor.currentState.spaceViewModelList[indexPath.item]
+        let isSelected = indexPath.item == reactor.currentState.selectedSpaceIndex
+        if isSelected {
+            cell.selectedAttributes()
+            spaceCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        } else {
+            cell.unSelectedAttributes()
+        }
         return cell
     }
     private func billCardCollectionViewCell(

@@ -18,15 +18,16 @@ import DonWorryNetworking
 
 protocol AuthRepository {
     // 카카오 기반 회원가입 API 호출
-    func signupWithKakao(request: AuthModels.SignUp.Request) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func signupWithKakao(request: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
 
     // 애플 기반 회원가입 API 호출
-    func signupWithApple(requeset: AuthModels.SignUp.Request) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
 
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
-    func loginWithApple(identityToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
-    func loginWithKakao(accessToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func loginWithApple(identityToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func loginWithKakao(accessToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func logout() -> Observable<AuthModels.Empty.Response>
+    func deregister() -> Observable<AuthModels.Empty.Response>
     func checkNickname(nickname: String) -> Observable<AuthModels.Empty.Response>
 }
 
@@ -38,16 +39,16 @@ final class AuthRepositoryImpl: AuthRepository {
         self.network = network
     }
 
-    func signupWithKakao(request: AuthModels.SignUp.Request) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(createKakaoRegisterAPI(with: request))
+    func signupWithKakao(request: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(createKakaoRegisterAPI(with: request, fcmToken: fcmToken))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.asObservable()
     }
 
 
-    func signupWithApple(requeset: AuthModels.SignUp.Request) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(createAppleRegisterAPI(with: requeset))
+    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(createAppleRegisterAPI(with: requeset, fcmToken: fcmToken))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.asObservable()
@@ -61,8 +62,8 @@ final class AuthRepositoryImpl: AuthRepository {
         }
     }
 
-    func loginWithApple(identityToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(AppleLoginAPI(identityToken: identityToken))
+    func loginWithApple(identityToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(AppleLoginAPI(identityToken: identityToken, fcmToken: deviceToken))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.catch { [weak self] error in
@@ -70,8 +71,8 @@ final class AuthRepositoryImpl: AuthRepository {
             }.asObservable()
     }
 
-    func loginWithKakao(accessToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(KakaoLoginAPI(accessToken: accessToken))
+    func loginWithKakao(accessToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(KakaoLoginAPI(accessToken: accessToken, fcmToken: deviceToken))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.catch { [weak self] error in
@@ -94,6 +95,11 @@ final class AuthRepositoryImpl: AuthRepository {
             .asObservable()
     }
 
+    func deregister() -> Observable<AuthModels.Empty.Response> {
+        network.request(DeregisterAPI(authorizationCode: ""))
+            .compactMap { _ in return .init() }
+            .asObservable()
+    }
 
     private func judgeSignInError(_ error: Error, _ token: String) -> AuthError {
         guard let error = error as? NetworkError else { return .parsing }
@@ -117,7 +123,7 @@ final class AuthRepositoryImpl: AuthRepository {
 
     // MARK: API
 
-    private func createKakaoRegisterAPI(with request: AuthModels.SignUp.Request) -> KakaoRegisterAPI {
+    private func createKakaoRegisterAPI(with request: AuthModels.SignUp.Request, fcmToken: String) -> KakaoRegisterAPI {
         return .init(
             request: .init(
                 provider: request.oauthType.rawValue,
@@ -128,11 +134,12 @@ final class AuthRepositoryImpl: AuthRepository {
                 bankHolder: request.bankHolder,
                 isAgreeMarketing: request.isAgreeMarketing
             ),
-            accessToken: request.token
+            accessToken: request.token,
+            fcmToken: fcmToken
         )
     }
 
-    private func createAppleRegisterAPI(with request: AuthModels.SignUp.Request) -> AppleRegisterAPI {
+    private func createAppleRegisterAPI(with request: AuthModels.SignUp.Request, fcmToken: String) -> AppleRegisterAPI {
         return .init(
             request: .init(
                 provider: request.oauthType.rawValue,
@@ -143,7 +150,8 @@ final class AuthRepositoryImpl: AuthRepository {
                 bankHolder: request.bankHolder,
                 isAgreeMarketing: request.isAgreeMarketing
             ),
-            identityToken: request.token
+            identityToken: request.token,
+            fcmToken: fcmToken
         )
     }
 

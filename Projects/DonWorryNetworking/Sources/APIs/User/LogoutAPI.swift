@@ -20,6 +20,5 @@ public struct LogoutAPI: ServiceAPI {
     public var headers: [String : String]? {
         return ["Authorization" : "Bearer \(UserDefaults.standard.string(forKey: "accessToken") ?? "")"]
     }
-    
     public init() {}
 }

@@ -12,12 +12,12 @@ import Models
 import ReactorKit
 
 enum ProfileStep {
-    case none
     case pop
     case profileImageSheet
     case nicknameEdit
     case accountEdit
     case deleteAccountSheet
+    case login
 }
 
 final class ProfileViewReactor: Reactor {
@@ -25,7 +25,7 @@ final class ProfileViewReactor: Reactor {
     private let uploadImageUseCase: UploadImageUseCase
     private let updateProfileImageUseCase: UpdateProfileImageUseCase
     private let logoutUseCase: LogoutUseCase
-    private let disposeBag: DisposeBag
+    private let deRegisterUseCase: DeRegisterUseCase
 
     enum Action {
         case viewWillAppear
@@ -59,13 +59,14 @@ final class ProfileViewReactor: Reactor {
         getUserAccountUseCase: GetUserAccountUseCase = GetUserAccountUseCaseImpl(),
         uploadImageUseCase: UploadImageUseCase = UploadImageUseCaseImpl(),
         updateProfileImageUseCase: UpdateProfileImageUseCase = UpdateProfileImageUseCaseImpl(),
-        logoutUseCase: LogoutUseCase = LogoutUseCaseImpl()
+        logoutUseCase: LogoutUseCase = LogoutUseCaseImpl(),
+        deRegisterUseCase: DeRegisterUseCase = DeRegisterUseCaseImpl()
     ) {
         self.getUserAccountUseCase = getUserAccountUseCase
         self.uploadImageUseCase = uploadImageUseCase
         self.updateProfileImageUseCase = updateProfileImageUseCase
         self.logoutUseCase = logoutUseCase
-        disposeBag = .init()
+        self.deRegisterUseCase = deRegisterUseCase
         self.initialState = State(
             user: User(id: -1, nickName: "", bankAccount: BankAccount(bank: "", accountHolderName: "", accountNumber: ""), image: "")
         )
@@ -125,14 +126,13 @@ final class ProfileViewReactor: Reactor {
             
         case .pressLogoutButton:
             return logoutUseCase.logout()
-                .map { _ in return .routeTo(step: .none)}
+                .map { _ in return .routeTo(step: .login) }
             
         case .pressAccountDeleteButton:
             return .just(.routeTo(step: .deleteAccountSheet))
             
         case .deleteAccount:
-            // TODO: 회원 탈퇴 API 호출
-            return .empty()
+            return deRegisterUseCase.deregister().map { _ in .routeTo(step: .login) }
         }
     }
     

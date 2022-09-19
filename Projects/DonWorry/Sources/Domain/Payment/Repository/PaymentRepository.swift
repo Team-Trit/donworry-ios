@@ -42,7 +42,7 @@ final class PaymentRepositoryImpl: PaymentRepository {
     }
     
     private func convertToGiverPayment(_ dto: DTO.GetPaymentsGiver) -> PaymentModels.FetchGiverPayment.Response {
-        return .init(paymentID: dto.paymentID, spaceID: dto.spaceID, amount: dto.amount, spaceTotalAmount: dto.spaceTotalAmount, isCompleted: dto.isCompleted, takerNickname: dto.takerNickname, account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder), cards: dto.cards.map { .init(name: $0.name, paymentDate: $0.paymentDate, categoryImgURL: $0.categoryImgURL, totalAmount: $0.totalAmount, cardJoinUserCount: $0.cardJoinUserCount, amountPerUser: $0.amountPerUser)}, payments: dto.payments.map { .init(id: $0.id, amount: $0.amount, isCompleted: $0.isCompleted, takerNickname: $0.takerNickname)})
+        return .init(paymentID: dto.paymentID, spaceID: dto.spaceID, amount: dto.amount, spaceTotalAmount: dto.totalAmount, isCompleted: dto.isCompleted, takerNickname: dto.takerNickname, account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder), cards: dto.cards.map { .init(name: $0.name, paymentDate: $0.paymentDate, categoryImgURL: $0.categoryImgURL, totalAmount: $0.totalAmount, cardJoinUserCount: $0.cardJoinUserCount, amountPerUser: $0.amountPerUser)}, payments: dto.payments.map { .init(id: $0.id, amount: $0.amount, isCompleted: $0.isCompleted, takerNickname: $0.takerNickname)})
     }
 
     private func convertToTakerPaymentList(_ dto: DTO.GetPaymentsTaker) -> PaymentModels.FetchTakerPaymentList.Response {
