@@ -25,7 +25,7 @@ final class AddPaymentCardCollectionViewCell: UICollectionViewCell {
         v.setImage(UIImage(systemName: "plus"), for: .normal)
         v.tintColor = .designSystem(.white)
         v.backgroundColor = .designSystem(.mainBlue)
-        v.isEnabled = false
+        v.isUserInteractionEnabled = false
         return v
     }()
     lazy var plusLabel: UILabel = {

@@ -8,6 +8,7 @@
 
 import UIKit
 import DesignSystem
+import DonWorryExtensions
 
 struct TakeBillCardCellViewModel: Equatable {
     var userCount: Int
@@ -59,6 +60,12 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
         super.init(coder: coder)
 
         setUI()
+    }
+    
+    override var isHighlighted: Bool {
+        didSet {
+            self.showAnimationOnHilighted()
+        }
     }
 
     private func setUI() {

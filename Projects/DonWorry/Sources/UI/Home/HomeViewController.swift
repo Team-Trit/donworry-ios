@@ -67,6 +67,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        // ✅
         self.billCardCollectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in
                 self?.billCardCollectionView.cellForItem(at: indexPath)
