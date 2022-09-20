@@ -151,7 +151,17 @@ final class PaymentCardDetailViewController: BaseViewController, View {
         layout()
     }
 
+    private func dispatch(to reactor: Reactor) {
+        self.fileCollectionView.rx.itemSelected
+            .map { .imageCellButton(reactor.currentState.imgURLs[$0.row] ?? "") }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
     func bind(reactor: Reactor) {
+        
+        dispatch(to: reactor)
+        
         self.rx.viewDidLoad.map { .viewDidLoad }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -229,7 +239,11 @@ extension PaymentCardDetailViewController {
             self.navigationController?.popViewController(animated: true)
         case .editAmount:
             break
-
+        case .showImage(let imageUrl):
+            let detailImageViewController = DetailImageViewController()
+            detailImageViewController.imageUrl = imageUrl
+            detailImageViewController.modalPresentationStyle = .fullScreen
+            present(detailImageViewController, animated: true)
         }
     }
 }
@@ -323,20 +337,6 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
             cell.deleteButton.isHidden = true
             return cell
         default: return UICollectionViewCell()
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch collectionView {
-        case fileCollectionView:
-            guard let cell = collectionView.cellForItem(at: indexPath) as? FileCollectionViewCell else {
-                return
-            }
-            let detailImageViewController = DetailImageViewController()
-            detailImageViewController.imageUrl = cell.imageUrl
-            present(detailImageViewController, animated: true)
-        default:
-            break
         }
     }
     

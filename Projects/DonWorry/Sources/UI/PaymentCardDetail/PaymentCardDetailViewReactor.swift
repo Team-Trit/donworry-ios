@@ -15,6 +15,7 @@ import RxSwift
 enum PaymentCardDetailStep {
     case pop
     case editAmount
+    case showImage(String)
 }
 
 final class PaymentCardDetailViewReactor: Reactor {
@@ -23,6 +24,7 @@ final class PaymentCardDetailViewReactor: Reactor {
         case viewDidLoad
         case didTapBackButton
         case didTapBottomButton
+        case imageCellButton(String)
     }
 
     enum Mutation {
@@ -80,6 +82,8 @@ final class PaymentCardDetailViewReactor: Reactor {
          case .didTapBottomButton:
              let result = judgeIsAdmin()
              return result
+         case .imageCellButton(let url):
+             return .just(.routeTo(.showImage(url)))
          }
     }
 
