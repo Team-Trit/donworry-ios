@@ -340,20 +340,6 @@ extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectio
         }
     }
     
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        switch collectionView {
-//        case fileCollectionView:
-//            guard let cell = collectionView.cellForItem(at: indexPath) as? FileCollectionViewCell else {
-//                return
-//            }
-//            let detailImageViewController = DetailImageViewController()
-//            detailImageViewController.imageUrl = cell.imageUrl
-//            present(detailImageViewController, animated: true)
-//        default:
-//            break
-//        }
-//    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView {
         case attendanceCollectionView:
