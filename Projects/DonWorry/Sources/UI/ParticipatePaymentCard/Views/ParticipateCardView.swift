@@ -149,7 +149,7 @@ extension ParticipateCardView {
         
         userNicknameLabel.snp.makeConstraints { make in
             make.top.equalTo(userImageView.snp.bottom).offset(5)
-            make.centerX.equalToSuperview()
+            make.leading.trailing.equalTo(rightCardView).inset(6)
         }
         
         dateContainerView.snp.makeConstraints { make in
