@@ -53,6 +53,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case updateSpace(Index, SpaceCellViewModel)
         case updateSpaceWithServer(Space)
         case setupTimer(Bool)
+        case setupIsSpaceTapped(Bool)
         case routeTo(HomeStep)
     }
 
@@ -63,7 +64,11 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         var selectedSpaceViewModel: SpaceCellViewModel? // 선택된 정산방 ID
         var homeHeader: HeaderModel? // 헤더 뷰모델
         var timer: Disposable?
+        var isSpaceTapped: Bool = false
+        var isSpaceEmpty: Bool = false
 
+        @Pulse var reloadWithScroll: Void? // 스크롤 있는 collectionView 업데이트
+        @Pulse var reload: Void? // 주기적인 collectionView 업데이트
         @Pulse var step: HomeStep?
     }
 
@@ -90,19 +95,30 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return .concat([requestUserAccount(), requestSpaceList(), .just(.setupTimer(true))])
+            return .concat([
+                requestUserAccount(),
+                requestSpaceList(),
+                .just(.setupTimer(true))
+            ])
         case .viewDidDisappear:
             return .just(.setupTimer(false))
         case .getSpace(let spaceID):
-            return spaceService.fetchSpace(request: .init(spaceID: spaceID))
-                .map { .updateSpaceWithServer($0) }
+            let updateSpaceWithServer = requestSpace(spaceID: spaceID)
+            return updateSpaceWithServer
         case .didSelectSpace(let index, let spaceModel):
             guard let space = spaceModel else {
                 return .error(SpaceError.undefined)
             }
             let updateSpace = Observable.just(Mutation.updateSpace(index, space))
             let updateSpaceWithServer = requestSpace(spaceID: space.id)
-            return .concat([updateSpace, updateSpaceWithServer])
+            return .concat([
+                .just(.setupTimer(false)),
+                .just(.setupIsSpaceTapped(true)),
+                updateSpace,
+                updateSpaceWithServer,
+                .just(.setupIsSpaceTapped(false)),
+                .just(.setupTimer(true))
+            ])
         case .didTapAlarm:
             return .just(.routeTo(.alarm))
         case .didTapSearchButton:
@@ -145,14 +161,21 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.timer?.dispose()
             }
         case .updateSpaceList(let spaceList):
+            if spaceList.isEmpty {
+                newState.spaceViewModelList = []
+                newState.sections = [.BillCardSection([])]
+                newState.selectedSpaceViewModel = nil
+                newState.isSpaceEmpty = true
+                break
+            }
+
+            newState.isSpaceEmpty = false
             if currentState.selectedSpaceIndex < spaceList.count {
                 let selectedSpace = spaceList[currentState.selectedSpaceIndex]
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
-                    space: selectedSpace,
-                    payments: selectedSpace.payments,
-                    isTaker: selectedSpace.isTaker
+                    space: selectedSpace
                 )
                 newState.selectedSpaceViewModel = homePresenter.formatSpaceCellViewModel(space: selectedSpace)
             }
@@ -166,26 +189,33 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
                 newState.sections = homePresenter.formatSection(
                     isAllPaymentCompleted: selectedSpace.isAllPaymentCompleted,
-                    space: selectedSpace,
-                    payments: selectedSpace.payments,
-                    isTaker: selectedSpace.isTaker
+                    space: selectedSpace
                 )
                 newState.selectedSpaceViewModel = homePresenter.formatSpaceCellViewModel(space: selectedSpace)
             }
+            newState.reload = ()
         case .updateSpace(let index, let spaceModel):
             newState.selectedSpaceIndex = index
             newState.selectedSpaceViewModel = spaceModel
         case .updateSpaceWithServer(let space):
-            newState.spaceViewModelList[currentState.selectedSpaceIndex] = homePresenter.formatSpaceCellViewModel(space: space)
-            newState.sections = homePresenter.formatSection(
-                isAllPaymentCompleted: space.isAllPaymentCompleted,
-                space: space,
-                payments: space.payments,
-                isTaker: space.isTaker
-            )
+            if let index = newState.spaceViewModelList.firstIndex(where: { $0.id == space.id }) {
+                newState.spaceViewModelList[index] = homePresenter.formatSpaceCellViewModel(space: space)
+                newState.sections = homePresenter.formatSection(
+                    isAllPaymentCompleted: space.isAllPaymentCompleted,
+                    space: space
+                )
+                if currentState.isSpaceTapped {
+                    newState.reloadWithScroll = ()
+                } else {
+                    newState.reload = ()
+                }
+            }
+        case .setupIsSpaceTapped(let direction):
+            newState.isSpaceTapped = direction
         case .routeTo(let step):
             newState.step = step
         }
+        print(newState)
         return newState
     }
 
@@ -214,7 +244,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     }
 
     private func setupTimer() -> Disposable {
-        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+        Observable<Int>.interval(.seconds(5), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
             if let selectedSpaceID = self?.currentState.selectedSpaceViewModel?.id {
                 self?.action.onNext(.getSpace(selectedSpaceID))

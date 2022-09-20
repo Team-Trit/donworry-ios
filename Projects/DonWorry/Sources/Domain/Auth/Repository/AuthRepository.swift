@@ -21,10 +21,10 @@ protocol AuthRepository {
     func signupWithKakao(request: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
 
     // 애플 기반 회원가입 API 호출
-    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String, authorizationCode: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
 
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
-    func loginWithApple(identityToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
+    func loginWithApple(identityToken: String, deviceToken: String, authorizationCode: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func loginWithKakao(accessToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)>
     func logout() -> Observable<AuthModels.Empty.Response>
     func deregister() -> Observable<AuthModels.Empty.Response>
@@ -47,8 +47,8 @@ final class AuthRepositoryImpl: AuthRepository {
     }
 
 
-    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(createAppleRegisterAPI(with: requeset, fcmToken: fcmToken))
+    func signupWithApple(requeset: AuthModels.SignUp.Request, fcmToken: String, authorizationCode: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(createAppleRegisterAPI(with: requeset, fcmToken: fcmToken, authorizationCode: authorizationCode))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.asObservable()
@@ -62,8 +62,8 @@ final class AuthRepositoryImpl: AuthRepository {
         }
     }
 
-    func loginWithApple(identityToken: String, deviceToken: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
-        network.request(AppleLoginAPI(identityToken: identityToken, fcmToken: deviceToken))
+    func loginWithApple(identityToken: String, deviceToken: String, authorizationCode: String) -> Observable<(AuthModels.SignUp.Response, AuthenticationToken)> {
+        network.request(AppleLoginAPI(identityToken: identityToken, fcmToken: deviceToken, authorizationCode: authorizationCode))
             .compactMap { [weak self] response in
                 (self?.convertToUser(with: response), self?.convertToToken(with: response)) as? (AuthModels.SignUp.Response, AuthenticationToken)
             }.catch { [weak self] error in
@@ -139,7 +139,7 @@ final class AuthRepositoryImpl: AuthRepository {
         )
     }
 
-    private func createAppleRegisterAPI(with request: AuthModels.SignUp.Request, fcmToken: String) -> AppleRegisterAPI {
+    private func createAppleRegisterAPI(with request: AuthModels.SignUp.Request, fcmToken: String, authorizationCode: String) -> AppleRegisterAPI {
         return .init(
             request: .init(
                 provider: request.oauthType.rawValue,
@@ -151,7 +151,8 @@ final class AuthRepositoryImpl: AuthRepository {
                 isAgreeMarketing: request.isAgreeMarketing
             ),
             identityToken: request.token,
-            fcmToken: fcmToken
+            fcmToken: fcmToken,
+            authorizationCode: authorizationCode
         )
     }
 

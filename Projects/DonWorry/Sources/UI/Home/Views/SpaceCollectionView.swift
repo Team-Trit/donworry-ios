@@ -24,7 +24,7 @@ final class SpaceCollectionView: UICollectionView {
         self.showsHorizontalScrollIndicator = false
         self.contentInset = .init(top: 0, left: 25, bottom: 0, right: 25)
         self.register(SpaceCollectionViewCell.self)
-        self.backgroundColor = .clear
+        self.backgroundColor = .white
         self.allowsSelection = true
         self.allowsMultipleSelection = false
     }

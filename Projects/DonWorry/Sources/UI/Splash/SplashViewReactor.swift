@@ -51,14 +51,12 @@ final class SplashViewReactor: Reactor {
         case .splashEnd:
             let isUserLoggined = isUserLogginedUseCase.isUserLoggined()
             let goToHome = (currentState.shareID == nil) && isUserLoggined
-
             if goToHome  {
                 return .just(.routeTo(.home))
             } else if !isUserLoggined {
                 return .just(.routeTo(.login))
             } else {
                 return joinSpace().catch { .just(.error($0)) }
-
             }
         }
     }

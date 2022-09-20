@@ -141,7 +141,6 @@ extension EnterUserInfoViewController {
             .drive { self.accountStackView.accountInputField.chooseBankButton.setTitle($0, for: .normal) }
             .disposed(by: disposeBag)
         
-        
         reactor.pulse(\.$toast)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
@@ -159,8 +158,7 @@ extension EnterUserInfoViewController {
             .compactMap { $0 }
             .drive { [weak self] in
                 self?.route(to: $0)
-            }
-            .disposed(by: disposeBag)
+            }.disposed(by: disposeBag)
     }
 }
 

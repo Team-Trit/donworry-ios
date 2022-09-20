@@ -32,7 +32,8 @@ final class DeRegisterUseCaseImpl: DeRegisterUseCase {
             .do(onNext: { [weak self] _ in
                 _ = self?.accessTokenRepository.deleteAccessToken()
                 _ = self?.userAccountRepository.deleteLocalUserAccount()
-            })
+            }
+            )
                 }
 }
 

@@ -14,19 +14,23 @@ import ReactorKit
 import RxCocoa
 import RxSwift
 import SnapKit
+import SkeletonView
 
 final class HomeViewController: BaseViewController, ReactorKit.View {
     typealias Reactor = HomeReactor
-    
-    // MARK: 테스트용 local storage service
-    let service = UserServiceImpl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
         setNotification()
     }
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        headerView.showGradientSkeleton()
+        emptyView.showAnimatedGradientSkeleton()
+    }
 
     func bind(reactor: Reactor) {
         self.render(reactor)
@@ -92,34 +96,24 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
     private func render(_ reactor: Reactor) {
         reactor.state.map { $0.homeHeader }
             .observe(on: MainScheduler.instance)
-            .bind(to: self.headerView.rx.viewModel)
-            .disposed(by: disposeBag)
-
-        reactor.state.map { $0.spaceViewModelList.isNotEmpty }
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.emptyView.rx.isHidden)
-            .disposed(by: disposeBag)
-
-        reactor.state.map { $0.spaceViewModelList.isEmpty }
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.billCardCollectionView.rx.isHidden)
-            .disposed(by: disposeBag)
+            .subscribe(onNext: { [weak self] in
+                self?.headerView.viewModel = $0
+                self?.headerView.hideSkeleton()
+            }).disposed(by: disposeBag)
 
         reactor.state.map { $0.spaceViewModelList }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] spaces in
                 self?.spaceCollectionView.reloadData()
-            }).disposed(by: disposeBag)
-
-        reactor.state.map { $0.sections }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] section in
-                self?.billCardCollectionView.reloadData()
+                self?.emptyView.isHidden = spaces.isNotEmpty
+                self?.emptyView.hideSkeleton()
             }).disposed(by: disposeBag)
 
         spaceCollectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
+
+        spaceCollectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
         billCardCollectionView.rx.setDataSource(self)
@@ -130,6 +124,32 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] in
                 self?.move(to: $0)
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$reload)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] section in
+                self?.billCardCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.state.map { $0.isSpaceEmpty }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.billCardCollectionView.reloadData()
+                self?.spaceCollectionView.reloadData()
+                self?.emptyView.hideSkeleton()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$reloadWithScroll)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] in
+                self?.billCardCollectionView.reloadData()
+                self?.billCardCollectionView.scrollToItem(
+                    at: .init(item: 0, section: 0),
+                    at: .left,
+                    animated: false
+                )
             }).disposed(by: disposeBag)
     }
 
@@ -167,6 +187,13 @@ extension HomeViewController {
         self.view.addSubview(self.goToCreateSpaceButton)
         self.view.addSubview(self.emptyView)
 
+        commonAttribute(of: view)
+        commonAttribute(of: spaceCollectionView)
+        commonAttribute(of: billCardCollectionView)
+        commonAttribute(of: gotoSearchSpaceButton)
+        commonAttribute(of: goToCreateSpaceButton)
+        commonAttribute(of: emptyView)
+
         self.headerView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
@@ -195,7 +222,7 @@ extension HomeViewController {
             make.height.equalTo(58)
         }
         self.emptyView.snp.makeConstraints { make in
-            make.top.equalTo(self.headerView.snp.bottom)
+            make.top.equalTo(self.spaceCollectionView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.goToCreateSpaceButton.snp.top)
         }
@@ -208,6 +235,10 @@ extension HomeViewController {
         )
     }
 
+    private func commonAttribute(of target: UIView) {
+        target.isSkeletonable = true
+    }
+    
     private func setNotification() {
         NotificationCenter.default.addObserver(self, selector: #selector(routeToPaymentListScene), name: .init("com.TriT.DonWorry.joinSpace"), object: nil)
     }
@@ -301,18 +332,33 @@ extension HomeViewController {
     }
 }
 
-// MARK: UICollectionViewDataSource
+// MARK: SkeletonCollectionViewDelegate
 
-extension HomeViewController: UICollectionViewDataSource {
+extension HomeViewController: SkeletonCollectionViewDelegate { }
+
+// MARK: SkeletonCollectionViewDataSource
+
+extension HomeViewController: SkeletonCollectionViewDataSource {
+
+    func collectionSkeletonView(
+        _ skeletonView: UICollectionView,
+        cellIdentifierForItemAt indexPath: IndexPath
+    ) -> ReusableCellIdentifier {
+        return SpaceCollectionViewCell.description()
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
+        guard let currentState = reactor?.currentState else { return 0 }
         switch collectionView {
         case spaceCollectionView:
-            return reactor?.currentState.spaceViewModelList.count ?? 0
+            let spaceCount = currentState.spaceViewModelList.count
+            return (spaceCount == 0 && currentState.isSpaceEmpty == false) ? 4 : spaceCount // 4 : skeleton
         case billCardCollectionView:
-            return reactor?.currentState.sections[0].items.count ?? 1
+            let billCardCount = currentState.sections[0].items.count
+            return billCardCount // no Skeleton
         default:
             return 0
         }
@@ -333,18 +379,24 @@ extension HomeViewController: UICollectionViewDataSource {
     private func spaceCollectionViewCell(
         for indexPath: IndexPath
     ) -> SpaceCollectionViewCell {
-        guard let reactor = reactor else { return .init() }
+        guard let currentState = reactor?.currentState else { return .init() }
+        let spaceViewModelList = currentState.spaceViewModelList
         let cell = spaceCollectionView.dequeueReusableCell(
             SpaceCollectionViewCell.self,
             for: indexPath
         )
-        cell.viewModel = reactor.currentState.spaceViewModelList[indexPath.item]
-        let isSelected = indexPath.item == reactor.currentState.selectedSpaceIndex
-        if isSelected {
-            cell.selectedAttributes()
-            spaceCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        if spaceViewModelList.isNotEmpty || currentState.isSpaceEmpty {
+            cell.viewModel = spaceViewModelList[indexPath.item]
+            let isSelected = indexPath.item == currentState.selectedSpaceIndex
+            if isSelected {
+                cell.selectedAttributes()
+                spaceCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+            } else {
+                cell.unSelectedAttributes()
+            }
+            cell.hideAnimation()
         } else {
-            cell.unSelectedAttributes()
+            cell.startAnimation()
         }
         return cell
     }

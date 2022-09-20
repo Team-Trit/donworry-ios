@@ -29,6 +29,7 @@ enum AuthModels {
             var isAgreeMarketing: Bool
             var token: String
             var oauthType: OAuthType
+            var authorizationCode: String?
 
             static var initialValue: Request = .init(nickname: "", email: "", imgURL: nil, bank: "은행선택", bankNumber: "", bankHolder: "", isAgreeMarketing: false, token: "", oauthType: .apple)
         }

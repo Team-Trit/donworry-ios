@@ -35,7 +35,7 @@ final class SignUpUseCaseImpl: SignUpUseCase {
         guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
         switch request.oauthType {
         case .apple:
-            return authRepository.signupWithApple(requeset: request, fcmToken: fcmToken)
+            return authRepository.signupWithApple(requeset: request, fcmToken: fcmToken, authorizationCode: request.authorizationCode ?? "")
                 .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                     _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                     _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)

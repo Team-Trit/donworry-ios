@@ -66,7 +66,6 @@ final class GiveBillCardCollectionViewCell: UICollectionViewCell {
         v.font = .designSystem(weight: .bold, size: ._13)
         v.adjustsFontForContentSizeCategory = true
         v.text = "줄돈"
-
         v.textAlignment = .center
         return v
     }()

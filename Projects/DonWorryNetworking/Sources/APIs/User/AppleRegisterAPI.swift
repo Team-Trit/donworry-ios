@@ -13,10 +13,11 @@ import Moya
 public struct AppleRegisterAPI: ServiceAPI {
     public typealias Response = DTO.PostUser
     public var request: Request
-    public init(request: Request, identityToken: String, fcmToken: String) {
+    public init(request: Request, identityToken: String, fcmToken: String, authorizationCode: String) {
         self.request = request
         self.fcmToken = fcmToken
         self.identityToken = identityToken
+        self.authorizationCode = authorizationCode
     }
     public var path: String { return "/register/user/apple" }
     public var method: Method = .post
@@ -25,8 +26,10 @@ public struct AppleRegisterAPI: ServiceAPI {
     }
     public var headers: [String : String]? {
         ["Authorization-APPLE": "Bearer \(identityToken)",
-         "DeviceToken": "\(fcmToken)"]
+         "DeviceToken": "\(fcmToken)",
+         "Authorization-Code": "\(authorizationCode)"]
     }
+    private let authorizationCode: String
     private let identityToken: String
     private let fcmToken: String
 }

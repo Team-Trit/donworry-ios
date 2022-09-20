@@ -13,6 +13,7 @@ import SnapKit
 import Kingfisher
 import RxSwift
 import RxCocoa
+import SkeletonView
 
 struct HomeHeaderViewModel {
     var imageURL: String?
@@ -57,6 +58,7 @@ final class HomeHeaderView: UIView {
         didSet {
             self.titleLabel.text = "\(viewModel?.nickName ?? "")님 안녕하세요"
             profileButton.setBasicProfileImageWhenNilAndEmpty(with: viewModel?.imageURL)
+            profileButton.roundCorners(22.5)
         }
     }
 
@@ -79,12 +81,19 @@ final class HomeHeaderView: UIView {
         self.stackView.addArrangedSubview(self.profileButton)
         self.stackView.addArrangedSubview(self.titleLabel)
 
+        commonAttribute(of: self)
+        commonAttribute(of: stackView)
+        commonAttribute(of: alarmButton)
+        commonAttribute(of: profileButton)
+        commonAttribute(of: titleLabel)
+
         self.snp.makeConstraints { make in
             make.height.equalTo(65)
         }
         self.stackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview().offset(25)
+            make.trailing.equalTo(alarmButton.snp.leading).offset(10)
             make.bottom.equalToSuperview()
         }
         self.profileButton.snp.makeConstraints { make in
@@ -100,5 +109,9 @@ final class HomeHeaderView: UIView {
             endColor: .designSystem(.blueBottomGradient)!
         )
         self.profileButton.roundCorners(22.5)
+    }
+
+    private func commonAttribute(of target: UIView) {
+        target.isSkeletonable = true
     }
 }

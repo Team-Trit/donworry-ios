@@ -15,6 +15,7 @@ import DesignSystem
 import DonWorryExtensions
 import RxDataSources
 import FirebaseDynamicLinks
+import SkeletonView
 
 final class PaymentCardListViewController: BaseViewController, View {
     typealias Reactor = PaymentCardListReactor
@@ -61,6 +62,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.contentInset = UIEdgeInsets(top: 13, left: 0, bottom: 58 + 6 + 20, right: 0)
         v.register(PaymentCardCollectionViewCell.self)
         v.register(AddPaymentCardCollectionViewCell.self)
+        v.register(ParticipantListCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
         return v
     }()
@@ -103,6 +105,10 @@ final class PaymentCardListViewController: BaseViewController, View {
         super.viewDidLoad()
         setUI()
         setNotification()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     func setNotification() {
@@ -321,7 +327,6 @@ extension PaymentCardListViewController {
         }
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(self.spaceIDLabel.snp.bottom).offset(15)
-//            make.center.equalToSuperview()
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -431,7 +436,6 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         } else {
             return currentState.paymentCardListViewModel.count + 1
         }
-
     }
 
     func collectionView(
@@ -458,7 +462,8 @@ extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        if indexPath.item == (reactor?.currentState.paymentCardListViewModel.count ?? 0) {
+        guard let paymentCardListViewModel = reactor?.currentState.paymentCardListViewModel else { return .zero }
+        if indexPath.item == paymentCardListViewModel.count {
             return .init(width: 340, height: 127)
         } else {
             return .init(width: 340, height: 216)

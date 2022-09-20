@@ -132,9 +132,9 @@ extension SplashViewController: UIGestureRecognizerDelegate {
     private func routeToPaymentCardListViewController(_ paymentCardList: PaymentCardListViewController) {
         let home = HomeViewController()
         home.reactor = HomeReactor()
-        let navigationController = UINavigationController()
+        let navigationController = UINavigationController(rootViewController: home)
         navigationController.isNavigationBarHidden = true
-        navigationController.setViewControllers([home, paymentCardList], animated: true)
+        navigationController.pushViewController(paymentCardList, animated: false)
         navigationController.interactivePopGestureRecognizer?.delegate = self
         navigationController.interactivePopGestureRecognizer?.isEnabled = true
         UIView.transition(

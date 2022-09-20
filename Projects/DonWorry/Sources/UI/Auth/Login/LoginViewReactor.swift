@@ -14,7 +14,7 @@ import Foundation
 enum LoginStep {
     typealias OAuthType = AuthModels.OAuthType
     case none
-    case signup(String, OAuthType)
+    case signup(String, String, OAuthType)
     case home
 }
 
@@ -25,13 +25,10 @@ final class LoginViewReactor: Reactor {
     private let signInUseCase: SignInUseCase
     
     enum Action {
-        case proceedWithAppleToken(identityToken: Token)
+        case proceedWithAppleToken(identityToken: Token, authorizationCode: Token)
         case kakaoLoginButtonPressed
         case routeToHome
-        case routeToSignUp(Token)
         case errorToast(String)
-        // TODO: 삭제하기
-        case didTapTestUserButton
     }
     
     enum Mutation {
@@ -61,21 +58,15 @@ final class LoginViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .proceedWithAppleToken(let identityToken):
-            let signIn = requestAppleLogin(token: identityToken)
+        case .proceedWithAppleToken(let identityToken, let authorizationCode):
+            let signIn = requestAppleLogin(token: identityToken, authorizationCode: authorizationCode)
             return signIn
         case .kakaoLoginButtonPressed:
             return requestKakaoLogin()
         case .routeToHome:
             return .just(.routeTo(.home))
-        case .routeToSignUp(let token):
-            return .just(.routeTo(.signup(token, .kakao)))
         case .errorToast(let message):
             return .just(.toast(message))
-        case .didTapTestUserButton:
-            // TODO: 유저ID를 아실경우, signIn 메소드를 사용해주세요.
-            return testUserService.signIn(1)
-                .map { _ in .routeTo(.home) }
         }
     }
 
@@ -92,14 +83,14 @@ final class LoginViewReactor: Reactor {
         return newState
     }
 
-    private func requestAppleLogin(token: String) -> Observable<Mutation> {
-        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token, deviceToken: ""))
+    private func requestAppleLogin(token: String, authorizationCode: String) -> Observable<Mutation> {
+        signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token, deviceToken: ""), authorizationCode: authorizationCode)
             .map { _ in Mutation.routeTo(.home) }
             .catch { error in
                 guard let error = error.toAuthError() else { return .error(error) }
                 switch error {
                 case .nouser(let token):
-                    return .just(.routeTo(.signup(token, .apple)))
+                    return .just(.routeTo(.signup(token, authorizationCode, .apple)))
                 default:
                     return .just(.toast(error.message))
                 }
@@ -115,7 +106,7 @@ final class LoginViewReactor: Reactor {
                 guard let error = error.toAuthError() else { return .error(error) }
                 switch error {
                 case .nouser(let token):
-                    return .just(.routeTo(.signup(token, .apple)))
+                    return .just(.routeTo(.signup(token, "", .kakao)))
                 default:
                     return .just(.toast(error.message))
                 }

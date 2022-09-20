@@ -31,7 +31,7 @@ final class BillCardCollectionView: UICollectionView {
 
 extension BillCardCollectionView: UICollectionViewDelegateFlowLayout {
     fileprivate var collectionViewInset: CGFloat {
-        return 94
+        return 80 // 94
     }
 
     fileprivate var itemSpacing: CGFloat {
@@ -59,16 +59,6 @@ extension BillCardCollectionView: UICollectionViewDelegateFlowLayout {
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
     }
-//
-//    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//
-//        let width: CGFloat = scrollView.contentOffset.x + collectionViewInset * 2
-//        let cellWidth: CGFloat = UIScreen.main.bounds.width - collectionViewInset * 2 + itemSpacing
-//        let newPage = Int(width / cellWidth)
-//        if pageControl.currentPage != newPage {
-//            pageControl.currentPage = newPage
-//        }
-//    }
 }
 
 // MARK: HorizontalCarouselLayoutDelegate

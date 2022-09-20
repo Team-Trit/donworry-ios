@@ -19,9 +19,7 @@ protocol HomePresenter {
 
     func formatSection(
         isAllPaymentCompleted: Bool,
-        space: SpaceModels.Space,
-        payments: [SpaceModels.SpacePayment],
-        isTaker: Bool
+        space: SpaceModels.Space
     ) -> [BillCardSection]
 }
 
@@ -52,13 +50,11 @@ final class HomePresenterImpl: HomePresenter {
     }
     func formatSection(
         isAllPaymentCompleted: Bool,
-        space: SpaceModels.Space,
-        payments: [SpaceModels.SpacePayment],
-        isTaker: Bool
+        space: SpaceModels.Space
     ) -> [BillCardSection] {
-        if payments.isEmpty { return [.BillCardSection(createOpenStateCard(status: space.status))] }
+        if space.payments.isEmpty { return [.BillCardSection(createOpenStateCard(status: space.status))] }
         var cards: [HomeBillCardItem] = createProgressStateCard(status: space.status)
-        cards.append(contentsOf: formatBillCardList(from: payments, isTaker: isTaker))
+        cards.append(contentsOf: formatBillCardList(from: space.payments, isTaker: space.isTaker))
         if isAllPaymentCompleted { cards.append(.LeaveBillCard) }
         return [.BillCardSection(cards)]
     }

@@ -29,6 +29,7 @@ final class PaymentCardListReactor: Reactor {
     typealias PaymentCardList = [PaymentCardModels.FetchCardList.Response.PaymentCard]
     typealias Space = PaymentCardModels.FetchCardList.Response.Space
     typealias Status = SpaceModels.StartPaymentAlogrithm.Request.Status
+    typealias User = PaymentCardModels.FetchCardList.Response.PaymentCard.User
 
     enum Action {
         case viewWillAppear
@@ -57,6 +58,7 @@ final class PaymentCardListReactor: Reactor {
         var paymentCardListViewModel: [PaymentCardCellViewModel] = []
         var canLeaveSpace: Bool = true
         var isUserAdmin: Bool = false
+        var spaceJoinUsers: [User] = []
         var timer: Disposable?
 
         @Pulse var error: Error?
@@ -171,7 +173,7 @@ final class PaymentCardListReactor: Reactor {
     }
 
     private func setupTimer() -> Disposable {
-        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
+        Observable<Int>.interval(.seconds(3), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
             self?.action.onNext(.getPaymentStatus)
         })
     }
