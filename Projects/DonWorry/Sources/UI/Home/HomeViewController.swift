@@ -17,9 +17,6 @@ import SnapKit
 
 final class HomeViewController: BaseViewController, ReactorKit.View {
     typealias Reactor = HomeReactor
-    
-    // MARK: 테스트용 local storage service
-    let service = UserServiceImpl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,13 +109,6 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 self?.spaceCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
-        reactor.state.map { $0.sections }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] section in
-                self?.billCardCollectionView.reloadData()
-            }).disposed(by: disposeBag)
-
         spaceCollectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
 
@@ -130,6 +120,24 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] in
                 self?.move(to: $0)
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$reload)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] section in
+                self?.billCardCollectionView.reloadData()
+            }).disposed(by: disposeBag)
+
+        reactor.pulse(\.$reloadWithScroll)
+            .observe(on: MainScheduler.instance)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] in
+                self?.billCardCollectionView.reloadData()
+                self?.billCardCollectionView.scrollToItem(
+                    at: .init(item: 0, section: 0),
+                    at: .left,
+                    animated: false
+                )
             }).disposed(by: disposeBag)
     }
 

@@ -31,6 +31,7 @@ public class HorizontalCarouselLayout: UICollectionViewFlowLayout {
 
         self.isInit = true
     }
+
     public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
