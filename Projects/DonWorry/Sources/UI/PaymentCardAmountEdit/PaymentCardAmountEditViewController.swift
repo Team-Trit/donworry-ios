@@ -42,6 +42,17 @@ final class PaymentCardAmountEditViewController: BaseViewController, View {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private lazy var topView =  UIView()
+    
+    private lazy var labelStackView: UIStackView = {
+        let v = UIStackView()
+        v.spacing = 15
+        v.alignment = .center
+        v.distribution = .fill
+        v.axis = .horizontal
+        return v
+    }()
+    
     private lazy var imageBackgroundView: UIView = {
         let v = UIView()
         v.backgroundColor = .designSystem(.grayEEEEEE)
@@ -196,55 +207,57 @@ extension PaymentCardAmountEditViewController {
     private func setUI() {
         view.backgroundColor = .designSystem(.white)
 
-        view.addSubviews(navigationBar, paymentTitleLabel, amountLabel, wonLabel, nextButton, numberPadCollectionView)
+        view.addSubviews(navigationBar, topView, numberPadCollectionView)
+        topView.addSubviews(labelStackView, amountLabel, wonLabel, nextButton)
+        
+        labelStackView.addArrangedSubviews(imageBackgroundView, iconImageView, paymentTitleLabel)
         
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
         
-        paymentTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(100)
-            make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
-            make.top.equalToSuperview().offset(134)
+        topView.snp.makeConstraints { make in
+            make.top.equalTo(navigationBar.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        labelStackView.snp.makeConstraints { make in
+            make.top.equalTo(navigationBar.snp.bottom).offset(UIDevice.current.hasNotch ? 45 : 35)
+            make.leading.equalToSuperview().offset(50)
+        }
+        
+        imageBackgroundView.snp.makeConstraints { make in
+            make.width.height.equalTo(37)
+        }
+
+        iconImageView.snp.makeConstraints { make in
+            make.center.equalTo(imageBackgroundView.snp.center)
+            make.width.height.equalTo(30)
         }
         
         amountLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(nextButton.snp.top).offset(-100)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(130)
+            make.top.equalTo(labelStackView.snp.bottom).offset(UIDevice.current.hasNotch ? 40 : 30)
             make.trailing.equalTo(wonLabel.snp.leading).offset(-6)
             make.width.equalTo(230)
         }
         
         wonLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(amountLabel.snp.bottom).offset(-35)
+            make.bottom.equalTo(amountLabel.snp.bottom).offset(-10)
             make.trailing.equalToSuperview().offset(-70)
         }
         
         nextButton.snp.makeConstraints { make in
-            make.width.equalTo(340)
+            make.leading.equalTo(self.view.snp.leading).inset(25)
+            make.trailing.equalTo(self.view.snp.trailing).inset(25)
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(394)
+            make.bottom.equalTo(numberPadCollectionView.snp.top).offset(UIDevice.current.hasNotch ? -25 : -15)
         }
         
         numberPadCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(nextButton.snp.bottom).offset(20)
+            make.top.equalTo(topView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
-        }
-
-        if editType == .create {
-            view.addSubviews(imageBackgroundView, iconImageView)
-
-            imageBackgroundView.snp.makeConstraints { make in
-                make.leading.equalToSuperview().offset(50)
-                make.centerY.equalTo(navigationBar.snp.bottom).offset(50)
-                make.width.height.equalTo(37)
-            }
-
-            iconImageView.snp.makeConstraints { make in
-                make.center.equalTo(imageBackgroundView.snp.center)
-                make.width.height.equalTo(30)
-            }
+            make.height.equalTo( UIScreen.main.bounds.size.height / 2.1 )
         }
 
     }
