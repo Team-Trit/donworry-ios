@@ -12,6 +12,7 @@ import SnapKit
 import DesignSystem
 import DonWorryExtensions
 import Kingfisher
+import SkeletonView
 
 struct PaymentCardInRoomViewModel {
     var id: Int
@@ -190,6 +191,12 @@ extension PaymentCardInRoomView {
         self.payerStackView.addArrangedSubview(self.payerImageView)
         self.payerStackView.addArrangedSubview(self.payerNameLabel)
 
+        [self, nameLabel, amountStackView, cardSideView, participatedUserCountLabel,
+         iconWrappedView, totalAmountLabel, iconImageView, participatedUserView,
+         payerStackView, dateLabel, payerImageView, payerNameLabel].forEach { [weak self] in
+            self?.commonAttribute(of: $0)
+        }
+
         self.snp.makeConstraints { make in
             make.width.equalTo(340)
             make.height.equalTo(216)
@@ -241,4 +248,7 @@ extension PaymentCardInRoomView {
         self.iconWrappedView.roundCorners(5)
     }
 
+    private func commonAttribute(of target: UIView) {
+        target.isSkeletonable = true
+    }
 }

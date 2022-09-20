@@ -9,6 +9,7 @@
 import UIKit
 import DesignSystem
 import DonWorryExtensions
+import SkeletonView
 
 struct PaymentCardCellViewModel: Equatable {
     var id: Int
@@ -57,9 +58,14 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
+        self.skeletonCornerRadius = 20
         self.layer.cornerRadius = 20
         self.paymentCardInRoomView.layer.masksToBounds = true
         self.contentView.addSubview(self.paymentCardInRoomView)
+
+        [self, paymentCardInRoomView].forEach { [weak self] in
+            self?.commonAttribute(of: $0)
+        }
 
         self.paymentCardInRoomView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -94,5 +100,9 @@ final class PaymentCardCollectionViewCell: UICollectionViewCell {
                 }
             )
         }
+    }
+
+    private func commonAttribute(of target: UIView) {
+        target.isSkeletonable = true
     }
 }
