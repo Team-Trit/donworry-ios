@@ -50,13 +50,13 @@ extension AgreeTermTableViewCell {
         contentView.addSubviews(checkButton, titleLabel, linkButton)
         
         checkButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-5)
+            make.leading.equalToSuperview().offset(-3)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(40)
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(checkButton.snp.trailing).offset(15)
+            make.leading.equalTo(checkButton.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
         }
         

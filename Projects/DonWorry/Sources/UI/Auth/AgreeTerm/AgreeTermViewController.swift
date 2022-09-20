@@ -141,6 +141,7 @@ extension AgreeTermViewController {
                 signUpModel: signupModel,
                 checkedTerms: checkedTerms
             )
+            /*
             if #available(iOS 15.0, *) {
                 if let presentationController = confirmTermViewController.sheetPresentationController {
                     presentationController.detents = [.medium()]
@@ -148,6 +149,10 @@ extension AgreeTermViewController {
                 }
             }
             self.present(confirmTermViewController, animated: true)
+            */
+            
+            confirmTermViewController.modalPresentationStyle = .overCurrentContext
+            self.present(confirmTermViewController, animated: false)
         }
     }
 

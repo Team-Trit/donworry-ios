@@ -128,7 +128,7 @@ extension PaymentCardAmountEditReactor {
             } else {
                 _ = amount.popLast()
             }
-        } else if amount.count < 16 {
+        } else if amount.count < 10 {
             if amount == "0" {
                 amount = with
             } else {
