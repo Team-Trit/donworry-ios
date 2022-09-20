@@ -132,6 +132,14 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
                 self?.billCardCollectionView.reloadData()
             }).disposed(by: disposeBag)
 
+        reactor.state.map { $0.isSpaceEmpty }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.billCardCollectionView.reloadData()
+                self?.spaceCollectionView.reloadData()
+                self?.emptyView.hideSkeleton()
+            }).disposed(by: disposeBag)
+
         reactor.pulse(\.$reloadWithScroll)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
@@ -347,7 +355,7 @@ extension HomeViewController: SkeletonCollectionViewDataSource {
         switch collectionView {
         case spaceCollectionView:
             let spaceCount = currentState.spaceViewModelList.count
-            return spaceCount == 0 ? 4 : spaceCount // 4 : skeleton
+            return (spaceCount == 0 && currentState.isSpaceEmpty == false) ? 4 : spaceCount // 4 : skeleton
         case billCardCollectionView:
             let billCardCount = currentState.sections[0].items.count
             return billCardCount // no Skeleton
@@ -377,7 +385,7 @@ extension HomeViewController: SkeletonCollectionViewDataSource {
             SpaceCollectionViewCell.self,
             for: indexPath
         )
-        if spaceViewModelList.isNotEmpty {
+        if spaceViewModelList.isNotEmpty || currentState.isSpaceEmpty {
             cell.viewModel = spaceViewModelList[indexPath.item]
             let isSelected = indexPath.item == currentState.selectedSpaceIndex
             if isSelected {

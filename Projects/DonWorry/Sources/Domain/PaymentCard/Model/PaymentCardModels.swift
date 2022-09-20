@@ -5,9 +5,9 @@
 ////  Created by Woody on 2022/09/04.
 ////  Copyright © 2022 Tr-iT. All rights reserved.
 ////
-//
-//import Foundation
-//
+
+import Foundation
+
 enum PaymentCardModels {
 
     enum FetchCardList {
@@ -15,6 +15,7 @@ enum PaymentCardModels {
         struct Response {
             public let isAllPaymentCompleted: Bool
             public let space: Space
+//            public let spaceJoinUsers: [PaymentCard.User]
             public let cards: [PaymentCard]
 
             struct Space {
@@ -23,7 +24,7 @@ enum PaymentCardModels {
             }
 
             struct PaymentCard {
-                let id, spaceJoinUserCount, cardJoinUserCount: Int
+                let id, cardJoinUserCount: Int
                 let name: String
                 let totalAmount: Int
                 let bgColor, paymentDate: String

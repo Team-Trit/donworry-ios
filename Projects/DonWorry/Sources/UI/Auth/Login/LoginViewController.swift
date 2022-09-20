@@ -19,14 +19,6 @@ import SnapKit
 final class LoginViewController: BaseViewController, View {
     private lazy var labelStackView = LabelStackView()
     
-    // TODO: 삭제하기
-    lazy var testUserButton: UIButton = {
-        let v = UIButton()
-        v.setTitle("", for: .normal)
-        v.setBackgroundColor(.clear, for: .normal)
-        return v
-    }()
-    
     private lazy var appleLoginButton: UIButton = {
         let v = UIButton()
         v.setBackgroundImage(.init(.apple_login_button), for: .normal)
@@ -87,18 +79,6 @@ extension LoginViewController {
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.centerX.equalToSuperview()
         }
-        
-        // TODO: 삭제하기
-        view.addSubview(testUserButton)
-        testUserButton.snp.makeConstraints { make in
-            make.width.height.equalTo(100)
-            make.top.trailing.equalToSuperview().inset(30)
-        }
-        testUserButton.rx.tap
-            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
-            .map { .didTapTestUserButton }
-            .bind(to: reactor!.action)
-            .disposed(by: disposeBag)
     }
 }
 
@@ -151,11 +131,12 @@ extension LoginViewController {
 extension LoginViewController {
     private func route(to step: LoginStep) {
         switch step {
-        case let .signup(token, oauthType):
+        case let .signup(token, authorizationCode ,oauthType):
             let vc = EnterUserInfoViewController()
             vc.reactor = EnterUserInfoViewReactor(
                 oauthType: oauthType,
-                token: token
+                token: token,
+                authorizationCode: authorizationCode
             )
             self.navigationController?.pushViewController(vc, animated: true)
         case .home:
@@ -183,9 +164,11 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
         didCompleteWithAuthorization authorization: ASAuthorization
     ) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-           let identityToken = appleIDCredential.identityToken {
+           let identityToken = appleIDCredential.identityToken,
+           let authorizationCode = appleIDCredential.authorizationCode {
             let tokenString = String(decoding: identityToken, as: UTF8.self)
-            reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString))
+            let authorizationCode = String(decoding: authorizationCode, as: UTF8.self)
+            reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString, authorizationCode: authorizationCode))
         } else {
             DWToastFactory.show(message: "애플 로그인 실패", type: .error)
         }

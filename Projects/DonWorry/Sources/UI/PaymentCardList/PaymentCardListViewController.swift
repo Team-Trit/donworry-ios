@@ -62,7 +62,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.contentInset = UIEdgeInsets(top: 13, left: 0, bottom: 58 + 6 + 20, right: 0)
         v.register(PaymentCardCollectionViewCell.self)
         v.register(AddPaymentCardCollectionViewCell.self)
-//        v.register(ParticipantListCollectionViewCell.self)
+        v.register(ParticipantListCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
         return v
     }()
@@ -443,11 +443,6 @@ extension PaymentCardListViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let reactor = reactor else { return .init() }
-//        if indexPath.item == 0 {
-//            let cell = collectionView.dequeueReusableCell(ParticipantListCollectionViewCell.self, for: indexPath)
-//            cell.viewModel = .init(users: users)
-//            return cell
-//        } else
         if indexPath.item == reactor.currentState.paymentCardListViewModel.count {
             let cell = collectionView.dequeueReusableCell(AddPaymentCardCollectionViewCell.self, for: indexPath)
             return cell
@@ -467,9 +462,8 @@ extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-//        if indexPath.item == 0 {
-//            return .init(width: 340, height: 160)
-        if indexPath.item == (reactor?.currentState.paymentCardListViewModel.count ?? 0) {
+        guard let paymentCardListViewModel = reactor?.currentState.paymentCardListViewModel else { return .zero }
+        if indexPath.item == paymentCardListViewModel.count {
             return .init(width: 340, height: 127)
         } else {
             return .init(width: 340, height: 216)

@@ -11,7 +11,6 @@ import SnapKit
 import DonWorryExtensions
 import DesignSystem
 
-
 struct ParticipantListCellViewModel {
     let users: [ParticipantCellViewModel]
 }

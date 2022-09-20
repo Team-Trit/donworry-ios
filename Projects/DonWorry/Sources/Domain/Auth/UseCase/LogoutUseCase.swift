@@ -15,12 +15,23 @@ protocol LogoutUseCase {
 
 final class LogoutUseCaseImpl: LogoutUseCase {
     private let authRepository: AuthRepository
-    
-    init(authRepository: AuthRepository = AuthRepositoryImpl()) {
+    private let accessTokenRepository: AccessTokenRepository
+    private let userAccountRepository: UserAccountRepository
+    init(
+        authRepository: AuthRepository = AuthRepositoryImpl(),
+        accessTokenRepository: AccessTokenRepository = AccessTokenRepositoryImpl(),
+        userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl()
+    ) {
         self.authRepository = authRepository
+        self.accessTokenRepository = accessTokenRepository
+        self.userAccountRepository = userAccountRepository
     }
     
     func logout() -> Observable<AuthModels.Empty.Response> {
         authRepository.logout()
+            .do { [weak self] _ in
+                _ = self?.accessTokenRepository.deleteAccessToken()
+                _ = self?.userAccountRepository.deleteLocalUserAccount()
+            }
     }
 }

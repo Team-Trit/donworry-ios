@@ -65,6 +65,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         var homeHeader: HeaderModel? // 헤더 뷰모델
         var timer: Disposable?
         var isSpaceTapped: Bool = false
+        var isSpaceEmpty: Bool = false
 
         @Pulse var reloadWithScroll: Void? // 스크롤 있는 collectionView 업데이트
         @Pulse var reload: Void? // 주기적인 collectionView 업데이트
@@ -94,7 +95,11 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return .concat([requestUserAccount(), requestSpaceList(), .just(.setupTimer(true))])
+            return .concat([
+                requestUserAccount(),
+                requestSpaceList(),
+                .just(.setupTimer(true))
+            ])
         case .viewDidDisappear:
             return .just(.setupTimer(false))
         case .getSpace(let spaceID):
@@ -153,10 +158,18 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
             if direction {
                 newState.timer = setupTimer()
             } else {
-                print("타이머 없애기")
                 newState.timer?.dispose()
             }
         case .updateSpaceList(let spaceList):
+            if spaceList.isEmpty {
+                newState.spaceViewModelList = []
+                newState.sections = [.BillCardSection([])]
+                newState.selectedSpaceViewModel = nil
+                newState.isSpaceEmpty = true
+                break
+            }
+
+            newState.isSpaceEmpty = false
             if currentState.selectedSpaceIndex < spaceList.count {
                 let selectedSpace = spaceList[currentState.selectedSpaceIndex]
                 newState.spaceViewModelList = homePresenter.formatSpaceCellListViewModel(spaceList: spaceList)
@@ -202,6 +215,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case .routeTo(let step):
             newState.step = step
         }
+        print(newState)
         return newState
     }
 

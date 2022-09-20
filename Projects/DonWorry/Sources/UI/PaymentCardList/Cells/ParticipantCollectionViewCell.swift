@@ -13,7 +13,7 @@ import DonWorryExtensions
 
 struct ParticipantCellViewModel {
     let id: Int
-    let imageURL: String
+    let imageURL: String?
     let nickname: String
 }
 
@@ -49,7 +49,7 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
     var viewModel: ParticipantCellViewModel? {
         didSet {
             DispatchQueue.main.async { [weak self] in
-                self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.viewModel?.imageURL ?? "")
+                self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.viewModel?.imageURL)
                 self?.nickNameLabel.text = self?.viewModel?.nickname
                 self?.nickNameLabel.sizeToFit()
             }
@@ -85,6 +85,6 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
             make.width.height.equalTo(48)
         }
 
-        profileImageView.roundCorners(profileImageView.bounds.height / 2)
+        profileImageView.roundCorners(24)
     }
 }

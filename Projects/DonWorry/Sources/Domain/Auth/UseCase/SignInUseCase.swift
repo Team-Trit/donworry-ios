@@ -11,7 +11,7 @@ import RxSwift
 
 protocol SignInUseCase {
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response>
-    func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
+    func signInWithApple(request: AuthModels.SignIn.Reqeust, authorizationCode: String) -> Observable<AuthModels.Empty.Response>
     func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response>
 }
 
@@ -54,9 +54,9 @@ final class SignInUseCaseImpl: SignInUseCase {
             }
     }
 
-    func signInWithApple(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
+    func signInWithApple(request: AuthModels.SignIn.Reqeust, authorizationCode: String) -> Observable<AuthModels.Empty.Response> {
         guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
-        return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken)
+        return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken, authorizationCode:  authorizationCode)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
                 _ = self?.accessTokenRepository.saveAccessToken(authentication.accessToken)

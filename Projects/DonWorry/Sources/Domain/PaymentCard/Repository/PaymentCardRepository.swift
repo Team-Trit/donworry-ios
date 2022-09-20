@@ -95,7 +95,6 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
     private func convertToPaymentCard(_ dto: DTO.GetPaymentCardList.PaymentCard) -> PaymentCardModels.FetchCardList.Response.PaymentCard {
         return .init(
             id: dto.id,
-            spaceJoinUserCount: dto.spaceJoinUserCount,
             cardJoinUserCount: dto.cardJoinUserCount,
             name: dto.name,
             totalAmount: dto.totalAmount,

@@ -55,11 +55,14 @@ final class EnterUserInfoViewReactor: Reactor {
     
     init(oauthType: OAuthType,
          token: String,
+         authorizationCode: String,
          checkNicknameUseCase: CheckNicknameUseCase = CheckNicknameUseCaseImpl()
     ) {
         var signUpModel = SignUpModel.initialValue
         signUpModel.token = token
         signUpModel.oauthType = oauthType
+        signUpModel.authorizationCode = authorizationCode
+        print(signUpModel)
         self.checkNicknameUseCase = checkNicknameUseCase
         self.initialState = State(signUpModel: signUpModel, isNextButtonAvailable: false)
     }
@@ -127,7 +130,7 @@ extension EnterUserInfoViewReactor: EnterUserInfoViewDelegate {
     
     private func checkNickname(nickname: String) -> Observable<Mutation> {
         checkNicknameUseCase.checkNickname(nickname: nickname)
-            .map { _ in .routeTo(step: .none) }
+            .map { _ in .routeTo(step: .agreeTerm(self.currentState.signUpModel)) }
             .catch { error in
                 guard let error = error.toAuthError() else { return .error(error)}
 

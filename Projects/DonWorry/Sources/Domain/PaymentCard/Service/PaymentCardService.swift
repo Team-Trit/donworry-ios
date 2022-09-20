@@ -46,7 +46,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
     }
 
     // 유저가 정산 카드에 참여했는지 안했는지 판단해주는 메소드
-    // 참여했다면 isUserParticipatedIn을 True로 변환res
+    // 참여했다면 isUserParticipatedIn을 True로 변환 res
     private func compareUserIsParticipatedInPaymentCard(
         response: PaymentCardModels.FetchCardList.Response
     ) -> PaymentCardModels.FetchCardList.Response {
@@ -57,7 +57,6 @@ final class PaymentCardServiceImpl: PaymentCardService {
             cards: response.cards.map { c in
                     .init(
                         id: c.id,
-                        spaceJoinUserCount: c.spaceJoinUserCount,
                         cardJoinUserCount: c.cardJoinUserCount,
                         name: c.name,
                         totalAmount: c.totalAmount,

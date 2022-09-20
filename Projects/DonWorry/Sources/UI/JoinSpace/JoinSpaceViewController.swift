@@ -128,6 +128,7 @@ final class JoinSpaceViewController: BaseViewController, View {
 extension JoinSpaceViewController {
 
     private func setUI() {
+        self.isModalInPresentation = true
         self.dismissButton.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         self.dismissButton.setTitle("취소", for: .normal)
         self.dismissButton.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
