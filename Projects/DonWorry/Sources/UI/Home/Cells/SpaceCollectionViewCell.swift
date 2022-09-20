@@ -10,6 +10,7 @@ import UIKit
 import DesignSystem
 import SnapKit
 import DonWorryExtensions
+import SkeletonView
 
 struct SpaceCellViewModel: Equatable {
     var id: Int
@@ -25,7 +26,6 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
         case OPEN
         case PROGRESS
         case DONE
-
     }
 
     lazy var titleLabel: UILabel = {
@@ -57,7 +57,6 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
             self?.titleLabel.textColor = .designSystem(.white)
             self?.contentView.backgroundColor = self?.viewModel?.status.selectedBackgroundColor
         }
-
     }
 
     func unSelectedAttributes() {
@@ -78,15 +77,34 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
+        self.skeletonCornerRadius = Float(self.contentView.bounds.width / 2)
         self.contentView.roundCorners(self.contentView.bounds.width / 2)
         self.contentView.backgroundColor = .designSystem(.grayF6F6F6)
         self.contentView.addSubview(self.titleLabel)
+
+        [self, titleLabel].forEach { [weak self] in
+            self?.commonAttribute(of: $0)
+        }
 
         self.titleLabel.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(15)
             make.top.bottom.equalToSuperview().inset(20)
         }
+    }
+
+    func startAnimation() {
+        self.showAnimatedGradientSkeleton()
+        titleLabel.showAnimatedGradientSkeleton()
+    }
+
+    func hideAnimation() {
+        self.hideSkeleton()
+        titleLabel.hideSkeleton()
+    }
+
+    private func commonAttribute(of target: UIView) {
+        target.isSkeletonable = true
     }
 }
 

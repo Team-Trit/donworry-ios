@@ -171,7 +171,7 @@ final class PaymentCardListReactor: Reactor {
     }
 
     private func setupTimer() -> Disposable {
-        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
+        Observable<Int>.interval(.seconds(3), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
             self?.action.onNext(.getPaymentStatus)
         })
     }

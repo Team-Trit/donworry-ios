@@ -153,6 +153,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
             if direction {
                 newState.timer = setupTimer()
             } else {
+                print("타이머 없애기")
                 newState.timer?.dispose()
             }
         case .updateSpaceList(let spaceList):

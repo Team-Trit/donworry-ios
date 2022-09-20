@@ -27,6 +27,7 @@ let project = Project.make(
             .external(name: "FirebaseDynamicLinks"),
             .external(name: "FirebaseMessaging"),
             .external(name: "FirebaseAnalytics"),
+            .external(name: "SkeletonView"),
         ]
     ),
     Target.unitTests(name: "DonWorry"),
