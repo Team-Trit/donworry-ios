@@ -18,7 +18,7 @@ final class NumberPadCollectionView: UICollectionView {
         let itemSpacing: CGFloat = 40
         
         flowLayout.itemSize = CGSize(width: itemSize, height: itemSize)
-        flowLayout.sectionInset = UIEdgeInsets(top: 40, left: 45, bottom: 0, right: 45)
+        flowLayout.sectionInset = UIEdgeInsets(top: UIDevice.current.hasNotch ? 40 : 30 , left: 45, bottom: 0, right: 45)
         flowLayout.minimumLineSpacing = lineSpacing
         flowLayout.minimumInteritemSpacing = itemSpacing
 
