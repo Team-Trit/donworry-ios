@@ -16,6 +16,12 @@ public struct SentMoneyCellViewModel {
     let totalAmount: Int
     let totalUers: Int
     let myAmount: Int
+    
+    var iconName: String {
+        let firstIndex = icon.index(after: icon.lastIndex(of: "/")!)
+        let lastIndex = icon.index(before: icon.lastIndex(of: ".")!)
+        return String(icon[firstIndex...lastIndex])
+    }
 }
 
 class SentMoneyTableViewCell: UITableViewCell {
@@ -34,6 +40,7 @@ class SentMoneyTableViewCell: UITableViewCell {
     private let spaceIcon: UIImageView = {
         let spaceIcon = UIImageView()
         spaceIcon.translatesAutoresizingMaskIntoConstraints = false
+        spaceIcon.contentMode = .scaleAspectFit
         return spaceIcon
     }()
     
@@ -79,10 +86,6 @@ class SentMoneyTableViewCell: UITableViewCell {
     
     func render() {
         contentView.addSubview(smallRoundRectangle)
-        NSLayoutConstraint.activate([
-            smallRoundRectangle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            smallRoundRectangle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-        ])
         smallRoundRectangle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         smallRoundRectangle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 27).isActive = true
         smallRoundRectangle.widthAnchor.constraint(equalToConstant: 43).isActive = true
@@ -91,8 +94,7 @@ class SentMoneyTableViewCell: UITableViewCell {
         smallRoundRectangle.addSubview(spaceIcon)
         spaceIcon.centerYAnchor.constraint(equalTo: smallRoundRectangle.centerYAnchor).isActive = true
         spaceIcon.centerXAnchor.constraint(equalTo: smallRoundRectangle.centerXAnchor).isActive = true
-        spaceIcon.widthAnchor.constraint(equalToConstant: 27).isActive = true
-        spaceIcon.heightAnchor.constraint(equalToConstant: 27).isActive = true
+        
         
         contentView.addSubview(spaceNameLabel)
         spaceNameLabel.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
@@ -101,27 +103,26 @@ class SentMoneyTableViewCell: UITableViewCell {
         contentView.addSubview(paymentDate)
         paymentDate.bottomAnchor.constraint(equalTo: smallRoundRectangle.bottomAnchor).isActive = true
         paymentDate.leadingAnchor.constraint(equalTo: smallRoundRectangle.trailingAnchor, constant: 10).isActive = true
-        
+
         contentView.addSubview(dividedAmountDetail)
         dividedAmountDetail.topAnchor.constraint(equalTo: smallRoundRectangle.topAnchor).isActive = true
         dividedAmountDetail.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
-        
+
         contentView.addSubview(dividedAmount)
         dividedAmount.topAnchor.constraint(equalTo: dividedAmountDetail.bottomAnchor, constant: 5).isActive = true
         dividedAmount.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -27).isActive = true
-        
-        
     }
-
+    
     func configure(myPayment: SentMoneyCellViewModel) {
         numberformatter.numberStyle = .decimal
-        spaceIcon.image = UIImage(named: myPayment.icon)
+        spaceIcon.image = UIImage(assetName: myPayment.iconName)
+        spaceIcon.widthAnchor.constraint(equalToConstant: myPayment.iconName == "ic_icecream" ? 15 : 27).isActive = true
         spaceNameLabel.text = myPayment.name
         paymentDate.text = myPayment.date
         dividedAmountDetail.attributedText = makeAtrributedString(myPayment: myPayment)
         dividedAmount.text = numberformatter.string(for: myPayment.myAmount)! + "원"
     }
-    
+
     func makeAtrributedString(myPayment: SentMoneyCellViewModel) -> NSMutableAttributedString {
         numberformatter.numberStyle = .decimal
         let paymentString = numberformatter.string(for: myPayment.totalAmount)! + "원" + " / " + "\(myPayment.totalUers)" + "명"
