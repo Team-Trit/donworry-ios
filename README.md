@@ -1,9 +1,21 @@
-![돈워리커버](https://user-images.githubusercontent.com/63157395/191316581-4f360071-0929-42fe-bded-a44a09e3f922.png)
+![돈워리커버](https://user-images.githubusercontent.com/63157395/191316581-4f360071-0929-42fe-bded-a44a09e3f922.png)
 
 
 <h2 align="center"><i>세상에 없던 영리한 정산앱, 돈.워리</i></h2>
 
+> Description Goes Here
+
 ## ✨ Features
+
+| 로그인/회원가입 | 홈 | 정산방 | 정산방 생성 | 정산방 참가 | 정산항목 참여 |  
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> |  
+
+
+| 정산항목 상세 | 정산항목 상세 | 받을돈 | 줄돈 | 알림 | 프로필 |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| <img width="200" src="">| <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> |  
+
 
 
 ## 🛠 Requirements
@@ -12,9 +24,25 @@
 <img width="100" alt="xcode-version" src="https://img.shields.io/badge/Xcode-13.4.1-informational"> 
 
 
-## 📦 Library
+## 🚀 Usage
 
-| Library       | Version |
+<b> 1. Install `tuist` </b>
+
+```
+curl -Ls https://install.tuist.io | bash 
+```
+
+<b> 2. Generate project </b>
+
+```
+tuist clean
+tuist fetch
+tuist generate
+```
+
+## 📦 Packages
+
+| Packages       | Version |
 | ---------------- | ------- |
 | ReactorKit       | 3.0.0   |
 | RxSwift          | 6.5.0   |
@@ -67,7 +95,8 @@ Projects
 ```
 
 
-<h3 align="center"><i>트라잇의 iOS Developers</i></h3>
+<!-- <h3 align="center"><i>트라잇의 iOS Developers</i></h3> -->
+## 👨‍💻 Authors
 <p align="center">
 <table>
     <tr align="center">
