@@ -166,6 +166,7 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
                 newState.sections = [.BillCardSection([])]
                 newState.selectedSpaceViewModel = nil
                 newState.isSpaceEmpty = true
+                newState.reload = ()
                 break
             }
 

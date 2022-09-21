@@ -73,7 +73,8 @@ final class EmptyPaymentCardView: UIView {
 
         self.stackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.centerX.centerY.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-50)
         }
         self.boxView.snp.makeConstraints { make in
             make.height.equalTo(62)

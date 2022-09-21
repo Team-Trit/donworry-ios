@@ -13,6 +13,7 @@ import SnapKit
 extension UICollectionViewCell {
 
     func addCompleteView(_ blurWrappedView: UIView = UIView()) {
+        if self.contentView.subviews.contains(where: { $0.tag == 100 }) { return }
         blurWrappedView.tag = 100
         self.contentView.addSubview(blurWrappedView)
         blurWrappedView.snp.makeConstraints { make in

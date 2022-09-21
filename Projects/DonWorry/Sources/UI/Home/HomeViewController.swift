@@ -128,11 +128,13 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
 
         reactor.pulse(\.$reload)
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] section in
+            .subscribe(onNext: { [weak self] _ in
                 self?.billCardCollectionView.reloadData()
+                self?.emptyView.hideSkeleton()
             }).disposed(by: disposeBag)
 
         reactor.state.map { $0.isSpaceEmpty }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 self?.billCardCollectionView.reloadData()
@@ -143,7 +145,7 @@ final class HomeViewController: BaseViewController, ReactorKit.View {
         reactor.pulse(\.$reloadWithScroll)
             .observe(on: MainScheduler.instance)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] in
+            .subscribe(onNext: { [weak self] _ in
                 self?.billCardCollectionView.reloadData()
                 self?.billCardCollectionView.scrollToItem(
                     at: .init(item: 0, section: 0),
