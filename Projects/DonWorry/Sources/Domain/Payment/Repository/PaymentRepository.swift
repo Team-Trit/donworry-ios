@@ -12,7 +12,7 @@ import RxSwift
 protocol PaymentRepository {
     func fetchGiverPayment(spaceID: Int, paymentID: Int) -> Observable<PaymentModels.FetchGiverPayment.Response>
     func fetchTakerPaymentList(spaceID: Int) -> Observable<PaymentModels.FetchTakerPaymentList.Response>
-    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.Empty.Response>
+    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.CompletePayment.Response>
 }
 
 final class PaymentRepositoryImpl: PaymentRepository {
@@ -36,9 +36,9 @@ final class PaymentRepositoryImpl: PaymentRepository {
             }.asObservable()
     }
 
-    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.Empty.Response> {
+    func patchPaymentsGiverIsCompleted(paymentID: Int) -> Observable<PaymentModels.CompletePayment.Response> {
         network.request(PatchPaymentsIsCompletedAPI(request: .init(paymentId: paymentID)))
-            .compactMap { _ in .init() }.asObservable()
+            .compactMap { .init(rank: $0.rank) }.asObservable()
     }
     
     private func convertToGiverPayment(_ dto: DTO.GetPaymentsGiver) -> PaymentModels.FetchGiverPayment.Response {

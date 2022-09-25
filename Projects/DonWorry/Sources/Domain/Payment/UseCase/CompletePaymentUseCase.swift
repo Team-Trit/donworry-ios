@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 protocol CompletePaymentUseCase {
-    func completePayment(request: PaymentModels.CompletePayment.Request) -> Observable<PaymentModels.Empty.Response>
+    func completePayment(request: PaymentModels.CompletePayment.Request) -> Observable<PaymentModels.CompletePayment.Response>
 }
 
 final class CompletePaymentUseCaseImpl: CompletePaymentUseCase {
@@ -22,7 +22,7 @@ final class CompletePaymentUseCaseImpl: CompletePaymentUseCase {
         self.paymentRepository = paymentRepository
     }
 
-    func completePayment(request: PaymentModels.CompletePayment.Request) -> Observable<PaymentModels.Empty.Response> {
+    func completePayment(request: PaymentModels.CompletePayment.Request) -> Observable<PaymentModels.CompletePayment.Response> {
         paymentRepository.patchPaymentsGiverIsCompleted(paymentID: request.paymentID)
     }
 }

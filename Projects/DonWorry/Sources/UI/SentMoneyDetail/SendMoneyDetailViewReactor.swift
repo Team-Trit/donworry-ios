@@ -27,8 +27,9 @@ final class SendMoneyDetailViewReactor : Reactor {
 
     enum Mutation {
         case setup(Response)
-        case updateIsSent(Bool)
+        case updateIsSent(Bool, Int)
         case routeTo(SentMoneyDetailStep)
+        case toast(String)
     }
 
     struct State {
@@ -40,7 +41,7 @@ final class SendMoneyDetailViewReactor : Reactor {
         var cards: [SentMoneyCellViewModel] = [] // 다음 화면에서 필요
         var payments: [DetailProgressCellViewModel] = [] // 다음 화면에서 필요
 
-        @Pulse var toast: Void?
+        @Pulse var toast: String?
         @Pulse var step: SentMoneyDetailStep?
     }
 
@@ -83,18 +84,21 @@ final class SendMoneyDetailViewReactor : Reactor {
                  self?.formatDetailProgressCellViewModel(from: $0, with: response.amount)
              }
              newState.isSent = response.isCompleted
-         case .updateIsSent(let isSent):
+         case .updateIsSent(let isSent, let rank):
              newState.isSent = isSent
-             if isSent { newState.toast = () }
+             if isSent { newState.toast = "정산 \(rank)등이에요! 🥳🥳🥳" }
          case .routeTo(let step):
              newState.step = step
+         case .toast(let message):
+             newState.toast = message
          }
         return newState
     }
 
     private func requestSendMoney() -> Observable<Mutation> {
-        completePaymentUseCase.completePayment(request: .init(paymentID: currentState.paymentID)).map { _ in .updateIsSent(true) }
-
+        completePaymentUseCase.completePayment(request: .init(paymentID: currentState.paymentID))
+            .map { .updateIsSent(true, $0.rank) }
+            .catch { _ in return .just(.toast("보내기 실패 ㅠㅠ")) }
     }
 
     private func requestGivierPayment() -> Observable<Mutation> {

@@ -80,6 +80,10 @@ enum PaymentModels {
         struct Request {
             let paymentID: Int
         }
+
+        struct Response {
+            let rank: Int
+        }
     }
 
     // MARK: 성공했는데 응답이 없어도 되는 경우

@@ -96,8 +96,8 @@ final class SendMoneyDetailViewController: BaseViewController, View {
         reactor.pulse(\.$toast)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                DWToastFactory.show(message: "정산 완료 알림을 보냈어요!")
+            .subscribe(onNext: { message in
+                DWToastFactory.show(message: message)
             }).disposed(by: disposeBag)
 
         reactor.pulse(\.$step)

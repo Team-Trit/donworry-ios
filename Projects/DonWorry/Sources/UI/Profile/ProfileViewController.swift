@@ -136,9 +136,9 @@ extension ProfileViewController {
             .disposed(by: disposeBag)
         
         accountButtonStackView.deleteButton.rx.tap
-            .map { Reactor.Action.pressAccountDeleteButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+            .subscribe(onNext: { [weak self] _ in
+                self?.route(to: .deleteAccountSheet)
+            }).disposed(by: disposeBag)
         
         navigationBar.leftItem.rx.tap
             .map { Reactor.Action.pressBackButton }
@@ -170,6 +170,7 @@ extension ProfileViewController {
 }
 
 // MARK: - Route
+
 extension ProfileViewController: UIGestureRecognizerDelegate {
     private func route(to step: ProfileStep) {
         switch step {
@@ -246,15 +247,7 @@ extension ProfileViewController: UIGestureRecognizerDelegate {
             break
             
         case .deleteAccountSheet:
-            let alert = UIAlertController(title: "정말로 탈퇴하시겠습니까?", message: "탈퇴 시 회원님의 모든 정보가 삭제되고 이후 복구할 수 없습니다.", preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "탈퇴", style: .destructive) { _ in
-                self.reactor?.action.onNext(.deleteAccount)
-            }
-            let cancelAction = UIAlertAction(title: "취소", style: .cancel)
-            
-            alert.addAction(confirmAction)
-            alert.addAction(cancelAction)
-            self.present(alert, animated: true)
+            self.present(confirmDeleteUserAlertController(), animated: true)
 
         case .login:
             let loginViewController = LoginViewController()
@@ -273,6 +266,19 @@ extension ProfileViewController: UIGestureRecognizerDelegate {
         }
     }
 
+    private func confirmDeleteUserAlertController() -> UIAlertController {
+        let alert = UIAlertController(title: "돈워리를 정말 떠나실건가요?", message: nil, preferredStyle: .alert)
+        let leave = UIAlertAction(title: "안녕히계세요", style: .destructive) { _ in
+            self.reactor?.action.onNext(.deleteAccount)
+        }
+        let cancel = UIAlertAction(title: "잘못 눌렀어요", style: .default)
+
+        alert.addAction(cancel)
+        alert.addAction(leave)
+
+        return alert
+    }
+
     private var window: UIWindow? {
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             return scene.windows.first
@@ -282,6 +288,7 @@ extension ProfileViewController: UIGestureRecognizerDelegate {
 }
 
 // MARK: - UITableViewDataSource
+
 extension ProfileViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
