@@ -81,7 +81,7 @@ final class ReceivedMoneyDetailReactor: Reactor {
                 spaceID: currentState.spaceID,
                 payments: createRequest()
             )
-        ).map { _ in Mutation.toast("미정산자들에게 재촉완료") }
+        ).map { _ in Mutation.toast("미정산자들에게 재촉 알림을 보냈어요!") }
     }
 
     private func createRequest() -> [PushAlarmsPayment] {

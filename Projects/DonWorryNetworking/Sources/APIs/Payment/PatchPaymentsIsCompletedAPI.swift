@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 public struct PatchPaymentsIsCompletedAPI: ServiceAPI {
-    public typealias Response = DTO.Empty
+    public typealias Response = DTO.PatchPaymentsIsCompleted
     public var request: Request
     public init(request: Request) {
         self.request = request

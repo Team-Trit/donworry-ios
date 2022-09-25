@@ -38,7 +38,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
+
         Messaging.messaging().apnsToken = deviceToken
+    }
+
+    // MARK: APNS DeviceToken Decoding Method
+    private func decodeDeviceToken(_ deviceToken: Data) -> String {
+        var token: String = ""
+        for i in 0..<deviceToken.count {
+            token += String(format: "%02.2hhx", deviceToken[i] as CVarArg)
+        }
+        print("디바이스", token)
+        return token
     }
 }
 

@@ -36,7 +36,6 @@ final class ProfileViewReactor: Reactor {
         case pressUpdateAccountButton
         case pressServiceButton(index: Int)
         case pressLogoutButton
-        case pressAccountDeleteButton
         case deleteAccount
     }
     
@@ -127,10 +126,7 @@ final class ProfileViewReactor: Reactor {
         case .pressLogoutButton:
             return logoutUseCase.logout()
                 .map { _ in return .routeTo(step: .login) }
-            
-        case .pressAccountDeleteButton:
-            return .just(.routeTo(step: .deleteAccountSheet))
-            
+
         case .deleteAccount:
             return deRegisterUseCase.deregister().map { _ in .routeTo(step: .login) }
         }
