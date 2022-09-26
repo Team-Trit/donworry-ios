@@ -62,7 +62,6 @@ final class EnterUserInfoViewReactor: Reactor {
         signUpModel.token = token
         signUpModel.oauthType = oauthType
         signUpModel.authorizationCode = authorizationCode
-        print(signUpModel)
         self.checkNicknameUseCase = checkNicknameUseCase
         self.initialState = State(signUpModel: signUpModel, isNextButtonAvailable: false)
     }
