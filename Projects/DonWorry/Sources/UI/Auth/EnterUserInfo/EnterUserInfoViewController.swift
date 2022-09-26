@@ -31,11 +31,7 @@ final class EnterUserInfoViewController: BaseViewController, View{
         return v
     }()
     private lazy var nickNameStackView = NickNameStackView()
-    lazy var accountStackView: AccountStackView = {
-        let v = AccountStackView()
-        v.accountInputField.accountTextField.textField.delegate = self
-        return v
-    }()
+    lazy var accountStackView = AccountStackView()
     private lazy var nextButton: DWButton = {
         let v = DWButton.create(.xlarge50)
         v.title = "다음"
@@ -182,15 +178,5 @@ extension EnterUserInfoViewController {
         default:
             break
         }
-    }
-}
-
-// MARK: - UITextFieldDelegate
-extension EnterUserInfoViewController: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard CharacterSet(charactersIn: "0123456789").isSuperset(of: CharacterSet(charactersIn: string)) else {
-             return false
-        }
-        return true
     }
 }
