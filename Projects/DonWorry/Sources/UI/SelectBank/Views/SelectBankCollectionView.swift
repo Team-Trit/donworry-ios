@@ -20,7 +20,8 @@ final class SelectBankCollectionView: UICollectionView {
     
     convenience init() {
         let flowLayout = UICollectionViewFlowLayout()
-        let itemWidth: CGFloat = 150
+        let frameWidth = UIScreen.main.bounds.width
+        let itemWidth: CGFloat = frameWidth / 2 - 40
         let itemHeight: CGFloat = 45
         let itemSpacing: CGFloat = 10
         flowLayout.scrollDirection = .vertical
