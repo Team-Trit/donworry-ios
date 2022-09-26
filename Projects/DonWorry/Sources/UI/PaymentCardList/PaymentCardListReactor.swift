@@ -16,7 +16,7 @@ enum PaymentCardListStep {
 
     case pop
     case paymentCardDetail(PaymentCardCellViewModel, IsCardAdmin, String)
-    case actionSheet
+    case actionSheet(Bool)
     case nameEdit
     case addPaymentCard
     case participate
@@ -99,7 +99,7 @@ final class PaymentCardListReactor: Reactor {
             let detailCard = requestIsUserCardAdmin(card: card)
             return detailCard
         case .didTapOptionButton:
-            return .just(.routeTo(.actionSheet))
+            return .just(.routeTo(.actionSheet(currentState.isUserAdmin)))
         case .routeToNameEdit:
             return .just(.routeTo(.nameEdit))
         case .didTapLeaveButton:
