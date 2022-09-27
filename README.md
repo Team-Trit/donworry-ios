@@ -82,12 +82,15 @@
 | <img width="200" src="https://user-images.githubusercontent.com/63157395/192469145-cca4db75-a4f8-455c-a470-ec598a5e4e8c.PNG">| <img width="200" src="https://user-images.githubusercontent.com/63157395/192469112-a7b73588-7728-4f97-b7ac-c0d811531087.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192470420-36a6ea80-99b0-4a6f-a6e8-9f04a663c2f5.PNG"> |  
 
 
+<br/>
 
 ## 🛠 Requirements
 
 <img width="77" alt="ios-version" src="https://img.shields.io/badge/iOS-15.0%2B-lightgrey"> 
 <img width="100" alt="xcode-version" src="https://img.shields.io/badge/Xcode-13.4.1-informational"> 
 
+
+<br/>
 
 ## 🚀 Usage
 
@@ -105,6 +108,42 @@ tuist fetch
 tuist generate
 ```
 
+<br/>
+
+## 🔨 Made with
+
+### Architecture
+
+- CleanArchitecture + ReactorKit + Coordinator
+- Tuist(Modulization)
+
+### Networking
+
+- Moya
+
+### Reactive
+
+- RxSwift
+- RxCocoa
+- RxDataSources
+
+### UI
+
+- SnapKit
+- Kingfisher
+- SkeletonView
+
+### Etc
+
+- RxKakaoSDK
+- FirebaseDynamicLinks
+- FirebaseMessaging
+- FirebaseAnalytics
+
+
+<br/>
+
+
 ## 📦 Packages
 
 | Packages       | Version |
@@ -119,6 +158,7 @@ tuist generate
 | firebase-ios-sdk | 8.14.0  |
 | SkeletonView     | 1.7.0   |
 
+<br/>
 
 
 ## 🗂 Folder Structure
@@ -207,3 +247,8 @@ Projects
     </tr>
 </table>
 </p>
+
+<br/>
+
+## 📑 License
+이 소스코드 저장소에 속한 코드는 MIT 라이선스를 따릅니다. 
