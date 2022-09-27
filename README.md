@@ -114,7 +114,7 @@ tuist generate
 
 ### Architecture
 
-- CleanArchitecture + ReactorKit + Coordinator
+- CleanArchitecture + ReactorKit + Coordinator [(돈.워리 아키텍처)](https://github.com/Team-Trit/donworry-ios/issues/166)
 - Tuist(Modulization)
 
 ### Networking
