@@ -107,37 +107,38 @@ tuist generate
 ```
 Projects
   |── Core
-  │			|── BaseArchitecture
-  │			└── DonWorryExtensions
+  │   |── BaseArchitecture
+  │   └── DonWorryExtensions
   │── DesignSystem
   │── DonWorryLocalStorage
   │── DonWorryNetworking
-  │			└── Sources
-  │						|── APIs
-  │						|── DonWorryNetwork
-  │						|── DTO
-  │						└── Helper
-	│── DonWorry
-  			|
-			  |── Resources
-			  |			|── Assets.xcassets
-			  |			|── GoogleService-Info.plist
-			  |			└── LaunchScreen.storyboard
-			  └── Sources
-			  			|── App
-			  			|		|── AppDelegate.swift
-			  			|		└── SceneDelegate.swift
-			        |── Domain
-			        |   |── Error
-			        |   |── Model
-			        │   |── Repository
-			        │   │── Service
-			        │   └── UseCase
-			        │── Global
-			        └── UI
-			           	│── View
-			        		│── Presenter
-			       			└── Reactor
+  │   └── Sources
+  │   |── APIs
+  │   |── DonWorryNetwork
+  │   |── DTO
+  │   └── Helper
+  │── DonWorry
+      |
+      |── Resources
+      |    |── Assets.xcassets
+      |    |── GoogleService-Info.plist
+      |    └── LaunchScreen.storyboard
+      └── Sources
+           |── App
+           |   |── AppDelegate.swift
+           |   └── SceneDelegate.swift
+           |── Domain
+           |   |── Error
+           |   |── Model
+           │   |── Repository
+           │   │── Service
+           │   └── UseCase
+           │── Global
+           └── UI
+               │── View
+               │── Presenter
+               └── Reactor
+
 ```
 
 
