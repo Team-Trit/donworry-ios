@@ -47,20 +47,27 @@
 - 직접 계좌로 송금받는, 당연한 편리함
 
 
+**5. 쉽게 정산에 참여할 수 있습니다**
+
+- 더 이상 메신저에 매번 계좌번호를 공유하거나 일일히 연락처를 찾고 정산을 요청하지 마세요.
+- 코드를 입력하거나 공유하기를 통하여 정산방으로 바로 입장하고 편하게 정산하세요.
+
+
 
 <br/>
 
 
 ## ✨ Features
 
-| 로그인/회원가입 | 홈 | 정산방 | 정산방 생성 | 정산방 참가 | 정산항목 참여 |  
+| 로그인/회원가입 | 홈 | 정산방 | 정산방 생성 | 정산방 참가 | 정산항목 추가 |  
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> |  
+| <img width="200" src="https://user-images.githubusercontent.com/63157395/192468445-263fbb60-8cc5-40b8-8a28-e581a3958337.gif"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192468469-6cd8dac9-8955-41f0-9bb0-10ac84d833d4.gif"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192468740-a8043931-5f2b-495a-aabf-ebec68560753.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192468754-abfc61dc-cccd-47fa-a8d1-ed0fb1fe5d67.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192468772-9dbaad22-9c94-4cc6-8811-a804912f19e1.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192469074-9cc83478-64e9-45f4-a3e4-b9822cbb4e0b.gif"> |  
 
 
-| 정산항목 상세 | 정산항목 상세 | 받을돈 | 줄돈 | 알림 | 프로필 |
+| 정산항목 참여 | 정산항목 상세 | 받을돈 | 보낼돈 | 정산내역 요약 | 프로필 |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| <img width="200" src="">| <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> | <img width="200" src=""> |  
+| <img width="200" src="https://user-images.githubusercontent.com/63157395/192469094-624157fd-b277-4706-8d56-f79a81f9cfb3.PNG">| <img width="200" src="https://user-images.githubusercontent.com/63157395/192469281-938ac74a-59dc-4574-922c-ec2119403b3d.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192469366-f8b2c3b6-b544-407c-b504-0cc6a9a5a60c.PNG">|<img width="200" src="https://user-images.githubusercontent.com/63157395/192469145-cca4db75-a4f8-455c-a470-ec598a5e4e8c.PNG">| <img width="200" src="https://user-images.githubusercontent.com/63157395/192469112-a7b73588-7728-4f97-b7ac-c0d811531087.PNG"> | <img width="200" src="https://user-images.githubusercontent.com/63157395/192470420-36a6ea80-99b0-4a6f-a6e8-9f04a663c2f5.PNG"> |  
+
 
 
 
