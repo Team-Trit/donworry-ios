@@ -19,7 +19,7 @@ final class SignInUseCaseImpl: SignInUseCase {
     private let authRepository: AuthRepository
     private let accessTokenRepository: AccessTokenRepository
     private let userAccountRepository: UserAccountRepository
-    private let fcmTokenRepository: FCMDeviceTokenRepository
+    private let tokenRepository: DeviceTokenRepository
 
     let kakaoLoginToken: PublishSubject<AuthModels.Kakao.Response>
     var completeKakaoLogin: PublishSubject<AuthModels.Empty.Response>
@@ -29,7 +29,7 @@ final class SignInUseCaseImpl: SignInUseCase {
         authRepository: AuthRepository = AuthRepositoryImpl(),
         accessTokenRepository: AccessTokenRepository = AccessTokenRepositoryImpl(),
         userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
-        fcmTokenRepository: FCMDeviceTokenRepository = FCMDeviceTokenRepositoryImpl()
+        tokenRepository: DeviceTokenRepository = DeviceTokenRepositoryImpl()
     ) {
         self.kakaoLoginToken = .init()
         self.completeKakaoLogin = .init()
@@ -37,7 +37,7 @@ final class SignInUseCaseImpl: SignInUseCase {
         self.authRepository = authRepository
         self.accessTokenRepository = accessTokenRepository
         self.userAccountRepository = userAccountRepository
-        self.fcmTokenRepository = fcmTokenRepository
+        self.tokenRepository = tokenRepository
     }
 
     func kakaoLogin() -> Observable<AuthModels.Kakao.Response> {
@@ -45,7 +45,7 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
-        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .just(.init()) }
         return authRepository.loginWithKakao(accessToken: request.token, deviceToken: fcmToken)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
@@ -55,7 +55,7 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     func signInWithApple(request: AuthModels.SignIn.Reqeust, authorizationCode: String) -> Observable<AuthModels.Empty.Response> {
-        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .just(.init()) }
         return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken, authorizationCode:  authorizationCode)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)

@@ -9,18 +9,18 @@
 import Foundation
 import DonWorryLocalStorage
 
-protocol FCMDeviceTokenRepository {
-    func fetchFCMToken() -> String?
+protocol DeviceTokenRepository {
+    func fetchDeviceToken() -> String?
 }
 
-final class FCMDeviceTokenRepositoryImpl: FCMDeviceTokenRepository {
+final class DeviceTokenRepositoryImpl: DeviceTokenRepository {
     private let localStorage: LocalStorage
 
     init(localStorage: LocalStorage = UserDefaults.standard) {
         self.localStorage = localStorage
     }
 
-    func fetchFCMToken() -> String? {
-        localStorage.read(key: .fcmDeviceToken, type: String.self)
+    func fetchDeviceToken() -> String? {
+        localStorage.read(key: .deviceToken, type: String.self)
     }
 }

@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupFirebase(application: application)
         return true
     }
-
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -38,43 +37,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-
-        Messaging.messaging().apnsToken = deviceToken
-    }
-
-    // MARK: APNS DeviceToken Decoding Method
-    private func decodeDeviceToken(_ deviceToken: Data) -> String {
         var token: String = ""
         for i in 0..<deviceToken.count {
             token += String(format: "%02.2hhx", deviceToken[i] as CVarArg)
         }
-        print("디바이스", token)
-        return token
-    }
-}
-
-// MARK: MessagingDelegate
-
-extension AppDelegate: MessagingDelegate {
-
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        if let fcmToken = fcmToken {
-            UserDefaults.standard.write(fcmToken, key: .fcmDeviceToken)
-        }
+        UserDefaults.standard.write(token, key: .deviceToken)
     }
 }
 
 extension AppDelegate {
-
     func setupFirebase(application: UIApplication) {
         FirebaseApp.configure()
-        Messaging.messaging().delegate = self
-        UNUserNotificationCenter.current().delegate = self
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: authOptions,
-            completionHandler: {_, _ in })
-
-        application.registerForRemoteNotifications()
+        center.requestAuthorization(options: authOptions) { (granted, error) in
+            guard granted else {
+                return
+            }
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
     }
 }
