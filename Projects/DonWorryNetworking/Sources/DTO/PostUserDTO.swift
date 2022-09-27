@@ -15,10 +15,10 @@ extension DTO {
         public let isAgreeMarketing: Bool
         public let tokenType, accessToken, refreshToken: String
         public let imgUrl: String?
-        public let account: Account
+        public let account: Account?
         
         public struct Account: Codable {
-            public let bank, number, holder: String
+            public let bank, number, holder: String?
             public let userID: Int
             
             public enum CodingKeys: String, CodingKey {

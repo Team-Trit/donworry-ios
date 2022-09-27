@@ -14,10 +14,11 @@ extension DTO {
         public let nickname: String
         public let isAgreeMarketing: Bool
         public let imgUrl, tokenType, accessToken, refreshToken: String?
-        public let account: Account       
+        public let account: Account
+
         public struct Account: Codable {
             public let id: Int
-            public let bank, number, holder: String
+            public let bank, number, holder: String?
             public let userId: Int
 
             enum CodingKeys: String, CodingKey {

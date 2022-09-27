@@ -101,22 +101,46 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             bgColor: dto.bgColor,
             paymentDate: dto.paymentDate,
             category: .init(id: dto.category.id, name: dto.category.name, imgURL: dto.category.imgURL),
-            account: .init(bank: dto.account.bank, number: dto.account.number, holder: dto.account.holder),
-            taker: .init(id: dto.taker.id, nickname: dto.taker.nickname, imgURL: dto.taker.imgURL),
-            givers: dto.givers.map { .init(id: $0.id, nickname: $0.nickname, imgURL: $0.imgURL) },
+            account: .init(
+                bank: dto.account?.bank ?? ErrorText.DeRegister.bank,
+                number: dto.account?.number ?? ErrorText.DeRegister.bankNumber,
+                holder: dto.account?.holder ?? ErrorText.DeRegister.bankHolder
+            ),
+            taker: .init(
+                id: dto.taker.id,
+                nickname: dto.taker.nickname ?? ErrorText.DeRegister.nickname,
+                imgURL: dto.taker.imgURL
+            ),
+            givers: dto.givers.map { .init(
+                id: $0.id,
+                nickname: $0.nickname ?? ErrorText.DeRegister.nickname,
+                imgURL: $0.imgURL)
+            },
             isUserParticipatedIn: dto.isUserJoin
         )
     }
     
     private func convertToPaymentCard(_ dto: DTO.GetPaymentCard.PaymentCard) -> PaymentCardModels.FetchCard.Response.PaymentCard {
-        return .init(id: dto.id, totalAmount: dto.totalAmount, users: dto.users.map{.init(id: $0.id, isTaker: $0.isTaker, nickname: $0.nickname, imgURL: $0.imgURL)}, imgUrls: dto.imgUrls)
+        return .init(
+            id: dto.id,
+            totalAmount: dto.totalAmount,
+            users: dto.users.map{
+                .init(
+                    id: $0.id,
+                    isTaker: $0.isTaker,
+                    nickname: $0.nickname ?? ErrorText.DeRegister.nickname,
+                    imgURL: $0.imgURL
+                )
+            },
+            imgUrls: dto.imgUrls
+        )
     }
     
     // PaymentCardUserDTO에서 PaymentCardUser 도메인으로 변환해줍니다.
     private func convertToUser(_ dto: DTO.GetPaymentCardList.PaymentCard.User) -> PaymentCardModels.FetchCardList.Response.PaymentCard.User {
         return .init(
             id: dto.id,
-            nickname: dto.nickname,
+            nickname: dto.nickname ?? ErrorText.DeRegister.nickname,
             imgURL: dto.imgURL
         )
     }

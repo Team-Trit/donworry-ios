@@ -6,6 +6,7 @@
 //  Copyright © 2022 Tr-iT. All rights reserved.
 //
 
+import Foundation
 import DonWorryNetworking
 import RxSwift
 
@@ -115,6 +116,11 @@ final class SpaceRepositoryImpl: SpaceRepository {
         return .init(id: dto.id, amount: dto.amount, isCompleted: dto.isCompleted, user: convert(from: dto.user))
     }
     private func convert(from dto: DTO.Space.User) -> SpaceModels.SpaceUser {
-        return .init(id: dto.id, nickname: dto.nickname, imgURL: dto.imgURL)
+        return .init(
+            id: dto.id,
+            nickname: dto.nickname ?? ErrorText.DeRegister.nickname,
+            imgURL: dto.imgURL
+        )
     }
 }
+

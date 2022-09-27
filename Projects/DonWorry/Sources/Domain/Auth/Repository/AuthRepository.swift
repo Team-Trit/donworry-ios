@@ -180,9 +180,9 @@ final class AuthRepositoryImpl: AuthRepository {
                 id: dto.id,
                 nickName: dto.nickname,
                 bankAccount: .init(
-                    bank: dto.account.bank,
-                    accountHolderName: dto.account.holder,
-                    accountNumber: dto.account.number
+                    bank: dto.account?.bank ?? ErrorText.DeRegister.bank,
+                    accountHolderName: dto.account?.holder ?? ErrorText.DeRegister.bankHolder,
+                    accountNumber: dto.account?.number ?? ErrorText.DeRegister.bankNumber
                 ),
                 image: dto.imgUrl ?? ""
             )
