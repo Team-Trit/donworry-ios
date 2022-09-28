@@ -13,12 +13,11 @@ enum PaymentCardSection: Hashable {
 
     case ParticipantCard(item: [Item])
     case PaymentCard(itmes: [Item])
-    case AddPaymentCard
+    case AddPaymentCard(item: [Item])
 }
 
 enum PaymentCardItem: Hashable {
     case AddPaymentCard
     case PaymentCard(PaymentCardCellViewModel)
     case Participant(ParticipantListCellViewModel)
-
 }

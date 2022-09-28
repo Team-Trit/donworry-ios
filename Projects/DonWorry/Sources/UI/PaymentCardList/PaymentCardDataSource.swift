@@ -18,7 +18,7 @@ final class PaymentCardDiffableDataSource: UICollectionViewDiffableDataSource<Pa
                 return cell
             case .Participant(let model):
                 let cell = collectionView.dequeueReusableCell(ParticipantListCollectionViewCell.self, for: indexPath)
-                cell.viewModel = model
+                cell.configure(with: model)
                 return cell
             case .PaymentCard(let model):
                 let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)

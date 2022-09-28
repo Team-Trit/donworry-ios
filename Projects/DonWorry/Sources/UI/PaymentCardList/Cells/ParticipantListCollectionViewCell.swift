@@ -17,6 +17,9 @@ struct ParticipantListCellViewModel: Hashable {
 
 final class ParticipantListCollectionViewCell: UICollectionViewCell {
 
+    typealias Section = SpaceJoinSection
+    typealias DataSource = SpaceJoinUserDiffableDataSource
+
     lazy var titleLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .heavy, size: ._15)
@@ -28,23 +31,34 @@ final class ParticipantListCollectionViewCell: UICollectionViewCell {
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 0
+        layout.minimumInteritemSpacing = 17
         layout.minimumLineSpacing = 17
-        layout.estimatedItemSize = .init(width: 48, height: 60)
+        layout.estimatedItemSize = .init(width: 48, height: 78)
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
         v.contentInset = .init(top: 0, left: 16, bottom: 0, right: 16)
         v.register(ParticipantCollectionViewCell.self)
         v.backgroundColor = .clear
-        v.delegate = self
-        v.dataSource = self
         return v
     }()
 
-    var viewModel: ParticipantListCellViewModel? {
-        didSet {
-            titleLabel.text = "현재 참가자 : \(viewModel?.users.count ?? 0)명"
-            collectionView.reloadData()
+    lazy var dataSource = DataSource(collectionView: collectionView)
+
+    func configure(with model: ParticipantListCellViewModel) {
+        apply(items: model.users)
+
+        DispatchQueue.main.async { [weak self] in
+            self?.titleLabel.text = "현재 참가자 : \(model.users.count)명"
+            self?.collectionView.reloadData()
         }
+    }
+
+    func apply(items: [ParticipantCellViewModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Section.Item>()
+        snapshot.appendSections([.users(items: [])])
+        snapshot.sectionIdentifiers.forEach { section in
+            snapshot.appendItems(items, toSection: section)
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
 
     override init(frame: CGRect) {
@@ -69,33 +83,29 @@ final class ParticipantListCollectionViewCell: UICollectionViewCell {
             make.top.equalToSuperview().offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
         }
-
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
+        }
+
+        collectionView.dataSource = dataSource
+    }
+}
+
+enum SpaceJoinSection: Hashable {
+    typealias Item = ParticipantCellViewModel
+    case users(items: [Item])
+}
+
+final class SpaceJoinUserDiffableDataSource: UICollectionViewDiffableDataSource<SpaceJoinSection, SpaceJoinSection.Item> {
+    init(collectionView: UICollectionView) {
+        super.init(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+            let cell = collectionView.dequeueReusableCell(ParticipantCollectionViewCell.self, for: indexPath)
+            cell.crownImageView.isHidden = indexPath.item != 0
+            print("이거첨에 나와야함 🚀🚀🚀🚀 ",itemIdentifier)
+            cell.configure(with: itemIdentifier)
+            return cell
         }
     }
-}
-
-// MARK: UICollectionViewDataSource
-
-extension ParticipantListCollectionViewCell: UICollectionViewDataSource {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.users.count ?? 0
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(ParticipantCollectionViewCell.self, for: indexPath)
-        cell.crownImageView.isHidden = indexPath.item != 0
-        cell.viewModel = viewModel?.users[indexPath.item]
-        return cell
-    }
-}
-
-// MARK: UICollectionViewDelegateFlowLayout
-
-extension ParticipantListCollectionViewCell: UICollectionViewDelegateFlowLayout {
-
 }

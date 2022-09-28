@@ -59,6 +59,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
+        layout.sectionInset = .init(top: 0, left: 0, bottom: 10, right: 0)
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
         v.contentInset = UIEdgeInsets(top: 13, left: 0, bottom: 58 + 6 + 20, right: 0)
@@ -238,13 +239,6 @@ final class PaymentCardListViewController: BaseViewController, View {
             .map { .didTapStartPaymentAlgorithmButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
-        self.collectionView.rx.itemSelected
-            .compactMap { [weak self] in
-                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
-            }.map { _ in .didTapAddPaymentCard }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
     }
 
     private func render(reactor: Reactor) {
@@ -266,7 +260,6 @@ final class PaymentCardListViewController: BaseViewController, View {
         reactor.state.map { $0.sections }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] sections in
-                print("업데이트합니당")
                 self?.apply(sections: sections)
             }).disposed(by: disposeBag)
 
@@ -303,8 +296,8 @@ extension PaymentCardListViewController {
                 snapshot.appendItems(models, toSection: section)
             case .PaymentCard(itmes: let models):
                 snapshot.appendItems(models, toSection: section)
-            case .AddPaymentCard:
-                break
+            case .AddPaymentCard(item: let model):
+                snapshot.appendItems(model)
             }
         }
         self.dataSource.apply(snapshot, animatingDifferences: false)

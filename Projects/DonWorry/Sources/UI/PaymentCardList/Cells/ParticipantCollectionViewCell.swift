@@ -38,13 +38,11 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
         return v
     }()
 
-    var viewModel: ParticipantCellViewModel? {
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.viewModel?.imageURL)
-                self?.nickNameLabel.text = self?.viewModel?.nickname
-                self?.nickNameLabel.sizeToFit()
-            }
+    func configure(with model: ParticipantCellViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: model.imageURL)
+            self?.nickNameLabel.text = model.nickname
+            self?.nickNameLabel.sizeToFit()
         }
     }
 
@@ -78,7 +76,6 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
         nickNameLabel.snp.makeConstraints { make in
             make.top.equalTo(profileImageView.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview()
         }
         
         profileImageView.roundCorners(24)

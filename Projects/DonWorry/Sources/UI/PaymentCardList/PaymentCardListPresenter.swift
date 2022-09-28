@@ -31,7 +31,7 @@ final class PaymentCardListPresenterImpl: PaymentCardListPresenter {
         var sections: [PaymentCardSection] = []
         sections.append(addParticipantSection(response.spaceJoinUsers))
         sections.append(addPaymentCardSection(response.cards))
-        if response.isAllPaymentCompleted {
+        if response.space.status == "OPEN" {
             sections.append(addAddPaymentCardSection())
         }
         return sections
@@ -47,7 +47,7 @@ final class PaymentCardListPresenterImpl: PaymentCardListPresenter {
     }
 
     private func addAddPaymentCardSection() -> PaymentCardSection {
-        return .AddPaymentCard
+        return .AddPaymentCard(item: [.AddPaymentCard])
     }
 
     // User -> ParticipantCellViewModel
@@ -81,7 +81,7 @@ final class PaymentCardListPresenterImpl: PaymentCardListPresenter {
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {
         var result: String = ""
         if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: totalAmount)) {
-            result = "총 " + amountText + "원"
+            result = amountText + "원"
         } else {
             result = "0원"
         }
