@@ -186,12 +186,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 self?.buttonType = isCardAdmin ? .delete : .participate
             }).disposed(by: disposeBag)
         
-        reactor.state.map { $0.isButtonEnabled }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isButtonEnabled in
-                self?.bottomButton.isEnabled = isButtonEnabled
-            }).disposed(by: disposeBag)
-        
         reactor.state.map { $0.cardName }
             .bind(to: navigationBar.titleLabel!.rx.text)
             .disposed(by: disposeBag)
@@ -220,6 +214,18 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 }
                 self?.fileCollectionView.reloadData()
             }).disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isParticipated }
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .bind(onNext: { [weak self] in
+                if $0 {
+                    self?.bottomButton.setTitle("참석 취소", for: .normal)
+                } else {
+                    self?.bottomButton.setTitle("참석 확인", for: .normal)
+                }
+            })
+            .disposed(by: disposeBag)
 
         reactor.pulse(\.$step)
             .observe(on: MainScheduler.instance)
