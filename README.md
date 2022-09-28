@@ -212,6 +212,7 @@ Projects
         <td><B>이한규<B></td>
         <td><B>임영후<B></td>
         <td><B>이재용<B></td>
+        <td><B>정영진<B></td>
     </tr>
     <tr align="center">
         <td>
@@ -244,6 +245,11 @@ Projects
             <br>
             <a href="https://github.com/wody-d"><I>wody-d</I></a>
         </td>
+        <td>
+            <img src="https://github.com/luminouxx.png?size=100">
+            <br>
+            <a href="https://github.com/luminouxx"><I>luminouxx</I></a>
+        </td>
     </tr>
 </table>
 </p>
@@ -251,4 +257,4 @@ Projects
 <br/>
 
 ## 📑 License
-이 소스코드 저장소에 속한 코드는 MIT 라이선스를 따릅니다. 
+This repository is released under the MIT license. See LICENSE for details.
