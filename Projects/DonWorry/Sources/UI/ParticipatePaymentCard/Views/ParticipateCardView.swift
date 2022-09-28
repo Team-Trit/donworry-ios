@@ -12,22 +12,26 @@ import DesignSystem
 import SnapKit
 
 final class ParticipateCardView: UIView {
+    
     private let cardShadowView: UIView = {
         $0.backgroundColor = .systemBackground
         $0.addShadowWithRoundedCorners(20.0, shadowColor: CGColor(red: 0, green: 0, blue: 0, alpha: 0.5), opacity: 1)
         return $0
     }(UIView())
+    
     let leftCardView: UIView = {
         $0.roundCorners(20)
         $0.clipsToBounds = true
         return $0
     }(UIView())
+    
     let rightCardView: UIView = {
         $0.roundCorners(20)
         $0.clipsToBounds = true
         $0.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
         return $0
     }(UIView())
+    
     let titleLabel: UILabel = {
         $0.font = .designSystem(weight: .heavy, size: ._15)
         $0.textColor = .designSystem(.white)
@@ -68,6 +72,7 @@ final class ParticipateCardView: UIView {
         $0.font = .designSystem(weight: .bold, size: ._13)
         $0.textColor = .designSystem(.white)
         $0.adjustsFontSizeToFitWidth = true
+        $0.textAlignment = .center
         return $0
     }(UILabel())
     

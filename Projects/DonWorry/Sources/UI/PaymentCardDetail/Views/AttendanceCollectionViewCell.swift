@@ -41,6 +41,8 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .designSystem(weight: .regular, size: ._13)
         label.textColor = .designSystem(.gray818181)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -62,7 +64,6 @@ class AttendanceCollectionViewCell: UICollectionViewCell {
     }
     
     fileprivate func setupUI() {
-        contentView.addSubview(userImageView)
         contentView.addSubview(stackView)
         stackView.alignment = .center
         stackView.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)

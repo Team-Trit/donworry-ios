@@ -19,10 +19,10 @@ class DetailImageViewController: UIViewController {
     
     let closeButton: UIButton = {
         $0.tintColor = .designSystem(.white)
-        $0.setImage(UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24)), for: .normal)
+        $0.setImage(UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 26)), for: .normal)
         $0.addTarget(self, action: #selector(sheetClosed), for: .touchUpInside)
         return $0
-    }(UIButton())
+    }(ImageCloseButton())
     
     var imageUrl: String? {
         didSet {
@@ -40,12 +40,30 @@ class DetailImageViewController: UIViewController {
         view.backgroundColor = .designSystem(.black)
         view.addSubview(imageView)
         imageView.anchor(left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 0, paddingRight: 0)
+        
         imageView.centerY(inView: view)
-        imageView.setHeight(height: UIScreen.main.bounds.height / 2)
         
         view.addSubview(closeButton)
-        closeButton.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop: 40, paddingLeft: 20)
+        closeButton.anchor(top: view.topAnchor, left: view.leftAnchor, paddingTop:  50, paddingLeft: 35)
     }
     
     
+}
+
+class ImageCloseButton: UIButton {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        super.point(inside: point, with: event)
+        let touchArea = bounds.insetBy(dx: -50, dy: -50)
+        return touchArea.contains(point)
+    }
+
 }

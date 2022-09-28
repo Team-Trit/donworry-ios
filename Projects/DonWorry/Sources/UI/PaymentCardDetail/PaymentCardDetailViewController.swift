@@ -318,6 +318,16 @@ extension PaymentCardDetailViewController {
 //MARK: CollectionView
 extension PaymentCardDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        switch collectionView {
+//        case attendanceCollectionView:
+//            return UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0)
+//        default:
+//            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+//        }
+//           
+//        }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let state = reactor?.currentState else { return 0 }
         switch collectionView {
