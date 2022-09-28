@@ -17,22 +17,22 @@ final class SignUpUseCaseImpl: SignUpUseCase {
     private let authRepository: AuthRepository
     private let accessTokenRepository: AccessTokenRepository
     private let userAccountRepository: UserAccountRepository
-    private let fcmTokenRepository: FCMDeviceTokenRepository
+    private let tokenRepository: DeviceTokenRepository
 
     init(
         authRepository: AuthRepository = AuthRepositoryImpl(),
         accessTokenRepository: AccessTokenRepository = AccessTokenRepositoryImpl(),
         userAccountRepository: UserAccountRepository = UserAccountRepositoryImpl(),
-        fcmTokenRepository: FCMDeviceTokenRepository = FCMDeviceTokenRepositoryImpl()
+        tokenRepository: DeviceTokenRepository = DeviceTokenRepositoryImpl()
     ) {
         self.authRepository = authRepository
         self.accessTokenRepository = accessTokenRepository
         self.userAccountRepository = userAccountRepository
-        self.fcmTokenRepository = fcmTokenRepository
+        self.tokenRepository = tokenRepository
     }
 
     func signUp(request: AuthModels.SignUp.Request) -> Observable<AuthModels.Empty.Response> {
-        guard let fcmToken = fcmTokenRepository.fetchFCMToken() else { return .just(.init()) }
+        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .just(.init()) }
         switch request.oauthType {
         case .apple:
             return authRepository.signupWithApple(requeset: request, fcmToken: fcmToken, authorizationCode: request.authorizationCode ?? "")
