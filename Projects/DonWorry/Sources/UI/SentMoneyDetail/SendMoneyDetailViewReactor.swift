@@ -75,7 +75,7 @@ final class SendMoneyDetailViewReactor : Reactor {
          switch mutation {
          case .setup(let response):
              newState.currentStatus = response
-             newState.totalAmount = response.amount
+             newState.totalAmount = response.spaceTotalAmount 
              newState.cards = response.cards.compactMap { [weak self] in
                  self?.formatGiveMoneyInfoViewModel(from: $0)
              }
