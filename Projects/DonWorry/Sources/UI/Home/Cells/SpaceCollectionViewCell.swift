@@ -18,6 +18,7 @@ struct SpaceCellViewModel: Equatable {
     var status: SpaceCollectionViewCell.SpaceStatus
     var adminID: Int
     var isAllPaymentCompleted: Bool
+    var isSelect: Bool
 }
 
 final class SpaceCollectionViewCell: UICollectionViewCell {
@@ -36,6 +37,19 @@ final class SpaceCollectionViewCell: UICollectionViewCell {
         return v
     }()
 
+    func configure(with model: SpaceCellViewModel) {
+        let textColor: UIColor? = model.isSelect ? .designSystem(.white) : .designSystem(.black)
+        let backgroundColor: UIColor? = model.isSelect ?
+        model.status.selectedBackgroundColor :
+        model.status.unselectedBackgroundColor
+
+        DispatchQueue.main.async { [weak self] in
+            self?.titleLabel.text = model.title
+            self?.titleLabel.textColor = textColor
+            self?.contentView.backgroundColor = backgroundColor
+        }
+    }
+    
     var viewModel: SpaceCellViewModel? {
         didSet {
             guard let viewModel = viewModel else { return }

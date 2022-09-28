@@ -56,6 +56,7 @@ final class PaymentCardListReactor: Reactor {
     struct State {
         var space: Space
         var paymentCardListViewModel: [PaymentCardCellViewModel] = []
+        var sections: [PaymentCardSection] = []
         var canLeaveSpace: Bool = true
         var isUserAdmin: Bool = false
         var spaceJoinUsers: [User] = []

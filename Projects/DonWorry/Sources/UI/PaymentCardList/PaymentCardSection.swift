@@ -7,27 +7,16 @@
 //
 
 import Foundation
-import RxDataSources
 
-enum PaymentCardItem: Equatable {
-    case AddPaymentCard
-    case PaymentCard(PaymentCardCellViewModel)
-}
-
-enum PaymentCardSection: Equatable {
-    case PaymentCardSection([PaymentCardItem])
-}
-                            
-extension PaymentCardSection: SectionModelType {
+enum PaymentCardSection: Hashable {
+    typealias ParticipantCardModel = ParticipantListCellViewModel
     typealias Item = PaymentCardItem
-    var items: [Item] {
-        switch self {
-        case .PaymentCardSection(let items):
-            return items
-        }
-    }
 
-    init(original: Self, items: [Self.Item]) {
-        self = original
-    }
+    case participantCard(ParticipantCardModel)
+    case PaymentCard(itmes: [Item])
+    case addPaymentCard
+}
+
+enum PaymentCardItem: Hashable {
+    case paymentCard(PaymentCardCellViewModel)
 }

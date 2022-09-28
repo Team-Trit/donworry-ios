@@ -11,7 +11,7 @@ import DesignSystem
 import DonWorryExtensions
 import SkeletonView
 
-struct PaymentCardCellViewModel: Equatable {
+struct PaymentCardCellViewModel: Hashable {
     var id: Int
     var name: String
     var totalAmount: String
@@ -23,7 +23,7 @@ struct PaymentCardCellViewModel: Equatable {
     var backgroundColor: String
     var isUserParticipated: Bool
 
-    struct User: Equatable {
+    struct User: Hashable {
         var id: Int
         var nickName: String
         var imageURL: String?

@@ -11,7 +11,7 @@ import SnapKit
 import DonWorryExtensions
 import DesignSystem
 
-struct ParticipantListCellViewModel {
+struct ParticipantListCellViewModel: Hashable {
     let users: [ParticipantCellViewModel]
 }
 

@@ -11,7 +11,7 @@ import Kingfisher
 import DesignSystem
 import DonWorryExtensions
 
-struct ParticipantCellViewModel {
+struct ParticipantCellViewModel: Hashable {
     let id: Int
     let imageURL: String?
     let nickname: String
