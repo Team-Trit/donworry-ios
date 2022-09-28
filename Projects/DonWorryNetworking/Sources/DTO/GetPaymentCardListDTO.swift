@@ -12,7 +12,7 @@ extension DTO {
     public struct GetPaymentCardList: Codable {
         public let isAllPaymentCompleted: Bool
         public let space: Space
-//        public let spaceJoinUsers: [PaymentCard.User]
+        public let spaceJoinUsers: [PaymentCard.User]
         public let cards: [PaymentCard]
 
         // MARK: - Space

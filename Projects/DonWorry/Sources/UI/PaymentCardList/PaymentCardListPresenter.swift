@@ -10,26 +10,53 @@ import Foundation
 import DonWorryExtensions
 
 protocol PaymentCardListPresenter {
-    func formatSection(
-        from paymentCardList: [PaymentCardModels.FetchCardList.Response.PaymentCard]
-    ) -> [PaymentCardCellViewModel]
+    typealias Response = PaymentCardModels.FetchCardList.Response
+    typealias PaymentCard = Response.PaymentCard
+    func formatPaymentCardModelList(from paymentCardList: [PaymentCard]) -> [PaymentCardCellViewModel]
+    func formatSection(with response: Response) -> [PaymentCardSection]
+    func canAlgorithmStart(with paymentCardList: [PaymentCard]) -> Bool
 }
 
-final class PaymentCardPresenterImpl: PaymentCardListPresenter {
+final class PaymentCardListPresenterImpl: PaymentCardListPresenter {
 
-    func formatSpace(
-        from space: PaymentCardModels.FetchCardList.Response.Space
-    ) {
-
+    func canAlgorithmStart(with paymentCardList: [PaymentCard]) -> Bool {
+        return paymentCardList.contains(where: { $0.cardJoinUserCount == 1 })
     }
 
-    func formatSection(
-        from paymentCardList: [PaymentCardModels.FetchCardList.Response.PaymentCard]
-    ) -> [PaymentCardCellViewModel] {
-        return paymentCardList.compactMap { [weak self] in self?.convert($0) }
+    func formatPaymentCardModelList(from paymentCardList: [PaymentCard]) -> [PaymentCardCellViewModel] {
+        return paymentCardList.compactMap { [weak self] in self?.convertToPaymentCardViewModel($0) }
     }
 
-    private func convert(_ paymentCard: PaymentCardModels.FetchCardList.Response.PaymentCard) -> PaymentCardCellViewModel {
+    func formatSection(with response: Response) -> [PaymentCardSection] {
+        var sections: [PaymentCardSection] = []
+        sections.append(addParticipantSection(response.spaceJoinUsers))
+        sections.append(addPaymentCardSection(response.cards))
+        if response.isAllPaymentCompleted {
+            sections.append(addAddPaymentCardSection())
+        }
+        return sections
+    }
+
+    private func addParticipantSection(_ spaceJoinUsers: [PaymentCard.User]) -> PaymentCardSection {
+        return .ParticipantCard(item: [.Participant(.init(users: spaceJoinUsers.map { convertToParticipantViewModel($0) }))])
+    }
+
+    private func addPaymentCardSection(_ paymentCardList: [PaymentCard]) -> PaymentCardSection {
+        let items = paymentCardList.map { self.convertToPaymentCardViewModel($0) }.map { PaymentCardItem.PaymentCard($0) }
+        return .PaymentCard(itmes: items)
+    }
+
+    private func addAddPaymentCardSection() -> PaymentCardSection {
+        return .AddPaymentCard
+    }
+
+    // User -> ParticipantCellViewModel
+    private func convertToParticipantViewModel(_ user: PaymentCard.User) -> ParticipantCellViewModel {
+        return .init(id: user.id, imageURL: user.imgURL, nickname: user.nickname)
+    }
+
+    // PaymentCard -> PaymentCardCellViewModel
+    private func convertToPaymentCardViewModel(_ paymentCard: PaymentCard) -> PaymentCardCellViewModel {
         return .init(
             id: paymentCard.id,
             name: paymentCard.name,
@@ -50,6 +77,7 @@ final class PaymentCardPresenterImpl: PaymentCardListPresenter {
         )
     }
 
+    // totalAmount(Int) -> String (원)
     private func convertTotalAmountToString(_ totalAmount: Int) -> String {
         var result: String = ""
         if let amountText = Formatter.amountFormatter.string(from: NSNumber(value: totalAmount)) {

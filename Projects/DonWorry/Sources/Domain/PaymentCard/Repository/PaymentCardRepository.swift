@@ -37,6 +37,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                 return .init(
                     isAllPaymentCompleted: response.isAllPaymentCompleted,
                     space: self.convertToSpace(response.space),
+                    spaceJoinUsers: response.spaceJoinUsers.map { self.convertToUser($0) },
                     cards: response.cards.compactMap { self.convertToPaymentCard($0) }
                 )
             }.asObservable()
@@ -86,7 +87,7 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             .compactMap { _ in .init() }.asObservable()
     }
 
-    // SpaceDTO에서 Space도메인으로 변환해줍니다.
+    // SpaceDTO에서 Space 도메인으로 변환해줍니다.
     private func convertToSpace(_ dto: DTO.GetPaymentCardList.Space) -> PaymentCardModels.FetchCardList.Response.Space {
         return .init(id: dto.id, adminID: dto.adminID, title: dto.title, status: dto.status, shareID: dto.shareID)
     }
@@ -119,7 +120,8 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
             isUserParticipatedIn: dto.isUserJoin
         )
     }
-    
+
+    // PaymentCardDTO에서 PaymentCard 도메인으로 변환해줍니다.
     private func convertToPaymentCard(_ dto: DTO.GetPaymentCard.PaymentCard) -> PaymentCardModels.FetchCard.Response.PaymentCard {
         return .init(
             id: dto.id,
@@ -145,10 +147,8 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
         )
     }
 
-
     private func createPostPaymentCardReqeust(paymentCard: PaymentCardModels.CreateCard.Request) -> PostPaymentCardAPI.Request {
         return  .init(
             spaceID: paymentCard.spaceID, categoryID: paymentCard.categoryID, bank: paymentCard.bank, number: paymentCard.accountNumber, holder: paymentCard.holder, name: paymentCard.name, totalAmount: paymentCard.totalAmount, bgColor: paymentCard.bgColor, paymentDate: paymentCard.paymentDate, imgUrls: paymentCard.imageURLs)
-
     }
 }

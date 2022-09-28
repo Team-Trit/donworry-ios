@@ -54,6 +54,7 @@ final class PaymentCardServiceImpl: PaymentCardService {
         return .init(
             isAllPaymentCompleted: response.isAllPaymentCompleted,
             space: response.space,
+            spaceJoinUsers: response.spaceJoinUsers,
             cards: response.cards.map { c in
                     .init(
                         id: c.id,

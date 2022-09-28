@@ -24,6 +24,7 @@ enum PaymentCardListStep {
 }
 
 final class PaymentCardListReactor: Reactor {
+
     typealias Section = PaymentCardSection
     typealias PaymentCardListInformation = PaymentCardModels.FetchCardList.Response
     typealias PaymentCardList = [PaymentCardModels.FetchCardList.Response.PaymentCard]
@@ -55,13 +56,13 @@ final class PaymentCardListReactor: Reactor {
 
     struct State {
         var space: Space
-        var paymentCardListViewModel: [PaymentCardCellViewModel] = []
         var sections: [PaymentCardSection] = []
-        var canLeaveSpace: Bool = true
-        var isUserAdmin: Bool = false
-        var spaceJoinUsers: [User] = []
         var timer: Disposable?
-
+        // MARK: 이후에 수정할 조건들
+        var isUserAdmin: Bool = false // 다음 화면으로 넘기는 필요한 정보
+        var canLeaveSpace: Bool = true // 정산방 나가기 조건
+        var cantStartAlgorithm: Bool = false // 정산시작 버튼에 대한 조건
+        var paymentCardCount: Int = 0 // 정산시작 버튼에 대한 조건
         @Pulse var error: Error?
         @Pulse var step: PaymentCardListStep?
     }
@@ -72,7 +73,7 @@ final class PaymentCardListReactor: Reactor {
         spaceService: SpaceService = SpaceServiceImpl(),
         judgeSpaceAdminUseCase: JudgeSpaceAdminUseCase = JudgeSpaceAdminUseCaseImpl(),
         paymentCardService: PaymentCardService = PaymentCardServiceImpl(),
-        paymentCardListPresenter: PaymentCardListPresenter = PaymentCardPresenterImpl()
+        paymentCardListPresenter: PaymentCardListPresenter = PaymentCardListPresenterImpl()
     ) {
         self.initialState = .init(space: .init(id: spaceID, adminID: adminID, title: "", status: status, shareID: ""))
         self.spaceService = spaceService
@@ -116,12 +117,12 @@ final class PaymentCardListReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-        case .initializeState(let information):
-            newState.space = information.space
-            newState.canLeaveSpace = information.isAllPaymentCompleted
-            newState.paymentCardListViewModel = paymentCardListPresenter.formatSection(
-                from: information.cards
-            )
+        case .initializeState(let response):
+            newState.space = response.space
+            newState.sections = paymentCardListPresenter.formatSection(with: response)
+            newState.canLeaveSpace = response.isAllPaymentCompleted
+            newState.cantStartAlgorithm = paymentCardListPresenter.canAlgorithmStart(with: response.cards)
+            newState.paymentCardCount = response.cards.count
         case .initializeIsUserAdmin(let isUserAdmin):
             newState.isUserAdmin = isUserAdmin
         case .setupTimer(let direction):
@@ -139,13 +140,15 @@ final class PaymentCardListReactor: Reactor {
     }
 
     private func requestStartPaymentAlgorithm() -> Observable<Mutation> {
-        if currentState.paymentCardListViewModel.contains(where: { $0.participatedUserCount == 1 }) {
+        if currentState.cantStartAlgorithm {
             return .just(.error(PaymentCardListViewError.cantStartAlgorithm))
-        } else if currentState.paymentCardListViewModel.isEmpty {
+        }
+        if currentState.paymentCardCount <= 0 {
             return .just(.error(PaymentCardListViewError.noPaymentCardList))
         }
         let space = currentState.space
-        return spaceService.startPaymentAlogrithm(request: .init(id: space.id, status: .progress)).map { _ in .routeTo(.pop) }
+        let requestAlgorithm = spaceService.startPaymentAlogrithm(request: .init(id: space.id, status: .progress))
+        return requestAlgorithm.map { _ in .routeTo(.pop) }
     }
 
     private func requestIsUserSpaceAdmin() -> Observable<Mutation> {
@@ -162,7 +165,9 @@ final class PaymentCardListReactor: Reactor {
     }
 
     private func requestLeaveSpace() -> Observable<Mutation> {
-        if !currentState.canLeaveSpace { return .just(.error(PaymentCardListViewError.cantLeaveUntilPaymentsCompleted)) }
+        if !currentState.canLeaveSpace {
+            return .just(.error(PaymentCardListViewError.cantLeaveUntilPaymentsCompleted))
+        }
         return spaceService.leaveSpace(
             request: .init(
                 isStatusOpen: currentState.space.status == "OPEN",

@@ -9,14 +9,16 @@
 import Foundation
 
 enum PaymentCardSection: Hashable {
-    typealias ParticipantCardModel = ParticipantListCellViewModel
     typealias Item = PaymentCardItem
 
-    case participantCard(ParticipantCardModel)
+    case ParticipantCard(item: [Item])
     case PaymentCard(itmes: [Item])
-    case addPaymentCard
+    case AddPaymentCard
 }
 
 enum PaymentCardItem: Hashable {
-    case paymentCard(PaymentCardCellViewModel)
+    case AddPaymentCard
+    case PaymentCard(PaymentCardCellViewModel)
+    case Participant(ParticipantListCellViewModel)
+
 }
