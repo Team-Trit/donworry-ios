@@ -31,7 +31,7 @@ final class HomePresenterImpl: HomePresenter {
             title: space.title,
             status: convertSpaceStatus(with: space.status),
             adminID: space.adminID,
-            isAllPaymentCompleted: space.isAllPaymentCompleted
+            isAllPaymentCompleted: space.isAllPaymentCompleted, isSelect: false
         )
     }
 
@@ -44,10 +44,11 @@ final class HomePresenterImpl: HomePresenter {
                 title: space.title,
                 status: self?.convertSpaceStatus(with: space.status) ?? .DONE,
                 adminID: space.adminID,
-                isAllPaymentCompleted: space.isAllPaymentCompleted
+                isAllPaymentCompleted: space.isAllPaymentCompleted, isSelect: false
             )
         }
     }
+    
     func formatSection(
         isAllPaymentCompleted: Bool,
         space: SpaceModels.Space

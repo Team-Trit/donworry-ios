@@ -37,6 +37,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
+        // MARK: 시뮬레이터에서 디버그할 시, 디바이스토큰을 못가져오기 때문에 회원가입, 로그인 오류납니다. 
         var token: String = ""
         for i in 0..<deviceToken.count {
             token += String(format: "%02.2hhx", deviceToken[i] as CVarArg)

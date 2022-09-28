@@ -62,6 +62,7 @@ final class LoginViewReactor: Reactor {
             let signIn = requestAppleLogin(token: identityToken, authorizationCode: authorizationCode)
             return signIn
         case .kakaoLoginButtonPressed:
+            print("카카오 버튼 눌림")
             return requestKakaoLogin()
         case .routeToHome:
             return .just(.routeTo(.home))
@@ -91,6 +92,8 @@ final class LoginViewReactor: Reactor {
                 switch error {
                 case .nouser(let token):
                     return .just(.routeTo(.signup(token, authorizationCode, .apple)))
+                case .appleLogin:
+                    return .just(.toast(error.message))
                 default:
                     return .just(.toast(error.message))
                 }
@@ -100,13 +103,16 @@ final class LoginViewReactor: Reactor {
     private func requestKakaoLogin() -> Observable<Mutation> {
         signInUseCase.kakaoLogin()
             .flatMap { token in
-                self.signInUseCase.signInWithKakao(request: .init(oauthType: .kakao, token: token.token, deviceToken: ""))
-            }.map { _ in .routeTo(.home)}
+                return self.signInUseCase.signInWithKakao(request: .init(oauthType: .kakao, token: token.token, deviceToken: ""))
+            }.map { _ in
+                return .routeTo(.home)}
             .catch { error in
                 guard let error = error.toAuthError() else { return .error(error) }
                 switch error {
                 case .nouser(let token):
                     return .just(.routeTo(.signup(token, "", .kakao)))
+                case .kakaoLogin:
+                    return .just(.toast(error.message))
                 default:
                     return .just(.toast(error.message))
                 }

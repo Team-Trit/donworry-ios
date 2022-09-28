@@ -45,7 +45,8 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     func signInWithKakao(request: AuthModels.SignIn.Reqeust) -> Observable<AuthModels.Empty.Response> {
-        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .just(.init()) }
+        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .error(AuthError.kakaoLogin) }
+
         return authRepository.loginWithKakao(accessToken: request.token, deviceToken: fcmToken)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
@@ -55,7 +56,7 @@ final class SignInUseCaseImpl: SignInUseCase {
     }
 
     func signInWithApple(request: AuthModels.SignIn.Reqeust, authorizationCode: String) -> Observable<AuthModels.Empty.Response> {
-        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .just(.init()) }
+        guard let fcmToken = tokenRepository.fetchDeviceToken() else { return .error(AuthError.appleLogin) }
         return authRepository.loginWithApple(identityToken: request.token, deviceToken: fcmToken, authorizationCode:  authorizationCode)
             .map { [weak self] (user, authentication) -> AuthModels.Empty.Response in
                 _ = self?.userAccountRepository.saveLocalUserAccount(user.user)
