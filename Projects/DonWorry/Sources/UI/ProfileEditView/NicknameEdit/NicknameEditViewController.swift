@@ -110,6 +110,11 @@ extension NicknameEditViewController {
             })
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.placeholder }
+            .observe(on: MainScheduler.instance)
+            .bind(to: nicknameEditField.textField.rx.placeholder)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$isDoneButtonAvailable)
             .asDriver(onErrorJustReturn: false)
             .drive(doneButton.rx.isEnabled)
