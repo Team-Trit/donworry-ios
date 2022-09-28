@@ -26,8 +26,8 @@ final public class AccountInputField: UIView {
         v.backgroundColor = .designSystem(.grayC5C5C5)
         return v
     }()
-    public lazy var holderTextField = LimitTextField(frame: .zero, type: .holder)
     public lazy var accountTextField = LimitTextField(frame: .zero, type: .account)
+    public lazy var holderTextField = LimitTextField(frame: .zero, type: .holder)
     private var type: AccountInputFieldType
     
     public init(frame: CGRect, type: AccountInputFieldType) {
@@ -45,8 +45,8 @@ final public class AccountInputField: UIView {
 extension AccountInputField {
     private func setUI() {
         self.addSubview(chooseBankButton)
-        self.addSubview(holderTextField)
         self.addSubview(accountTextField)
+        self.addSubview(holderTextField)
     
         self.snp.makeConstraints { make in
             make.height.equalTo(100)
@@ -59,12 +59,12 @@ extension AccountInputField {
                 make.height.equalTo(32)
             }
             
-            holderTextField.snp.makeConstraints { make in
+            accountTextField.snp.makeConstraints { make in
                 make.leading.equalTo(chooseBankButton.snp.trailing).offset(10)
                 make.trailing.equalToSuperview()
             }
             
-            accountTextField.snp.makeConstraints { make in
+            holderTextField.snp.makeConstraints { make in
                 make.top.equalTo(chooseBankButton.snp.bottom).offset(35)
                 make.leading.trailing.equalToSuperview()
             }
@@ -76,12 +76,12 @@ extension AccountInputField {
                 make.height.equalTo(32)
             }
             
-            holderTextField.snp.makeConstraints { make in
+            accountTextField.snp.makeConstraints { make in
                 make.leading.equalTo(chooseBankButton.snp.trailing).offset(10)
                 make.trailing.equalToSuperview()
             }
             
-            accountTextField.snp.makeConstraints { make in
+            holderTextField.snp.makeConstraints { make in
                 make.top.equalTo(chooseBankButton.snp.bottom).offset(35)
                 make.leading.trailing.equalToSuperview()
             }
