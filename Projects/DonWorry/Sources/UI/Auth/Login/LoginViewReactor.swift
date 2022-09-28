@@ -62,7 +62,6 @@ final class LoginViewReactor: Reactor {
             let signIn = requestAppleLogin(token: identityToken, authorizationCode: authorizationCode)
             return signIn
         case .kakaoLoginButtonPressed:
-            print("카카오 버튼 눌림")
             return requestKakaoLogin()
         case .routeToHome:
             return .just(.routeTo(.home))
@@ -86,7 +85,8 @@ final class LoginViewReactor: Reactor {
 
     private func requestAppleLogin(token: String, authorizationCode: String) -> Observable<Mutation> {
         signInUseCase.signInWithApple(request: .init(oauthType: .apple, token: token, deviceToken: ""), authorizationCode: authorizationCode)
-            .map { _ in Mutation.routeTo(.home) }
+            .map { _ in
+                return Mutation.routeTo(.home) }
             .catch { error in
                 guard let error = error.toAuthError() else { return .error(error) }
                 switch error {

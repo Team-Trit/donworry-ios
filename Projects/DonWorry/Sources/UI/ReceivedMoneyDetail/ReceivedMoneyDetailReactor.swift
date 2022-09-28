@@ -87,7 +87,7 @@ final class ReceivedMoneyDetailReactor: Reactor {
     private func createRequest() -> [PushAlarmsPayment] {
         return currentState.payments
             .filter { $0.isCompleted == false }
-            .map { PushAlarmsPayment(id: $0.id, receiverID: $0.id, isCompleted: $0.isCompleted) }
+            .map { PushAlarmsPayment(id: $0.id, receiverID: $0.receiverID, isCompleted: $0.isCompleted) }
     }
     private func formatTakerMoneyInfoViewModel(from entity: FetchTakerPaymentListPayment) -> RecievingCellViewModel {
         .init(

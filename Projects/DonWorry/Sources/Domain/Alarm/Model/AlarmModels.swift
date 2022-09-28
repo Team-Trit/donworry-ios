@@ -17,7 +17,13 @@ enum AlarmModels {
             let title: String
             let message: String
             let createdDate: String
-            
+            let data: MoreData?
+
+            struct MoreData {
+                let senderImgURL: String?
+                let spaceID: String?
+                let paymentID: String?
+            }
             enum AlarmType {
                 case system
                 case payment_start

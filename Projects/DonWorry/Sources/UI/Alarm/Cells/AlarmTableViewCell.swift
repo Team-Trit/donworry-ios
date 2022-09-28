@@ -16,6 +16,8 @@ struct AlarmCellViewModel {
     let type: AlarmType
     let spaceID: Int
     let paymentID: Int
+    let date: String
+    let imgURL: String?
 
     enum AlarmType {
         case payment_start
@@ -50,9 +52,8 @@ final class AlarmTableViewCell: UITableViewCell {
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = self?.cellViewModel?.title
                 self?.alertInfo.text = self?.cellViewModel?.message
-                self?.iconImage.image =  self?.cellViewModel?.type.image
-                // TODO: 서버 API 수정에 대응할것 
-                self?.sendDetailButton.isHidden = true // !(self?.cellViewModel?.type == .payment_push)
+                self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
+                self?.sendDetailButton.isHidden = true //!(self?.cellViewModel?.type == .payment_push)
             }
         }
     }
@@ -66,7 +67,7 @@ final class AlarmTableViewCell: UITableViewCell {
         return smallRec
     }()
 
-    let iconImage: UIImageView = {
+    let alarmImageView: UIImageView = {
         let iconImage = UIImageView()
         iconImage.translatesAutoresizingMaskIntoConstraints = false
         return iconImage
@@ -113,11 +114,11 @@ final class AlarmTableViewCell: UITableViewCell {
         smallRectangele.widthAnchor.constraint(equalToConstant: 43).isActive = true
         smallRectangele.heightAnchor.constraint(equalToConstant: 43).isActive = true
 
-        smallRectangele.addSubview(iconImage)
-        iconImage.centerXAnchor.constraint(equalTo: smallRectangele.centerXAnchor).isActive = true
-        iconImage.centerYAnchor.constraint(equalTo: smallRectangele.centerYAnchor).isActive = true
-        iconImage.widthAnchor.constraint(equalToConstant: 26).isActive = true
-        iconImage.heightAnchor.constraint(equalToConstant: 26).isActive = true
+        smallRectangele.addSubview(alarmImageView)
+        alarmImageView.centerXAnchor.constraint(equalTo: smallRectangele.centerXAnchor).isActive = true
+        alarmImageView.centerYAnchor.constraint(equalTo: smallRectangele.centerYAnchor).isActive = true
+        alarmImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
+        alarmImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
 
         contentView.addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: smallRectangele.topAnchor).isActive = true

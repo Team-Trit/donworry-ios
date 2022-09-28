@@ -62,9 +62,19 @@ final class AlarmRepositoryImpl: AlarmRepository {
             type: convertAlarmType(from: dto.createdDate),
             title: dto.title,
             message: dto.message,
-            createdDate: dto.createdDate
+            createdDate: dto.createdDate,
+            data: .init(senderImgURL: validImgURL(dto.data?.senderImgURL),
+                        spaceID: dto.data?.spaceID,
+                        paymentID: dto.data?.paymentID)
         )
+    }
 
+    // imgURL null로 오는 값은 실제 Nil처리 해주어야한다.
+    private func validImgURL(_ imgURL: String?) -> String? {
+        if let imgURL = imgURL {
+            return imgURL == "null" ? nil : imgURL
+        }
+        return nil
     }
 
     private func convertAlarmType(from alarmType: String) -> AlarmModels.GetAlarms.Alarm.AlarmType {
