@@ -11,8 +11,8 @@ import UIKit
 import SnapKit
 
 public enum LimitTextFieldType {
-    case nickName   // 닉네임을 입력해주세요, limit : 10, 한글과 영어만 입력
-    case holder     // 예금주명을 입력해주세요, limit : 20, 한글과 영어만 입력
+    case nickName   // 닉네임을 입력해주세요, limit : 8, 한글과 영어, 숫자만 입력
+    case holder     // 예금주명을 입력해주세요, limit : 10, 한글만 입력
     case account    // 계좌번호를 입력해주세요, 숫자만 입력
     
     case roomCode  // 정산방 코드를 입력해주세요, 숫자와 영어와 '-'만 입력
@@ -57,10 +57,10 @@ extension LimitTextField {
         switch type {
         case .nickName:
             placeholder = "닉네임을 입력해주세요"
-            self.limit = 10
+            self.limit = 8
         case .holder:
             placeholder = "예금주명을 입력해주세요"
-            self.limit = 20
+            self.limit = 10
         case .account:
             placeholder = "계좌번호를 입력해주세요"
             textField.keyboardType = .decimalPad
@@ -127,75 +127,26 @@ extension LimitTextField {
 // MARK: - UITextFieldDelegate
 extension LimitTextField: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let utf8Char = string.cString(using: .utf8)
-        let isBackSpace = strcmp(utf8Char, "\\b")
+        var pattern = ""
         
         switch type {
-        case .nickName, .holder:
-            if string.hasCharacters() || isBackSpace == -92 {
-                return true
-            }
-            return false
+        case .nickName:
+            pattern = "^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]*$"
+            
+        case .holder:
+            pattern = "^[가-힣ㄱ-ㅎㅏ-ㅣ]*$"
             
         case .account:
-            guard CharacterSet(charactersIn: "0123456789").isSuperset(of: CharacterSet(charactersIn: string)) else {
-                 return false
-            }
-            return true
+            pattern = "^[0-9]*$"
             
         case .roomCode:
-            if string.hasAlphabetsNumsHyphens() || isBackSpace == -92 {
-                return true
-            }
-            return false
+            pattern = "^[a-zA-Z0-9-]*$"
             
         case .roomName, .paymentTitle:
-            if string.hasCharNums() || isBackSpace == -92 {
-                return true
-            }
-            return false
+            pattern = "^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\\s]*$"
         }
-    }
-}
-
-// MARK: - String Extension
-extension String {
-    func hasCharacters() -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: "^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ\\s]$", options: .caseInsensitive)
-            if let _ = regex.firstMatch(in: self, options: NSRegularExpression.MatchingOptions.reportCompletion, range: NSMakeRange(0, self.count)) {
-                return true
-            }
-        } catch {
-            print(error.localizedDescription)
-            return false
-        }
-        return false
-    }
-    
-    func hasCharNums() -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: "^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\\s]$", options: .caseInsensitive)
-            if let _ = regex.firstMatch(in: self, options: NSRegularExpression.MatchingOptions.reportCompletion, range: NSMakeRange(0, self.count)) {
-                return true
-            }
-        } catch {
-            print(error.localizedDescription)
-            return false
-        }
-        return false
-    }
-    
-    func hasAlphabetsNumsHyphens() -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: "^[a-zA-Z0-9-\\s]$", options: .caseInsensitive)
-            if let _ = regex.firstMatch(in: self, options: NSRegularExpression.MatchingOptions.reportCompletion, range: NSMakeRange(0, self.count)) {
-                return true
-            }
-        } catch {
-            print(error.localizedDescription)
-            return false
-        }
-        return false
+        
+        guard let _ = string.range(of: pattern, options: .regularExpression) else { return false }
+        return true
     }
 }

@@ -76,7 +76,7 @@ final class SplashViewController: BaseViewController, View {
     }
 
     private func animateSplash() {
-        Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: 1.2, target: self, selector: #selector(splashTimeOut), userInfo: nil, repeats: false)
     }
 
     @objc func splashTimeOut() {
