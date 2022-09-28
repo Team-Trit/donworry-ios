@@ -128,11 +128,10 @@ final class JoinSpaceViewController: BaseViewController, View {
 extension JoinSpaceViewController {
 
     private func setUI() {
-        self.isModalInPresentation = true
         self.dismissButton.titleLabel?.font = .designSystem(weight: .regular, size: ._17)
         self.dismissButton.setTitle("취소", for: .normal)
         self.dismissButton.setTitleColor(.designSystem(.redFF0B0B), for: .normal)
-        self.nextButton.title = "다음"
+        self.nextButton.title = "완료"
         view.backgroundColor = .designSystem(.white)
         view.addSubviews(dismissButton)
         view.addSubview(imageView)

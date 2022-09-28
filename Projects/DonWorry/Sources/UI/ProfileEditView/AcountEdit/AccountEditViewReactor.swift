@@ -44,6 +44,8 @@ final class AccountEditViewReactor: Reactor {
     
     struct State {
         var user: Models.User
+        var accountPlaceholder: String?
+        var holderPlaceholder: String?
         @Pulse var isDoneButtonAvailable: Bool
         @Pulse var step: AccountEditViewStep?
     }
@@ -112,6 +114,8 @@ final class AccountEditViewReactor: Reactor {
         switch mutation {
         case .setup(let user):
             newState.user = user
+            newState.accountPlaceholder = user.bankAccount.accountNumber
+            newState.holderPlaceholder = user.bankAccount.accountHolderName
             
         case .updateBank(let selectedBank):
             newState.user.bankAccount.bank = selectedBank

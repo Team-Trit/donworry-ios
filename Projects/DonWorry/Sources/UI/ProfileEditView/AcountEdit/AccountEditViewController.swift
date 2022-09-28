@@ -138,6 +138,16 @@ extension AccountEditViewController {
             })
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.accountPlaceholder }
+            .observe(on: MainScheduler.instance)
+            .bind(to: accountEditField.accountTextField.textField.rx.placeholder)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.holderPlaceholder }
+            .observe(on: MainScheduler.instance)
+            .bind(to: accountEditField.holderTextField.textField.rx.placeholder)
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$isDoneButtonAvailable)
             .asDriver(onErrorJustReturn: false)
             .drive(self.doneButton.rx.isEnabled)

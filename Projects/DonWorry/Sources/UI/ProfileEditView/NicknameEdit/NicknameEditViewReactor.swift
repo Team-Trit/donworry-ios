@@ -35,6 +35,7 @@ final class NicknameEditViewReactor: Reactor {
     
     struct State {
         var user: Models.User
+        var placeholder: String?
         @Pulse var isDoneButtonAvailable: Bool
         @Pulse var toast: String?
         @Pulse var step: NicknameEditViewStep?
@@ -96,6 +97,7 @@ final class NicknameEditViewReactor: Reactor {
         switch mutation {
         case .setup(let user):
             newState.user = user
+            newState.placeholder = user.nickName
             
         case .updateNickname(let nickname):
             newState.user.nickName = nickname
