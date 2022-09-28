@@ -43,7 +43,6 @@ final class PaymentCardDetailViewReactor: Reactor {
         var participatedUsers: [AttendanceCellViewModel]
         var amount: Int
         var isParticipated: Bool?
-        var isButtonEnabled: Bool = false
         var imgURLs: [String?]
         @Pulse var step: PaymentCardDetailStep?
     }
@@ -99,7 +98,7 @@ final class PaymentCardDetailViewReactor: Reactor {
              newState.participatedUsers = response.card.users.map {
                  .init(id: $0.id, name: $0.nickname, imgURL: $0.imgURL)
              }
-             newState.isButtonEnabled = currentState.isCardAdmin || !(isParticipated )
+             newState.isParticipated = isParticipated
          case .routeTo(let step):
              newState.step = step
          }
