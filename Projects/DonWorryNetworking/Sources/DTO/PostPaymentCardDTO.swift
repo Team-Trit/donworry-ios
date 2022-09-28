@@ -15,7 +15,7 @@ extension DTO {
         public let totalAmount: Int
         public let bgColor, paymentDate: String
         public let category: Category
-        public let account: Account
+        public let account: Account?
 
         public enum CodingKeys: String, CodingKey {
             case id
@@ -35,7 +35,7 @@ extension DTO {
         }
         
         public struct Account: Codable {
-            public let bank, number, holder: String
+            public let bank, number, holder: String?
             public let userID: Int?
 
             public enum CodingKeys: String, CodingKey {
