@@ -113,7 +113,7 @@ final class SpaceNameReactor: Reactor {
     private func buttonText(of type: RoomNameEditViewType) -> String {
         switch type {
         case .create:
-            return "정산방 참가하기"
+            return "정산방 생성하기"
         case .rename:
             return "완료"
         }

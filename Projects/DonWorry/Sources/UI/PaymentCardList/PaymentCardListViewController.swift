@@ -359,8 +359,8 @@ extension PaymentCardListViewController {
                 }
             )
             self.navigationController?.pushViewController(detailViewController, animated: true)
-        case .actionSheet:
-            self.present(optionAlertController(), animated: true)
+        case .actionSheet(let isAdmin):
+            self.present(optionAlertController(isAdmin), animated: true)
         case .nameEdit:
             let editRoomNameViewController = SpaceNameViewController()
             editRoomNameViewController.reactor = SpaceNameReactor(type: .rename(reactor!.currentState.space.id))
@@ -402,13 +402,18 @@ extension PaymentCardListViewController {
         return createCard
     }
     
-    private func optionAlertController() -> UIAlertController {
+    private func optionAlertController(_ isAdmin: Bool) -> UIAlertController {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
-            self.dismiss(animated: true) { [weak self] in
-                self?.reactor?.action.onNext(.routeToNameEdit)
+        
+        if isAdmin {
+            let item1 = UIAlertAction(title: "정산방 이름 변경", style: .default) { _ in
+                self.dismiss(animated: true) { [weak self] in
+                    self?.reactor?.action.onNext(.routeToNameEdit)
+                }
             }
+            actionSheet.addAction(item1)
         }
+        
         let item2 = UIAlertAction(title: "정산방 나가기", style: .default) { _ in
             self.dismiss(animated: true) { [weak self] in
                 self?.reactor?.action.onNext(.didTapLeaveButton)
@@ -416,7 +421,6 @@ extension PaymentCardListViewController {
         }
         let cancel = UIAlertAction(title: "취소", style: .cancel)
 
-        actionSheet.addAction(item1)
         actionSheet.addAction(item2)
         actionSheet.addAction(cancel)
         return actionSheet
