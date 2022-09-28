@@ -27,6 +27,12 @@ struct Formatter {
         return formatter
     }()
 
+    static let alarmDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM월 dd일 EEEE"
+        return formatter
+    }()
+
     static func addTimeZone(dateString: String) -> String {
         return dateString + ".100Z"
     }
