@@ -72,6 +72,9 @@ final class AlarmReactor: Reactor {
     // MARK: Presenter
 
     private func formatTo(alarmModels: Response) -> [(DateString,[AlarmCellViewModel])] {
+        var alarmModels: Response = alarmModels.map {
+            .init(id: $0.id, type: $0.type, title: $0.title, message: $0.message, createdDate: convertDateType($0.createdDate))
+        }
         guard alarmModels.isNotEmpty else { return [] }
         var array: [(DateString, [AlarmCellViewModel])] = []
         var cellModel: [AlarmCellViewModel] = []
@@ -102,6 +105,7 @@ final class AlarmReactor: Reactor {
             paymentID: -1
         )
     }
+
     private func convertAlarmType(alarmType: AlarmModels.GetAlarms.Alarm.AlarmType) -> AlarmCellViewModel.AlarmType {
         switch alarmType {
         case .system:
@@ -115,6 +119,11 @@ final class AlarmReactor: Reactor {
         case .space:
             return .payment_start
         }
+    }
+
+    private func convertDateType(_ date: String) -> String {
+        let currentDate = Formatter.fullDateFormatter.date(from: date) ?? Date()
+        return Formatter.alarmDateFormatter.string(from: currentDate)
     }
 
     private let alarmService: AlarmService

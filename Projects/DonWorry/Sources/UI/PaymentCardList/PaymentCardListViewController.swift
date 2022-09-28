@@ -18,12 +18,14 @@ import FirebaseDynamicLinks
 import SkeletonView
 
 final class PaymentCardListViewController: BaseViewController, View {
-    typealias Reactor = PaymentCardListReactor
 
-    lazy var navigationBar: DWNavigationBar = {
-        let v = DWNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
-        return v
-    }()
+    typealias Reactor = PaymentCardListReactor
+    typealias DataSource = PaymentCardDiffableDataSource
+    typealias Section = PaymentCardSection
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Section.Item>
+
+    lazy var dataSource = DataSource(collectionView: collectionView)
+    lazy var navigationBar: DWNavigationBar = DWNavigationBar(title: "", type: .image, rightButtonImageName: "ellipsis")
     lazy var spaceStackView: UIStackView = {
         let v = UIStackView()
         v.axis = .horizontal
@@ -57,6 +59,7 @@ final class PaymentCardListViewController: BaseViewController, View {
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 10
+        layout.sectionInset = .init(top: 0, left: 0, bottom: 10, right: 0)
         layout.scrollDirection = .vertical
         let v = UICollectionView(frame: .zero, collectionViewLayout: layout)
         v.contentInset = UIEdgeInsets(top: 13, left: 0, bottom: 58 + 6 + 20, right: 0)
@@ -158,7 +161,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         shareLink.socialMetaTagParameters?.title = "돈.워리에서 정산해요" // 🔀 변경필요
         shareLink.socialMetaTagParameters?.descriptionText = "💸\(spaceTitle!)에 참가해서 정산을 완료해보세요 " // 🔀 변경필요
         shareLink.socialMetaTagParameters?.imageURL = URL(string: "https://user-images.githubusercontent.com/63157395/190110193-0d6f49b9-b163-4fe4-845f-d650dd088d9f.png") // 🔀 변경필요
-//        guard let fullDynamicLink = shareLink.url else { return }
+        //        guard let fullDynamicLink = shareLink.url else { return }
         
         // 3. 공유용 URL로 줄이기
         shareLink.shorten { [weak self] (url, warnings, error) in
@@ -215,18 +218,15 @@ final class PaymentCardListViewController: BaseViewController, View {
         self.collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
-        self.collectionView.rx.setDataSource(self)
-            .disposed(by: disposeBag)
-
         self.checkParticipatedButton.rx.tap.map { .didTapParticipatedButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
-                    .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
-                    .map { .didTapPaymentCard($0.viewModel!) }
-                    .bind(to: reactor.action)
-                    .disposed(by: disposeBag)
+            .compactMap { [weak self] in self?.collectionView.cellForItem(at: $0) as? PaymentCardCollectionViewCell }
+            .map { .didTapPaymentCard($0.viewModel!) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         self.collectionView.rx.itemSelected
             .compactMap { [weak self] in
@@ -237,13 +237,6 @@ final class PaymentCardListViewController: BaseViewController, View {
 
         self.startPaymentAlgorithmButton.rx.tap
             .map { .didTapStartPaymentAlgorithmButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-
-        self.collectionView.rx.itemSelected
-            .compactMap { [weak self] in
-                return self?.collectionView.cellForItem(at: $0) as? AddPaymentCardCollectionViewCell
-            }.map { _ in .didTapAddPaymentCard }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -264,10 +257,10 @@ final class PaymentCardListViewController: BaseViewController, View {
             .bind(to: spaceIDLabel.rx.text)
             .disposed(by: disposeBag)
 
-        reactor.state.map { $0.paymentCardListViewModel }
+        reactor.state.map { $0.sections }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.collectionView.reloadData()
+            .subscribe(onNext: { [weak self] sections in
+                self?.apply(sections: sections)
             }).disposed(by: disposeBag)
 
         // MARK: Pulse
@@ -292,6 +285,25 @@ final class PaymentCardListViewController: BaseViewController, View {
     }
 }
 
+extension PaymentCardListViewController {
+
+    func apply(sections: [Section]) {
+        var snapshot = Snapshot()
+        snapshot.appendSections(sections)
+        sections.forEach { section in
+            switch section {
+            case .ParticipantCard(item: let models):
+                snapshot.appendItems(models, toSection: section)
+            case .PaymentCard(itmes: let models):
+                snapshot.appendItems(models, toSection: section)
+            case .AddPaymentCard(item: let model):
+                snapshot.appendItems(model)
+            }
+        }
+        self.dataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
+
 // MARK: setUI
 
 extension PaymentCardListViewController {
@@ -303,7 +315,6 @@ extension PaymentCardListViewController {
         self.view.addSubview(self.startPaymentAlgorithmButton)
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.floatingStackView)
-
         self.floatingStackView.addArrangedSubviews(self.shareLinkButton, self.checkParticipatedButton)
         self.spaceStackView.addArrangedSubviews(self.spaceIDLabel, self.spaceIDCopyButton)
 
@@ -337,6 +348,7 @@ extension PaymentCardListViewController {
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)
+        self.collectionView.dataSource = dataSource
     }
 }
 
@@ -370,26 +382,35 @@ extension PaymentCardListViewController {
         case .participate:
             guard let currentState = reactor?.currentState else { return }
             let participateViewController = ParticipatePaymentCardViewController()
-            participateViewController.reactor = ParticipatePaymentCardViewReactor(
-                participatedCards: currentState.paymentCardListViewModel.map {
-                    .init(id: $0.id,
-                          isSelected: $0.isUserParticipated,
-                          name: $0.name,
-                          categoryName: $0.categoryImageName,
-                          amount: $0.totalAmount,
-                          payer: .init(id: $0.payer.id, imgURL: $0.payer.imageURL, name: $0.payer.nickName),
-                          date: $0.dateString,
-                          bgColor: $0.backgroundColor
-                    )
+
+            var cards: [ParticipateCellViewModel] = []
+            for section in currentState.sections {
+                guard case .PaymentCard(let items) = section else { continue }
+                for item in items {
+                    guard case .PaymentCard(let model) = item else { continue }
+                    cards.append(converToParticipatedCards(model))
                 }
-            )
+            }
+            participateViewController.reactor = ParticipatePaymentCardViewReactor(participatedCards: cards)
             participateViewController.modalPresentationStyle = .fullScreen
             self.present(participateViewController, animated: true)
         case .none:
             break
         }
     }
-    
+
+    private func converToParticipatedCards(_ cardModel: PaymentCardCellViewModel) -> ParticipateCellViewModel {
+        return .init(id: cardModel.id,
+                     isSelected: cardModel.isUserParticipated,
+                     name: cardModel.name,
+                     categoryName: cardModel.categoryImageName,
+                     amount: cardModel.totalAmount,
+                     payer: .init(id: cardModel.payer.id, imgURL: cardModel.payer.imageURL, name: cardModel.payer.nickName),
+                     date: cardModel.dateString,
+                     bgColor: cardModel.backgroundColor
+        )
+
+    }
     private func createPaymentCard() -> UIViewController {
         let createCard = PaymentCardNameEditViewController()
         let space = reactor!.currentState.space
@@ -427,37 +448,6 @@ extension PaymentCardListViewController {
     }
 }
 
-// MARK: UICollectionViewDataSource
-
-extension PaymentCardListViewController: UICollectionViewDataSource {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        numberOfItemsInSection section: Int
-    ) -> Int {
-        guard let currentState = reactor?.currentState else { return 0 }
-        if currentState.space.status != "OPEN" {
-            return currentState.paymentCardListViewModel.count
-        } else {
-            return currentState.paymentCardListViewModel.count + 1
-        }
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        guard let reactor = reactor else { return .init() }
-        if indexPath.item == reactor.currentState.paymentCardListViewModel.count {
-            let cell = collectionView.dequeueReusableCell(AddPaymentCardCollectionViewCell.self, for: indexPath)
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(PaymentCardCollectionViewCell.self, for: indexPath)
-            cell.viewModel = reactor.currentState.paymentCardListViewModel[indexPath.item]
-            return cell
-        }
-    }
-}
-
 // MARK: UICollectionViewDelegateFlowLayout
 
 extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
@@ -466,11 +456,15 @@ extension PaymentCardListViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        guard let paymentCardListViewModel = reactor?.currentState.paymentCardListViewModel else { return .zero }
-        if indexPath.item == paymentCardListViewModel.count {
-            return .init(width: 340, height: 127)
-        } else {
+        switch indexPath.section {
+        case 0:
+            return .init(width: 340, height: 150)
+        case 1:
             return .init(width: 340, height: 216)
+        case 2:
+            return .init(width: 340, height: 127)
+        default:
+            return .zero
         }
     }
 }

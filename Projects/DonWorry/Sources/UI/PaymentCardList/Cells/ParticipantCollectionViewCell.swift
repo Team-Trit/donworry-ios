@@ -11,7 +11,7 @@ import Kingfisher
 import DesignSystem
 import DonWorryExtensions
 
-struct ParticipantCellViewModel {
+struct ParticipantCellViewModel: Hashable {
     let id: Int
     let imageURL: String?
     let nickname: String
@@ -20,16 +20,8 @@ struct ParticipantCellViewModel {
 final class ParticipantCollectionViewCell: UICollectionViewCell {
 
     lazy var crownImageView: UIImageView = {
-        let v = UIImageView(image: UIImage(.ic_cake))
+        let v = UIImageView(image: UIImage(.ic_crown))
         v.isHidden = true
-        return v
-    }()
-    lazy var stackView: UIStackView = {
-        let v = UIStackView()
-        v.alignment = .center
-        v.distribution = .fill
-        v.axis = .vertical
-        v.spacing = 10
         return v
     }()
     lazy var profileImageView: UIImageView = {
@@ -40,21 +32,20 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
     lazy var nickNameLabel: UILabel = {
         let v = UILabel()
         v.font = .designSystem(weight: .regular, size: ._10)
-        v.textColor = .black // .designSystem(.gray818181)
-        v.numberOfLines = 1
+        v.textColor = .black
+        v.numberOfLines = 2
         v.textAlignment = .center
         return v
     }()
 
-    var viewModel: ParticipantCellViewModel? {
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.viewModel?.imageURL)
-                self?.nickNameLabel.text = self?.viewModel?.nickname
-                self?.nickNameLabel.sizeToFit()
-            }
+    func configure(with model: ParticipantCellViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            self?.profileImageView.setBasicProfileImageWhenNilAndEmpty(with: model.imageURL)
+            self?.nickNameLabel.text = model.nickname
+            self?.nickNameLabel.sizeToFit()
         }
     }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -68,23 +59,25 @@ final class ParticipantCollectionViewCell: UICollectionViewCell {
     }
 
     private func setUI() {
+        contentView.addSubview(profileImageView)
+        contentView.addSubview(nickNameLabel)
         contentView.addSubview(crownImageView)
-        contentView.addSubview(stackView)
-        stackView.addArrangedSubviews(profileImageView,nickNameLabel)
-
-        stackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(16)
-            make.leading.trailing.equalToSuperview()
-        }
+        
         crownImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(14)
+            make.width.height.equalTo(20)
             make.centerX.equalToSuperview()
-            make.centerY.equalTo(stackView.snp.top)
+            make.bottom.equalTo(profileImageView.snp.top).offset(10)
         }
         profileImageView.snp.makeConstraints { make in
             make.width.height.equalTo(48)
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
-
+        nickNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(profileImageView.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+        }
+        
         profileImageView.roundCorners(24)
     }
 }

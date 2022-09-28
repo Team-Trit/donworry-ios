@@ -11,11 +11,10 @@ import Foundation
 enum PaymentCardModels {
 
     enum FetchCardList {
-
         struct Response {
             public let isAllPaymentCompleted: Bool
             public let space: Space
-//            public let spaceJoinUsers: [PaymentCard.User]
+            public let spaceJoinUsers: [PaymentCard.User]
             public let cards: [PaymentCard]
 
             struct Space {

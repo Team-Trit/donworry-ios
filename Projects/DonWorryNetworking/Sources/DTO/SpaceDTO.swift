@@ -44,7 +44,6 @@ extension DTO {
                 case imgURL = "imgUrl"
             }
         }
-
     }
 }
 

@@ -73,4 +73,5 @@ public enum Asset: String {
     case ic_money
     case ic_spash_logo
     case ic_cash_coin
+    case ic_crown
 }
