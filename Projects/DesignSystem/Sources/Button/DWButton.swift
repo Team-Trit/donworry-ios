@@ -10,14 +10,16 @@ import UIKit
 import SnapKit
 
 public enum DonWorryButtonType {
-    case xlarge58 // weight : 340 , height : 58
-    case xlarge50 // weight : 340 , height : 50
-    case largeBlue // weight : 262
-    case mediumBlue // weight : 222
-    case smallBlue // weight : 106
-    case halfMainBlue // weight : 162 절반 버튼
-    case halfLightBlue // weight : 162 절반 버튼
-    case xsmallGray // weight : 70
+    case xlarge58 // width : 340 , height : 58
+    case xlarge50 // width : 340 , height : 50
+    case largeBlue // width : 262
+    case mediumBlue // width : 222
+    case smallBlue // width : 106
+    case halfMainBlue // width : 162 절반 버튼
+    case halfLightBlue // width : 162 절반 버튼
+    case halfBorderBlue // width : 162 절반 버튼
+    case halfBorderGray // width : 162 절반 버튼
+    case xsmallGray // width : 70
 }
 
 public extension DWButton {
@@ -92,9 +94,10 @@ public extension DWButton {
                 make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
                 make.height.equalTo(58)
             }
+            
         case .halfLightBlue:
             button.roundCornersInDesignSystem(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
             button.setBackgroundColor(.designSystem(.lightBlue)!, for: .normal)
@@ -103,6 +106,31 @@ public extension DWButton {
                 make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
                 make.height.equalTo(58)
             }
+            
+        case .halfBorderBlue:
+            button.roundCornersInDesignSystem(10)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+            button.setTitleColor(.designSystem(.mainBlue), for: .normal)
+            button.tintColor = .designSystem(.mainBlue)
+            button.layer.borderWidth = 1
+            button.layer.borderColor = CGColor(red: 0.1098, green: 0.4196, blue: 1, alpha: 1)   // mainBlue
+            button.snp.makeConstraints { make in
+                make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
+                make.height.equalTo(58)
+            }
+       
+        case .halfBorderGray:
+            button.roundCornersInDesignSystem(10)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+            button.setTitleColor(.designSystem(.gray818181), for: .normal)
+            button.tintColor = .designSystem(.gray818181)
+            button.layer.borderWidth = 1
+            button.layer.borderColor = CGColor(red: 0.5058, green: 0.5058, blue: 0.5058, alpha: 0.5)   // gray818181 50%
+            button.snp.makeConstraints { make in
+                make.width.equalTo(UIScreen.main.bounds.size.width * 0.42)
+                make.height.equalTo(58)
+            }
+            
         case .xsmallGray:
             button.roundCornersInDesignSystem(29)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
