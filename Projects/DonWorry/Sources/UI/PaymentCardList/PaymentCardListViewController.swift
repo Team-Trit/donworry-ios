@@ -247,6 +247,7 @@ final class PaymentCardListViewController: BaseViewController, View {
             .subscribe(onNext: { [weak self] (space, isUserAdmin) in
                 self?.navigationBar.titleLabel?.text = space.title
                 self?.startPaymentAlgorithmButton.isEnabled = space.status == "OPEN" && isUserAdmin
+                self?.floatingStackView.isHidden = !(space.status == "OPEN")
                 self?.shareLinkButton.isHidden = !(space.status == "OPEN")
                 self?.checkParticipatedButton.isHidden = !(space.status == "OPEN")
                 
