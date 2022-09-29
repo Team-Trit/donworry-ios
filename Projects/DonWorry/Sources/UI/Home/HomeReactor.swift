@@ -216,7 +216,6 @@ final class HomeReactor: Reactor, AdaptivePresentationControllerDelegate {
         case .routeTo(let step):
             newState.step = step
         }
-        print(newState)
         return newState
     }
 

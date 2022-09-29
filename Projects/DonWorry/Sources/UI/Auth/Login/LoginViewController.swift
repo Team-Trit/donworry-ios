@@ -168,6 +168,8 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
            let authorizationCode = appleIDCredential.authorizationCode {
             let tokenString = String(decoding: identityToken, as: UTF8.self)
             let authorizationCode = String(decoding: authorizationCode, as: UTF8.self)
+            print(tokenString)
+            print(authorizationCode)
             reactor?.action.onNext(.proceedWithAppleToken(identityToken: tokenString, authorizationCode: authorizationCode))
         } else {
             DWToastFactory.show(message: "애플 로그인 실패", type: .error)

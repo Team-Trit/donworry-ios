@@ -26,20 +26,20 @@ public struct PushPaymentAPI: ServiceAPI {
 
 extension PushPaymentAPI {
     public struct Request: Encodable {
-        public let spaceID: Int
+        public let spaceId: Int
         public let payments: [Payment]
         public init(spaceID: Int, payments: [Payment]) {
-            self.spaceID = spaceID
+            self.spaceId = spaceID
             self.payments = payments
         }
 
         public struct Payment: Encodable {
             public let id: Int
-            public let receiverID: Int
+            public let receiverId: Int
             public let isCompleted: Bool
             public init(id: Int, receiverID: Int, isCompleted: Bool) {
                 self.id = id
-                self.receiverID = receiverID
+                self.receiverId = receiverID
                 self.isCompleted = isCompleted
             }
         }

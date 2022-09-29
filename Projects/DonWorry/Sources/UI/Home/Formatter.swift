@@ -29,6 +29,7 @@ struct Formatter {
 
     static let alarmDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko")
         formatter.dateFormat = "MM월 dd일 EEEE"
         return formatter
     }()

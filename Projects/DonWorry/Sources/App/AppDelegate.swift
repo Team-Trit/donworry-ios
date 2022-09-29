@@ -7,7 +7,6 @@
 
 import UIKit
 import Firebase
-import FirebaseMessaging
 import FirebaseDynamicLinks
 import UserNotifications
 import KakaoSDKCommon

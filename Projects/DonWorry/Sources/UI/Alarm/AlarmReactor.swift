@@ -72,27 +72,32 @@ final class AlarmReactor: Reactor {
     // MARK: Presenter
 
     private func formatTo(alarmModels: Response) -> [(DateString,[AlarmCellViewModel])] {
-        var alarmModels: Response = alarmModels.map {
-            .init(id: $0.id, type: $0.type, title: $0.title, message: $0.message, createdDate: convertDateType($0.createdDate))
-        }
         guard alarmModels.isNotEmpty else { return [] }
-        var array: [(DateString, [AlarmCellViewModel])] = []
-        var cellModel: [AlarmCellViewModel] = []
-        var currentDate: String = alarmModels[0].createdDate
-        var index: Int = 1
+        let sortedAlarmModels = alarmModels.sorted { first, second in
+            Formatter.fullDateFormatter.date(from: first.createdDate)! >= Formatter.fullDateFormatter.date(from: second.createdDate)!
+        }
+        let alarmModels: [AlarmCellViewModel] = convertToAlarmModelList(sortedAlarmModels)
+        var result: [(DateString, [AlarmCellViewModel])] = []
+        var tempAlarmModels: [AlarmCellViewModel] = []
+        var currentDate: String = ""
+        var index: Int = 0
         while index < alarmModels.count {
-            let currentAlarmEntity = alarmModels[index]
-            let currentAlarmModel = converAlarm(alarm: currentAlarmEntity)
-            if currentAlarmEntity.createdDate == currentDate {
-                cellModel.append(currentAlarmModel)
+            let currentAlarmModel = alarmModels[index]
+            if currentAlarmModel.date == currentDate {
+                tempAlarmModels.append(currentAlarmModel)
             } else {
-                array.append((currentDate, cellModel))
-                currentDate = alarmModels[index].createdDate
-                cellModel = []
+                if tempAlarmModels.isNotEmpty { result.append((currentDate, tempAlarmModels)) }
+                tempAlarmModels = [currentAlarmModel]
+                currentDate = currentAlarmModel.date
             }
             index += 1
         }
-        return array
+        result.append((currentDate, tempAlarmModels))
+        return result
+    }
+
+    private func convertToAlarmModelList(_ alarmModels: Response) -> [AlarmCellViewModel] {
+        return alarmModels.map { converAlarm(alarm: $0) }
     }
 
     private func converAlarm(alarm: AlarmModels.GetAlarms.Alarm) -> AlarmCellViewModel {
@@ -101,8 +106,10 @@ final class AlarmReactor: Reactor {
             title: alarm.title,
             message: alarm.message,
             type: convertAlarmType(alarmType: alarm.type),
-            spaceID: -1,
-            paymentID: -1
+            spaceID: Int(alarm.data?.spaceID ?? "-1") ?? -1,
+            paymentID: Int(alarm.data?.paymentID ?? "-1") ?? -1,
+            date: convertDateType(alarm.createdDate),
+            imgURL: alarm.data?.senderImgURL ?? ""
         )
     }
 

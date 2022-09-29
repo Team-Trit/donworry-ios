@@ -12,7 +12,7 @@ import SnapKit
 import DonWorryExtensions
 import SkeletonView
 
-struct SpaceCellViewModel: Equatable {
+struct SpaceCellViewModel: Hashable {
     var id: Int
     var title: String
     var status: SpaceCollectionViewCell.SpaceStatus

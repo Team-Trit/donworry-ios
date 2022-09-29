@@ -103,7 +103,6 @@ final class SpaceJoinUserDiffableDataSource: UICollectionViewDiffableDataSource<
         super.init(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
             let cell = collectionView.dequeueReusableCell(ParticipantCollectionViewCell.self, for: indexPath)
             cell.crownImageView.isHidden = indexPath.item != 0
-            print("이거첨에 나와야함 🚀🚀🚀🚀 ",itemIdentifier)
             cell.configure(with: itemIdentifier)
             return cell
         }
