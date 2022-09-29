@@ -35,6 +35,7 @@ final public class LimitTextField: UIView {
         v.backgroundColor = textField.text!.isEmpty ? .designSystem(.grayC5C5C5) : .designSystem(.mainBlue)
         return v
     }()
+    var descriptionLabel: UILabel?
     private var limit: Int?
     private var limitLabel: UILabel?
     
@@ -58,6 +59,10 @@ extension LimitTextField {
         case .nickName:
             placeholder = "닉네임을 입력해주세요"
             self.limit = 8
+            self.descriptionLabel = UILabel()
+            descriptionLabel?.text = "영문 + 숫자 + 한글을 사용하여 8자 이내 조합"
+            descriptionLabel?.textColor = .designSystem(.grayC5C5C5)
+            descriptionLabel?.font = .designSystem(weight: .regular, size: ._9)
         case .holder:
             placeholder = "예금주명을 입력해주세요"
             self.limit = 10
@@ -104,6 +109,14 @@ extension LimitTextField {
                 make.trailing.equalToSuperview()
             }
         }
+        
+        if type == .nickName {
+            addSubview(descriptionLabel!)
+            descriptionLabel!.snp.makeConstraints { make in
+                make.top.equalTo(line.snp.bottom).offset(10)
+                make.leading.equalToSuperview()
+            }
+        }
     }
 }
 
@@ -121,6 +134,10 @@ extension LimitTextField {
         }
         let count = (sender.text?.count)!
         limitLabel?.text = "\(count)/\(limit)"
+        
+        if self.type == .nickName {
+            descriptionLabel?.isHidden = count > 0 ? true : false
+        }
     }
 }
 
