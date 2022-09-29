@@ -215,14 +215,14 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 self?.fileCollectionView.reloadData()
             }).disposed(by: disposeBag)
         
-        reactor.state.map { $0.isParticipated }
-            .compactMap { $0 }
+        reactor.state.map { ($0.isCardAdmin, $0.isParticipated ?? false) }
             .observe(on: MainScheduler.instance)
-            .bind(onNext: { [weak self] in
-                if $0 {
-                    self?.bottomButton.setTitle("참석 취소", for: .normal)
+            .bind(onNext: { [weak self] isAdmin, isParticipated in
+                if isAdmin {
+                    self?.bottomButton.setTitle("삭제하기", for: .normal)
                 } else {
-                    self?.bottomButton.setTitle("참석 확인", for: .normal)
+                    self?.bottomButton.setTitle(isParticipated ? "참석 완료" : "참석 확인", for: .normal)
+                    self?.bottomButton.setBackgroundColor(isParticipated ? .designSystem(.grayC5C5C5)! : .designSystem(.mainBlue)!, for: .normal)
                 }
             })
             .disposed(by: disposeBag)
