@@ -33,14 +33,15 @@ class SendMoneyDetailStatusView: UIView {
     private let questionButton: UIImageView = {
         let questionButton = UIImageView()
         questionButton.translatesAutoresizingMaskIntoConstraints = false
-        questionButton.image = UIImage(named: "QuestionMark")
+        questionButton.image = UIImage(systemName: "questionmark.circle.fill")
+        questionButton.tintColor = .black
         return questionButton
     }()
     
     private let questionView: QuestionInformationView = {
         let questionView = QuestionInformationView()
+        questionView.translatesAutoresizingMaskIntoConstraints = false
         questionView.isHidden = true
-        questionView.frame = CGRect(x: 170, y: 40, width: 168, height: 76)
         questionView.layer.masksToBounds = true
         questionView.layer.cornerRadius = 8
         questionView.backgroundColor = .designSystem(.grayF6F6F6)
@@ -116,10 +117,11 @@ class SendMoneyDetailStatusView: UIView {
     }
     
     func render() {
+        
         addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 25).isActive = true
-        titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-        titleLabel.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        titleLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
         addSubview(nameSubTitle)
         nameSubTitle.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor).isActive = true
@@ -127,18 +129,18 @@ class SendMoneyDetailStatusView: UIView {
 
         addSubview(leftSmallTitle)
         leftSmallTitle.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        leftSmallTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        leftSmallTitle.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         
         addSubview(totalAmountDescriptionLabel)
         totalAmountDescriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
-        totalAmountDescriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
+        totalAmountDescriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
         addSubview(totalAmountLabel)
         totalAmountLabel.topAnchor.constraint(equalTo: totalAmountDescriptionLabel.bottomAnchor).isActive = true
-        totalAmountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15).isActive = true
+        totalAmountLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         addSubview(paymentAmountLabel)
         paymentAmountLabel.topAnchor.constraint(equalTo: leftSmallTitle.bottomAnchor, constant: 0).isActive = true
-        paymentAmountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        paymentAmountLabel.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         
         addSubview(questionButton)
         questionButton.centerYAnchor.constraint(equalTo: paymentAmountLabel.centerYAnchor).isActive = true
@@ -146,22 +148,26 @@ class SendMoneyDetailStatusView: UIView {
         questionButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
         questionButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
 
+        //questionView.frame = CGRect(x: 170, y: 40, width: 168, height: 76)
         addSubview(questionView)
+        questionView.snp.makeConstraints { make in
+            make.bottom.equalTo(totalAmountLabel.snp.bottom)
+            make.leading.equalTo(questionButton.snp.trailing).offset(15)
+            make.trailing.equalToSuperview()
+            make.height.equalTo(76)
+        }
 
         addSubview(progressView)
         progressView.topAnchor.constraint(equalTo: paymentAmountLabel.bottomAnchor, constant: 15).isActive = true
-        progressView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-        progressView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
+        progressView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        progressView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         progressView.heightAnchor.constraint(equalToConstant: 8).isActive = true
     }
 
     func configure(recievedUser: String?, payment: Int, totalAmount: Int) {
         titleLabel.text = recievedUser
-        paymentAmountLabel.attributedText = makeAtrributedString(money: payment, fontSize: 20, wonColor: .black
-        )
-        totalAmountLabel.attributedText = makeAtrributedString(
-            money: totalAmount, fontSize: 18, wonColor: .black
-        )
+        paymentAmountLabel.attributedText = makeAtrributedString(money: payment, fontSize: 20, wonColor: .black)
+        totalAmountLabel.attributedText = makeAtrributedString(money: totalAmount, fontSize: 18, wonColor: .black)
         progressView.setProgress(Float(payment)/Float(totalAmount), animated: true)
     }
 }
