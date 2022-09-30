@@ -42,8 +42,13 @@ final class PaymentCardListViewController: BaseViewController, View {
         return v
     }()
     lazy var spaceIDCopyButton: UIButton = {
-        let v = UIButton(type: .system)
-        v.setImage(.init(.btn_copy), for: .normal)
+        let v = UIButton()
+        v.setTitle(" 복사하기", for: .normal)
+        let image = UIImage(systemName: "doc.on.doc")?.withTintColor(.designSystem(.white)!).resized(to: CGSize(width: 15, height: 15))
+        v.setImage(image, for: .normal)
+        v.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
+        v.backgroundColor = .designSystem(.black)
+        v.layer.cornerRadius = 15
         return v
     }()
     lazy var startPaymentAlgorithmButton: UIButton = {
@@ -73,7 +78,8 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.distribution = .equalSpacing
         v.alignment = .top
         v.backgroundColor = .designSystem(.white)
-        v.layoutMargins = UIEdgeInsets(top: 5, left: 25, bottom: 0, right: 25)
+        v.layoutMargins = UIEdgeInsets(top: 10, left: 25, bottom: 0, right: 25)
+        v.addShadow(shadowColor: UIColor.gray.cgColor, offset: CGSize(width: 0, height: -1), opacity: 0.05, radius: 0)
         v.isLayoutMarginsRelativeArrangement = true
         return v
     }()
@@ -328,12 +334,22 @@ extension PaymentCardListViewController {
             make.leading.equalToSuperview().inset(25)
             make.top.equalTo(self.navigationBar.snp.bottom).offset(20)
         }
+        
+        self.spaceIDCopyButton.snp.makeConstraints { make in
+            make.width.equalTo(90)
+            make.height.equalTo(30)
+            make.leading.equalTo(spaceIDLabel.snp.trailing).offset(15)
+            make.centerY.equalToSuperview()
+        }
+        
         self.startPaymentAlgorithmButton.snp.makeConstraints { make in
             make.width.equalTo(159)
             make.height.equalTo(32)
             make.trailing.equalToSuperview().inset(25)
             make.centerY.equalTo(self.spaceStackView)
         }
+        
+        
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(self.spaceIDLabel.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
@@ -342,7 +358,7 @@ extension PaymentCardListViewController {
         self.floatingStackView.snp.makeConstraints { make in
 //            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ? 0 : 30)
             make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(90)
+            make.height.equalTo(100)
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)

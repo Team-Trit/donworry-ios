@@ -84,7 +84,7 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .halfMainBlue:
-            button.roundCornersInDesignSystem(25)
+            button.roundCornersInDesignSystem(10)
             button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
@@ -96,7 +96,7 @@ public extension DWButton {
             }
             
         case .halfLightBlue:
-            button.roundCornersInDesignSystem(25)
+            button.roundCornersInDesignSystem(10)
             button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
