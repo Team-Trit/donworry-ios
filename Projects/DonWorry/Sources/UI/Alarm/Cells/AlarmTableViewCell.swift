@@ -52,7 +52,6 @@ final class AlarmTableViewCell: UITableViewCell {
     weak var alarmCellDelegate: AlarmCellDelegate?
     var cellViewModel: AlarmCellViewModel? {
         didSet {
-            print("✅\(cellViewModel?.type)")
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = self?.cellViewModel?.title
                 self?.alertInfo.text = self?.cellViewModel?.message
