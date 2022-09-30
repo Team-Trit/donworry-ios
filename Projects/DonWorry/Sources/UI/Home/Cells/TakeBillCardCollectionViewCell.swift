@@ -13,7 +13,8 @@ import DonWorryExtensions
 struct TakeBillCardCellViewModel: Equatable {
     var userCount: Int
     var totalCount: Int
-    var amount: String
+    var completedAmount: String
+    var waitingAmount: String
     var isCompleted: Bool
 }
 
@@ -24,6 +25,14 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
         v.font = .designSystem(weight: .bold, size: ._13)
         v.textColor = .designSystem(.white)
         v.text = "미정산:"
+        return v
+    }()
+    lazy var textLabel: UILabel = {
+        let v = UILabel()
+        v.textColor = .designSystem(.white)
+        v.font = .designSystem(weight: .heavy, size: ._15)
+        v.textAlignment = .center
+        v.text = "미정산 금액"
         return v
     }()
     lazy var amountLabel: UILabel = {
@@ -45,7 +54,7 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
                 return
             }
             self.descriptionLabel.text = "미정산: \(viewModel.userCount) / \(viewModel.totalCount)"
-            self.amountLabel.text = viewModel.amount
+            self.amountLabel.text = viewModel.waitingAmount
             if viewModel.isCompleted { self.addCompleteView() }
             else { self.removeCompleteView() }
         }
@@ -66,6 +75,7 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
         self.contentView.backgroundColor = .designSystem(.green)
         self.contentView.addSubview(self.statusImageView)
         self.contentView.addSubview(self.descriptionLabel)
+        self.contentView.addSubview(self.textLabel)
         self.contentView.addSubview(self.amountLabel)
 
         self.statusImageView.snp.makeConstraints { make in
@@ -76,8 +86,12 @@ final class TakeBillCardCollectionViewCell: UICollectionViewCell {
             make.top.equalToSuperview().offset(15)
             make.leading.equalToSuperview().offset(15)
         }
-        self.amountLabel.snp.makeConstraints { make in
+        self.textLabel.snp.makeConstraints { make in
             make.top.equalTo(statusImageView.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        self.amountLabel.snp.makeConstraints { make in
+            make.top.equalTo(textLabel.snp.bottom).offset(15)
             make.centerX.equalToSuperview()
         }
 

@@ -86,12 +86,12 @@ final class HomePresenterImpl: HomePresenter {
         let completedAmount = payments.filter { $0.isCompleted }.map { $0.amount }.reduce(0, +)
         let totalAmount = payments.map { $0.amount }.reduce(0, +)
         return [HomeBillCardItem.TakeBillCard(
-            .init(
-                userCount: payments.filter { !$0.isCompleted }.count,
-                totalCount: payments.count,
-                amount: formatter(completedAmount),
-                isCompleted: totalAmount == completedAmount
-            )
+            .init(userCount: payments.filter { !$0.isCompleted }.count,
+                  totalCount: payments.count,
+                  completedAmount: formatter(completedAmount),
+                  waitingAmount: formatter(totalAmount - completedAmount),
+                  isCompleted: totalAmount == completedAmount)
+
         )]
     }
 
