@@ -24,6 +24,7 @@ struct AlarmCellViewModel {
         case payment_end
         case payment_push
         case system
+        case payment_send
 
         var image: UIImage? {
             switch self {
@@ -32,9 +33,11 @@ struct AlarmCellViewModel {
             case .payment_end:
                 return UIImage(.ic_calculation_3d)
             case .payment_push:
-                return UIImage(.ic_money)
+                return UIImage(.ic_cash_coin)
+            case .payment_send:
+                return UIImage(.ic_car)
             default:
-                return UIImage(.ic_money)
+                return UIImage(.ic_coffee)
             }
         }
     }
@@ -49,12 +52,20 @@ final class AlarmTableViewCell: UITableViewCell {
     weak var alarmCellDelegate: AlarmCellDelegate?
     var cellViewModel: AlarmCellViewModel? {
         didSet {
+            print("✅\(cellViewModel?.type)")
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = self?.cellViewModel?.title
                 self?.alertInfo.text = self?.cellViewModel?.message
-                self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
+                
+                if self?.cellViewModel?.type == .payment_push {
+                    self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
+                } else {
+                    self?.alarmImageView.image = self?.cellViewModel?.type.image
+                }
+                
                 self?.sendDetailButton.isHidden = true //!(self?.cellViewModel?.type == .payment_push)
             }
+            render()
         }
     }
 
@@ -63,13 +74,16 @@ final class AlarmTableViewCell: UITableViewCell {
         smallRec.translatesAutoresizingMaskIntoConstraints = false
         smallRec.roundCorners(15)
         smallRec.addShadowWithRoundedCorners()
-        smallRec.backgroundColor = .designSystem(.white)
+        smallRec.backgroundColor = .designSystem(.grayF6F6F6)
         return smallRec
     }()
 
     let alarmImageView: UIImageView = {
         let iconImage = UIImageView()
         iconImage.translatesAutoresizingMaskIntoConstraints = false
+        iconImage.contentMode = .scaleAspectFit
+        iconImage.backgroundColor = .clear
+        iconImage.backgroundColor = .designSystem(.grayF6F6F6)
         return iconImage
     }()
 
@@ -100,7 +114,6 @@ final class AlarmTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        render()
     }
 
     required init?(coder: NSCoder) {
@@ -108,6 +121,7 @@ final class AlarmTableViewCell: UITableViewCell {
     }
 
     func render() {
+            
         contentView.addSubview(smallRectangele)
         smallRectangele.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         smallRectangele.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
@@ -115,18 +129,21 @@ final class AlarmTableViewCell: UITableViewCell {
         smallRectangele.heightAnchor.constraint(equalToConstant: 43).isActive = true
 
         smallRectangele.addSubview(alarmImageView)
+        alarmImageView.roundCorners(cellViewModel?.type == .payment_push ? 15 : 5)
         alarmImageView.centerXAnchor.constraint(equalTo: smallRectangele.centerXAnchor).isActive = true
         alarmImageView.centerYAnchor.constraint(equalTo: smallRectangele.centerYAnchor).isActive = true
-        alarmImageView.widthAnchor.constraint(equalToConstant: 26).isActive = true
-        alarmImageView.heightAnchor.constraint(equalToConstant: 26).isActive = true
+        alarmImageView.widthAnchor.constraint(equalToConstant: cellViewModel?.type == .payment_push ? 43 : 25).isActive = true
+        alarmImageView.heightAnchor.constraint(equalToConstant: cellViewModel?.type == .payment_push ? 43 : 25).isActive = true
+
+
 
         contentView.addSubview(titleLabel)
-        titleLabel.topAnchor.constraint(equalTo: smallRectangele.topAnchor).isActive = true
-        titleLabel.leadingAnchor.constraint(equalTo: smallRectangele.trailingAnchor, constant: 10).isActive = true
+        titleLabel.bottomAnchor.constraint(equalTo: smallRectangele.centerYAnchor, constant: -2).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: smallRectangele.trailingAnchor, constant: 15).isActive = true
 
         contentView.addSubview(alertInfo)
-        alertInfo.bottomAnchor.constraint(equalTo: smallRectangele.bottomAnchor).isActive = true
-        alertInfo.leadingAnchor.constraint(equalTo: smallRectangele.trailingAnchor, constant: 10).isActive = true
+        alertInfo.topAnchor.constraint(equalTo: smallRectangele.centerYAnchor, constant: 2).isActive = true
+        alertInfo.leadingAnchor.constraint(equalTo: smallRectangele.trailingAnchor, constant: 15).isActive = true
 
         contentView.addSubview(sendDetailButton)
         sendDetailButton.snp.makeConstraints { make in

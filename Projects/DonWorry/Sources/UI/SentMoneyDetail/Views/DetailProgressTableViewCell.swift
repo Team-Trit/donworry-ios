@@ -88,10 +88,10 @@ class DetailProgressTableViewCell: UITableViewCell {
         
     }
     
-    func configure(myData: DetailProgressCellViewModel) {
+    func configure(total: Int, myData: DetailProgressCellViewModel) {
         takerName.text = myData.name + "님께"
         myAmount.attributedText = makeAtrributedString(money: myData.myAmount, fontSize: 20, wonColor: .black)
-        progressView.setProgress(Float(myData.myAmount)/Float(myData.totalAmount), animated: false)
+        progressView.setProgress(Float(myData.myAmount)/Float(total), animated: false)
     }
 
 }

@@ -18,6 +18,7 @@ extension UIImageView {
             self.kf.setImage(with: url,
                              options: [.forceTransition])
         } else {
+            self.translatesAutoresizingMaskIntoConstraints = false
             self.backgroundColor = .designSystem(Pallete.grayF6F6F6)
             self.image = UIImage(.ic_basic_profile_image)
         }
