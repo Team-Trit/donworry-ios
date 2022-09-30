@@ -29,6 +29,7 @@ enum AlarmModels {
                 case payment_start
                 case payment_end
                 case paymnet_push
+                case payment_send
                 case space
             }
         }

@@ -13,6 +13,14 @@ struct SentMoneyMoreDetailViewModel {
     var totalAmount: Int
     var sentMoneyList: [SentMoneyCellViewModel]
     var myMoneyDetailInfoList: [DetailProgressCellViewModel]
+    
+    var total: Int {
+        var total = 0
+        sentMoneyList.forEach { element in
+            total += element.myAmount
+        }
+        return total
+    }
 }
 class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
     
@@ -65,6 +73,7 @@ class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
         tableView.separatorColor = .clear
         return tableView
     }()
+
     
     private lazy  var closeButton: DWButton = {
         let cloasedButton = DWButton.create(.xlarge50)
@@ -76,6 +85,7 @@ class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
 
     var viewModel: SentMoneyMoreDetailViewModel?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -83,7 +93,13 @@ class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
         detailTableView.delegate = self
         detailTableView.allowsSelection = false
         detailTableView.showsVerticalScrollIndicator = false
- 
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        print(viewModel?.totalAmount)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        print(viewModel?.sentMoneyList)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        print(viewModel?.myMoneyDetailInfoList)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
         render()
     }
 
@@ -128,7 +144,7 @@ extension SentMoneyMoreDetailViewController: UITableViewDataSource {
         
         if indexPath.row == viewModel.sentMoneyList.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: TotalAmountTableViewCell.identifier, for: indexPath) as! TotalAmountTableViewCell
-            cell.configure(totalAmount: viewModel.totalAmount)
+            cell.configure(totalAmount: viewModel.total)
             return cell
         }
         

@@ -59,7 +59,8 @@ final class AlarmRepositoryImpl: AlarmRepository {
     private func convertToAlarm(_ dto: DTO.GetAlarmsDTO) -> AlarmModels.GetAlarms.Alarm {
         return .init(
             id: dto.id,
-            type: convertAlarmType(from: dto.createdDate),
+//            type: convertAlarmType(from: dto.createdDate),
+            type: convertAlarmType(from: dto.type),
             title: dto.title,
             message: dto.message,
             createdDate: dto.createdDate,
@@ -78,14 +79,17 @@ final class AlarmRepositoryImpl: AlarmRepository {
     }
 
     private func convertAlarmType(from alarmType: String) -> AlarmModels.GetAlarms.Alarm.AlarmType {
+        print("📸\(alarmType)")
         if alarmType == "PAYMENT_START" {
-            return .payment_start
+            return .payment_start // 정산 시작
         } else if alarmType == "PAYMENT_END" {
-            return .payment_end
+            return .payment_end // 정산 종료 알람
         } else if alarmType == "PAYMENT_PUSH" {
-            return .paymnet_push
+            return .paymnet_push // 재촉하기 알람
         } else if alarmType == "SYSTEM" {
             return .system
+        } else if alarmType == "PAYMENT_SEND" {
+            return .payment_send
         }
         return .system
     }

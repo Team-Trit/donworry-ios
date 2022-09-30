@@ -125,6 +125,8 @@ final class AlarmReactor: Reactor {
             return .payment_start
         case .space:
             return .payment_start
+        case .payment_send:
+            return .payment_send
         }
     }
 

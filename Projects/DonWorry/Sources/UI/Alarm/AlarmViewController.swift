@@ -52,6 +52,7 @@ final class AlarmViewController: BaseViewController, View {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        print("🌟222")
         self.view.backgroundColor = .systemBackground
 
         layout()

@@ -148,7 +148,6 @@ class SendMoneyDetailStatusView: UIView {
         questionButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
         questionButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
 
-        //questionView.frame = CGRect(x: 170, y: 40, width: 168, height: 76)
         addSubview(questionView)
         questionView.snp.makeConstraints { make in
             make.bottom.equalTo(totalAmountLabel.snp.bottom)
