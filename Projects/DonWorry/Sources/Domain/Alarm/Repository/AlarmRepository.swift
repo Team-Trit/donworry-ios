@@ -79,7 +79,6 @@ final class AlarmRepositoryImpl: AlarmRepository {
     }
 
     private func convertAlarmType(from alarmType: String) -> AlarmModels.GetAlarms.Alarm.AlarmType {
-        print("📸\(alarmType)")
         if alarmType == "PAYMENT_START" {
             return .payment_start // 정산 시작
         } else if alarmType == "PAYMENT_END" {
