@@ -221,7 +221,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
                 if isAdmin {
                     self?.bottomButton.setTitle("삭제하기", for: .normal)
                 } else {
-                    self?.bottomButton.setTitle(isParticipated ? "참석 완료" : "참석 확인", for: .normal)
+                    self?.bottomButton.setTitle(isParticipated ? "참석 취소" : "참석 확인", for: .normal)
                     self?.bottomButton.setBackgroundColor(isParticipated ? .designSystem(.grayC5C5C5)! : .designSystem(.mainBlue)!, for: .normal)
                 }
             })
