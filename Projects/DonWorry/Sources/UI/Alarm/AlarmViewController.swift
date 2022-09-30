@@ -145,6 +145,7 @@ extension AlarmViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("✅보여주나? ")
         guard let alarmModels = reactor?.currentState.alarmModels else { return .init() }
         let cell = tableView.dequeueReusableCell(AlarmTableViewCell.self, for: indexPath)
         cell.cellViewModel = alarmModels[indexPath.section].1[indexPath.row]

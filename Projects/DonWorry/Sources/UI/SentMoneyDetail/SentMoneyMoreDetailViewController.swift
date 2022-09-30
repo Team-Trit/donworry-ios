@@ -16,10 +16,14 @@ struct SentMoneyMoreDetailViewModel {
     
     var total: Int {
         var total = 0
-        sentMoneyList.forEach { element in
+        myMoneyDetailInfoList.forEach { element in
             total += element.myAmount
         }
         return total
+    }
+    
+    var totalCount: Int {
+        return sentMoneyList.count + myMoneyDetailInfoList.count
     }
 }
 class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
@@ -93,13 +97,6 @@ class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
         detailTableView.delegate = self
         detailTableView.allowsSelection = false
         detailTableView.showsVerticalScrollIndicator = false
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
-        print(viewModel?.totalAmount)
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
-        print(viewModel?.sentMoneyList)
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
-        print(viewModel?.myMoneyDetailInfoList)
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
         render()
     }
 
@@ -130,7 +127,8 @@ class SentMoneyMoreDetailViewController: UIViewController, UITableViewDelegate {
 
 extension SentMoneyMoreDetailViewController: UITableViewDataSource {
     func tableView( _ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (viewModel?.sentMoneyList.count ?? 0) + (viewModel?.myMoneyDetailInfoList.count ?? 0) + 1
+        guard let count = viewModel?.totalCount else {return 0}
+        return count + 1
     }
 
     func tableView( _ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -142,14 +140,14 @@ extension SentMoneyMoreDetailViewController: UITableViewDataSource {
             return cell
         }
         
-        if indexPath.row == viewModel.sentMoneyList.count {
-            let cell = tableView.dequeueReusableCell(withIdentifier: TotalAmountTableViewCell.identifier, for: indexPath) as! TotalAmountTableViewCell
-            cell.configure(totalAmount: viewModel.total)
+        if indexPath.row >= viewModel.sentMoneyList.count && indexPath.row < viewModel.totalCount {
+            let cell = tableView.dequeueReusableCell(withIdentifier: DetailProgressTableViewCell.identifier, for: indexPath) as! DetailProgressTableViewCell
+            cell.configure(total: viewModel.total, myData: viewModel.myMoneyDetailInfoList[indexPath.row - viewModel.sentMoneyList.count])
             return cell
         }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: DetailProgressTableViewCell.identifier, for: indexPath) as! DetailProgressTableViewCell
-        cell.configure(myData: viewModel.myMoneyDetailInfoList[indexPath.row - viewModel.sentMoneyList.count - 1])
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: TotalAmountTableViewCell.identifier, for: indexPath) as! TotalAmountTableViewCell
+        cell.configure(totalAmount: viewModel.total)
         return cell
     }
     

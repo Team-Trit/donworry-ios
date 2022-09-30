@@ -52,14 +52,20 @@ final class AlarmTableViewCell: UITableViewCell {
     weak var alarmCellDelegate: AlarmCellDelegate?
     var cellViewModel: AlarmCellViewModel? {
         didSet {
-            render()
+            print("✅\(cellViewModel?.type)")
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = self?.cellViewModel?.title
                 self?.alertInfo.text = self?.cellViewModel?.message
-                self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
-                self?.alarmImageView.image = self?.cellViewModel?.type.image
+                
+                if self?.cellViewModel?.type == .payment_push {
+                    self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
+                } else {
+                    self?.alarmImageView.image = self?.cellViewModel?.type.image
+                }
+                
                 self?.sendDetailButton.isHidden = true //!(self?.cellViewModel?.type == .payment_push)
             }
+            render()
         }
     }
 
