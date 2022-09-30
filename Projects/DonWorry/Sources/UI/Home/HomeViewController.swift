@@ -306,7 +306,7 @@ extension HomeViewController {
             let sentMoneyDetailViewController = SendMoneyDetailViewController()
             sentMoneyDetailViewController.reactor = SendMoneyDetailViewReactor(spaceID: spaceID, paymentID: paymentID)
             if let presentationController = sentMoneyDetailViewController.sheetPresentationController {
-                presentationController.prefersGrabberVisible = false
+                presentationController.prefersGrabberVisible = true
                 presentationController.detents = [.medium()]
             }
             return sentMoneyDetailViewController

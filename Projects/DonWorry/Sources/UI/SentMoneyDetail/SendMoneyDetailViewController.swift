@@ -16,14 +16,6 @@ import DonWorryExtensions
 
 final class SendMoneyDetailViewController: BaseViewController, View {
     typealias Reactor = SendMoneyDetailViewReactor
-    
-    private let grabber: UIView = {
-        let v = UIView()
-        v.backgroundColor = .designSystem(.gray818181)
-        v.layer.masksToBounds = true
-        v.layer.cornerRadius = 3
-        return v
-    }()
 
     private var statusView: SendMoneyDetailStatusView = {
         let status = SendMoneyDetailStatusView()
@@ -131,15 +123,7 @@ extension SendMoneyDetailViewController {
         view.addSubview(statusView)
         view.addSubview(accountInfo)
         view.addSubview(self.buttonStackView)
-        view.addSubview(grabber)
         view.addSubviews(leftButtomButton, rightButtomButton)
-        
-        grabber.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(15)
-            make.leading.trailing.equalToSuperview().inset(170)
-            make.height.equalTo(6)
-        }
-        
 
         statusView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(50)
