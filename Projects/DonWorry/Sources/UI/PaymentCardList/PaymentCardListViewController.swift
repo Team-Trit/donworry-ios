@@ -73,7 +73,8 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.distribution = .equalSpacing
         v.alignment = .top
         v.backgroundColor = .designSystem(.white)
-        v.layoutMargins = UIEdgeInsets(top: 5, left: 25, bottom: 0, right: 25)
+        v.layoutMargins = UIEdgeInsets(top: 10, left: 25, bottom: 0, right: 25)
+        v.addShadow(shadowColor: UIColor.gray.cgColor, offset: CGSize(width: 0, height: -1), opacity: 0.05, radius: 0)
         v.isLayoutMarginsRelativeArrangement = true
         return v
     }()
@@ -342,7 +343,7 @@ extension PaymentCardListViewController {
         self.floatingStackView.snp.makeConstraints { make in
 //            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ? 0 : 30)
             make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(90)
+            make.height.equalTo(100)
         }
 
         self.startPaymentAlgorithmButton.roundCorners(14)
