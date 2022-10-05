@@ -1,6 +1,8 @@
 ![돈워리커버](https://user-images.githubusercontent.com/63157395/191316581-4f360071-0929-42fe-bded-a44a09e3f922.png)
 
-
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/63157395/193056644-2c3bec96-42ea-4291-9d42-c4fd057adddc.gif" width="100" >
+</div>
 <h2 align="center">세상에 없던 영리한 정산앱, 돈.워리</h2>
 
 
