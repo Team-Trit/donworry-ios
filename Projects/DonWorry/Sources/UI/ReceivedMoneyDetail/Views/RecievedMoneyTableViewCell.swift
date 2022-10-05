@@ -27,7 +27,7 @@ final class RecievedMoneyTableViewCell: UITableViewCell {
     
     private let profileImageView: UIImageView = {
         let profileImage = UIImageView()
-        profileImage.contentMode = .scaleAspectFit
+        profileImage.contentMode = .scaleAspectFill
         profileImage.translatesAutoresizingMaskIntoConstraints = false
         return profileImage
     }()

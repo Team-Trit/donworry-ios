@@ -80,7 +80,7 @@ final class AlarmTableViewCell: UITableViewCell {
     let alarmImageView: UIImageView = {
         let iconImage = UIImageView()
         iconImage.translatesAutoresizingMaskIntoConstraints = false
-        iconImage.contentMode = .scaleAspectFit
+        iconImage.contentMode = .scaleAspectFill
         iconImage.backgroundColor = .clear
         iconImage.backgroundColor = .designSystem(.grayF6F6F6)
         return iconImage
