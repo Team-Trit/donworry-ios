@@ -46,16 +46,32 @@ final class PaymentCardListViewController: BaseViewController, View {
         button.setTitle(" 복사하기", for: .normal)
         let copyImage = UIImage(systemName: "doc.on.doc")?
             .withTintColor(.designSystem(.gray818181)!)
-            .resized(to: CGSize(width: 15, height: 15))
+            .resized(to: CGSize(width: 11, height: 11))
         button.setImage(copyImage, for: .normal)
-        button.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
+        button.titleLabel?.font = .designSystem(weight: .regular, size: ._10)
         button.setTitleColor(.designSystem(.gray818181), for: .normal)
         button.layer.borderWidth = 1
         button.layer.borderColor = .init(red: 0.5058, green: 0.5058, blue: 0.5058, alpha: 1)
-        button.layer.cornerRadius = 13
+        button.layer.cornerRadius = 10
         return button
     }()
     
+    lazy var shareLinkButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("링크 공유", for: .normal)
+        button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+        button.backgroundColor = UIColor.init(red: 0.1098, green: 0.4196, blue: 1, alpha: 0.14)
+        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 9, weight: .regular))
+        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: configuration), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        let imagePadding: CGFloat = 5
+        button.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
+        button.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
+        button.imageEdgeInsets = .init(top: 0, left: 5, bottom: 0, right: 0)
+        button.addTarget(self, action: #selector(shareSpace), for: .touchUpInside)
+        button.layer.cornerRadius = 14
+        return button
+    }()
     /*
     lazy var startPaymentAlgorithmButton: UIButton = {
         let v = UIButton(type: .system)
@@ -95,6 +111,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         button.setTitle("정산 시작", for: .normal)
         return button
     }()
+    /*
     lazy var shareLinkButton: DWButton = {
         let v = DWButton.create(.halfBorderBlue)
         v.setTitle("정산 시작", for: .normal)
@@ -108,6 +125,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.addTarget(self, action: #selector(shareSpace), for: .touchUpInside)
         return v
     }()
+     */
     lazy var checkParticipatedButton: DWButton = {
         let v = DWButton.create(.halfBorderBlue)
         v.setTitle("참석 확인", for: .normal)
@@ -349,15 +367,15 @@ extension PaymentCardListViewController {
         }
         
         self.spaceIDCopyButton.snp.makeConstraints { make in
-            make.width.equalTo(80)
-            make.height.equalTo(26)
+            make.width.equalTo(65)
+            make.height.equalTo(20)
             make.leading.equalTo(spaceIDLabel.snp.trailing).offset(15)
             make.centerY.equalToSuperview()
         }
         
         self.shareLinkButton.snp.makeConstraints { make in
             make.width.equalTo(100)
-            make.height.equalTo(30)
+            make.height.equalTo(34)
             make.trailing.equalToSuperview().inset(28)
             make.centerY.equalTo(self.spaceStackView)
         }
