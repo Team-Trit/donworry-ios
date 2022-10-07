@@ -28,15 +28,22 @@ final class ParticipatePaymentCardViewController: BaseViewController, View {
     }(ParticipateCollectionView())
     
     private lazy var selectAllButton: UIButton = {
-        let bt = DWButton.create(.halfMainBlue)
-        bt.setTitle("모두 선택", for: .normal)
-        return bt
+        let button = DWButton.create(.halfBorderGray)
+        button.setTitle("모두 선택", for: .normal)
+        return button
     }()
     
     private lazy var checkAttendanceButton: UIButton = {
-        let bt = DWButton.create(.halfLightBlue)
-        bt.setTitle("참석 확인", for: .normal)
-        return bt
+        let button = DWButton.create(.halfBorderBlue)
+        button.setTitle("참석 확인", for: .normal)
+        let configuration = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 15, weight: .bold))
+        button.setImage(UIImage(systemName: "checkmark", withConfiguration: configuration), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        let imagePadding: CGFloat = 12
+        button.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
+        button.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
+        button.imageEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
+        return button
     }()
 
     override func viewDidLoad() {
