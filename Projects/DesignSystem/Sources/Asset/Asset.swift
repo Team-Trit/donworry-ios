@@ -30,6 +30,9 @@ public enum Asset: String {
     case ic_spoonknife
     case ic_movie
     case ic_wine
+    case ic_beer
+    case ic_mic
+    case ic_bacon
     case smartphone_with_bills
     case apple_login_button
     case google_login_button
