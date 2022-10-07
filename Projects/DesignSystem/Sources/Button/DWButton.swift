@@ -86,7 +86,7 @@ public extension DWButton {
             }
         case .halfMainBlue:
             button.roundCornersInDesignSystem(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
@@ -98,7 +98,7 @@ public extension DWButton {
             
         case .halfLightBlue:
             button.roundCornersInDesignSystem(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
             button.setBackgroundColor(.designSystem(.lightBlue)!, for: .normal)
@@ -110,7 +110,7 @@ public extension DWButton {
             
         case .halfBorderBlue:
             button.roundCornersInDesignSystem(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
             button.layer.borderWidth = 1
@@ -122,7 +122,7 @@ public extension DWButton {
        
         case .halfBorderGray:
             button.roundCornersInDesignSystem(25)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.gray818181), for: .normal)
             button.tintColor = .designSystem(.gray818181)
             button.layer.borderWidth = 1
