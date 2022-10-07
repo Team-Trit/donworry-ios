@@ -12,6 +12,7 @@ extension DTO {
         public let card: PaymentCard
         public struct PaymentCard: Codable {
             public let id, totalAmount: Int
+            public let category: Category
             public let users: [User]
             public let imgUrls: [String]
         }

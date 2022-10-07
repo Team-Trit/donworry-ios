@@ -107,6 +107,7 @@ enum PaymentCardModels {
                 public var id, totalAmount: Int
                 public let users: [User]
                 public let imgUrls: [String]
+                public let category: String
             }
             
             struct User: Codable {

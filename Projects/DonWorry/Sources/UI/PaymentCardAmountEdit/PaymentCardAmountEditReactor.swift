@@ -32,10 +32,10 @@ final class PaymentCardAmountEditReactor: Reactor {
     }
     
     struct State {
-        // create var
+        // 카드 생성 시 var
         var paymentCard: PaymentCardModels.CreateCard.Request?
         
-        // update var
+        // 카드 수정 시 var
         var cardTitle: String?
         var updateCard: PaymentCardModels.FetchCard.Response.PaymentCard?
         
@@ -46,19 +46,17 @@ final class PaymentCardAmountEditReactor: Reactor {
     
     let initialState: State
     
+    // 카드 생성 시 init
     init(
         paymentCard: PaymentCardModels.CreateCard.Request
     ){
         self.initialState = State(paymentCard: paymentCard, amount: "0")
     }
     
-    init(
-        title: String,
-        updateCard: PaymentCardModels.FetchCard.Response.PaymentCard
-    ) {
-        self.initialState = State(cardTitle: title, updateCard: updateCard, amount: "0")
+    // 카드 수정 시 init
+    init(cardTitle: String, updateCard: PaymentCardModels.FetchCard.Response.PaymentCard) {
+        self.initialState = State(cardTitle: cardTitle, updateCard: updateCard, amount: "0")
     }
-    
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
@@ -67,9 +65,8 @@ final class PaymentCardAmountEditReactor: Reactor {
             case .nextButtonPressed:
                 return .just(.routeTo(.paymentCardDeco))
             case .doneButtonPressed:
-            return paymentUseCase.putEditPaymentCardAmount(id: currentState.updateCard!.id, totalAmount: currentState.updateCard!.totalAmount)
+                return paymentUseCase.putEditPaymentCardAmount(id: currentState.updateCard!.id, totalAmount: currentState.updateCard!.totalAmount)
                 .map { _ in .routeTo(.pop) }
-            
             case .didTapBackButton:
                 return .just(.routeTo(.pop))
             case .didTapCloseButton:
