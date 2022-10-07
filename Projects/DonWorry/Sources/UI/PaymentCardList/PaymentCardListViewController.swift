@@ -258,7 +258,6 @@ final class PaymentCardListViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (space, isUserAdmin) in
                 self?.navigationBar.titleLabel?.text = space.title
-//                self?.spaceIDLabel.text! += space.shareID
                 self?.startPaymentAlgorithmButton.isEnabled = space.status == "OPEN" && isUserAdmin
                 self?.floatingStackView.isHidden = !(space.status == "OPEN")
                 self?.shareLinkButton.isHidden = !(space.status == "OPEN")
@@ -272,7 +271,12 @@ final class PaymentCardListViewController: BaseViewController, View {
                     self?.startPaymentAlgorithmButton.layer.borderColor = CGColor(red: 0.7725, green: 0.7725, blue: 0.7725, alpha: 1)   // grayC5C5C5
                 }
             }).disposed(by: disposeBag)
-
+        
+        reactor.state.map { $0.space.shareID }
+            .map { "정산방 ID : \($0)" }
+            .bind(to: spaceIDLabel.rx.text)
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.sections }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] sections in
