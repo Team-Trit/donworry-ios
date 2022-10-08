@@ -147,15 +147,24 @@ extension PaymentCardAmountEditViewController {
         if editType == .create {
             reactor.state.map { $0.paymentCard!.viewModel.categoryIconName }
                 .distinctUntilChanged()
+                .observe(on: MainScheduler.instance)
                 .map { UIImage(assetName: $0) }
                 .bind(to: iconImageView.rx.image)
                 .disposed(by: disposeBag)
             
             reactor.state.map { $0.paymentCard!.name }
                 .distinctUntilChanged()
+                .observe(on: MainScheduler.instance)
                 .bind(to: paymentTitleLabel.rx.text)
                 .disposed(by: disposeBag)
         } else {
+            reactor.state.map { $0.updateCard!.category }
+                .distinctUntilChanged()
+                .observe(on: MainScheduler.instance)
+                .map { UIImage(assetName: $0) }
+                .bind(to: iconImageView.rx.image)
+                .disposed(by: disposeBag)
+            
             reactor.state.map { $0.cardTitle }
                 .distinctUntilChanged()
                 .bind(to: paymentTitleLabel.rx.text)
@@ -164,11 +173,13 @@ extension PaymentCardAmountEditViewController {
         
         reactor.state.map { $0.amount }
             .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
             .bind(to: amountLabel.rx.text)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isButtonEnabled }
             .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
 

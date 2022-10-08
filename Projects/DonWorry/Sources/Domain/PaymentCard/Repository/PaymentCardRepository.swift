@@ -134,7 +134,8 @@ final class PaymentCardRepositoryImpl: PaymentCardRepository {
                     imgURL: $0.imgURL
                 )
             },
-            imgUrls: dto.imgUrls
+            imgUrls: dto.imgUrls,
+            category: dto.category.name
         )
     }
     

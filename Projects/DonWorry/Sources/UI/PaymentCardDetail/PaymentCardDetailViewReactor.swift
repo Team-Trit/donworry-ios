@@ -21,9 +21,10 @@ enum PaymentCardDetailStep {
 final class PaymentCardDetailViewReactor: Reactor {
     typealias Response = PaymentCardModels.FetchCard.Response
     enum Action {
-        case viewDidLoad
+        case viewWillAppear
         case didTapBackButton
         case didTapBottomButton
+        case didTapUpdateAmountButton
         case imageCellButton(String)
     }
 
@@ -44,6 +45,8 @@ final class PaymentCardDetailViewReactor: Reactor {
         var amount: Int
         var isParticipated: Bool?
         var imgURLs: [String?]
+        
+        var card: PaymentCardModels.FetchCard.Response?
         @Pulse var step: PaymentCardDetailStep?
     }
 
@@ -73,7 +76,7 @@ final class PaymentCardDetailViewReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
          switch action {
-         case .viewDidLoad:
+         case .viewWillAppear:
              let cardInfo = requestCardDetails()
              return cardInfo
          case .didTapBackButton:
@@ -81,6 +84,8 @@ final class PaymentCardDetailViewReactor: Reactor {
          case .didTapBottomButton:
              let result = judgeIsAdmin()
              return result
+         case .didTapUpdateAmountButton:
+             return .just(.routeTo(.editAmount))
          case .imageCellButton(let url):
              return .just(.routeTo(.showImage(url)))
          }
@@ -90,6 +95,7 @@ final class PaymentCardDetailViewReactor: Reactor {
         var newState = state
          switch mutation {
          case .updateViewModel(let response):
+             newState.card = response
              newState.amount = response.card.totalAmount
              newState.imgURLs = response.card.imgUrls
              let isParticipated = response.card.users.contains(where: { user in

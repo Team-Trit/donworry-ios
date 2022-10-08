@@ -59,7 +59,6 @@ final class PaymentCardDetailViewController: BaseViewController, View {
     
     lazy private var editButton: UIButton = {
         let button = UIButton()
-        button.isHidden = true
         button.setWidth(width: 16)
         button.setHeight(height: 22)
         button.contentMode = .scaleAspectFit
@@ -156,13 +155,19 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             .map { .imageCellButton(reactor.currentState.imgURLs[$0.row] ?? "") }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        editButton.rx.tap
+            .map { Reactor.Action.didTapUpdateAmountButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     func bind(reactor: Reactor) {
         
         dispatch(to: reactor)
         
-        self.rx.viewDidLoad.map { .viewDidLoad }
+        self.rx.viewWillAppear
+            .map { _ in Reactor.Action.viewWillAppear }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -184,6 +189,7 @@ final class PaymentCardDetailViewController: BaseViewController, View {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isCardAdmin in
                 self?.buttonType = isCardAdmin ? .delete : .participate
+                self?.editButton.isHidden = isCardAdmin ? false : true
             }).disposed(by: disposeBag)
         
         reactor.state.map { $0.cardName }
@@ -244,7 +250,14 @@ extension PaymentCardDetailViewController {
         case .pop:
             self.navigationController?.popViewController(animated: true)
         case .editAmount:
-            break
+            let cardAmountEditViewController = PaymentCardAmountEditViewController(editType: .update)
+            
+            let updateCard = reactor?.currentState.card?.card
+            
+            let amountReactor = PaymentCardAmountEditReactor(cardTitle: (reactor?.currentState.cardName)!, updateCard: updateCard!)
+            cardAmountEditViewController.reactor = amountReactor
+            self.navigationController?.pushViewController(cardAmountEditViewController, animated: true)
+            
         case .showImage(let imageUrl):
             let detailImageViewController = DetailImageViewController()
             detailImageViewController.imageUrl = imageUrl
