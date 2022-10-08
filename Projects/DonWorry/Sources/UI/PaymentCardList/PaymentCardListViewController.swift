@@ -42,21 +42,35 @@ final class PaymentCardListViewController: BaseViewController, View {
         return v
     }()
     lazy var spaceIDCopyButton: UIButton = {
-        let v = UIButton()
-        v.setTitle(" 복사하기", for: .normal)
-        let image = UIImage(systemName: "doc.on.doc")?.withTintColor(.designSystem(.white)!).resized(to: CGSize(width: 15, height: 15))
-        v.setImage(image, for: .normal)
-        v.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
-        v.backgroundColor = .designSystem(.black)
-        v.layer.cornerRadius = 15
-        return v
+        let button = UIButton()
+        button.setTitle(" 복사하기", for: .normal)
+        let copyImage = UIImage(systemName: "doc.on.doc")?
+            .withTintColor(.designSystem(.gray818181)!)
+            .resized(to: CGSize(width: 11, height: 11))
+        button.setImage(copyImage, for: .normal)
+        button.titleLabel?.font = .designSystem(weight: .regular, size: ._10)
+        button.setTitleColor(.designSystem(.gray818181), for: .normal)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = .init(red: 0.5058, green: 0.5058, blue: 0.5058, alpha: 1)
+        button.layer.cornerRadius = 10
+        return button
     }()
-    lazy var startPaymentAlgorithmButton: UIButton = {
-        let v = UIButton(type: .system)
-        v.setTitle("정산 시작", for: .normal)
-        v.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
-        v.layer.borderWidth = 1
-        return v
+    
+    lazy var shareLinkButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("링크 공유", for: .normal)
+        button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
+        button.backgroundColor = UIColor.init(red: 0.1098, green: 0.4196, blue: 1, alpha: 0.14)
+        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 9, weight: .semibold))
+        button.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: configuration), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        let imagePadding: CGFloat = 3
+        button.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
+        button.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
+        button.imageEdgeInsets = .init(top: 0, left: 5, bottom: 0, right: 0)
+        button.addTarget(self, action: #selector(shareSpace), for: .touchUpInside)
+        button.layer.cornerRadius = 14
+        return button
     }()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -83,21 +97,13 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.isLayoutMarginsRelativeArrangement = true
         return v
     }()
-    lazy var shareLinkButton: DWButton = {
-        let v = DWButton.create(.halfBorderGray)
-        v.setTitle("링크 공유", for: .normal)
-        let configuration = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 15, weight: .bold))
-        v.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: configuration), for: .normal)
-        v.semanticContentAttribute = .forceRightToLeft
-        let imagePadding: CGFloat = 12
-        v.titleEdgeInsets = .init(top: 0, left: -imagePadding, bottom: 0, right: imagePadding)
-        v.contentEdgeInsets = .init(top: 0, left: imagePadding, bottom: 0, right: 0)
-        v.imageEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
-        v.addTarget(self, action: #selector(shareSpace), for: .touchUpInside)
-        return v
+    lazy var startPaymentAlgorithmButton: UIButton = {
+        let button = DWButton.create(.halfBorderBlue)
+        button.setTitle("정산 시작", for: .normal)
+        return button
     }()
     lazy var checkParticipatedButton: DWButton = {
-        let v = DWButton.create(.halfBorderBlue)
+        let v = DWButton.create(.halfMainBlue)
         v.setTitle("참석 확인", for: .normal)
         let configuration = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 15, weight: .bold))
         v.setImage(UIImage(systemName: "checkmark", withConfiguration: configuration), for: .normal)
@@ -265,7 +271,12 @@ final class PaymentCardListViewController: BaseViewController, View {
                     self?.startPaymentAlgorithmButton.layer.borderColor = CGColor(red: 0.7725, green: 0.7725, blue: 0.7725, alpha: 1)   // grayC5C5C5
                 }
             }).disposed(by: disposeBag)
-
+        
+        reactor.state.map { $0.space.shareID }
+            .map { "정산방 ID : \($0)" }
+            .bind(to: spaceIDLabel.rx.text)
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.sections }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] sections in
@@ -321,10 +332,10 @@ extension PaymentCardListViewController {
         self.view.backgroundColor = .designSystem(.white)
         self.view.addSubview(self.navigationBar)
         self.view.addSubview(self.spaceStackView)
-        self.view.addSubview(self.startPaymentAlgorithmButton)
+        self.view.addSubview(self.shareLinkButton)
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.floatingStackView)
-        self.floatingStackView.addArrangedSubviews(self.shareLinkButton, self.checkParticipatedButton)
+        self.floatingStackView.addArrangedSubviews(self.startPaymentAlgorithmButton, self.checkParticipatedButton)
         self.spaceStackView.addArrangedSubviews(self.spaceIDLabel, self.spaceIDCopyButton)
 
         self.navigationBar.snp.makeConstraints { make in
@@ -336,32 +347,31 @@ extension PaymentCardListViewController {
         }
         
         self.spaceIDCopyButton.snp.makeConstraints { make in
-            make.width.equalTo(90)
-            make.height.equalTo(30)
+            make.width.equalTo(65)
+            make.height.equalTo(20)
             make.leading.equalTo(spaceIDLabel.snp.trailing).offset(15)
             make.centerY.equalToSuperview()
         }
         
-        self.startPaymentAlgorithmButton.snp.makeConstraints { make in
-            make.width.equalTo(159)
-            make.height.equalTo(32)
-            make.trailing.equalToSuperview().inset(25)
+        self.shareLinkButton.snp.makeConstraints { make in
+            make.width.equalTo(100)
+            make.height.equalTo(34)
+            make.trailing.equalToSuperview().inset(28)
             make.centerY.equalTo(self.spaceStackView)
         }
-        
         
         self.collectionView.snp.makeConstraints { make in
             make.top.equalTo(self.spaceIDLabel.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
+        
         self.floatingStackView.snp.makeConstraints { make in
 //            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(UIDevice.current.hasNotch ? 0 : 30)
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(100)
         }
 
-        self.startPaymentAlgorithmButton.roundCorners(14)
         self.collectionView.dataSource = dataSource
     }
 }

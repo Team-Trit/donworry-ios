@@ -26,6 +26,7 @@ public extension DWButton {
 
     static func create(_ type: DonWorryButtonType) -> DWButton {
         let button = DWButton(type: .system)
+        button.type = type
         switch type {
         case .xlarge58:
             button.roundCornersInDesignSystem(25)
@@ -84,8 +85,8 @@ public extension DWButton {
                 make.height.equalTo(58)
             }
         case .halfMainBlue:
-            button.roundCornersInDesignSystem(10)
-            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.roundCornersInDesignSystem(25)
+            button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.white), for: .normal)
             button.tintColor = .designSystem(.white)
             button.setBackgroundColor(.designSystem(.mainBlue)!, for: .normal)
@@ -96,7 +97,7 @@ public extension DWButton {
             }
             
         case .halfLightBlue:
-            button.roundCornersInDesignSystem(10)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
@@ -108,7 +109,7 @@ public extension DWButton {
             }
             
         case .halfBorderBlue:
-            button.roundCornersInDesignSystem(10)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.mainBlue), for: .normal)
             button.tintColor = .designSystem(.mainBlue)
@@ -120,7 +121,7 @@ public extension DWButton {
             }
        
         case .halfBorderGray:
-            button.roundCornersInDesignSystem(10)
+            button.roundCornersInDesignSystem(25)
             button.titleLabel?.font = .designSystem(weight: .heavy, size: ._15)
             button.setTitleColor(.designSystem(.gray818181), for: .normal)
             button.tintColor = .designSystem(.gray818181)
@@ -155,9 +156,10 @@ public final class DWButton: UIButton {
             setTitle(title, for: .normal)
         }
     }
+    public var type: DonWorryButtonType = .halfMainBlue
     public override var isEnabled: Bool {
         didSet {
-            if isEnabled {
+            if isEnabled && type != .halfBorderBlue {
                 self.addGradientInDesignSystem(
                     startColor: .designSystem(.blueTopGradient)!,
                     endColor: .designSystem(.blueBottomGradient)!
