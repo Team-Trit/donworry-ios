@@ -83,6 +83,7 @@ final class PaymentCardListViewController: BaseViewController, View {
         v.register(AddPaymentCardCollectionViewCell.self)
         v.register(ParticipantListCollectionViewCell.self)
         v.showsVerticalScrollIndicator = false
+        v.alwaysBounceVertical = true
         return v
     }()
     lazy var floatingStackView: UIStackView = {

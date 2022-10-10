@@ -35,7 +35,7 @@ final class PaymentCardIconEditViewController: BaseViewController, View {
     }()
 
     private lazy var iconCollectionView: UICollectionView = {
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout())
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: createCollecionViewLayout(with: UIScreen.main.isWiderThan375pt ))
         cv.isScrollEnabled = false
         return cv
     }()
@@ -161,7 +161,7 @@ extension PaymentCardIconEditViewController {
             $0.width.equalTo(300)
             $0.top.equalTo(titleLabel.snp.bottom).offset(57.5)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(100)
-            $0.leading.trailing.equalToSuperview().inset(25)
+            $0.leading.trailing.equalToSuperview().inset(UIScreen.main.isWiderThan375pt ? 25 : 35) //🔥
         }
     }
 }
@@ -171,21 +171,22 @@ extension PaymentCardIconEditViewController {
 
 extension PaymentCardIconEditViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
-    private func createCollecionViewLayout() -> UICollectionViewCompositionalLayout{
+    private func createCollecionViewLayout(with isWiderThan375pt: Bool) -> UICollectionViewCompositionalLayout{
         
-        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(102), heightDimension: .absolute(102))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(isWiderThan375pt ?  102 : 91), heightDimension: .absolute(isWiderThan375pt ?  102 : 91))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(102))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(isWiderThan375pt ?  102 : 91))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 3)
-        group.interItemSpacing = .fixed(16)
+        group.interItemSpacing = .fixed(isWiderThan375pt ?  16 : 12)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = CGFloat(16)
+        section.interGroupSpacing = CGFloat(isWiderThan375pt ?  16 : 8)
         
         let layout = UICollectionViewCompositionalLayout(section: section)
         
         return layout
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
