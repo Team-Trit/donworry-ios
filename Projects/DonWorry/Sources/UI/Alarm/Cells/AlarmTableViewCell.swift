@@ -9,6 +9,7 @@
 import UIKit
 import DesignSystem
 import Models
+import RxSwift
 
 struct AlarmCellViewModel {
     let title: String
@@ -29,11 +30,11 @@ struct AlarmCellViewModel {
         var image: UIImage? {
             switch self {
             case .payment_start:
-                return UIImage(.ic_calculation_3d)
+                return UIImage(assetName: "alarm_ic_calculation")
             case .payment_end:
-                return UIImage(.ic_calculation_3d)
+                return UIImage(assetName: "alarm_ic_money")
             case .payment_push:
-                return UIImage(.ic_cash_coin)
+                return UIImage(assetName: "alarm_ic_money")
             case .payment_send:
                 return UIImage(.ic_car)
             default:
@@ -50,21 +51,20 @@ protocol AlarmCellDelegate: AnyObject {
 final class AlarmTableViewCell: UITableViewCell {
     static let identifier: String = "AlarmTableViewCell"
     weak var alarmCellDelegate: AlarmCellDelegate?
+    var disposeBag = DisposeBag()
     var cellViewModel: AlarmCellViewModel? {
         didSet {
             DispatchQueue.main.async { [weak self] in
                 self?.titleLabel.text = self?.cellViewModel?.title
                 self?.alertInfo.text = self?.cellViewModel?.message
                 
-                if self?.cellViewModel?.type == .payment_push {
+                if self?.cellViewModel?.type == .payment_push || self?.cellViewModel?.type == .payment_send {
                     self?.alarmImageView.setBasicProfileImageWhenNilAndEmpty(with: self?.cellViewModel?.imgURL)
                 } else {
                     self?.alarmImageView.image = self?.cellViewModel?.type.image
                 }
-                
                 self?.sendDetailButton.isHidden = true //!(self?.cellViewModel?.type == .payment_push)
             }
-            render()
         }
     }
 
@@ -113,6 +113,8 @@ final class AlarmTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        render()
+
     }
 
     required init?(coder: NSCoder) {
@@ -128,11 +130,15 @@ final class AlarmTableViewCell: UITableViewCell {
         smallRectangele.heightAnchor.constraint(equalToConstant: 43).isActive = true
 
         smallRectangele.addSubview(alarmImageView)
-        alarmImageView.roundCorners(cellViewModel?.type == .payment_push ? 15 : 5)
+        alarmImageView.roundCorners(15)
         alarmImageView.centerXAnchor.constraint(equalTo: smallRectangele.centerXAnchor).isActive = true
         alarmImageView.centerYAnchor.constraint(equalTo: smallRectangele.centerYAnchor).isActive = true
-        alarmImageView.widthAnchor.constraint(equalToConstant: cellViewModel?.type == .payment_push ? 43 : 25).isActive = true
-        alarmImageView.heightAnchor.constraint(equalToConstant: cellViewModel?.type == .payment_push ? 43 : 25).isActive = true
+        
+
+
+        
+        alarmImageView.widthAnchor.constraint(equalToConstant: 43).isActive = true
+        alarmImageView.heightAnchor.constraint(equalToConstant: 43).isActive = true
 
 
 
