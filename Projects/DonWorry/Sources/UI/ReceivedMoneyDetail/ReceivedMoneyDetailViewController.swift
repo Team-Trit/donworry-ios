@@ -38,6 +38,7 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
         separatorView.backgroundColor = .designSystem(.white)
         return separatorView
     }()
+    
     private let subTitle: UILabel = {
         let subTitle = UILabel()
         subTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -45,6 +46,7 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
         subTitle.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         return subTitle
     }()
+    
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,6 +57,7 @@ final class RecievedMoneyDetailViewController: BaseViewController, View {
 
         return tableView
     }()
+    
     private let bottomButton: DWButton = {
         let buttonButton = DWButton.create(.xlarge50)
         buttonButton.translatesAutoresizingMaskIntoConstraints = false
@@ -165,5 +168,4 @@ extension RecievedMoneyDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
-
 }

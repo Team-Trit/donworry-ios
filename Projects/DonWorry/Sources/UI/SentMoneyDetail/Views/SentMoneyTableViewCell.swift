@@ -40,7 +40,7 @@ class SentMoneyTableViewCell: UITableViewCell {
     private let spaceIcon: UIImageView = {
         let spaceIcon = UIImageView()
         spaceIcon.translatesAutoresizingMaskIntoConstraints = false
-        spaceIcon.contentMode = .scaleAspectFill
+        spaceIcon.contentMode = .scaleAspectFit
         return spaceIcon
     }()
     
