@@ -33,7 +33,7 @@ class RecieveMoneyDetailStatusView: UIView {
     private let rightSmallTitle: UILabel = {
         let rightSmallTitle = UILabel()
         rightSmallTitle.translatesAutoresizingMaskIntoConstraints = false
-        rightSmallTitle.text = "미정산 금액"
+        rightSmallTitle.text = "총 정산 금액"
         rightSmallTitle.font = .designSystem(weight: .bold, size: ._15)
         rightSmallTitle.textColor = UIColor.black
         rightSmallTitle.layer.opacity = 0.4
