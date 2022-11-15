@@ -4,6 +4,7 @@ extension Project {
 
   public static func make(
     name: String,
+    settings: Settings?,
     targets: [Target]
   ) -> Project {
     Project(
@@ -13,6 +14,7 @@ extension Project {
         disableBundleAccessors: true,
         disableSynthesizedResourceAccessors: true
       ),
+      settings: settings,
       targets: targets
     )
   }
