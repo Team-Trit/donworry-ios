@@ -10,6 +10,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.make(
   name: "CoreKit",
+  settings: nil,
   targets: [
     .staticLibrary(
       name: "CoreKit",

@@ -10,6 +10,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.make(
   name: "DonWorryLocalStorage",
+  settings: nil,
   targets: [
     .staticLibrary(
         name: "DonWorryLocalStorage"
